@@ -1,102 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rift Raiders</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        rrRed: '#ff3333',
-                        rrDark: '#0a0a0a',
-                        rrCard: '#121212',
-                        rrBorder: '#222222'
-                    }
-                }
-            }
-        }
-    </script>
-</head>
-<body class="bg-rrDark text-gray-100 font-sans antialiased min-h-screen flex flex-col justify-between">
+        const defaultPlayers = [
+            { id: 1, name: "Takeku", team: "Main Roster", role: "Mid Laner", game: "Wild Rift", socials: "#", img: "https://images.unsplash.com/photo-1566492031773-4f4e44671857?auto=format&fit=crop&w=600&q=80" }
+        ];
 
-    <!-- Header / Navbar -->
-    <header class="border-b border-rrBorder bg-black/80 sticky top-0 z-50 backdrop-blur-md">
-        <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <img id="siteLogo" src="https://i.ibb.co/689L51P/58834.png" alt="RR Logo" class="w-9 h-9 object-contain rounded-full border border-rrRed/40 p-0.5">
-                <div>
-                    <span class="font-bold tracking-widest text-sm uppercase block leading-none">Rift Raiders</span>
-                    <span class="text-[9px] text-rrRed font-semibold tracking-wider uppercase">EST. 2024</span>
-                </div>
-            </div>
-            <div class="flex items-center space-x-4 text-sm font-semibold">
-                <a href="https://discord.gg/x3M8dZ7fmR" target="_blank" class="hover:text-rrRed transition flex items-center"><i class="fab fa-discord mr-1 text-base text-rrRed"></i> Discord</a>
-                <a href="https://www.facebook.com/share/19rMmgaJKg/" target="_blank" class="hover:text-rrRed transition flex items-center"><i class="fab fa-facebook mr-1 text-base text-rrRed"></i> Facebook</a>
-                <a href="mailto:riftraiders.wr@gmail.com" class="hover:text-rrRed transition flex items-center"><i class="fas fa-envelope mr-1 text-base text-rrRed"></i> Email</a>
-            </div>
-        </div>
-    </header>
+        const defaultCreators = [
+            { id: 1, name: "Takeku", game: "Wild Rift", bio: "Content creator and streamer covering Wild Rift, League of Legends, and community events.", tiktok: "#", youtube: "#", twitch: "#", img: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800&q=80" }
+        ];
 
-    <!-- Main Content -->
-    <main class="max-w-4xl mx-auto px-4 py-6 space-y-10 flex-grow w-full">
-        
-        <!-- Cover Photo Banner / Hero Section -->
-        <section class="relative rounded-2xl overflow-hidden border border-rrBorder shadow-2xl bg-black">
-            <!-- Background Image -->
-            <div class="relative h-64 md:h-80 w-full overflow-hidden">
-                <img id="siteCover" src="https://i.ibb.co/3k15y8B/58833.png" alt="Rift Raiders Cover" class="w-full h-full object-cover opacity-75">
-                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
-            </div>
-
-            <!-- Banner Content Overlay -->
-            <div class="absolute inset-0 flex flex-col justify-end p-6 md:p-8 space-y-2">
-                <div class="flex items-center space-x-2">
-                    <span class="bg-rrRed text-white text-[10px] font-black px-2.5 py-0.5 rounded uppercase tracking-widest">Official Guild</span>
-                    <span class="text-gray-300 text-[11px] font-semibold tracking-wider">RIFT RAIDERS • EST. 2024</span>
-                </div>
-                <div>
-                    <h1 class="text-3xl md:text-5xl font-black tracking-wider uppercase text-white drop-shadow-md">Rift Raiders</h1>
-                    <p class="text-rrRed font-bold text-xs md:text-sm tracking-wide mt-0.5">Competitive gaming. Built to dominate the Rift.</p>
-                </div>
-                <p class="text-gray-300 text-xs md:text-sm max-w-2xl leading-relaxed hidden sm:block pt-1">
-                    Rift Raiders began its journey in 2024 as a dedicated competitive team. After a year of climbing the ranks, we expanded in April 2025 by establishing our official guild. Today, we continue to field elite rosters and content creators.
-                </p>
-                <div class="pt-2">
-                    <a href="#roster" class="inline-flex items-center bg-rrRed hover:bg-red-700 text-white font-bold px-4 py-2 rounded-lg text-xs uppercase tracking-wider transition shadow-lg">
-                        Explore The Roster <i class="fas fa-arrow-down ml-2"></i>
-                    </a>
-                </div>
-            </div>
-        </section>
-
-        <!-- About Description Mobile View -->
-        <section class="sm:hidden bg-rrCard p-4 rounded-xl border border-rrBorder space-y-2">
-            <h3 class="text-xs font-bold text-rrRed uppercase tracking-wider">About Rift Raiders</h3>
-            <p class="text-gray-300 text-xs leading-relaxed">
-                Rift Raiders began its journey in 2024 as a dedicated competitive team. After a year of climbing the ranks, we expanded in April 2025 by establishing our official guild. Today, we continue to field elite rosters.
-            </p>
-        </section>
-
-        <!-- MEET THE TEAMS (PLAYERS) -->
-        <section id="roster" class="space-y-6">
-            <div class="border-l-4 border-rrRed pl-3">
-                <span class="text-rrRed text-xs font-bold tracking-widest uppercase">Competitive Roster</span>
-                <h2 class="text-2xl font-bold uppercase tracking-wide">Meet The Teams</h2>
-                <p class="text-gray-400 text-xs">Active competitive players across Wild Rift, League of Legends, and Valorant.</p>
-            </div>
-
-            <!-- Players Grid -->
-            <div id="playersGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Injected via JavaScript -->
-            </div>
-        </section>
-
-        <!-- MEET THE CREATORS -->
-        <section class="space-y-6">
+        let siteLogo = "https://i.ibb.co/689L51P/58834.png";
+        let siteCover = "https://i.ibb.co/3k15y8B/58833.png";
             <div class="border-l-4 border-rrRed pl-3">
                 <span class="text-rrRed text-xs font-bold tracking-widest uppercase">Community Voices</span>
                 <h2 class="text-2xl font-bold uppercase tracking-wide">Meet The Creators</h2>
