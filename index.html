@@ -18,6 +18,27 @@
             }
         }
     </script>
+
+    <!-- ADMIN PORTAL UI SCRIPT (Safe & Isolated) -->
+    <script>
+        function openAdmin() {
+            document.getElementById('adminModal').style.display = 'flex';
+            document.getElementById('adminPassInput').value = '';
+            document.getElementById('loginView').style.display = 'flex';
+            document.getElementById('dashboardView').style.display = 'none';
+        }
+        function closeAdmin() {
+            document.getElementById('adminModal').style.display = 'none';
+        }
+        function verifyAdmin() {
+            if(document.getElementById('adminPassInput').value === '07092004') {
+                document.getElementById('loginView').style.display = 'none';
+                document.getElementById('dashboardView').style.display = 'block';
+            } else {
+                alert('Access Denied. Incorrect Password.');
+            }
+        }
+    </script>
 </head>
 <body class="bg-rrDark text-gray-100 font-sans antialiased min-h-screen flex flex-col justify-between relative">
 
@@ -54,7 +75,7 @@
             </div>
         </section>
 
-        <!-- ABOUT RIFT RAIDERS (Text Only as requested) -->
+        <!-- ABOUT RIFT RAIDERS -->
         <section class="space-y-4">
             <div class="bg-rrCard border border-rrBorder p-6 md:p-8 rounded-xl shadow-lg">
                 <h2 class="text-2xl font-black uppercase tracking-wide text-rrRed mb-4 border-b border-rrBorder pb-2">About Us</h2>
@@ -117,7 +138,7 @@
                 
                 <h3 class="font-black text-xl text-white uppercase border-b border-rrBorder pb-2"><i class="fas fa-cogs text-rrRed mr-2"></i>Owner Dashboard</h3>
 
-                <!-- UPLOAD SITE IMAGES (NEW) -->
+                <!-- UPLOAD SITE IMAGES -->
                 <div class="bg-black p-4 rounded border border-rrBorder space-y-4">
                     <h4 class="font-bold text-sm text-green-500 uppercase border-b border-gray-800 pb-2"><i class="fas fa-images mr-1"></i> Site Design</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -191,28 +212,8 @@
         </div>
     </div>
 
-    <!-- MAIN SCRIPT -->
+    <!-- DATABASE SCRIPT -->
     <script>
-        // UI & Login Logic
-        function openAdmin() {
-            document.getElementById('adminModal').style.display = 'flex';
-            document.getElementById('adminPassInput').value = '';
-            document.getElementById('loginView').style.display = 'flex';
-            document.getElementById('dashboardView').style.display = 'none';
-        }
-        function closeAdmin() {
-            document.getElementById('adminModal').style.display = 'none';
-        }
-        function verifyAdmin() {
-            if(document.getElementById('adminPassInput').value === '07092004') {
-                document.getElementById('loginView').style.display = 'none';
-                document.getElementById('dashboardView').style.display = 'block';
-            } else {
-                alert('Access Denied. Incorrect Password.');
-            }
-        }
-
-        // FIREBASE CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSy87GyUvjxpgvVQpSS_wjh2Sm6HssUd_jbm",
             authDomain: "riftraiders-348f4.firebaseapp.com",
@@ -232,10 +233,8 @@
             banner: "https://i.ibb.co/3k15y8B/58833.png"
         };
 
-        // RENDER SITE IMMEDIATELY (Prevents slow loading blank screen)
         renderSite();
 
-        // LISTENER (Updates when data changes)
         db.ref('/').on('value', (snapshot) => {
             const data = snapshot.val();
             if (data) {
@@ -246,7 +245,6 @@
             renderSite();
         });
 
-        // SAVE FUNCTION (With error handling)
         function saveToDatabase(successMsg) {
             db.ref('/').update({
                 competitive: competitiveList,
@@ -260,7 +258,6 @@
             });
         }
 
-        // IMAGE COMPRESSOR (Optimized to fix Slow Loading)
         function processImage(file, defaultImage, callback) {
             if (!file) { callback(defaultImage); return; }
             const reader = new FileReader();
@@ -268,14 +265,12 @@
                 const img = new Image();
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
-                    // Binabaan ang size para hindi maging laggy ang Firebase
                     const MAX_WIDTH = 250; 
                     const scaleSize = MAX_WIDTH / img.width;
                     canvas.width = MAX_WIDTH;
                     canvas.height = img.height * scaleSize;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    // Compress quality to 0.5 using webp for smallest size
                     callback(canvas.toDataURL('image/webp', 0.5));
                 }
                 img.src = e.target.result;
@@ -283,7 +278,6 @@
             reader.readAsDataURL(file);
         }
 
-        // DESIGN UPDATE FUNCTIONS
         function saveLogo() {
             const file = document.getElementById('uploadLogo').files[0];
             if(!file) return alert("Select a logo first!");
@@ -302,7 +296,6 @@
             });
         }
 
-        // ADD TEAM PLAYER
         function addCompetitive() {
             const ign = document.getElementById('cIgn').value;
             const role = document.getElementById('cRole').value;
@@ -316,7 +309,6 @@
                 competitiveList.push({ ign, role, team, game, photo: base64Img });
                 saveToDatabase("Team Member Added Successfully!");
                 
-                // Clear fields
                 document.getElementById('cIgn').value = '';
                 document.getElementById('cRole').value = '';
                 document.getElementById('cTeam').value = '';
@@ -324,7 +316,6 @@
             });
         }
 
-        // ADD CREATOR
         function addCreator() {
             const name = document.getElementById('crName').value;
             const game = document.getElementById('crGame').value;
@@ -341,8 +332,20 @@
                 creatorsList.push({ name, game, socials, photo: base64Img });
                 saveToDatabase("Creator Added Successfully!");
                 
-                // Clear fields
                 document.getElementById('crName').value = '';
                 document.getElementById('crGame').value = '';
                 document.getElementById('crFb').value = '';
-                document.getElementById('
+                document.getElementById('crYt').value = '';
+                document.getElementById('crTt').value = '';
+                document.getElementById('crPhoto').value = '';
+            });
+        }
+
+        function deleteCompetitive(idx) {
+            if(confirm('Delete this player?')) { competitiveList.splice(idx, 1); saveToDatabase("Player Deleted!"); }
+        }
+        function deleteCreator(idx) {
+            if(confirm('Delete this creator?')) { creatorsList.splice(idx, 1); saveToDatabase("Creator Deleted!"); }
+        }
+
+        function renderSit
