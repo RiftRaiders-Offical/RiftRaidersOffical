@@ -32,7 +32,6 @@
                 </div>
             </div>
             
-            <!-- OFFICIAL SOCIALS -->
             <div class="flex items-center space-x-4">
                 <a href="https://www.facebook.com/share/19rMmgaJKg/" target="_blank" class="text-gray-400 hover:text-blue-500 transition text-lg"><i class="fab fa-facebook"></i></a>
                 <a href="https://discord.gg/x3M8dZ7fmR" target="_blank" class="text-gray-400 hover:text-indigo-400 transition text-lg"><i class="fab fa-discord"></i></a>
@@ -47,7 +46,7 @@
         <section class="relative rounded-2xl overflow-hidden border border-rrBorder shadow-2xl bg-black">
             <div class="relative h-48 md:h-80 w-full overflow-hidden">
                 <img id="siteCover" src="https://i.ibb.co/3k15y8B/58833.png" alt="Cover" class="w-full h-full object-cover opacity-60">
-                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
             </div>
             <div class="absolute inset-0 flex flex-col justify-end p-6 md:p-10 space-y-2">
                 <h1 class="text-3xl md:text-6xl font-black tracking-wider uppercase text-white drop-shadow-lg">Rift Raiders</h1>
@@ -55,19 +54,13 @@
             </div>
         </section>
 
-        <!-- ABOUT RIFT RAIDERS -->
+        <!-- ABOUT RIFT RAIDERS (Text Only as requested) -->
         <section class="space-y-4">
-            <div class="border-l-4 border-white pl-4">
-                <h2 class="text-2xl md:text-3xl font-black uppercase tracking-wide">About Us</h2>
-                <span class="text-gray-400 text-xs md:text-sm font-semibold tracking-widest uppercase">Our Story</span>
-            </div>
-            <div class="bg-rrCard border border-rrBorder p-6 md:p-8 rounded-xl shadow-lg flex flex-col md:flex-row items-center gap-6">
-                <img src="https://i.ibb.co/689L51P/58834.png" alt="RR Logo" class="w-32 h-32 md:w-40 md:h-40 object-cover rounded-full border-4 border-rrRed/50 bg-black p-1 shadow-2xl shadow-rrRed/20">
-                <div class="text-center md:text-left space-y-3">
-                    <p class="text-gray-300 leading-relaxed text-sm md:text-base font-medium">
-                        Rift Raiders began its journey in 2024 as a dedicated competitive team. After a year of climbing the ranks, we expanded in April 2025 by establishing our official guild. Today, we continue to field elite.
-                    </p>
-                </div>
+            <div class="bg-rrCard border border-rrBorder p-6 md:p-8 rounded-xl shadow-lg">
+                <h2 class="text-2xl font-black uppercase tracking-wide text-rrRed mb-4 border-b border-rrBorder pb-2">About Us</h2>
+                <p class="text-gray-300 leading-relaxed text-sm md:text-base font-medium">
+                    Rift Raiders began its journey in 2024 as a dedicated competitive team. After a year of climbing the ranks, we expanded in April 2025 by establishing our official guild. Today, we continue to field elite.
+                </p>
             </div>
         </section>
 
@@ -78,7 +71,7 @@
                 <span class="text-gray-400 text-xs md:text-sm font-semibold tracking-widest uppercase">The official esports roster</span>
             </div>
             <div id="competitiveGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                <!-- Players will load here -->
+                <p class="text-gray-600 italic">Loading players...</p>
             </div>
         </section>
 
@@ -89,7 +82,7 @@
                 <span class="text-gray-400 text-xs md:text-sm font-semibold tracking-widest uppercase">Our content creators & streamers</span>
             </div>
             <div id="creatorsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                <!-- Creators will load here -->
+                <p class="text-gray-600 italic">Loading creators...</p>
             </div>
         </section>
     </main>
@@ -98,7 +91,7 @@
     <footer class="border-t border-rrBorder bg-black py-8 mt-16 text-center md:text-left relative z-10">
         <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p class="text-xs text-gray-500">© 2026 Rift Raiders. All rights reserved.</p>
-            <!-- BUTTON NA BUBUSKAS NG ADMIN PORTAL -->
+            <!-- ADMIN PORTAL BUTTON -->
             <button onclick="openAdmin()" class="bg-rrBorder hover:bg-rrRed hover:text-white text-gray-300 px-4 py-2 rounded transition font-bold text-sm cursor-pointer z-50">
                 <i class="fas fa-cog mr-1"></i> Admin Portal
             </button>
@@ -106,61 +99,82 @@
     </footer>
 
     <!-- ADMIN MODAL -->
-    <!-- Dito na binago ang style para safe sa conflict -->
     <div id="adminModal" style="display: none;" class="fixed inset-0 bg-black/95 backdrop-blur-md z-[99999] flex-col items-center justify-center p-4">
-        <div class="bg-rrCard border border-rrBorder rounded-lg max-w-2xl w-full p-4 md:p-6 space-y-6 max-h-[90vh] overflow-y-auto shadow-2xl relative">
+        <div class="bg-rrCard border border-rrBorder rounded-lg max-w-2xl w-full p-4 md:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
             
-            <div class="flex justify-between items-center border-b border-rrBorder pb-3 sticky top-0 bg-rrCard z-10">
-                <h3 class="font-black text-xl text-rrRed uppercase">Owner Dashboard</h3>
-                <button onclick="closeAdmin()" class="text-gray-400 hover:text-white bg-black rounded-lg p-2 transition cursor-pointer"><i class="fas fa-times text-xl"></i></button>
+            <button onclick="closeAdmin()" class="absolute top-4 right-4 text-gray-400 hover:text-white bg-black rounded p-2 transition cursor-pointer z-50"><i class="fas fa-times text-xl"></i></button>
+
+            <!-- LOGIN VIEW -->
+            <div id="loginView" class="py-10 flex flex-col items-center space-y-5">
+                <h3 class="font-black text-2xl text-rrRed uppercase">Admin Security</h3>
+                <p class="text-xs text-gray-500">Please enter the master password.</p>
+                <input type="password" id="adminPassInput" placeholder="Password" class="w-full max-w-xs bg-rrDark border border-rrBorder rounded px-4 py-3 text-white text-center focus:outline-none focus:border-rrRed">
+                <button onclick="verifyAdmin()" class="w-full max-w-xs bg-rrRed text-white font-bold py-2.5 rounded hover:bg-red-700 transition">Unlock Portal</button>
             </div>
 
-            <div class="space-y-8">
-                <!-- 1. ADD TEAM PLAYER -->
+            <!-- DASHBOARD VIEW -->
+            <div id="dashboardView" style="display: none;" class="space-y-8 mt-6">
+                
+                <h3 class="font-black text-xl text-white uppercase border-b border-rrBorder pb-2"><i class="fas fa-cogs text-rrRed mr-2"></i>Owner Dashboard</h3>
+
+                <!-- UPLOAD SITE IMAGES (NEW) -->
+                <div class="bg-black p-4 rounded border border-rrBorder space-y-4">
+                    <h4 class="font-bold text-sm text-green-500 uppercase border-b border-gray-800 pb-2"><i class="fas fa-images mr-1"></i> Site Design</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-xs text-gray-400 block mb-1">Upload Main Logo (Header):</label>
+                            <input type="file" id="uploadLogo" accept="image/*" class="w-full bg-rrDark border border-rrBorder rounded p-1 text-sm text-gray-400">
+                            <button onclick="saveLogo()" class="w-full mt-2 bg-gray-800 hover:bg-green-600 text-white text-xs font-bold py-2 rounded transition">Update Logo</button>
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-400 block mb-1">Upload Cover Photo (Background):</label>
+                            <input type="file" id="uploadBanner" accept="image/*" class="w-full bg-rrDark border border-rrBorder rounded p-1 text-sm text-gray-400">
+                            <button onclick="saveBanner()" class="w-full mt-2 bg-gray-800 hover:bg-green-600 text-white text-xs font-bold py-2 rounded transition">Update Cover</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ADD TEAM PLAYER -->
                 <div class="bg-black p-4 rounded border border-rrBorder space-y-3">
                     <h4 class="font-bold text-sm text-rrRed uppercase border-b border-gray-800 pb-2"><i class="fas fa-users mr-1"></i> Add Team Member</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <input type="text" id="cIgn" placeholder="IGN (e.g., Takeku)" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-rrRed">
-                        <input type="text" id="cRole" placeholder="Role (e.g., Jungler)" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-rrRed">
-                        <input type="text" id="cTeam" placeholder="Team Name (e.g., Team Alpha)" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-rrRed">
-                        <select id="cGame" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-gray-300 focus:outline-none focus:border-rrRed">
+                        <input type="text" id="cIgn" placeholder="IGN (e.g., Takeku)" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white">
+                        <input type="text" id="cRole" placeholder="Role (e.g., Jungler)" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white">
+                        <input type="text" id="cTeam" placeholder="Team Name (e.g., Team Alpha)" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white">
+                        <select id="cGame" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-gray-300">
                             <option value="Wild Rift">League of Legends: Wild Rift</option>
                             <option value="League of Legends">League of Legends (PC)</option>
                         </select>
                     </div>
                     <div>
-                        <label class="text-xs text-gray-400 block mb-1">Upload Photo (From Gallery):</label>
-                        <input type="file" id="cPhoto" accept="image/*" class="w-full bg-rrDark border border-rrBorder rounded p-1 text-sm text-gray-400 cursor-pointer">
+                        <label class="text-xs text-gray-400 block mb-1">Upload Photo:</label>
+                        <input type="file" id="cPhoto" accept="image/*" class="w-full bg-rrDark border border-rrBorder rounded p-1 text-sm text-gray-400">
                     </div>
-                    <button onclick="addCompetitive()" class="w-full bg-rrRed text-white text-sm font-bold py-2.5 rounded hover:bg-red-700 transition cursor-pointer">Add to Team Roster</button>
+                    <button onclick="addCompetitive()" class="w-full bg-rrRed text-white text-sm font-bold py-2.5 rounded hover:bg-red-700 transition">Add to Team Roster</button>
                 </div>
 
-                <!-- 2. ADD CREATOR -->
+                <!-- ADD CREATOR -->
                 <div class="bg-black p-4 rounded border border-rrBorder space-y-3">
                     <h4 class="font-bold text-sm text-blue-500 uppercase border-b border-gray-800 pb-2"><i class="fas fa-video mr-1"></i> Add Creator</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <input type="text" id="crName" placeholder="Creator Name" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
-                        <input type="text" id="crGame" placeholder="Main Game Focus (e.g., Valorant, LoL)" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                        <input type="text" id="crName" placeholder="Creator Name" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white">
+                        <input type="text" id="crGame" placeholder="Main Game Focus" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white">
                     </div>
-                    
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
-                        <input type="text" id="crFb" placeholder="Facebook Link" class="w-full bg-rrDark border border-rrBorder rounded px-2 py-1.5 text-xs text-white focus:outline-none focus:border-blue-500">
-                        <input type="text" id="crYt" placeholder="YouTube Link" class="w-full bg-rrDark border border-rrBorder rounded px-2 py-1.5 text-xs text-white focus:outline-none focus:border-blue-500">
-                        <input type="text" id="crTt" placeholder="TikTok Link" class="w-full bg-rrDark border border-rrBorder rounded px-2 py-1.5 text-xs text-white focus:outline-none focus:border-blue-500">
-                        <input type="text" id="crTw" placeholder="Twitch Link" class="w-full bg-rrDark border border-rrBorder rounded px-2 py-1.5 text-xs text-white focus:outline-none focus:border-blue-500">
-                        <input type="text" id="crX" placeholder="X (Twitter) Link" class="w-full bg-rrDark border border-rrBorder rounded px-2 py-1.5 text-xs text-white focus:outline-none focus:border-blue-500">
+                        <input type="text" id="crFb" placeholder="Facebook Link" class="w-full bg-rrDark border border-rrBorder rounded px-2 py-1.5 text-xs text-white">
+                        <input type="text" id="crYt" placeholder="YouTube Link" class="w-full bg-rrDark border border-rrBorder rounded px-2 py-1.5 text-xs text-white">
+                        <input type="text" id="crTt" placeholder="TikTok Link" class="w-full bg-rrDark border border-rrBorder rounded px-2 py-1.5 text-xs text-white">
                     </div>
-
                     <div>
-                        <label class="text-xs text-gray-400 block mb-1">Upload Photo (From Gallery):</label>
-                        <input type="file" id="crPhoto" accept="image/*" class="w-full bg-rrDark border border-rrBorder rounded p-1 text-sm text-gray-400 cursor-pointer">
+                        <label class="text-xs text-gray-400 block mb-1">Upload Photo:</label>
+                        <input type="file" id="crPhoto" accept="image/*" class="w-full bg-rrDark border border-rrBorder rounded p-1 text-sm text-gray-400">
                     </div>
-                    <button onclick="addCreator()" class="w-full bg-blue-600 text-white text-sm font-bold py-2.5 rounded hover:bg-blue-700 transition cursor-pointer">Add Creator</button>
+                    <button onclick="addCreator()" class="w-full bg-blue-600 text-white text-sm font-bold py-2.5 rounded hover:bg-blue-700 transition">Add Creator</button>
                 </div>
 
-                <!-- 3. MANAGE LISTS -->
+                <!-- MANAGE LISTS -->
                 <div class="bg-black p-4 rounded border border-rrBorder space-y-4">
-                    <h4 class="font-bold text-sm text-gray-300 uppercase border-b border-gray-800 pb-2"><i class="fas fa-trash mr-1"></i> Manage Members</h4>
+                    <h4 class="font-bold text-sm text-gray-300 uppercase border-b border-gray-800 pb-2"><i class="fas fa-trash mr-1"></i> Manage Data</h4>
                     
                     <div>
                         <p class="text-xs text-rrRed font-bold mb-2">Teams Roster</p>
@@ -177,18 +191,27 @@
         </div>
     </div>
 
-    <!-- UI SCRIPT (Safe from Database errors) -->
+    <!-- MAIN SCRIPT -->
     <script>
+        // UI & Login Logic
         function openAdmin() {
             document.getElementById('adminModal').style.display = 'flex';
+            document.getElementById('adminPassInput').value = '';
+            document.getElementById('loginView').style.display = 'flex';
+            document.getElementById('dashboardView').style.display = 'none';
         }
         function closeAdmin() {
             document.getElementById('adminModal').style.display = 'none';
         }
-    </script>
+        function verifyAdmin() {
+            if(document.getElementById('adminPassInput').value === '07092004') {
+                document.getElementById('loginView').style.display = 'none';
+                document.getElementById('dashboardView').style.display = 'block';
+            } else {
+                alert('Access Denied. Incorrect Password.');
+            }
+        }
 
-    <!-- DATABASE SCRIPT -->
-    <script>
         // FIREBASE CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSy87GyUvjxpgvVQpSS_wjh2Sm6HssUd_jbm",
@@ -199,49 +222,84 @@
             messagingSenderId: "103200979693",
             appId: "1:103200979693:web:48d4b7f6e65734f2756ee4"
         };
-
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
         let competitiveList = [];
         let creatorsList = [];
+        let siteSettings = {
+            logo: "https://i.ibb.co/689L51P/58834.png",
+            banner: "https://i.ibb.co/3k15y8B/58833.png"
+        };
 
-        // REAL-TIME LISTENER
+        // RENDER SITE IMMEDIATELY (Prevents slow loading blank screen)
+        renderSite();
+
+        // LISTENER (Updates when data changes)
         db.ref('/').on('value', (snapshot) => {
             const data = snapshot.val();
             if (data) {
-                competitiveList = data.competitive || [];
-                creatorsList = data.creators || [];
+                if(data.competitive) competitiveList = data.competitive;
+                if(data.creators) creatorsList = data.creators;
+                if(data.settings) siteSettings = data.settings;
             }
             renderSite();
         });
 
-        function saveToDatabase() {
+        // SAVE FUNCTION (With error handling)
+        function saveToDatabase(successMsg) {
             db.ref('/').update({
                 competitive: competitiveList,
-                creators: creatorsList
+                creators: creatorsList,
+                settings: siteSettings
+            }).then(() => {
+                if(successMsg) alert(successMsg);
+                renderSite();
+            }).catch(e => {
+                alert("Error saving data! (Check Firebase Rules): " + e.message);
             });
         }
 
-        // IMAGE COMPRESSOR
-        function processImage(file, callback) {
-            if (!file) { callback("https://i.ibb.co/3k15y8B/58833.png"); return; }
+        // IMAGE COMPRESSOR (Optimized to fix Slow Loading)
+        function processImage(file, defaultImage, callback) {
+            if (!file) { callback(defaultImage); return; }
             const reader = new FileReader();
             reader.onload = function(e) {
                 const img = new Image();
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 400; 
+                    // Binabaan ang size para hindi maging laggy ang Firebase
+                    const MAX_WIDTH = 250; 
                     const scaleSize = MAX_WIDTH / img.width;
                     canvas.width = MAX_WIDTH;
                     canvas.height = img.height * scaleSize;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    callback(canvas.toDataURL('image/jpeg', 0.6));
+                    // Compress quality to 0.5 using webp for smallest size
+                    callback(canvas.toDataURL('image/webp', 0.5));
                 }
                 img.src = e.target.result;
             }
             reader.readAsDataURL(file);
+        }
+
+        // DESIGN UPDATE FUNCTIONS
+        function saveLogo() {
+            const file = document.getElementById('uploadLogo').files[0];
+            if(!file) return alert("Select a logo first!");
+            processImage(file, siteSettings.logo, (base64) => {
+                siteSettings.logo = base64;
+                saveToDatabase("Main Logo Updated!");
+            });
+        }
+
+        function saveBanner() {
+            const file = document.getElementById('uploadBanner').files[0];
+            if(!file) return alert("Select a banner cover first!");
+            processImage(file, siteSettings.banner, (base64) => {
+                siteSettings.banner = base64;
+                saveToDatabase("Cover Banner Updated!");
+            });
         }
 
         // ADD TEAM PLAYER
@@ -252,19 +310,17 @@
             const game = document.getElementById('cGame').value;
             const file = document.getElementById('cPhoto').files[0];
 
-            if(!ign || !role || !team) { alert("Please fill IGN, Role, and Team."); return; }
+            if(!ign || !role || !team) { alert("Please fill IGN, Role, and Team!"); return; }
 
-            document.getElementById('cIgn').value = "Uploading..."; 
-            
-            processImage(file, (base64Img) => {
+            processImage(file, "https://i.ibb.co/3k15y8B/58833.png", (base64Img) => {
                 competitiveList.push({ ign, role, team, game, photo: base64Img });
-                saveToDatabase();
+                saveToDatabase("Team Member Added Successfully!");
                 
+                // Clear fields
                 document.getElementById('cIgn').value = '';
                 document.getElementById('cRole').value = '';
                 document.getElementById('cTeam').value = '';
                 document.getElementById('cPhoto').value = '';
-                alert("Team Member Added!");
             });
         }
 
@@ -275,67 +331,18 @@
             const socials = {
                 fb: document.getElementById('crFb').value,
                 yt: document.getElementById('crYt').value,
-                tt: document.getElementById('crTt').value,
-                tw: document.getElementById('crTw').value,
-                x: document.getElementById('crX').value
+                tt: document.getElementById('crTt').value
             };
             const file = document.getElementById('crPhoto').files[0];
 
-            if(!name || !game) { alert("Please fill Name and Game Focus."); return; }
+            if(!name || !game) { alert("Please fill Name and Game Focus!"); return; }
 
-            document.getElementById('crName').value = "Uploading...";
-            
-            processImage(file, (base64Img) => {
+            processImage(file, "https://i.ibb.co/689L51P/58834.png", (base64Img) => {
                 creatorsList.push({ name, game, socials, photo: base64Img });
-                saveToDatabase();
+                saveToDatabase("Creator Added Successfully!");
                 
+                // Clear fields
                 document.getElementById('crName').value = '';
                 document.getElementById('crGame').value = '';
                 document.getElementById('crFb').value = '';
-                document.getElementById('crYt').value = '';
-                document.getElementById('crTt').value = '';
-                document.getElementById('crTw').value = '';
-                document.getElementById('crX').value = '';
-                document.getElementById('crPhoto').value = '';
-                alert("Creator Added!");
-            });
-        }
-
-        // DELETE FUNCTIONS
-        function deleteCompetitive(idx) {
-            if(confirm('Delete this player?')) { competitiveList.splice(idx, 1); saveToDatabase(); }
-        }
-        function deleteCreator(idx) {
-            if(confirm('Delete this creator?')) { creatorsList.splice(idx, 1); saveToDatabase(); }
-        }
-
-        // RENDER SITE
-        function renderSite() {
-            // Render Teams
-            const cGrid = document.getElementById('competitiveGrid');
-            if(competitiveList.length === 0) {
-                cGrid.innerHTML = '<p class="text-gray-600 italic">No team players yet.</p>';
-            } else {
-                cGrid.innerHTML = competitiveList.map(p => `
-                    <div class="bg-rrCard border border-rrBorder rounded-xl overflow-hidden flex flex-row shadow-lg hover:border-rrRed transition group">
-                        <div class="w-1/3 min-w-[120px] bg-black relative">
-                            <img src="${p.photo}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-                        </div>
-                        <div class="p-4 flex flex-col justify-center w-2/3">
-                            <span class="text-[10px] bg-rrRed text-white px-2 py-0.5 rounded w-max font-bold mb-1">${p.game}</span>
-                            <h3 class="text-xl font-black text-white uppercase truncate">${p.ign}</h3>
-                            <p class="text-gray-400 text-xs uppercase font-bold tracking-widest mt-0.5">${p.role}</p>
-                            <p class="text-gray-500 text-[10px] mt-2"><i class="fas fa-shield-alt text-rrRed mr-1"></i> ${p.team}</p>
-                        </div>
-                    </div>`).join('');
-            }
-
-            // Render Creators
-            const crGrid = document.getElementById('creatorsGrid');
-            if(creatorsList.length === 0) {
-                crGrid.innerHTML = '<p class="text-gray-600 italic">No creators yet.</p>';
-            } else {
-                crGrid.innerHTML = creatorsList.map(c => `
-                    <div class="bg-rrCard border border-rrBorder rounded-xl overflow-hidden shadow-lg hover:border-blue-500 transition group p-4 flex flex-col items-center text-center">
-                        <img src="${c.photo}" class="w-24 h-24 rounded-full object-cover border-2 border-blue-500 mb-3 group-hover:scale-110 transition duration-300">
-             
+                document.getElementById('
