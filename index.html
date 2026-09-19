@@ -19,10 +19,10 @@
         }
     </script>
 </head>
-<body class="bg-rrDark text-gray-100 font-sans antialiased min-h-screen flex flex-col justify-between">
+<body class="bg-rrDark text-gray-100 font-sans antialiased min-h-screen flex flex-col justify-between relative">
 
     <!-- Header -->
-    <header class="border-b border-rrBorder bg-black/80 sticky top-0 z-50 backdrop-blur-md">
+    <header class="border-b border-rrBorder bg-black/80 sticky top-0 z-40 backdrop-blur-md">
         <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center space-x-3">
                 <img id="siteLogo" src="https://i.ibb.co/689L51P/58834.png" alt="RR Logo" class="w-10 h-10 object-cover rounded-full border border-rrRed/40 p-0.5 bg-black">
@@ -79,22 +79,24 @@
     </main>
 
     <!-- Footer -->
-    <footer class="border-t border-rrBorder bg-black py-8 mt-16 text-center md:text-left">
+    <footer class="border-t border-rrBorder bg-black py-8 mt-16 text-center md:text-left relative z-10">
         <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p class="text-xs text-gray-500">© 2026 Rift Raiders. All rights reserved.</p>
-            <button onclick="toggleAdminModal()" class="bg-rrBorder hover:bg-rrRed hover:text-white text-gray-300 px-4 py-2 rounded transition font-bold text-sm">
+            <!-- BUTTON NA BUBUSKAS NG ADMIN PORTAL -->
+            <button onclick="toggleAdminModal()" class="bg-rrBorder hover:bg-rrRed hover:text-white text-gray-300 px-4 py-2 rounded transition font-bold text-sm cursor-pointer z-20">
                 <i class="fas fa-cog mr-1"></i> Admin Portal
             </button>
         </div>
     </footer>
 
-    <!-- ADMIN MODAL (NO LOGIN REQUIRED) -->
-    <div id="adminModal" class="fixed inset-0 bg-black/95 backdrop-blur-md hidden z-[100] flex-col items-center justify-center p-4">
+    <!-- ADMIN MODAL -->
+    <!-- Napalitan ko yung style para masigurong laging nasa itaas ito (z-50) at clickable. -->
+    <div id="adminModal" class="fixed inset-0 bg-black/95 backdrop-blur-md hidden z-[9999] flex-col items-center justify-center p-4">
         <div class="bg-rrCard border border-rrBorder rounded-lg max-w-2xl w-full p-4 md:p-6 space-y-6 max-h-[90vh] overflow-y-auto shadow-2xl relative">
             
             <div class="flex justify-between items-center border-b border-rrBorder pb-3 sticky top-0 bg-rrCard z-10">
                 <h3 class="font-black text-xl text-rrRed uppercase">Owner Dashboard</h3>
-                <button onclick="toggleAdminModal()" class="text-gray-400 hover:text-white bg-black rounded-lg p-2 transition"><i class="fas fa-times text-xl"></i></button>
+                <button onclick="toggleAdminModal()" class="text-gray-400 hover:text-white bg-black rounded-lg p-2 transition cursor-pointer"><i class="fas fa-times text-xl"></i></button>
             </div>
 
             <div class="space-y-8">
@@ -103,42 +105,42 @@
                 <div class="bg-black p-4 rounded border border-rrBorder space-y-3">
                     <h4 class="font-bold text-sm text-rrRed uppercase border-b border-gray-800 pb-2"><i class="fas fa-users mr-1"></i> Add Team Member</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <input type="text" id="cIgn" placeholder="IGN (e.g., Takeku)" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white">
-                        <input type="text" id="cRole" placeholder="Role (e.g., Jungler)" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white">
-                        <input type="text" id="cTeam" placeholder="Team Name (e.g., Team Alpha)" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white">
-                        <select id="cGame" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-gray-300">
+                        <input type="text" id="cIgn" placeholder="IGN (e.g., Takeku)" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-rrRed">
+                        <input type="text" id="cRole" placeholder="Role (e.g., Jungler)" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-rrRed">
+                        <input type="text" id="cTeam" placeholder="Team Name (e.g., Team Alpha)" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-rrRed">
+                        <select id="cGame" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-gray-300 focus:outline-none focus:border-rrRed">
                             <option value="Wild Rift">League of Legends: Wild Rift</option>
                             <option value="League of Legends">League of Legends (PC)</option>
                         </select>
                     </div>
                     <div>
                         <label class="text-xs text-gray-400 block mb-1">Upload Photo (From Gallery):</label>
-                        <input type="file" id="cPhoto" accept="image/*" class="w-full bg-rrDark border border-rrBorder rounded p-1 text-sm text-gray-400">
+                        <input type="file" id="cPhoto" accept="image/*" class="w-full bg-rrDark border border-rrBorder rounded p-1 text-sm text-gray-400 cursor-pointer">
                     </div>
-                    <button onclick="addCompetitive()" class="w-full bg-rrRed text-white text-sm font-bold py-2.5 rounded hover:bg-red-700 transition">Add to Team Roster</button>
+                    <button onclick="addCompetitive()" class="w-full bg-rrRed text-white text-sm font-bold py-2.5 rounded hover:bg-red-700 transition cursor-pointer">Add to Team Roster</button>
                 </div>
 
                 <!-- 2. ADD CREATOR -->
                 <div class="bg-black p-4 rounded border border-rrBorder space-y-3">
                     <h4 class="font-bold text-sm text-blue-500 uppercase border-b border-gray-800 pb-2"><i class="fas fa-video mr-1"></i> Add Creator</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <input type="text" id="crName" placeholder="Creator Name" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white">
-                        <input type="text" id="crGame" placeholder="Main Game Focus (e.g., Valorant, LoL)" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white">
+                        <input type="text" id="crName" placeholder="Creator Name" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                        <input type="text" id="crGame" placeholder="Main Game Focus (e.g., Valorant, LoL)" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
                     </div>
                     
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
-                        <input type="text" id="crFb" placeholder="Facebook Link" class="w-full bg-rrDark border border-rrBorder rounded px-2 py-1.5 text-xs text-white">
-                        <input type="text" id="crYt" placeholder="YouTube Link" class="w-full bg-rrDark border border-rrBorder rounded px-2 py-1.5 text-xs text-white">
-                        <input type="text" id="crTt" placeholder="TikTok Link" class="w-full bg-rrDark border border-rrBorder rounded px-2 py-1.5 text-xs text-white">
-                        <input type="text" id="crTw" placeholder="Twitch Link" class="w-full bg-rrDark border border-rrBorder rounded px-2 py-1.5 text-xs text-white">
-                        <input type="text" id="crX" placeholder="X (Twitter) Link" class="w-full bg-rrDark border border-rrBorder rounded px-2 py-1.5 text-xs text-white">
+                        <input type="text" id="crFb" placeholder="Facebook Link" class="w-full bg-rrDark border border-rrBorder rounded px-2 py-1.5 text-xs text-white focus:outline-none focus:border-blue-500">
+                        <input type="text" id="crYt" placeholder="YouTube Link" class="w-full bg-rrDark border border-rrBorder rounded px-2 py-1.5 text-xs text-white focus:outline-none focus:border-blue-500">
+                        <input type="text" id="crTt" placeholder="TikTok Link" class="w-full bg-rrDark border border-rrBorder rounded px-2 py-1.5 text-xs text-white focus:outline-none focus:border-blue-500">
+                        <input type="text" id="crTw" placeholder="Twitch Link" class="w-full bg-rrDark border border-rrBorder rounded px-2 py-1.5 text-xs text-white focus:outline-none focus:border-blue-500">
+                        <input type="text" id="crX" placeholder="X (Twitter) Link" class="w-full bg-rrDark border border-rrBorder rounded px-2 py-1.5 text-xs text-white focus:outline-none focus:border-blue-500">
                     </div>
 
                     <div>
                         <label class="text-xs text-gray-400 block mb-1">Upload Photo (From Gallery):</label>
-                        <input type="file" id="crPhoto" accept="image/*" class="w-full bg-rrDark border border-rrBorder rounded p-1 text-sm text-gray-400">
+                        <input type="file" id="crPhoto" accept="image/*" class="w-full bg-rrDark border border-rrBorder rounded p-1 text-sm text-gray-400 cursor-pointer">
                     </div>
-                    <button onclick="addCreator()" class="w-full bg-blue-600 text-white text-sm font-bold py-2.5 rounded hover:bg-blue-700 transition">Add Creator</button>
+                    <button onclick="addCreator()" class="w-full bg-blue-600 text-white text-sm font-bold py-2.5 rounded hover:bg-blue-700 transition cursor-pointer">Add Creator</button>
                 </div>
 
                 <!-- 3. MANAGE LISTS -->
@@ -161,7 +163,7 @@
     </div>
 
     <script>
-        // FIREBASE CONFIG MO
+        // FIREBASE CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSy87GyUvjxpgvVQpSS_wjh2Sm6HssUd_jbm",
             authDomain: "riftraiders-348f4.firebaseapp.com",
@@ -324,14 +326,4 @@
 
             // Render Manage Lists in Admin
             const mComp = document.getElementById('manageCompetitive');
-            mComp.innerHTML = competitiveList.length === 0 ? '<p class="text-gray-600">Empty</p>' : 
-                competitiveList.map((p, idx) => `
-                <div class="flex justify-between items-center p-1.5 bg-black rounded mb-1">
-                    <span class="text-gray-300">${p.ign} (${p.team})</span>
-                    <button onclick="deleteCompetitive(${idx})" class="text-red-500 hover:text-red-300"><i class="fas fa-times"></i></button>
-                </div>`).join('');
-
-            const mCr = document.getElementById('manageCreators');
-            mCr.innerHTML = creatorsList.length === 0 ? '<p class="text-gray-600">Empty</p>' : 
-                creatorsList.map((c, idx) => `
-                <div class="flex justify-between items-center p-1.5 
+            mComp.innerHTML = competitiveList.length === 0 ? '<p class="text-gray-600">E
