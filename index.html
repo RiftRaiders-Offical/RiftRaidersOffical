@@ -31,6 +31,13 @@
                     <span class="text-[10px] text-rrRed font-semibold tracking-wider uppercase">Official Website</span>
                 </div>
             </div>
+            
+            <!-- OFFICIAL SOCIALS -->
+            <div class="flex items-center space-x-4">
+                <a href="https://www.facebook.com/share/19rMmgaJKg/" target="_blank" class="text-gray-400 hover:text-blue-500 transition text-lg"><i class="fab fa-facebook"></i></a>
+                <a href="https://discord.gg/x3M8dZ7fmR" target="_blank" class="text-gray-400 hover:text-indigo-400 transition text-lg"><i class="fab fa-discord"></i></a>
+                <a href="mailto:riftraiders.wr@gmail.com" class="text-gray-400 hover:text-rrRed transition text-lg"><i class="fas fa-envelope"></i></a>
+            </div>
         </div>
     </header>
 
@@ -327,17 +334,4 @@
             const mCr = document.getElementById('manageCreators');
             mCr.innerHTML = creatorsList.length === 0 ? '<p class="text-gray-600">Empty</p>' : 
                 creatorsList.map((c, idx) => `
-                <div class="flex justify-between items-center p-1.5 bg-black rounded mb-1">
-                    <span class="text-gray-300">${c.name}</span>
-                    <button onclick="deleteCreator(${idx})" class="text-red-500 hover:text-red-300"><i class="fas fa-times"></i></button>
-                </div>`).join('');
-        }
-
-        function toggleAdminModal() {
-            const modal = document.getElementById('adminModal');
-            if(modal.classList.contains('hidden')) {
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-            } else {
-                modal.classList.add('hidden');
-                modal.classList.remo
+                <div class="flex justify-between items-center p-1.5 
