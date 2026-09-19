@@ -21,112 +21,140 @@
 </head>
 <body class="bg-rrDark text-gray-100 font-sans antialiased min-h-screen flex flex-col justify-between">
 
-    <!-- Header / Navbar -->
+    <!-- Header -->
     <header class="border-b border-rrBorder bg-black/80 sticky top-0 z-50 backdrop-blur-md">
-        <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center space-x-3">
-                <img id="siteLogo" src="https://i.ibb.co/689L51P/58834.png" alt="RR Logo" class="w-9 h-9 object-contain rounded-full border border-rrRed/40 p-0.5 bg-black">
+                <img id="siteLogo" src="https://i.ibb.co/689L51P/58834.png" alt="RR Logo" class="w-10 h-10 object-cover rounded-full border border-rrRed/40 p-0.5 bg-black">
                 <div>
-                    <span class="font-bold tracking-widest text-sm uppercase block leading-none">Rift Raiders</span>
-                    <span class="text-[9px] text-rrRed font-semibold tracking-wider uppercase">EST. 2024</span>
+                    <span class="font-bold tracking-widest text-sm md:text-base uppercase block leading-none">Rift Raiders</span>
+                    <span class="text-[10px] text-rrRed font-semibold tracking-wider uppercase">Official Website</span>
                 </div>
             </div>
         </div>
     </header>
 
     <!-- Main Content -->
-    <main class="max-w-4xl mx-auto px-4 py-6 space-y-10 flex-grow w-full">
+    <main class="max-w-6xl mx-auto px-4 py-6 space-y-12 flex-grow w-full">
         <!-- Cover Photo Banner -->
         <section class="relative rounded-2xl overflow-hidden border border-rrBorder shadow-2xl bg-black">
-            <div class="relative h-64 md:h-80 w-full overflow-hidden">
-                <img id="siteCover" src="https://i.ibb.co/3k15y8B/58833.png" alt="Cover" class="w-full h-full object-cover opacity-75">
-                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
+            <div class="relative h-48 md:h-80 w-full overflow-hidden">
+                <img id="siteCover" src="https://i.ibb.co/3k15y8B/58833.png" alt="Cover" class="w-full h-full object-cover opacity-60">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
             </div>
-            <div class="absolute inset-0 flex flex-col justify-end p-6 md:p-8 space-y-2">
-                <div class="flex items-center space-x-2">
-                    <span class="bg-rrRed text-white text-[10px] font-black px-2.5 py-0.5 rounded uppercase tracking-widest">Official Guild</span>
-                </div>
-                <div>
-                    <h1 class="text-3xl md:text-5xl font-black tracking-wider uppercase text-white drop-shadow-md">Rift Raiders</h1>
-                    <p class="text-rrRed font-bold text-xs md:text-sm tracking-wide mt-0.5">Competitive gaming. Built to dominate the Rift.</p>
-                </div>
+            <div class="absolute inset-0 flex flex-col justify-end p-6 md:p-10 space-y-2">
+                <h1 class="text-3xl md:text-6xl font-black tracking-wider uppercase text-white drop-shadow-lg">Rift Raiders</h1>
+                <p class="text-rrRed font-bold text-sm md:text-lg tracking-wide">Competitive gaming. Built to dominate.</p>
             </div>
         </section>
 
-        <!-- TEAMS -->
-        <section id="roster" class="space-y-6">
-            <div class="border-l-4 border-rrRed pl-3">
-                <span class="text-rrRed text-xs font-bold tracking-widest uppercase">Competitive Roster</span>
-                <h2 class="text-2xl font-bold uppercase tracking-wide">Meet The Teams</h2>
+        <!-- TEAMS ROSTER -->
+        <section class="space-y-6">
+            <div class="border-l-4 border-rrRed pl-4">
+                <h2 class="text-2xl md:text-3xl font-black uppercase tracking-wide">Meet The Teams</h2>
+                <span class="text-gray-400 text-xs md:text-sm font-semibold tracking-widest uppercase">The official esports roster</span>
             </div>
-            <div id="playersGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Players will be loaded here from database -->
+            <div id="competitiveGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                <!-- Players will load here -->
+            </div>
+        </section>
+
+        <!-- CREATORS -->
+        <section class="space-y-6">
+            <div class="border-l-4 border-blue-500 pl-4">
+                <h2 class="text-2xl md:text-3xl font-black uppercase tracking-wide">Meet The Creators</h2>
+                <span class="text-gray-400 text-xs md:text-sm font-semibold tracking-widest uppercase">Our content creators & streamers</span>
+            </div>
+            <div id="creatorsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                <!-- Creators will load here -->
             </div>
         </section>
     </main>
 
     <!-- Footer -->
-    <footer class="border-t border-rrBorder bg-black py-6 mt-16 text-xs text-gray-500">
-        <div class="max-w-4xl mx-auto px-4 flex justify-between items-center">
-            <p>© 2026 Rift Raiders.</p>
-            <button onclick="toggleAdminModal()" class="bg-rrBorder hover:bg-rrRed hover:text-white text-gray-300 px-3 py-1.5 rounded transition font-semibold">
-                <i class="fas fa-lock mr-1"></i> Owner Admin Portal
+    <footer class="border-t border-rrBorder bg-black py-8 mt-16 text-center md:text-left">
+        <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+            <p class="text-xs text-gray-500">© 2026 Rift Raiders. All rights reserved.</p>
+            <button onclick="toggleAdminModal()" class="bg-rrBorder hover:bg-rrRed hover:text-white text-gray-300 px-4 py-2 rounded transition font-bold text-sm">
+                <i class="fas fa-cog mr-1"></i> Admin Portal
             </button>
         </div>
     </footer>
 
-    <!-- ADMIN MODAL -->
-    <div id="adminModal" class="fixed inset-0 bg-black/90 backdrop-blur-sm hidden z-[100] flex-col items-center justify-center p-4">
-        <div class="bg-rrCard border border-rrBorder rounded-lg max-w-lg w-full p-6 space-y-6 max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div class="flex justify-between items-center border-b border-rrBorder pb-4 sticky top-0 bg-rrCard z-10">
-                <h3 class="font-bold text-lg text-rrRed uppercase">Owner Dashboard</h3>
-                <button onclick="toggleAdminModal()" class="text-gray-400 hover:text-white bg-black rounded p-2"><i class="fas fa-times text-lg"></i></button>
+    <!-- ADMIN MODAL (NO LOGIN REQUIRED) -->
+    <div id="adminModal" class="fixed inset-0 bg-black/95 backdrop-blur-md hidden z-[100] flex-col items-center justify-center p-4">
+        <div class="bg-rrCard border border-rrBorder rounded-lg max-w-2xl w-full p-4 md:p-6 space-y-6 max-h-[90vh] overflow-y-auto shadow-2xl relative">
+            
+            <div class="flex justify-between items-center border-b border-rrBorder pb-3 sticky top-0 bg-rrCard z-10">
+                <h3 class="font-black text-xl text-rrRed uppercase">Owner Dashboard</h3>
+                <button onclick="toggleAdminModal()" class="text-gray-400 hover:text-white bg-black rounded-lg p-2 transition"><i class="fas fa-times text-xl"></i></button>
             </div>
 
-            <!-- Login View -->
-            <div id="loginView" class="space-y-4">
-                <p class="text-sm text-gray-400">Enter PIN (1234) to unlock tools.</p>
-                <input type="password" id="adminPin" placeholder="Enter PIN" class="w-full bg-black border border-rrBorder rounded px-3 py-2 text-white focus:outline-none focus:border-rrRed">
-                <button onclick="verifyAdmin()" class="w-full bg-rrRed text-white font-bold py-2 rounded hover:bg-red-700 transition">Unlock Panel</button>
-            </div>
-
-            <!-- Dashboard View -->
-            <div id="dashboardView" class="space-y-6 hidden">
-                <div class="flex justify-between items-center bg-black/40 p-3 rounded border border-rrBorder">
-                    <span class="text-xs text-green-400 font-medium"><i class="fas fa-check-circle mr-1"></i> Admin Mode Active</span>
-                    <button onclick="logoutAdmin()" class="text-xs text-red-400 hover:underline">Lock Out</button>
+            <div class="space-y-8">
+                
+                <!-- 1. ADD TEAM PLAYER -->
+                <div class="bg-black p-4 rounded border border-rrBorder space-y-3">
+                    <h4 class="font-bold text-sm text-rrRed uppercase border-b border-gray-800 pb-2"><i class="fas fa-users mr-1"></i> Add Team Member</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <input type="text" id="cIgn" placeholder="IGN (e.g., Takeku)" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white">
+                        <input type="text" id="cRole" placeholder="Role (e.g., Jungler)" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white">
+                        <input type="text" id="cTeam" placeholder="Team Name (e.g., Team Alpha)" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white">
+                        <select id="cGame" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-gray-300">
+                            <option value="Wild Rift">League of Legends: Wild Rift</option>
+                            <option value="League of Legends">League of Legends (PC)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 block mb-1">Upload Photo (From Gallery):</label>
+                        <input type="file" id="cPhoto" accept="image/*" class="w-full bg-rrDark border border-rrBorder rounded p-1 text-sm text-gray-400">
+                    </div>
+                    <button onclick="addCompetitive()" class="w-full bg-rrRed text-white text-sm font-bold py-2.5 rounded hover:bg-red-700 transition">Add to Team Roster</button>
                 </div>
 
-                <!-- Visuals Form (Using Links) -->
-                <div class="border-t border-rrBorder pt-4 space-y-3">
-                    <h4 class="font-bold text-sm text-rrRed uppercase">Update Website Images</h4>
-                    <p class="text-[10px] text-gray-400">Pumunta sa <a href="https://imgbb.com/" target="_blank" class="text-blue-400 underline">ImgBB.com</a>, i-upload ang picture, at ilagay ang "Direct Link" dito.</p>
-                    <input type="text" id="logoLink" placeholder="Logo Direct Link (e.g., https://i.ibb.co/...)" class="w-full bg-black border border-rrBorder rounded px-3 py-2 text-xs text-white">
-                    <input type="text" id="coverLink" placeholder="Cover Direct Link (e.g., https://i.ibb.co/...)" class="w-full bg-black border border-rrBorder rounded px-3 py-2 text-xs text-white">
-                    <button onclick="updateVisuals()" class="w-full bg-rrBorder text-white text-xs font-bold py-2 rounded hover:bg-rrRed transition">Save & Apply Changes</button>
+                <!-- 2. ADD CREATOR -->
+                <div class="bg-black p-4 rounded border border-rrBorder space-y-3">
+                    <h4 class="font-bold text-sm text-blue-500 uppercase border-b border-gray-800 pb-2"><i class="fas fa-video mr-1"></i> Add Creator</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <input type="text" id="crName" placeholder="Creator Name" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white">
+                        <input type="text" id="crGame" placeholder="Main Game Focus (e.g., Valorant, LoL)" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white">
+                    </div>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                        <input type="text" id="crFb" placeholder="Facebook Link" class="w-full bg-rrDark border border-rrBorder rounded px-2 py-1.5 text-xs text-white">
+                        <input type="text" id="crYt" placeholder="YouTube Link" class="w-full bg-rrDark border border-rrBorder rounded px-2 py-1.5 text-xs text-white">
+                        <input type="text" id="crTt" placeholder="TikTok Link" class="w-full bg-rrDark border border-rrBorder rounded px-2 py-1.5 text-xs text-white">
+                        <input type="text" id="crTw" placeholder="Twitch Link" class="w-full bg-rrDark border border-rrBorder rounded px-2 py-1.5 text-xs text-white">
+                        <input type="text" id="crX" placeholder="X (Twitter) Link" class="w-full bg-rrDark border border-rrBorder rounded px-2 py-1.5 text-xs text-white">
+                    </div>
+
+                    <div>
+                        <label class="text-xs text-gray-400 block mb-1">Upload Photo (From Gallery):</label>
+                        <input type="file" id="crPhoto" accept="image/*" class="w-full bg-rrDark border border-rrBorder rounded p-1 text-sm text-gray-400">
+                    </div>
+                    <button onclick="addCreator()" class="w-full bg-blue-600 text-white text-sm font-bold py-2.5 rounded hover:bg-blue-700 transition">Add Creator</button>
                 </div>
 
-                <!-- Add Player (Using Links) -->
-                <div class="border-t border-rrBorder pt-4 space-y-3">
-                    <h4 class="font-bold text-sm text-rrRed uppercase">Add Player to Roster</h4>
-                    <input type="text" id="pName" placeholder="Player IGN (e.g., Takeku)" class="w-full bg-black border border-rrBorder rounded px-3 py-2 text-xs text-white">
-                    <input type="text" id="pRole" placeholder="Role (e.g., Mid Laner)" class="w-full bg-black border border-rrBorder rounded px-3 py-2 text-xs text-white">
-                    <input type="text" id="pImgLink" placeholder="Player Picture Link (ImgBB Direct Link)" class="w-full bg-black border border-rrBorder rounded px-3 py-2 text-xs text-white">
-                    <button onclick="addPlayer()" class="w-full bg-rrBorder text-white text-xs font-bold py-2 rounded hover:bg-rrRed transition">Add Player to Public List</button>
+                <!-- 3. MANAGE LISTS -->
+                <div class="bg-black p-4 rounded border border-rrBorder space-y-4">
+                    <h4 class="font-bold text-sm text-gray-300 uppercase border-b border-gray-800 pb-2"><i class="fas fa-trash mr-1"></i> Manage Members</h4>
+                    
+                    <div>
+                        <p class="text-xs text-rrRed font-bold mb-2">Teams Roster</p>
+                        <div id="manageCompetitive" class="space-y-1 max-h-32 overflow-y-auto text-xs border border-rrBorder p-2 rounded"></div>
+                    </div>
+
+                    <div>
+                        <p class="text-xs text-blue-400 font-bold mb-2">Creators</p>
+                        <div id="manageCreators" class="space-y-1 max-h-32 overflow-y-auto text-xs border border-rrBorder p-2 rounded"></div>
+                    </div>
                 </div>
 
-                <!-- Manage Entries -->
-                <div class="border-t border-rrBorder pt-4 space-y-2">
-                    <h4 class="font-bold text-sm text-gray-300 uppercase">Manage Active Players</h4>
-                    <div id="manageList" class="space-y-1 max-h-40 overflow-y-auto text-xs"></div>
-                </div>
             </div>
         </div>
     </div>
 
-    <!-- MAIN SCRIPT (Firebase & Logic) -->
     <script>
-        // YUNG FIREBASE CONFIG MO
+        // FIREBASE CONFIG MO
         const firebaseConfig = {
             apiKey: "AIzaSy87GyUvjxpgvVQpSS_wjh2Sm6HssUd_jbm",
             authDomain: "riftraiders-348f4.firebaseapp.com",
@@ -137,117 +165,174 @@
             appId: "1:103200979693:web:48d4b7f6e65734f2756ee4"
         };
 
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        let players = [];
-        let siteLogo = "https://i.ibb.co/689L51P/58834.png";
-        let siteCover = "https://i.ibb.co/3k15y8B/58833.png";
+        let competitiveList = [];
+        let creatorsList = [];
 
         // REAL-TIME LISTENER
         db.ref('/').on('value', (snapshot) => {
             const data = snapshot.val();
             if (data) {
-                players = data.players || [];
-                siteLogo = data.logo || "https://i.ibb.co/689L51P/58834.png";
-                siteCover = data.cover || "https://i.ibb.co/3k15y8B/58833.png";
+                competitiveList = data.competitive || [];
+                creatorsList = data.creators || [];
             }
             renderSite();
         });
 
-        // Function para mag-save sa Database
         function saveToDatabase() {
-            db.ref('/').set({
-                players: players,
-                logo: siteLogo,
-                cover: siteCover
+            db.ref('/').update({
+                competitive: competitiveList,
+                creators: creatorsList
             });
         }
 
-        // Render UI
-        function renderSite() {
-            document.getElementById('siteLogo').src = siteLogo;
-            document.getElementById('siteCover').src = siteCover;
-
-            const grid = document.getElementById('playersGrid');
-            if(players.length === 0) {
-                grid.innerHTML = '<p class="text-gray-500 text-sm italic">Wala pang nakalagay na players.</p>';
-            } else {
-                grid.innerHTML = players.map(p => `
-                    <div class="bg-rrCard border border-rrBorder rounded-xl overflow-hidden flex flex-row shadow-xl">
-                        <div class="w-32 h-32 bg-black relative flex-shrink-0">
-                            <img src="${p.img}" class="w-full h-full object-cover">
-                        </div>
-                        <div class="p-4 flex flex-col justify-center">
-                            <h3 class="text-lg font-black text-white leading-tight">${p.name}</h3>
-                            <p class="text-rrRed text-xs font-bold uppercase mt-1">${p.role}</p>
-                        </div>
-                    </div>`).join('');
+        // IMAGE COMPRESSOR
+        function processImage(file, callback) {
+            if (!file) { callback("https://i.ibb.co/3k15y8B/58833.png"); return; }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 400; 
+                    const scaleSize = MAX_WIDTH / img.width;
+                    canvas.width = MAX_WIDTH;
+                    canvas.height = img.height * scaleSize;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    callback(canvas.toDataURL('image/jpeg', 0.6));
+                }
+                img.src = e.target.result;
             }
-
-            const mList = document.getElementById('manageList');
-            if(players.length === 0) {
-                mList.innerHTML = '<p class="text-gray-600 italic">Walang idedelete.</p>';
-            } else {
-                mList.innerHTML = players.map((p, idx) => `
-                    <div class="flex justify-between items-center p-2 bg-black rounded border border-rrBorder mb-1">
-                        <span class="text-white">${p.name}</span>
-                        <button onclick="deletePlayer(${idx})" class="text-red-500 font-bold bg-rrDark px-2 py-1 rounded hover:bg-red-900 transition">Delete</button>
-                    </div>`).join('');
-            }
+            reader.readAsDataURL(file);
         }
 
-        // Admin Actions
-        function addPlayer() {
-            const name = document.getElementById('pName').value;
-            const role = document.getElementById('pRole').value;
-            let img = document.getElementById('pImgLink').value;
-            
-            if(!name || !role) {
-                alert("Pakilagyan ng Pangalan at Role!");
-                return;
-            }
-            
-            // Default image kung walang nilagay na link
-            if(!img) img = "https://images.unsplash.com/photo-1566492031773-4f4e44671857?auto=format&fit=crop&w=600&q=80";
-            
-            players.push({ name, role, img });
-            saveToDatabase();
-            
-            document.getElementById('pName').value = '';
-            document.getElementById('pRole').value = '';
-            document.getElementById('pImgLink').value = '';
-            alert('Player Added! Makikita na ito ng lahat.');
-        }
+        // ADD TEAM PLAYER
+        function addCompetitive() {
+            const ign = document.getElementById('cIgn').value;
+            const role = document.getElementById('cRole').value;
+            const team = document.getElementById('cTeam').value;
+            const game = document.getElementById('cGame').value;
+            const file = document.getElementById('cPhoto').files[0];
 
-        function updateVisuals() {
-            const lLink = document.getElementById('logoLink').value;
-            const cLink = document.getElementById('coverLink').value;
-            
-            if(!lLink && !cLink) {
-                alert("Walang link na nilagay.");
-                return;
-            }
+            if(!ign || !role || !team) { alert("Please fill IGN, Role, and Team."); return; }
 
-            if(lLink) siteLogo = lLink;
-            if(cLink) siteCover = cLink;
+            document.getElementById('cIgn').value = "Uploading..."; 
             
-            saveToDatabase();
-            
-            document.getElementById('logoLink').value = '';
-            document.getElementById('coverLink').value = '';
-            alert('Images Updated!');
-        }
-
-        function deletePlayer(idx) {
-            if(confirm('Sigurado ka bang buburahin itong player?')) {
-                players.splice(idx, 1);
+            processImage(file, (base64Img) => {
+                competitiveList.push({ ign, role, team, game, photo: base64Img });
                 saveToDatabase();
-            }
+                
+                document.getElementById('cIgn').value = '';
+                document.getElementById('cRole').value = '';
+                document.getElementById('cTeam').value = '';
+                document.getElementById('cPhoto').value = '';
+                alert("Team Member Added!");
+            });
         }
 
-        // Modal Logic
+        // ADD CREATOR
+        function addCreator() {
+            const name = document.getElementById('crName').value;
+            const game = document.getElementById('crGame').value;
+            const socials = {
+                fb: document.getElementById('crFb').value,
+                yt: document.getElementById('crYt').value,
+                tt: document.getElementById('crTt').value,
+                tw: document.getElementById('crTw').value,
+                x: document.getElementById('crX').value
+            };
+            const file = document.getElementById('crPhoto').files[0];
+
+            if(!name || !game) { alert("Please fill Name and Game Focus."); return; }
+
+            document.getElementById('crName').value = "Uploading...";
+            
+            processImage(file, (base64Img) => {
+                creatorsList.push({ name, game, socials, photo: base64Img });
+                saveToDatabase();
+                
+                document.getElementById('crName').value = '';
+                document.getElementById('crGame').value = '';
+                document.getElementById('crFb').value = '';
+                document.getElementById('crYt').value = '';
+                document.getElementById('crTt').value = '';
+                document.getElementById('crTw').value = '';
+                document.getElementById('crX').value = '';
+                document.getElementById('crPhoto').value = '';
+                alert("Creator Added!");
+            });
+        }
+
+        // DELETE FUNCTIONS
+        function deleteCompetitive(idx) {
+            if(confirm('Delete this player?')) { competitiveList.splice(idx, 1); saveToDatabase(); }
+        }
+        function deleteCreator(idx) {
+            if(confirm('Delete this creator?')) { creatorsList.splice(idx, 1); saveToDatabase(); }
+        }
+
+        // RENDER SITE
+        function renderSite() {
+            // Render Teams
+            const cGrid = document.getElementById('competitiveGrid');
+            if(competitiveList.length === 0) {
+                cGrid.innerHTML = '<p class="text-gray-600 italic">No team players yet.</p>';
+            } else {
+                cGrid.innerHTML = competitiveList.map(p => `
+                    <div class="bg-rrCard border border-rrBorder rounded-xl overflow-hidden flex flex-row shadow-lg hover:border-rrRed transition group">
+                        <div class="w-1/3 min-w-[120px] bg-black relative">
+                            <img src="${p.photo}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                        </div>
+                        <div class="p-4 flex flex-col justify-center w-2/3">
+                            <span class="text-[10px] bg-rrRed text-white px-2 py-0.5 rounded w-max font-bold mb-1">${p.game}</span>
+                            <h3 class="text-xl font-black text-white uppercase truncate">${p.ign}</h3>
+                            <p class="text-gray-400 text-xs uppercase font-bold tracking-widest mt-0.5">${p.role}</p>
+                            <p class="text-gray-500 text-[10px] mt-2"><i class="fas fa-shield-alt text-rrRed mr-1"></i> ${p.team}</p>
+                        </div>
+                    </div>`).join('');
+            }
+
+            // Render Creators
+            const crGrid = document.getElementById('creatorsGrid');
+            if(creatorsList.length === 0) {
+                crGrid.innerHTML = '<p class="text-gray-600 italic">No creators yet.</p>';
+            } else {
+                crGrid.innerHTML = creatorsList.map(c => `
+                    <div class="bg-rrCard border border-rrBorder rounded-xl overflow-hidden shadow-lg hover:border-blue-500 transition group p-4 flex flex-col items-center text-center">
+                        <img src="${c.photo}" class="w-24 h-24 rounded-full object-cover border-2 border-blue-500 mb-3 group-hover:scale-110 transition duration-300">
+                        <h3 class="text-lg font-black text-white uppercase">${c.name}</h3>
+                        <p class="text-blue-400 text-xs font-bold uppercase mb-3">${c.game}</p>
+                        <div class="flex space-x-3 mt-auto pt-2 border-t border-rrBorder w-full justify-center">
+                            ${c.socials.fb ? `<a href="${c.socials.fb}" target="_blank" class="text-gray-400 hover:text-blue-500 text-lg"><i class="fab fa-facebook"></i></a>` : ''}
+                            ${c.socials.yt ? `<a href="${c.socials.yt}" target="_blank" class="text-gray-400 hover:text-red-500 text-lg"><i class="fab fa-youtube"></i></a>` : ''}
+                            ${c.socials.tt ? `<a href="${c.socials.tt}" target="_blank" class="text-gray-400 hover:text-white text-lg"><i class="fab fa-tiktok"></i></a>` : ''}
+                            ${c.socials.tw ? `<a href="${c.socials.tw}" target="_blank" class="text-gray-400 hover:text-purple-500 text-lg"><i class="fab fa-twitch"></i></a>` : ''}
+                            ${c.socials.x ? `<a href="${c.socials.x}" target="_blank" class="text-gray-400 hover:text-white text-lg"><i class="fab fa-twitter"></i></a>` : ''}
+                        </div>
+                    </div>`).join('');
+            }
+
+            // Render Manage Lists in Admin
+            const mComp = document.getElementById('manageCompetitive');
+            mComp.innerHTML = competitiveList.length === 0 ? '<p class="text-gray-600">Empty</p>' : 
+                competitiveList.map((p, idx) => `
+                <div class="flex justify-between items-center p-1.5 bg-black rounded mb-1">
+                    <span class="text-gray-300">${p.ign} (${p.team})</span>
+                    <button onclick="deleteCompetitive(${idx})" class="text-red-500 hover:text-red-300"><i class="fas fa-times"></i></button>
+                </div>`).join('');
+
+            const mCr = document.getElementById('manageCreators');
+            mCr.innerHTML = creatorsList.length === 0 ? '<p class="text-gray-600">Empty</p>' : 
+                creatorsList.map((c, idx) => `
+                <div class="flex justify-between items-center p-1.5 bg-black rounded mb-1">
+                    <span class="text-gray-300">${c.name}</span>
+                    <button onclick="deleteCreator(${idx})" class="text-red-500 hover:text-red-300"><i class="fas fa-times"></i></button>
+                </div>`).join('');
+        }
+
         function toggleAdminModal() {
             const modal = document.getElementById('adminModal');
             if(modal.classList.contains('hidden')) {
@@ -255,22 +340,4 @@
                 modal.classList.add('flex');
             } else {
                 modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }
-        }
-        function verifyAdmin() {
-            if(document.getElementById('adminPin').value === '1234') {
-                document.getElementById('loginView').classList.add('hidden');
-                document.getElementById('dashboardView').classList.remove('hidden');
-            } else { alert('Wrong PIN!'); }
-        }
-        function logoutAdmin() {
-            document.getElementById('loginView').classList.remove('hidden');
-            document.getElementById('dashboardView').classList.add('hidden');
-            document.getElementById('adminPin').value = '';
-            toggleAdminModal();
-        }
-    </script>
-</body>
-</html>
-
+                modal.classList.remo
