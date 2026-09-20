@@ -89,7 +89,7 @@
                 <span class="text-gray-400 text-xs md:text-sm font-semibold tracking-widest uppercase">The official esports roster</span>
             </div>
             <div id="competitiveGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                <p class="text-gray-600 italic">Loading players...</p>
+                <p class="text-gray-600 italic text-sm">Loading players...</p>
             </div>
         </section>
 
@@ -100,7 +100,7 @@
                 <span class="text-gray-400 text-xs md:text-sm font-semibold tracking-widest uppercase">Our content creators & streamers</span>
             </div>
             <div id="creatorsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                <p class="text-gray-600 italic">Loading creators...</p>
+                <p class="text-gray-600 italic text-sm">Loading creators...</p>
             </div>
         </section>
     </main>
@@ -225,16 +225,33 @@
             banner: "https://i.ibb.co/3k15y8B/58833.png"
         };
 
-        renderSite();
-
+        // ANTI-CRASH DATA LOADER
         db.ref('/').on('value', (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                if(data.competitive) competitiveList = data.competitive;
-                if(data.creators) creatorsList = data.creators;
-                if(data.settings) siteSettings = data.settings;
+            try {
+                const data = snapshot.val();
+                if (data) {
+                    // Auto-fix bugged arrays from Firebase
+                    if (data.competitive) {
+                        competitiveList = Array.isArray(data.competitive) ? data.competitive : Object.values(data.competitive);
+                    } else {
+                        competitiveList = [];
+                    }
+                    
+                    if (data.creators) {
+                        creatorsList = Array.isArray(data.creators) ? data.creators : Object.values(data.creators);
+                    } else {
+                        creatorsList = [];
+                    }
+
+                    if (data.settings && data.settings.logo) {
+                        siteSettings = data.settings;
+                    }
+                }
+                renderSite();
+            } catch (error) {
+                console.error("Firebase read error:", error);
+                renderSite(); // Render safe defaults even if it fails
             }
-            renderSite();
         });
 
         function saveToDatabase(successMsg, btnElement, originalText) {
@@ -331,21 +348,4 @@
             btn.disabled = true;
 
             processImage(file, "https://i.ibb.co/3k15y8B/58833.png", (base64Img) => {
-                competitiveList.push({ ign, role, team, game, photo: base64Img });
-                
-                document.getElementById('cIgn').value = '';
-                document.getElementById('cRole').value = '';
-                document.getElementById('cTeam').value = '';
-                document.getElementById('cPhoto').value = '';
-
-                saveToDatabase("Team Member Added Successfully!", btn, "Add to Team Roster");
-            });
-        }
-
-        function addCreator() {
-            const name = document.getElementById('crName').value;
-            const game = document.getElementById('crGame').value;
-            const socials = {
-                fb: document.getElementById('crFb').value,
-                yt: document.getElementById('crYt').value,
-                tt: documen
+                competitive
