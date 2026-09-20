@@ -19,7 +19,7 @@
         }
     </script>
 
-    <!-- ADMIN PORTAL UI SCRIPT (Safe & Isolated) -->
+    <!-- ADMIN PORTAL UI SCRIPT -->
     <script>
         function openAdmin() {
             document.getElementById('adminModal').style.display = 'flex';
@@ -42,7 +42,6 @@
 </head>
 <body class="bg-rrDark text-gray-100 font-sans antialiased min-h-screen flex flex-col justify-between relative">
 
-    <!-- Header -->
     <header class="border-b border-rrBorder bg-black/80 sticky top-0 z-40 backdrop-blur-md">
         <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center space-x-3">
@@ -52,7 +51,6 @@
                     <span class="text-[10px] text-rrRed font-semibold tracking-wider uppercase">Official Website</span>
                 </div>
             </div>
-            
             <div class="flex items-center space-x-4">
                 <a href="https://www.facebook.com/share/19rMmgaJKg/" target="_blank" class="text-gray-400 hover:text-blue-500 transition text-lg"><i class="fab fa-facebook"></i></a>
                 <a href="https://discord.gg/x3M8dZ7fmR" target="_blank" class="text-gray-400 hover:text-indigo-400 transition text-lg"><i class="fab fa-discord"></i></a>
@@ -61,7 +59,6 @@
         </div>
     </header>
 
-    <!-- Main Content -->
     <main class="max-w-6xl mx-auto px-4 py-6 space-y-12 flex-grow w-full">
         <!-- Cover Photo Banner -->
         <section class="relative rounded-2xl overflow-hidden border border-rrBorder shadow-2xl bg-black">
@@ -108,11 +105,9 @@
         </section>
     </main>
 
-    <!-- Footer -->
     <footer class="border-t border-rrBorder bg-black py-8 mt-16 text-center md:text-left relative z-10">
         <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p class="text-xs text-gray-500">© 2026 Rift Raiders. All rights reserved.</p>
-            <!-- ADMIN PORTAL BUTTON -->
             <button onclick="openAdmin()" class="bg-rrBorder hover:bg-rrRed hover:text-white text-gray-300 px-4 py-2 rounded transition font-bold text-sm cursor-pointer z-50">
                 <i class="fas fa-cog mr-1"></i> Admin Portal
             </button>
@@ -128,7 +123,6 @@
             <!-- LOGIN VIEW -->
             <div id="loginView" class="py-10 flex flex-col items-center space-y-5">
                 <h3 class="font-black text-2xl text-rrRed uppercase">Admin Security</h3>
-                <p class="text-xs text-gray-500">Please enter the master password.</p>
                 <input type="password" id="adminPassInput" placeholder="Password" class="w-full max-w-xs bg-rrDark border border-rrBorder rounded px-4 py-3 text-white text-center focus:outline-none focus:border-rrRed">
                 <button onclick="verifyAdmin()" class="w-full max-w-xs bg-rrRed text-white font-bold py-2.5 rounded hover:bg-red-700 transition">Unlock Portal</button>
             </div>
@@ -145,12 +139,12 @@
                         <div>
                             <label class="text-xs text-gray-400 block mb-1">Upload Main Logo (Header):</label>
                             <input type="file" id="uploadLogo" accept="image/*" class="w-full bg-rrDark border border-rrBorder rounded p-1 text-sm text-gray-400">
-                            <button onclick="saveLogo()" class="w-full mt-2 bg-gray-800 hover:bg-green-600 text-white text-xs font-bold py-2 rounded transition">Update Logo</button>
+                            <button id="btnLogo" onclick="saveLogo()" class="w-full mt-2 bg-gray-800 hover:bg-green-600 text-white text-xs font-bold py-2 rounded transition">Update Logo</button>
                         </div>
                         <div>
                             <label class="text-xs text-gray-400 block mb-1">Upload Cover Photo (Background):</label>
                             <input type="file" id="uploadBanner" accept="image/*" class="w-full bg-rrDark border border-rrBorder rounded p-1 text-sm text-gray-400">
-                            <button onclick="saveBanner()" class="w-full mt-2 bg-gray-800 hover:bg-green-600 text-white text-xs font-bold py-2 rounded transition">Update Cover</button>
+                            <button id="btnBanner" onclick="saveBanner()" class="w-full mt-2 bg-gray-800 hover:bg-green-600 text-white text-xs font-bold py-2 rounded transition">Update Cover</button>
                         </div>
                     </div>
                 </div>
@@ -168,10 +162,10 @@
                         </select>
                     </div>
                     <div>
-                        <label class="text-xs text-gray-400 block mb-1">Upload Photo:</label>
+                        <label class="text-xs text-gray-400 block mb-1">Upload Photo (Required):</label>
                         <input type="file" id="cPhoto" accept="image/*" class="w-full bg-rrDark border border-rrBorder rounded p-1 text-sm text-gray-400">
                     </div>
-                    <button onclick="addCompetitive()" class="w-full bg-rrRed text-white text-sm font-bold py-2.5 rounded hover:bg-red-700 transition">Add to Team Roster</button>
+                    <button id="btnCompetitive" onclick="addCompetitive()" class="w-full bg-rrRed text-white text-sm font-bold py-2.5 rounded hover:bg-red-700 transition">Add to Team Roster</button>
                 </div>
 
                 <!-- ADD CREATOR -->
@@ -187,21 +181,19 @@
                         <input type="text" id="crTt" placeholder="TikTok Link" class="w-full bg-rrDark border border-rrBorder rounded px-2 py-1.5 text-xs text-white">
                     </div>
                     <div>
-                        <label class="text-xs text-gray-400 block mb-1">Upload Photo:</label>
+                        <label class="text-xs text-gray-400 block mb-1">Upload Photo (Required):</label>
                         <input type="file" id="crPhoto" accept="image/*" class="w-full bg-rrDark border border-rrBorder rounded p-1 text-sm text-gray-400">
                     </div>
-                    <button onclick="addCreator()" class="w-full bg-blue-600 text-white text-sm font-bold py-2.5 rounded hover:bg-blue-700 transition">Add Creator</button>
+                    <button id="btnCreator" onclick="addCreator()" class="w-full bg-blue-600 text-white text-sm font-bold py-2.5 rounded hover:bg-blue-700 transition">Add Creator</button>
                 </div>
 
                 <!-- MANAGE LISTS -->
                 <div class="bg-black p-4 rounded border border-rrBorder space-y-4">
                     <h4 class="font-bold text-sm text-gray-300 uppercase border-b border-gray-800 pb-2"><i class="fas fa-trash mr-1"></i> Manage Data</h4>
-                    
                     <div>
                         <p class="text-xs text-rrRed font-bold mb-2">Teams Roster</p>
                         <div id="manageCompetitive" class="space-y-1 max-h-32 overflow-y-auto text-xs border border-rrBorder p-2 rounded"></div>
                     </div>
-
                     <div>
                         <p class="text-xs text-blue-400 font-bold mb-2">Creators</p>
                         <div id="manageCreators" class="space-y-1 max-h-32 overflow-y-auto text-xs border border-rrBorder p-2 rounded"></div>
@@ -245,33 +237,55 @@
             renderSite();
         });
 
-        function saveToDatabase(successMsg) {
+        function saveToDatabase(successMsg, btnElement, originalText) {
             db.ref('/').update({
                 competitive: competitiveList,
                 creators: creatorsList,
                 settings: siteSettings
             }).then(() => {
-                if(successMsg) alert(successMsg);
+                alert(successMsg);
+                if(btnElement) {
+                    btnElement.innerText = originalText;
+                    btnElement.disabled = false;
+                }
                 renderSite();
             }).catch(e => {
-                alert("Error saving data! (Check Firebase Rules): " + e.message);
+                alert("ERROR: " + e.message);
+                if(btnElement) {
+                    btnElement.innerText = originalText;
+                    btnElement.disabled = false;
+                }
             });
         }
 
         function processImage(file, defaultImage, callback) {
             if (!file) { callback(defaultImage); return; }
+            
             const reader = new FileReader();
             reader.onload = function(e) {
                 const img = new Image();
                 img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 250; 
-                    const scaleSize = MAX_WIDTH / img.width;
-                    canvas.width = MAX_WIDTH;
-                    canvas.height = img.height * scaleSize;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    callback(canvas.toDataURL('image/webp', 0.5));
+                    try {
+                        const canvas = document.createElement('canvas');
+                        const MAX_WIDTH = 300;
+                        const scaleSize = MAX_WIDTH / img.width;
+                        canvas.width = MAX_WIDTH;
+                        canvas.height = img.height * scaleSize;
+                        
+                        const ctx = canvas.getContext('2d');
+                        ctx.fillStyle = '#000000';
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        
+                        callback(canvas.toDataURL('image/jpeg', 0.8));
+                    } catch(err) {
+                        alert("Error processing image: " + err.message);
+                        callback(defaultImage);
+                    }
+                }
+                img.onerror = function() {
+                    alert("Invalid image file.");
+                    callback(defaultImage);
                 }
                 img.src = e.target.result;
             }
@@ -281,18 +295,22 @@
         function saveLogo() {
             const file = document.getElementById('uploadLogo').files[0];
             if(!file) return alert("Select a logo first!");
+            const btn = document.getElementById('btnLogo');
+            btn.innerText = "Saving...";
             processImage(file, siteSettings.logo, (base64) => {
                 siteSettings.logo = base64;
-                saveToDatabase("Main Logo Updated!");
+                saveToDatabase("Main Logo Updated!", btn, "Update Logo");
             });
         }
 
         function saveBanner() {
             const file = document.getElementById('uploadBanner').files[0];
             if(!file) return alert("Select a banner cover first!");
+            const btn = document.getElementById('btnBanner');
+            btn.innerText = "Saving...";
             processImage(file, siteSettings.banner, (base64) => {
                 siteSettings.banner = base64;
-                saveToDatabase("Cover Banner Updated!");
+                saveToDatabase("Cover Banner Updated!", btn, "Update Cover");
             });
         }
 
@@ -302,17 +320,25 @@
             const team = document.getElementById('cTeam').value;
             const game = document.getElementById('cGame').value;
             const file = document.getElementById('cPhoto').files[0];
+            const btn = document.getElementById('btnCompetitive');
 
-            if(!ign || !role || !team) { alert("Please fill IGN, Role, and Team!"); return; }
+            if(!ign || !role || !team) { 
+                alert("Please fill all required fields (IGN, Role, Team)!"); 
+                return; 
+            }
+
+            btn.innerText = "Processing Image & Saving...";
+            btn.disabled = true;
 
             processImage(file, "https://i.ibb.co/3k15y8B/58833.png", (base64Img) => {
                 competitiveList.push({ ign, role, team, game, photo: base64Img });
-                saveToDatabase("Team Member Added Successfully!");
                 
                 document.getElementById('cIgn').value = '';
                 document.getElementById('cRole').value = '';
                 document.getElementById('cTeam').value = '';
                 document.getElementById('cPhoto').value = '';
+
+                saveToDatabase("Team Member Added Successfully!", btn, "Add to Team Roster");
             });
         }
 
@@ -322,30 +348,4 @@
             const socials = {
                 fb: document.getElementById('crFb').value,
                 yt: document.getElementById('crYt').value,
-                tt: document.getElementById('crTt').value
-            };
-            const file = document.getElementById('crPhoto').files[0];
-
-            if(!name || !game) { alert("Please fill Name and Game Focus!"); return; }
-
-            processImage(file, "https://i.ibb.co/689L51P/58834.png", (base64Img) => {
-                creatorsList.push({ name, game, socials, photo: base64Img });
-                saveToDatabase("Creator Added Successfully!");
-                
-                document.getElementById('crName').value = '';
-                document.getElementById('crGame').value = '';
-                document.getElementById('crFb').value = '';
-                document.getElementById('crYt').value = '';
-                document.getElementById('crTt').value = '';
-                document.getElementById('crPhoto').value = '';
-            });
-        }
-
-        function deleteCompetitive(idx) {
-            if(confirm('Delete this player?')) { competitiveList.splice(idx, 1); saveToDatabase("Player Deleted!"); }
-        }
-        function deleteCreator(idx) {
-            if(confirm('Delete this creator?')) { creatorsList.splice(idx, 1); saveToDatabase("Creator Deleted!"); }
-        }
-
-        function renderSit
+                tt: documen
