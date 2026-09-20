@@ -21,7 +21,6 @@
 
     <!-- ADMIN PORTAL UI SCRIPT -->
     <script>
-        // Catch global errors quietly for smooth experience
         window.onerror = function(message, source, lineno, colno, error) {
             console.error("System Error: ", message, " at line: ", lineno);
         };
@@ -56,7 +55,6 @@
                     <span class="text-[10px] text-rrRed font-semibold tracking-wider uppercase">Official Website</span>
                 </div>
             </div>
-            <!-- RESTORED HEADER SOCIALS -->
             <div class="flex items-center space-x-4">
                 <a href="https://www.facebook.com/share/19rMmgaJKg/" target="_blank" class="text-gray-400 hover:text-blue-500 transition text-lg"><i class="fab fa-facebook"></i></a>
                 <a href="https://discord.gg/x3M8dZ7fmR" target="_blank" class="text-gray-400 hover:text-indigo-400 transition text-lg"><i class="fab fa-discord"></i></a>
@@ -181,7 +179,6 @@
                         <input type="text" id="crName" placeholder="Creator Name" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white">
                         <input type="text" id="crGame" placeholder="Main Game Focus" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white">
                     </div>
-                    <!-- RESTORED SOCIAL LINKS -->
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
                         <input type="text" id="crFb" placeholder="Facebook Link" class="w-full bg-rrDark border border-rrBorder rounded px-2 py-1.5 text-xs text-white">
                         <input type="text" id="crYt" placeholder="YouTube Link" class="w-full bg-rrDark border border-rrBorder rounded px-2 py-1.5 text-xs text-white">
@@ -213,44 +210,16 @@
 
     <!-- DATABASE SCRIPT -->
     <script>
-        // Define everything in global scope first to avoid 'not defined' errors
-        let competitiveList = [];
-        let creatorsList = [];
+        let competitiveList = {};
+        let creatorsList = {};
         let siteSettings = {
             logo: "https://i.ibb.co/689L51P/58834.png",
             banner: "https://i.ibb.co/3k15y8B/58833.png"
         };
         let db = null;
 
-        function saveToDatabase(successMsg, btnElement, originalText) {
-            if (!db) {
-                alert("Database is still connecting. Please wait a few seconds and try again.");
-                if(btnElement) { btnElement.innerText = originalText; btnElement.disabled = false; }
-                return;
-            }
-            db.ref('/').update({
-                competitive: competitiveList,
-                creators: creatorsList,
-                settings: siteSettings
-            }).then(() => {
-                alert(successMsg);
-                if(btnElement) {
-                    btnElement.innerText = originalText;
-                    btnElement.disabled = false;
-                }
-                renderSite();
-            }).catch(e => {
-                alert("ERROR: " + e.message);
-                if(btnElement) {
-                    btnElement.innerText = originalText;
-                    btnElement.disabled = false;
-                }
-            });
-        }
-
         function processImage(file, defaultImage, callback) {
             if (!file) { callback(defaultImage); return; }
-            
             const reader = new FileReader();
             reader.onload = function(e) {
                 const img = new Image();
@@ -269,42 +238,47 @@
                         
                         callback(canvas.toDataURL('image/jpeg', 0.8));
                     } catch(err) {
-                        alert("Error processing image: " + err.message);
+                        alert("Error processing image.");
                         callback(defaultImage);
                     }
                 }
-                img.onerror = function() {
-                    alert("Invalid image file.");
-                    callback(defaultImage);
-                }
+                img.onerror = function() { callback(defaultImage); }
                 img.src = e.target.result;
             }
             reader.readAsDataURL(file);
         }
 
+        // DIRECT DATABASE OPERATIONS (Like last night)
         window.saveLogo = function() {
+            if(!db) return alert("Database disconnected.");
             const file = document.getElementById('uploadLogo').files[0];
             if(!file) return alert("Select a logo first!");
             const btn = document.getElementById('btnLogo');
             btn.innerText = "Saving...";
             processImage(file, siteSettings.logo, (base64) => {
-                siteSettings.logo = base64;
-                saveToDatabase("Main Logo Updated!", btn, "Update Logo");
+                db.ref('settings').update({ logo: base64 }).then(() => {
+                    alert("Main Logo Updated!");
+                    btn.innerText = "Update Logo";
+                });
             });
         }
 
         window.saveBanner = function() {
+            if(!db) return alert("Database disconnected.");
             const file = document.getElementById('uploadBanner').files[0];
             if(!file) return alert("Select a banner cover first!");
             const btn = document.getElementById('btnBanner');
             btn.innerText = "Saving...";
             processImage(file, siteSettings.banner, (base64) => {
-                siteSettings.banner = base64;
-                saveToDatabase("Cover Banner Updated!", btn, "Update Cover");
+                db.ref('settings').update({ banner: base64 }).then(() => {
+                    alert("Cover Banner Updated!");
+                    btn.innerText = "Update Cover";
+                });
             });
         }
 
         window.addCompetitive = function() {
+            if(!db) return alert("Database disconnected.");
             const ign = document.getElementById('cIgn').value;
             const role = document.getElementById('cRole').value;
             const team = document.getElementById('cTeam').value;
@@ -321,27 +295,50 @@
             btn.disabled = true;
 
             processImage(file, "https://i.ibb.co/3k15y8B/58833.png", (base64Img) => {
-                competitiveList.push({ ign, role, team, game, photo: base64Img });
-                
-                document.getElementById('cIgn').value = '';
-                document.getElementById('cRole').value = '';
-                document.getElementById('cTeam').value = '';
-                document.getElementById('cPhoto').value = '';
-
-                saveToDatabase("Team Member Added Successfully!", btn, "Add to Team Roster");
+                db.ref('competitive').push({
+                    ign: ign,
+                    role: role,
+                    team: team,
+                    game: game,
+                    photo: base64Img
+                }).then(() => {
+                    alert("Team Member Added Successfully!");
+                    document.getElementById('cIgn').value = '';
+                    document.getElementById('cRole').value = '';
+                    document.getElementById('cTeam').value = '';
+                    document.getElementById('cPhoto').value = '';
+                    btn.innerText = "Add to Team Roster";
+                    btn.disabled = false;
+                });
             });
         }
 
         window.addCreator = function() {
+            if(!db) return alert("Database disconnected.");
             const name = document.getElementById('crName').value;
             const game = document.getElementById('crGame').value;
-            const socials = {
-                fb: document.getElementById('crFb').value,
-                yt: document.getElementById('crYt').value,
-                tt: document.getElementById('crTt').value
-            };
+            const fb = document.getElementById('crFb').value;
+            const yt = document.getElementById('crYt').value;
+            const tt = document.getElementById('crTt').value;
             const file = document.getElementById('crPhoto').files[0];
             const btn = document.getElementById('btnCreator');
 
             if(!name || !game) { 
-                alert("P
+                alert("Please fill Creator Name and Game Focus!"); 
+                return; 
+            }
+
+            btn.innerText = "Processing Image & Saving...";
+            btn.disabled = true;
+
+            processImage(file, "https://i.ibb.co/689L51P/58834.png", (base64Img) => {
+                db.ref('creators').push({
+                    name: name,
+                    game: game,
+                    socials: { fb: fb, yt: yt, tt: tt },
+                    photo: base64Img
+                }).then(() => {
+                    alert("Creator Added Successfully!");
+                    document.getElementById('crName').value = '';
+                    document.getElementById('crGame').value = '';
+         
