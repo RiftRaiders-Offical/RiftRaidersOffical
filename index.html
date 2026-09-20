@@ -312,8 +312,7 @@
                 });
             });
         }
-
-        window.addCreator = function() {
+              window.addCreator = function() {
             if(!db) return alert("Database disconnected.");
             const name = document.getElementById('crName').value;
             const game = document.getElementById('crGame').value;
@@ -341,4 +340,132 @@
                     alert("Creator Added Successfully!");
                     document.getElementById('crName').value = '';
                     document.getElementById('crGame').value = '';
-         
+                    document.getElementById('crFb').value = '';
+                    document.getElementById('crYt').value = '';
+                    document.getElementById('crTt').value = '';
+                    document.getElementById('crPhoto').value = '';
+                    btn.innerText = "Add Creator";
+                    btn.disabled = false;
+                });
+            });
+        }
+
+        window.deleteCompetitive = function(key) {
+            if(confirm('Delete this player?')) { 
+                db.ref('competitive/' + key).remove();
+            }
+        }
+        window.deleteCreator = function(key) {
+            if(confirm('Delete this creator?')) { 
+                db.ref('creators/' + key).remove();
+            }
+        }
+
+        function renderSite() {
+            try {
+                document.getElementById('siteLogo').src = (siteSettings && siteSettings.logo) ? siteSettings.logo : "https://i.ibb.co/689L51P/58834.png";
+                document.getElementById('siteCover').src = (siteSettings && siteSettings.banner) ? siteSettings.banner : "https://i.ibb.co/3k15y8B/58833.png";
+
+                const compKeys = Object.keys(competitiveList);
+                const cGrid = document.getElementById('competitiveGrid');
+                if(compKeys.length === 0) {
+                    cGrid.innerHTML = '<p class="text-gray-500 italic text-sm">No team players yet. Add one in the Admin Portal.</p>';
+                } else {
+                    cGrid.innerHTML = compKeys.map(key => {
+                        const p = competitiveList[key];
+                        return `
+                        <div class="bg-rrCard border border-rrBorder rounded-xl overflow-hidden flex flex-row shadow-lg">
+                            <div class="w-1/3 min-w-[120px] bg-black relative">
+                                <img src="${p.photo || 'https://i.ibb.co/3k15y8B/58833.png'}" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-4 flex flex-col justify-center w-2/3">
+                                <span class="text-[10px] bg-rrRed text-white px-2 py-0.5 rounded w-max font-bold mb-1">${p.game || ''}</span>
+                                <h3 class="text-xl font-black text-white uppercase truncate">${p.ign || ''}</h3>
+                                <p class="text-gray-400 text-xs uppercase font-bold tracking-widest mt-0.5">${p.role || ''}</p>
+                                <p class="text-gray-500 text-[10px] mt-2"><i class="fas fa-shield-alt text-rrRed mr-1"></i> ${p.team || ''}</p>
+                            </div>
+                        </div>`;
+                    }).join('');
+                }
+
+                const creatorKeys = Object.keys(creatorsList);
+                const crGrid = document.getElementById('creatorsGrid');
+                if(creatorKeys.length === 0) {
+                    crGrid.innerHTML = '<p class="text-gray-500 italic text-sm">No creators yet. Add one in the Admin Portal.</p>';
+                } else {
+                    crGrid.innerHTML = creatorKeys.map(key => {
+                        const c = creatorsList[key];
+                        return `
+                        <div class="bg-rrCard border border-rrBorder rounded-xl overflow-hidden shadow-lg p-4 flex flex-col items-center text-center">
+                            <img src="${c.photo || 'https://i.ibb.co/689L51P/58834.png'}" class="w-24 h-24 rounded-full object-cover border-2 border-blue-500 mb-3">
+                            <h3 class="text-lg font-black text-white uppercase">${c.name || ''}</h3>
+                            <p class="text-blue-400 text-xs font-bold uppercase mb-3">${c.game || ''}</p>
+                            <div class="flex space-x-3 mt-auto pt-2 border-t border-rrBorder w-full justify-center">
+                                ${c.socials && c.socials.fb ? `<a href="${c.socials.fb}" target="_blank" class="text-gray-400 hover:text-blue-500 text-lg"><i class="fab fa-facebook"></i></a>` : ''}
+                                ${c.socials && c.socials.yt ? `<a href="${c.socials.yt}" target="_blank" class="text-gray-400 hover:text-red-500 text-lg"><i class="fab fa-youtube"></i></a>` : ''}
+                                ${c.socials && c.socials.tt ? `<a href="${c.socials.tt}" target="_blank" class="text-gray-400 hover:text-white text-lg"><i class="fab fa-tiktok"></i></a>` : ''}
+                            </div>
+                        </div>`;
+                    }).join('');
+                }
+
+                document.getElementById('manageCompetitive').innerHTML = (compKeys.length === 0) ? '<p class="text-gray-600">Empty</p>' : 
+                    compKeys.map(key => `
+                    <div class="flex justify-between items-center p-1.5 bg-black rounded mb-1">
+                        <span class="text-gray-300">${competitiveList[key].ign} (${competitiveList[key].team})</span>
+                        <button onclick="deleteCompetitive('${key}')" class="text-red-500 hover:text-red-300"><i class="fas fa-times"></i></button>
+                    </div>`).join('');
+
+                document.getElementById('manageCreators').innerHTML = (creatorKeys.length === 0) ? '<p class="text-gray-600">Empty</p>' : 
+                    creatorKeys.map(key => `
+                    <div class="flex justify-between items-center p-1.5 bg-black rounded mb-1">
+                        <span class="text-gray-300">${creatorsList[key].name}</span>
+                        <button onclick="deleteCreator('${key}')" class="text-red-500 hover:text-red-300"><i class="fas fa-times"></i></button>
+                    </div>`).join('');
+                    
+            } catch (error) {
+                console.error("Render error:", error);
+            }
+        }
+
+        // Initialize Firebase securely
+        try {
+            const firebaseConfig = {
+                apiKey: "AIzaSy87GyUvjxpgvVQpSS_wjh2Sm6HssUd_jbm",
+                authDomain: "riftraiders-348f4.firebaseapp.com",
+                databaseURL: "https://riftraiders-348f4-default-rtdb.asia-southeast1.firebasedatabase.app",
+                projectId: "riftraiders-348f4",
+                storageBucket: "riftraiders-348f4.firebasestorage.app",
+                messagingSenderId: "103200979693",
+                appId: "1:103200979693:web:48d4b7f6e65734f2756ee4"
+            };
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
+            db = firebase.database();
+
+            db.ref('/').on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    competitiveList = data.competitive || {};
+                    creatorsList = data.creators || {};
+                    if (data.settings && data.settings.logo) {
+                        siteSettings = data.settings;
+                    }
+                } else {
+                    competitiveList = {};
+                    creatorsList = {};
+                }
+                renderSite();
+            }, (errorObject) => {
+                // ITO YUNG MAGPA-POP-UP KAPAG MAY NAG-BLOCK
+                alert("Firebase Connection Error: " + errorObject.name + " - " + errorObject.message);
+            });
+        } catch(e) {
+            alert("System Init Error: " + e.message);
+            console.error("Firebase Init Error:", e);
+        }
+    </script>
+</body>
+</html>
+        
