@@ -21,10 +21,9 @@
 
     <!-- ADMIN PORTAL UI SCRIPT -->
     <script>
-        // ERROR DETECTOR: Ipapakita niya kung may nag-crash
+        // Catch global errors quietly for smooth experience
         window.onerror = function(message, source, lineno, colno, error) {
-            alert("SYSTEM ERROR DETECTED!\nMessage: " + message + "\nLine: " + lineno);
-            return true;
+            console.error("System Error: ", message, " at line: ", lineno);
         };
 
         function openAdmin() {
@@ -57,6 +56,12 @@
                     <span class="text-[10px] text-rrRed font-semibold tracking-wider uppercase">Official Website</span>
                 </div>
             </div>
+            <!-- RESTORED HEADER SOCIALS -->
+            <div class="flex items-center space-x-4">
+                <a href="https://www.facebook.com/share/19rMmgaJKg/" target="_blank" class="text-gray-400 hover:text-blue-500 transition text-lg"><i class="fab fa-facebook"></i></a>
+                <a href="https://discord.gg/x3M8dZ7fmR" target="_blank" class="text-gray-400 hover:text-indigo-400 transition text-lg"><i class="fab fa-discord"></i></a>
+                <a href="mailto:riftraiders.wr@gmail.com" class="text-gray-400 hover:text-rrRed transition text-lg"><i class="fas fa-envelope"></i></a>
+            </div>
         </div>
     </header>
 
@@ -73,10 +78,21 @@
             </div>
         </section>
 
+        <!-- ABOUT RIFT RAIDERS -->
+        <section class="space-y-4">
+            <div class="bg-rrCard border border-rrBorder p-6 md:p-8 rounded-xl shadow-lg">
+                <h2 class="text-2xl font-black uppercase tracking-wide text-rrRed mb-4 border-b border-rrBorder pb-2">About Us</h2>
+                <p class="text-gray-300 leading-relaxed text-sm md:text-base font-medium">
+                    Rift Raiders began its journey in 2024 as a dedicated competitive team. After a year of climbing the ranks, we expanded in April 2025 by establishing our official guild. Today, we continue to field elite.
+                </p>
+            </div>
+        </section>
+
         <!-- TEAMS ROSTER -->
         <section class="space-y-6">
             <div class="border-l-4 border-rrRed pl-4">
                 <h2 class="text-2xl md:text-3xl font-black uppercase tracking-wide">Meet The Teams</h2>
+                <span class="text-gray-400 text-xs md:text-sm font-semibold tracking-widest uppercase">The official esports roster</span>
             </div>
             <div id="competitiveGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                 <p class="text-gray-600 italic text-sm">Loading players...</p>
@@ -87,6 +103,7 @@
         <section class="space-y-6">
             <div class="border-l-4 border-blue-500 pl-4">
                 <h2 class="text-2xl md:text-3xl font-black uppercase tracking-wide">Meet The Creators</h2>
+                <span class="text-gray-400 text-xs md:text-sm font-semibold tracking-widest uppercase">Our content creators & streamers</span>
             </div>
             <div id="creatorsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                 <p class="text-gray-600 italic text-sm">Loading creators...</p>
@@ -123,15 +140,15 @@
 
                 <!-- UPLOAD SITE IMAGES -->
                 <div class="bg-black p-4 rounded border border-rrBorder space-y-4">
-                    <h4 class="font-bold text-sm text-green-500 uppercase border-b border-gray-800 pb-2"><i class="fas fa-images mr-1"></i> Update Website Design</h4>
+                    <h4 class="font-bold text-sm text-green-500 uppercase border-b border-gray-800 pb-2"><i class="fas fa-images mr-1"></i> Site Design</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="text-xs text-gray-400 block mb-1">New Logo:</label>
+                            <label class="text-xs text-gray-400 block mb-1">Upload Main Logo (Header):</label>
                             <input type="file" id="uploadLogo" accept="image/*" class="w-full bg-rrDark border border-rrBorder rounded p-1 text-sm text-gray-400">
                             <button id="btnLogo" onclick="saveLogo()" class="w-full mt-2 bg-gray-800 hover:bg-green-600 text-white text-xs font-bold py-2 rounded transition">Update Logo</button>
                         </div>
                         <div>
-                            <label class="text-xs text-gray-400 block mb-1">New Cover Banner:</label>
+                            <label class="text-xs text-gray-400 block mb-1">Upload Cover Photo (Background):</label>
                             <input type="file" id="uploadBanner" accept="image/*" class="w-full bg-rrDark border border-rrBorder rounded p-1 text-sm text-gray-400">
                             <button id="btnBanner" onclick="saveBanner()" class="w-full mt-2 bg-gray-800 hover:bg-green-600 text-white text-xs font-bold py-2 rounded transition">Update Cover</button>
                         </div>
@@ -151,7 +168,7 @@
                         </select>
                     </div>
                     <div>
-                        <label class="text-xs text-gray-400 block mb-1">Upload Photo:</label>
+                        <label class="text-xs text-gray-400 block mb-1">Upload Photo (Optional):</label>
                         <input type="file" id="cPhoto" accept="image/*" class="w-full bg-rrDark border border-rrBorder rounded p-1 text-sm text-gray-400">
                     </div>
                     <button id="btnCompetitive" onclick="addCompetitive()" class="w-full bg-rrRed text-white text-sm font-bold py-2.5 rounded hover:bg-red-700 transition">Add to Team Roster</button>
@@ -164,8 +181,14 @@
                         <input type="text" id="crName" placeholder="Creator Name" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white">
                         <input type="text" id="crGame" placeholder="Main Game Focus" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white">
                     </div>
+                    <!-- RESTORED SOCIAL LINKS -->
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                        <input type="text" id="crFb" placeholder="Facebook Link" class="w-full bg-rrDark border border-rrBorder rounded px-2 py-1.5 text-xs text-white">
+                        <input type="text" id="crYt" placeholder="YouTube Link" class="w-full bg-rrDark border border-rrBorder rounded px-2 py-1.5 text-xs text-white">
+                        <input type="text" id="crTt" placeholder="TikTok Link" class="w-full bg-rrDark border border-rrBorder rounded px-2 py-1.5 text-xs text-white">
+                    </div>
                     <div>
-                        <label class="text-xs text-gray-400 block mb-1">Upload Photo:</label>
+                        <label class="text-xs text-gray-400 block mb-1">Upload Photo (Optional):</label>
                         <input type="file" id="crPhoto" accept="image/*" class="w-full bg-rrDark border border-rrBorder rounded p-1 text-sm text-gray-400">
                     </div>
                     <button id="btnCreator" onclick="addCreator()" class="w-full bg-blue-600 text-white text-sm font-bold py-2.5 rounded hover:bg-blue-700 transition">Add Creator</button>
@@ -190,43 +213,21 @@
 
     <!-- DATABASE SCRIPT -->
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSy87GyUvjxpgvVQpSS_wjh2Sm6HssUd_jbm",
-            authDomain: "riftraiders-348f4.firebaseapp.com",
-            databaseURL: "https://riftraiders-348f4-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "riftraiders-348f4",
-            storageBucket: "riftraiders-348f4.firebasestorage.app",
-            messagingSenderId: "103200979693",
-            appId: "1:103200979693:web:48d4b7f6e65734f2756ee4"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-
+        // Define everything in global scope first to avoid 'not defined' errors
         let competitiveList = [];
         let creatorsList = [];
         let siteSettings = {
             logo: "https://i.ibb.co/689L51P/58834.png",
             banner: "https://i.ibb.co/3k15y8B/58833.png"
         };
-
-        db.ref('/').on('value', (snapshot) => {
-            try {
-                const data = snapshot.val();
-                if (data) {
-                    competitiveList = data.competitive ? (Array.isArray(data.competitive) ? data.competitive : Object.values(data.competitive)) : [];
-                    creatorsList = data.creators ? (Array.isArray(data.creators) ? data.creators : Object.values(data.creators)) : [];
-                    if (data.settings && data.settings.logo) {
-                        siteSettings = data.settings;
-                    }
-                }
-                renderSite();
-            } catch (error) {
-                console.error("Data Load Error:", error);
-                renderSite();
-            }
-        });
+        let db = null;
 
         function saveToDatabase(successMsg, btnElement, originalText) {
+            if (!db) {
+                alert("Database is still connecting. Please wait a few seconds and try again.");
+                if(btnElement) { btnElement.innerText = originalText; btnElement.disabled = false; }
+                return;
+            }
             db.ref('/').update({
                 competitive: competitiveList,
                 creators: creatorsList,
@@ -239,7 +240,7 @@
                 }
                 renderSite();
             }).catch(e => {
-                alert("DATABASE ERROR: " + e.message);
+                alert("ERROR: " + e.message);
                 if(btnElement) {
                     btnElement.innerText = originalText;
                     btnElement.disabled = false;
@@ -247,63 +248,63 @@
             });
         }
 
-        // Pinatatag na Image Processor para hindi mag-crash
         function processImage(file, defaultImage, callback) {
-            try {
-                if (!file) { 
-                    callback(defaultImage); 
-                    return; 
-                }
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = new Image();
-                    img.onload = function() {
+            if (!file) { callback(defaultImage); return; }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    try {
                         const canvas = document.createElement('canvas');
                         const MAX_WIDTH = 300;
                         const scaleSize = MAX_WIDTH / img.width;
                         canvas.width = MAX_WIDTH;
                         canvas.height = img.height * scaleSize;
+                        
                         const ctx = canvas.getContext('2d');
                         ctx.fillStyle = '#000000';
                         ctx.fillRect(0, 0, canvas.width, canvas.height);
                         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                         
-                        callback(canvas.toDataURL('image/jpeg', 0.7));
-                    };
-                    img.onerror = function() { alert("Image Error: Cannot process this image file."); callback(defaultImage); };
-                    img.src = e.target.result;
-                };
-                reader.onerror = function() { alert("File Error: Cannot read the selected file."); callback(defaultImage); };
-                reader.readAsDataURL(file);
-            } catch (err) {
-                alert("Upload Crash: " + err.message);
-                callback(defaultImage);
+                        callback(canvas.toDataURL('image/jpeg', 0.8));
+                    } catch(err) {
+                        alert("Error processing image: " + err.message);
+                        callback(defaultImage);
+                    }
+                }
+                img.onerror = function() {
+                    alert("Invalid image file.");
+                    callback(defaultImage);
+                }
+                img.src = e.target.result;
             }
+            reader.readAsDataURL(file);
         }
 
-        function saveLogo() {
+        window.saveLogo = function() {
             const file = document.getElementById('uploadLogo').files[0];
-            if(!file) { alert("Please select a logo file first!"); return; }
+            if(!file) return alert("Select a logo first!");
             const btn = document.getElementById('btnLogo');
-            btn.innerText = "Saving Logo...";
+            btn.innerText = "Saving...";
             processImage(file, siteSettings.logo, (base64) => {
                 siteSettings.logo = base64;
-                saveToDatabase("Main Logo Updated Successfully!", btn, "Update Logo");
+                saveToDatabase("Main Logo Updated!", btn, "Update Logo");
             });
         }
 
-        function saveBanner() {
+        window.saveBanner = function() {
             const file = document.getElementById('uploadBanner').files[0];
-            if(!file) { alert("Please select a cover file first!"); return; }
+            if(!file) return alert("Select a banner cover first!");
             const btn = document.getElementById('btnBanner');
-            btn.innerText = "Saving Cover...";
+            btn.innerText = "Saving...";
             processImage(file, siteSettings.banner, (base64) => {
                 siteSettings.banner = base64;
-                saveToDatabase("Cover Banner Updated Successfully!", btn, "Update Cover");
+                saveToDatabase("Cover Banner Updated!", btn, "Update Cover");
             });
         }
 
-        function addCompetitive() {
+        window.addCompetitive = function() {
             const ign = document.getElementById('cIgn').value;
             const role = document.getElementById('cRole').value;
             const team = document.getElementById('cTeam').value;
@@ -312,7 +313,7 @@
             const btn = document.getElementById('btnCompetitive');
 
             if(!ign || !role || !team) { 
-                alert("ERROR: Please fill all text fields (IGN, Role, Team)!"); 
+                alert("Please fill all required fields (IGN, Role, Team)!"); 
                 return; 
             }
 
@@ -331,44 +332,16 @@
             });
         }
 
-        function addCreator() {
+        window.addCreator = function() {
             const name = document.getElementById('crName').value;
             const game = document.getElementById('crGame').value;
+            const socials = {
+                fb: document.getElementById('crFb').value,
+                yt: document.getElementById('crYt').value,
+                tt: document.getElementById('crTt').value
+            };
             const file = document.getElementById('crPhoto').files[0];
             const btn = document.getElementById('btnCreator');
 
             if(!name || !game) { 
-                alert("ERROR: Please fill Creator Name and Game Focus!"); 
-                return; 
-            }
-
-            btn.innerText = "Processing Image & Saving...";
-            btn.disabled = true;
-
-            processImage(file, "https://i.ibb.co/689L51P/58834.png", (base64Img) => {
-                creatorsList.push({ name, game, photo: base64Img });
-                
-                document.getElementById('crName').value = '';
-                document.getElementById('crGame').value = '';
-                document.getElementById('crPhoto').value = '';
-
-                saveToDatabase("Creator Added Successfully!", btn, "Add Creator");
-            });
-        }
-
-        function deleteCompetitive(idx) {
-            if(confirm('Delete this player?')) { 
-                competitiveList.splice(idx, 1); 
-                saveToDatabase("Player Deleted!", null, null); 
-            }
-        }
-        function deleteCreator(idx) {
-            if(confirm('Delete this creator?')) { 
-                creatorsList.splice(idx, 1); 
-                saveToDatabase("Creator Deleted!", null, null); 
-            }
-        }
-
-        function renderSite() {
-            try {
-                document.getElementById('siteLogo').src = (siteSettings && siteSettings.logo) ? siteSettings.l
+                alert("P
