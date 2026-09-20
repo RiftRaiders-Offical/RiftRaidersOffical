@@ -19,29 +19,22 @@
         }
     </script>
 
+    <!-- PLAYER CARD ANIMATION CSS -->
+    <style>
+        .player-card .img-container { transition: all 0.4s ease-in-out; width: 100%; height: 100%; position: absolute; z-index: 10; box-shadow: 5px 0 15px rgba(0,0,0,0.8); }
+        .player-card.is-open .img-container { width: 35%; }
+        .player-card .default-info { transition: all 0.4s ease; opacity: 1; transform: translateY(0); position: absolute; bottom: 0; left: 0; padding: 1rem; text-shadow: 0 2px 4px rgba(0,0,0,1); }
+        .player-card.is-open .default-info { opacity: 0; transform: translateY(10px); pointer-events: none; }
+        .player-card .expanded-info { transition: all 0.4s ease-in-out; opacity: 0; transform: translateX(20px); position: absolute; right: 0; top: 0; width: 65%; height: 100%; padding: 1rem; display: flex; flex-direction: column; justify-content: center; background-color: #121212; z-index: 5;}
+        .player-card.is-open .expanded-info { opacity: 1; transform: translateX(0); }
+    </style>
+
     <!-- ADMIN PORTAL UI SCRIPT -->
     <script>
-        window.onerror = function(message, source, lineno, colno, error) {
-            console.error("System Error: ", message, " at line: ", lineno);
-        };
-
-        function openAdmin() {
-            document.getElementById('adminModal').style.display = 'flex';
-            document.getElementById('adminPassInput').value = '';
-            document.getElementById('loginView').style.display = 'flex';
-            document.getElementById('dashboardView').style.display = 'none';
-        }
-        function closeAdmin() {
-            document.getElementById('adminModal').style.display = 'none';
-        }
-        function verifyAdmin() {
-            if(document.getElementById('adminPassInput').value === '07092004') {
-                document.getElementById('loginView').style.display = 'none';
-                document.getElementById('dashboardView').style.display = 'block';
-            } else {
-                alert('Access Denied. Incorrect Password.');
-            }
-        }
+        window.onerror = function(message, source, lineno, colno, error) { console.error("System Error: ", message, " at line: ", lineno); };
+        function openAdmin() { document.getElementById('adminModal').style.display = 'flex'; document.getElementById('adminPassInput').value = ''; document.getElementById('loginView').style.display = 'flex'; document.getElementById('dashboardView').style.display = 'none'; }
+        function closeAdmin() { document.getElementById('adminModal').style.display = 'none'; }
+        function verifyAdmin() { if(document.getElementById('adminPassInput').value === '07092004') { document.getElementById('loginView').style.display = 'none'; document.getElementById('dashboardView').style.display = 'block'; } else { alert('Access Denied. Incorrect Password.'); } }
     </script>
 </head>
 <body class="bg-rrDark text-gray-100 font-sans antialiased min-h-screen flex flex-col justify-between relative">
@@ -64,7 +57,6 @@
     </header>
 
     <main class="max-w-6xl mx-auto px-4 py-6 space-y-12 flex-grow w-full">
-        <!-- Cover Photo Banner -->
         <section class="relative rounded-2xl overflow-hidden border border-rrBorder shadow-2xl bg-black">
             <div class="relative h-48 md:h-80 w-full overflow-hidden">
                 <img id="siteCover" src="https://i.ibb.co/3k15y8B/58833.png" alt="Cover" class="w-full h-full object-cover opacity-60">
@@ -80,9 +72,7 @@
         <section class="space-y-4">
             <div class="bg-rrCard border border-rrBorder p-6 md:p-8 rounded-xl shadow-lg">
                 <h2 class="text-2xl font-black uppercase tracking-wide text-rrRed mb-4 border-b border-rrBorder pb-2">About Us</h2>
-                <p class="text-gray-300 leading-relaxed text-sm md:text-base font-medium">
-                    Rift Raiders began its journey in 2024 as a dedicated competitive team. After a year of climbing the ranks, we expanded in April 2025 by establishing our official guild. Today, we continue to field elite rosters ready to conquer the rift.
-                </p>
+                <p class="text-gray-300 leading-relaxed text-sm md:text-base font-medium">Rift Raiders began its journey in 2024 as a dedicated competitive team. After a year of climbing the ranks, we expanded in April 2025 by establishing our official guild. Today, we continue to field elite rosters ready to conquer the rift.</p>
             </div>
         </section>
 
@@ -90,7 +80,7 @@
         <section class="space-y-6">
             <div class="border-l-4 border-rrRed pl-4">
                 <h2 class="text-2xl md:text-3xl font-black uppercase tracking-wide">Meet The Teams</h2>
-                <span class="text-gray-400 text-xs md:text-sm font-semibold tracking-widest uppercase">The official esports roster</span>
+                <span class="text-gray-400 text-xs md:text-sm font-semibold tracking-widest uppercase">The official esports roster (Tap a player for stats)</span>
             </div>
             <div id="competitiveGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                 <p class="text-gray-600 italic text-sm">Loading players...</p>
@@ -119,7 +109,7 @@
             </div>
         </section>
 
-        <!-- PARTNERS & SPONSORS -->
+        <!-- PARTNERS -->
         <section class="space-y-6">
             <div class="border-l-4 border-green-500 pl-4">
                 <h2 class="text-2xl md:text-3xl font-black uppercase tracking-wide">Partnerships</h2>
@@ -134,16 +124,13 @@
     <footer class="border-t border-rrBorder bg-black py-8 mt-16 text-center md:text-left relative z-10">
         <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p class="text-xs text-gray-500">© 2026 Rift Raiders. All rights reserved.</p>
-            <button onclick="openAdmin()" class="bg-rrBorder hover:bg-rrRed hover:text-white text-gray-300 px-4 py-2 rounded transition font-bold text-sm cursor-pointer z-50">
-                <i class="fas fa-cog mr-1"></i> Admin Portal
-            </button>
+            <button onclick="openAdmin()" class="bg-rrBorder hover:bg-rrRed hover:text-white text-gray-300 px-4 py-2 rounded transition font-bold text-sm cursor-pointer z-50"><i class="fas fa-cog mr-1"></i> Admin Portal</button>
         </div>
     </footer>
 
     <!-- ADMIN MODAL -->
     <div id="adminModal" style="display: none;" class="fixed inset-0 bg-black/95 backdrop-blur-md z-[99999] flex-col items-center justify-center p-4">
         <div class="bg-rrCard border border-rrBorder rounded-lg max-w-2xl w-full p-4 md:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-            
             <button onclick="closeAdmin()" class="absolute top-4 right-4 text-gray-400 hover:text-white bg-black rounded p-2 transition cursor-pointer z-50"><i class="fas fa-times text-xl"></i></button>
 
             <!-- LOGIN VIEW -->
@@ -155,7 +142,6 @@
 
             <!-- DASHBOARD VIEW -->
             <div id="dashboardView" style="display: none;" class="space-y-6 mt-6">
-                
                 <h3 class="font-black text-xl text-white uppercase border-b border-rrBorder pb-2"><i class="fas fa-cogs text-rrRed mr-2"></i>Owner Dashboard</h3>
 
                 <!-- UPLOAD SITE IMAGES -->
@@ -163,12 +149,10 @@
                     <h4 class="font-bold text-sm text-green-500 uppercase border-b border-gray-800 pb-2"><i class="fas fa-images mr-1"></i> Site Design</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="text-xs text-gray-400 block mb-1">Upload Main Logo (Header):</label>
                             <input type="file" id="uploadLogo" accept="image/*" class="w-full bg-rrDark border border-rrBorder rounded p-1 text-sm text-gray-400">
                             <button id="btnLogo" onclick="saveLogo()" class="w-full mt-2 bg-gray-800 hover:bg-green-600 text-white text-xs font-bold py-2 rounded transition">Update Logo</button>
                         </div>
                         <div>
-                            <label class="text-xs text-gray-400 block mb-1">Upload Cover Photo (Background):</label>
                             <input type="file" id="uploadBanner" accept="image/*" class="w-full bg-rrDark border border-rrBorder rounded p-1 text-sm text-gray-400">
                             <button id="btnBanner" onclick="saveBanner()" class="w-full mt-2 bg-gray-800 hover:bg-green-600 text-white text-xs font-bold py-2 rounded transition">Update Cover</button>
                         </div>
@@ -179,34 +163,41 @@
                 <div class="bg-black p-4 rounded border border-rrBorder space-y-3">
                     <h4 class="font-bold text-sm text-yellow-500 uppercase border-b border-gray-800 pb-2"><i class="fas fa-trophy mr-1"></i> Add Match Record</h4>
                     <div class="grid grid-cols-2 gap-3">
-                        <input type="text" id="mOpponent" placeholder="Opponent Team" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white">
+                        <input type="text" id="mOpponent" placeholder="Opponent" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white">
                         <input type="text" id="mScore" placeholder="Score (e.g., 2-1)" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white">
                         <select id="mType" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-gray-300">
-                            <option value="Tournament">Tournament</option>
-                            <option value="Scrim">Scrimmage</option>
+                            <option value="Tournament">Tournament</option><option value="Scrim">Scrimmage</option>
                         </select>
                         <select id="mResult" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-gray-300">
-                            <option value="Win" class="text-green-500">Win</option>
-                            <option value="Loss" class="text-red-500">Loss</option>
-                            <option value="Draw" class="text-yellow-500">Draw</option>
+                            <option value="Win" class="text-green-500">Win</option><option value="Loss" class="text-red-500">Loss</option><option value="Draw" class="text-yellow-500">Draw</option>
                         </select>
                         <input type="date" id="mDate" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-gray-400 col-span-2">
                     </div>
                     <button id="btnMatch" onclick="addMatch()" class="w-full bg-yellow-600 text-white text-sm font-bold py-2.5 rounded hover:bg-yellow-700 transition">Add Match</button>
                 </div>
 
-                <!-- ADD TEAM PLAYER -->
+                <!-- ADD TEAM PLAYER (UPDATED FOR STATS) -->
                 <div class="bg-black p-4 rounded border border-rrBorder space-y-3">
-                    <h4 class="font-bold text-sm text-rrRed uppercase border-b border-gray-800 pb-2"><i class="fas fa-users mr-1"></i> Add Team Member</h4>
+                    <h4 class="font-bold text-sm text-rrRed uppercase border-b border-gray-800 pb-2"><i class="fas fa-users mr-1"></i> Add Team Member (With Stats)</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <input type="text" id="cIgn" placeholder="IGN (e.g., Takeku)" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white">
                         <input type="text" id="cRole" placeholder="Role (e.g., Jungler)" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white">
-                        <input type="text" id="cTeam" placeholder="Team Name (e.g., Team Alpha)" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white">
+                        <input type="text" id="cTeam" placeholder="Team Name (e.g., Alpha)" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white">
                         <select id="cGame" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-gray-300">
-                            <option value="Wild Rift">League of Legends: Wild Rift</option>
-                            <option value="League of Legends">League of Legends (PC)</option>
+                            <option value="Wild Rift">League of Legends: Wild Rift</option><option value="League of Legends">League of Legends (PC)</option>
                         </select>
+                        <input type="text" id="cWinrate" placeholder="Tournament Winrate (e.g., 65%)" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white md:col-span-2">
                     </div>
+                    
+                    <p class="text-[10px] text-gray-500 mt-2">Paste Image Links for Top 3 Champions (Leave blank if none):</p>
+                    <div class="grid grid-cols-3 gap-2">
+                        <input type="text" id="cChamp1" placeholder="Champ 1 Image URL" class="w-full bg-rrDark border border-rrBorder rounded px-2 py-1.5 text-xs text-white">
+                        <input type="text" id="cChamp2" placeholder="Champ 2 Image URL" class="w-full bg-rrDark border border-rrBorder rounded px-2 py-1.5 text-xs text-white">
+                        <input type="text" id="cChamp3" placeholder="Champ 3 Image URL" class="w-full bg-rrDark border border-rrBorder rounded px-2 py-1.5 text-xs text-white">
+                    </div>
+                    
+                    <input type="text" id="cProfileLink" placeholder="OP.GG or Profile Tracker Link (Optional)" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white">
+                    
                     <div>
                         <label class="text-xs text-gray-400 block mb-1">Upload Photo (Optional):</label>
                         <input type="file" id="cPhoto" accept="image/*" class="w-full bg-rrDark border border-rrBorder rounded p-1 text-sm text-gray-400">
@@ -221,7 +212,7 @@
                         <input type="text" id="crName" placeholder="Creator Name" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white">
                         <input type="text" id="crGame" placeholder="Main Game Focus" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white">
                     </div>
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                    <div class="grid grid-cols-3 gap-2">
                         <input type="text" id="crFb" placeholder="Facebook Link" class="w-full bg-rrDark border border-rrBorder rounded px-2 py-1.5 text-xs text-white">
                         <input type="text" id="crYt" placeholder="YouTube Link" class="w-full bg-rrDark border border-rrBorder rounded px-2 py-1.5 text-xs text-white">
                         <input type="text" id="crTt" placeholder="TikTok Link" class="w-full bg-rrDark border border-rrBorder rounded px-2 py-1.5 text-xs text-white">
@@ -235,56 +226,36 @@
 
                 <!-- ADD PARTNER -->
                 <div class="bg-black p-4 rounded border border-rrBorder space-y-3">
-                    <h4 class="font-bold text-sm text-green-500 uppercase border-b border-gray-800 pb-2"><i class="fas fa-handshake mr-1"></i> Add Partner / Sponsor</h4>
+                    <h4 class="font-bold text-sm text-green-500 uppercase border-b border-gray-800 pb-2"><i class="fas fa-handshake mr-1"></i> Add Partner</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <input type="text" id="pName" placeholder="Partner/Sponsor Name" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white">
-                        <input type="text" id="pLink" placeholder="Website/Page Link (Optional)" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white">
+                        <input type="text" id="pName" placeholder="Partner Name" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white">
+                        <input type="text" id="pLink" placeholder="Website Link (Optional)" class="w-full bg-rrDark border border-rrBorder rounded px-3 py-2 text-sm text-white">
                     </div>
                     <div>
-                        <label class="text-xs text-gray-400 block mb-1">Upload Partner Logo:</label>
                         <input type="file" id="pPhoto" accept="image/*" class="w-full bg-rrDark border border-rrBorder rounded p-1 text-sm text-gray-400">
                     </div>
                     <button id="btnPartner" onclick="addPartner()" class="w-full bg-green-600 text-white text-sm font-bold py-2.5 rounded hover:bg-green-700 transition">Add Partner</button>
                 </div>
 
-                <!-- MANAGE LISTS -->
+                                <!-- MANAGE LISTS -->
                 <div class="bg-black p-4 rounded border border-rrBorder space-y-4">
                     <h4 class="font-bold text-sm text-gray-300 uppercase border-b border-gray-800 pb-2"><i class="fas fa-trash mr-1"></i> Manage Data</h4>
-                    
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <p class="text-xs text-rrRed font-bold mb-2">Teams Roster</p>
-                            <div id="manageCompetitive" class="space-y-1 max-h-32 overflow-y-auto text-xs border border-rrBorder p-2 rounded"></div>
-                        </div>
-                        <div>
-                            <p class="text-xs text-yellow-500 font-bold mb-2">Match History</p>
-                            <div id="manageMatches" class="space-y-1 max-h-32 overflow-y-auto text-xs border border-rrBorder p-2 rounded"></div>
-                        </div>
-                        <div>
-                            <p class="text-xs text-blue-400 font-bold mb-2">Creators</p>
-                            <div id="manageCreators" class="space-y-1 max-h-32 overflow-y-auto text-xs border border-rrBorder p-2 rounded"></div>
-                        </div>
-                        <div>
-                            <p class="text-xs text-green-400 font-bold mb-2">Partners</p>
-                            <div id="managePartners" class="space-y-1 max-h-32 overflow-y-auto text-xs border border-rrBorder p-2 rounded"></div>
-                        </div>
+                        <div><p class="text-xs text-rrRed font-bold mb-2">Teams</p><div id="manageCompetitive" class="space-y-1 max-h-32 overflow-y-auto text-xs border border-rrBorder p-2 rounded"></div></div>
+                        <div><p class="text-xs text-yellow-500 font-bold mb-2">Matches</p><div id="manageMatches" class="space-y-1 max-h-32 overflow-y-auto text-xs border border-rrBorder p-2 rounded"></div></div>
+                        <div><p class="text-xs text-blue-400 font-bold mb-2">Creators</p><div id="manageCreators" class="space-y-1 max-h-32 overflow-y-auto text-xs border border-rrBorder p-2 rounded"></div></div>
+                        <div><p class="text-xs text-green-400 font-bold mb-2">Partners</p><div id="managePartners" class="space-y-1 max-h-32 overflow-y-auto text-xs border border-rrBorder p-2 rounded"></div></div>
                     </div>
                 </div>
 
             </div>
         </div>
     </div>
-              <!-- DATABASE SCRIPT -->
+
+    <!-- DATABASE SCRIPT -->
     <script>
-        let competitiveList = {};
-        let creatorsList = {};
-        let matchesList = {};
-        let partnersList = {};
-        
-        let siteSettings = {
-            logo: "https://i.ibb.co/689L51P/58834.png",
-            banner: "https://i.ibb.co/3k15y8B/58833.png"
-        };
+        let competitiveList = {}; let creatorsList = {}; let matchesList = {}; let partnersList = {};
+        let siteSettings = { logo: "https://i.ibb.co/689L51P/58834.png", banner: "https://i.ibb.co/3k15y8B/58833.png" };
         let db = null;
 
         function processImage(file, defaultImage, callback) {
@@ -295,375 +266,199 @@
                 img.onload = function() {
                     try {
                         const canvas = document.createElement('canvas');
-                        const MAX_WIDTH = 300;
-                        const scaleSize = MAX_WIDTH / img.width;
-                        canvas.width = MAX_WIDTH;
-                        canvas.height = img.height * scaleSize;
-                        
+                        const scaleSize = 300 / img.width;
+                        canvas.width = 300; canvas.height = img.height * scaleSize;
                         const ctx = canvas.getContext('2d');
-                        ctx.fillStyle = '#000000';
-                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        ctx.fillStyle = '#000000'; ctx.fillRect(0, 0, canvas.width, canvas.height);
                         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        
                         callback(canvas.toDataURL('image/jpeg', 0.8));
-                    } catch(err) {
-                        alert("Error processing image.");
-                        callback(defaultImage);
-                    }
-                }
-                img.onerror = function() { callback(defaultImage); }
+                    } catch(err) { callback(defaultImage); }
+                };
+                img.onerror = function() { callback(defaultImage); };
                 img.src = e.target.result;
-            }
+            };
             reader.readAsDataURL(file);
         }
 
-        // DIRECT DATABASE OPERATIONS
         window.saveLogo = function() {
-            if(!db) return alert("Database disconnected.");
-            const file = document.getElementById('uploadLogo').files[0];
-            if(!file) return alert("Select a logo first!");
-            const btn = document.getElementById('btnLogo');
-            btn.innerText = "Saving...";
-            processImage(file, siteSettings.logo, (base64) => {
-                db.ref('settings').update({ logo: base64 }).then(() => {
-                    alert("Main Logo Updated!");
-                    btn.innerText = "Update Logo";
-                });
-            });
+            if(!db) return; const file = document.getElementById('uploadLogo').files[0];
+            if(!file) return alert("Select a logo!");
+            document.getElementById('btnLogo').innerText = "Saving...";
+            processImage(file, siteSettings.logo, (b) => { db.ref('settings').update({ logo: b }).then(() => { alert("Logo Updated!"); document.getElementById('btnLogo').innerText = "Update Logo"; }); });
         }
-
         window.saveBanner = function() {
-            if(!db) return alert("Database disconnected.");
-            const file = document.getElementById('uploadBanner').files[0];
-            if(!file) return alert("Select a banner cover first!");
-            const btn = document.getElementById('btnBanner');
-            btn.innerText = "Saving...";
-            processImage(file, siteSettings.banner, (base64) => {
-                db.ref('settings').update({ banner: base64 }).then(() => {
-                    alert("Cover Banner Updated!");
-                    btn.innerText = "Update Cover";
-                });
-            });
+            if(!db) return; const file = document.getElementById('uploadBanner').files[0];
+            if(!file) return alert("Select a banner!");
+            document.getElementById('btnBanner').innerText = "Saving...";
+            processImage(file, siteSettings.banner, (b) => { db.ref('settings').update({ banner: b }).then(() => { alert("Cover Updated!"); document.getElementById('btnBanner').innerText = "Update Cover"; }); });
         }
 
         window.addMatch = function() {
-            if(!db) return alert("Database disconnected.");
-            const opponent = document.getElementById('mOpponent').value;
-            const score = document.getElementById('mScore').value;
-            const type = document.getElementById('mType').value;
-            const result = document.getElementById('mResult').value;
+            if(!db) return;
+            const opponent = document.getElementById('mOpponent').value; const score = document.getElementById('mScore').value;
+            const type = document.getElementById('mType').value; const result = document.getElementById('mResult').value;
             const date = document.getElementById('mDate').value;
-            const btn = document.getElementById('btnMatch');
-
-            if(!opponent || !score || !date) { 
-                alert("Please fill Opponent, Score, and Date!"); 
-                return; 
-            }
-
-            btn.innerText = "Saving...";
-            btn.disabled = true;
-
-            db.ref('matches').push({
-                opponent: opponent,
-                score: score,
-                type: type,
-                result: result,
-                date: date
-            }).then(() => {
-                alert("Match Added Successfully!");
-                document.getElementById('mOpponent').value = '';
-                document.getElementById('mScore').value = '';
-                document.getElementById('mDate').value = '';
-                btn.innerText = "Add Match";
-                btn.disabled = false;
+            if(!opponent || !score || !date) return alert("Fill Opponent, Score, and Date!");
+            document.getElementById('btnMatch').innerText = "Saving...";
+            db.ref('matches').push({ opponent: opponent, score: score, type: type, result: result, date: date }).then(() => {
+                alert("Match Added!"); document.getElementById('mOpponent').value = ''; document.getElementById('mScore').value = ''; document.getElementById('mDate').value = ''; document.getElementById('btnMatch').innerText = "Add Match";
             });
         }
 
         window.addPartner = function() {
-            if(!db) return alert("Database disconnected.");
-            const name = document.getElementById('pName').value;
-            const link = document.getElementById('pLink').value;
-            const file = document.getElementById('pPhoto').files[0];
-            const btn = document.getElementById('btnPartner');
-
-            if(!name || !file) { 
-                alert("Please provide a Partner Name and upload a Logo!"); 
-                return; 
-            }
-
-            btn.innerText = "Processing & Saving...";
-            btn.disabled = true;
-
-            processImage(file, "https://i.ibb.co/689L51P/58834.png", (base64Img) => {
-                db.ref('partners').push({
-                    name: name,
-                    link: link,
-                    logo: base64Img
-                }).then(() => {
-                    alert("Partner Added Successfully!");
-                    document.getElementById('pName').value = '';
-                    document.getElementById('pLink').value = '';
-                    document.getElementById('pPhoto').value = '';
-                    btn.innerText = "Add Partner";
-                    btn.disabled = false;
-                });
-            });
+            if(!db) return; const name = document.getElementById('pName').value; const link = document.getElementById('pLink').value; const file = document.getElementById('pPhoto').files[0];
+            if(!name || !file) return alert("Partner Name and Logo required!");
+            document.getElementById('btnPartner').innerText = "Saving...";
+            processImage(file, "https://i.ibb.co/689L51P/58834.png", (b) => { db.ref('partners').push({ name: name, link: link, logo: b }).then(() => {
+                alert("Partner Added!"); document.getElementById('pName').value = ''; document.getElementById('pLink').value = ''; document.getElementById('btnPartner').innerText = "Add Partner";
+            }); });
         }
 
         window.addCompetitive = function() {
             if(!db) return alert("Database disconnected.");
-            const ign = document.getElementById('cIgn').value;
-            const role = document.getElementById('cRole').value;
-            const team = document.getElementById('cTeam').value;
-            const game = document.getElementById('cGame').value;
+            const ign = document.getElementById('cIgn').value; const role = document.getElementById('cRole').value;
+            const team = document.getElementById('cTeam').value; const game = document.getElementById('cGame').value;
+            const winrate = document.getElementById('cWinrate').value;
+            const champ1 = document.getElementById('cChamp1').value; const champ2 = document.getElementById('cChamp2').value; const champ3 = document.getElementById('cChamp3').value;
+            const profileLink = document.getElementById('cProfileLink').value;
             const file = document.getElementById('cPhoto').files[0];
-            const btn = document.getElementById('btnCompetitive');
-
-            if(!ign || !role || !team) { 
-                alert("Please fill all required fields (IGN, Role, Team)!"); 
-                return; 
-            }
-
-            btn.innerText = "Processing Image & Saving...";
-            btn.disabled = true;
+            
+            if(!ign || !role || !team) return alert("IGN, Role, and Team required!");
+            const btn = document.getElementById('btnCompetitive'); btn.innerText = "Saving..."; btn.disabled = true;
 
             processImage(file, "https://i.ibb.co/3k15y8B/58833.png", (base64Img) => {
                 db.ref('competitive').push({
-                    ign: ign,
-                    role: role,
-                    team: team,
-                    game: game,
+                    ign: ign, role: role, team: team, game: game,
+                    winrate: winrate || 'N/A',
+                    champs: [champ1, champ2, champ3],
+                    profileLink: profileLink || '',
                     photo: base64Img
                 }).then(() => {
-                    alert("Team Member Added Successfully!");
-                    document.getElementById('cIgn').value = '';
-                    document.getElementById('cRole').value = '';
-                    document.getElementById('cTeam').value = '';
-                    document.getElementById('cPhoto').value = '';
-                    btn.innerText = "Add to Team Roster";
-                    btn.disabled = false;
+                    alert("Team Member Added!");
+                    document.getElementById('cIgn').value = ''; document.getElementById('cRole').value = ''; document.getElementById('cTeam').value = '';
+                    document.getElementById('cWinrate').value = ''; document.getElementById('cChamp1').value = ''; document.getElementById('cChamp2').value = '';
+                    document.getElementById('cChamp3').value = ''; document.getElementById('cProfileLink').value = ''; document.getElementById('cPhoto').value = '';
+                    btn.innerText = "Add to Team Roster"; btn.disabled = false;
                 });
             });
         }
 
         window.addCreator = function() {
-            if(!db) return alert("Database disconnected.");
-            const name = document.getElementById('crName').value;
-            const game = document.getElementById('crGame').value;
-            const fb = document.getElementById('crFb').value;
-            const yt = document.getElementById('crYt').value;
-            const tt = document.getElementById('crTt').value;
-            const file = document.getElementById('crPhoto').files[0];
-            const btn = document.getElementById('btnCreator');
-
-            if(!name || !game) { 
-                alert("Please fill Creator Name and Game Focus!"); 
-                return; 
-            }
-
-            btn.innerText = "Processing Image & Saving...";
-            btn.disabled = true;
-
-            processImage(file, "https://i.ibb.co/689L51P/58834.png", (base64Img) => {
-                db.ref('creators').push({
-                    name: name,
-                    game: game,
-                    socials: { fb: fb, yt: yt, tt: tt },
-                    photo: base64Img
-                }).then(() => {
-                    alert("Creator Added Successfully!");
-                    document.getElementById('crName').value = '';
-                    document.getElementById('crGame').value = '';
-                    document.getElementById('crFb').value = '';
-                    document.getElementById('crYt').value = '';
-                    document.getElementById('crTt').value = '';
-                    document.getElementById('crPhoto').value = '';
-                    btn.innerText = "Add Creator";
-                    btn.disabled = false;
-                });
-            });
+            if(!db) return; const name = document.getElementById('crName').value; const game = document.getElementById('crGame').value;
+            const fb = document.getElementById('crFb').value; const yt = document.getElementById('crYt').value; const tt = document.getElementById('crTt').value; const file = document.getElementById('crPhoto').files[0];
+            if(!name || !game) return alert("Creator Name and Game required!");
+            document.getElementById('btnCreator').innerText = "Saving...";
+            processImage(file, "https://i.ibb.co/689L51P/58834.png", (b) => { db.ref('creators').push({ name: name, game: game, socials: { fb: fb, yt: yt, tt: tt }, photo: b }).then(() => {
+                alert("Creator Added!"); document.getElementById('crName').value = ''; document.getElementById('crGame').value = ''; document.getElementById('crFb').value = ''; document.getElementById('crYt').value = ''; document.getElementById('crTt').value = ''; document.getElementById('btnCreator').innerText = "Add Creator";
+            }); });
         }
 
-        window.deleteCompetitive = function(key) {
-            if(confirm('Delete this player?')) { db.ref('competitive/' + key).remove(); }
-        }
-        window.deleteCreator = function(key) {
-            if(confirm('Delete this creator?')) { db.ref('creators/' + key).remove(); }
-        }
-        window.deleteMatch = function(key) {
-            if(confirm('Delete this match record?')) { db.ref('matches/' + key).remove(); }
-        }
-        window.deletePartner = function(key) {
-            if(confirm('Delete this partner?')) { db.ref('partners/' + key).remove(); }
-        }
+        window.deleteCompetitive = function(key) { if(confirm('Delete player?')) { db.ref('competitive/' + key).remove(); } }
+        window.deleteCreator = function(key) { if(confirm('Delete creator?')) { db.ref('creators/' + key).remove(); } }
+        window.deleteMatch = function(key) { if(confirm('Delete match?')) { db.ref('matches/' + key).remove(); } }
+        window.deletePartner = function(key) { if(confirm('Delete partner?')) { db.ref('partners/' + key).remove(); } }
 
         function renderSite() {
             try {
-                document.getElementById('siteLogo').src = (siteSettings && siteSettings.logo) ? siteSettings.logo : "https://i.ibb.co/689L51P/58834.png";
-                document.getElementById('siteCover').src = (siteSettings && siteSettings.banner) ? siteSettings.banner : "https://i.ibb.co/3k15y8B/58833.png";
+                document.getElementById('siteLogo').src = siteSettings.logo; document.getElementById('siteCover').src = siteSettings.banner;
 
-                // RENDER TEAMS
+                // RENDER TEAMS (ANIMATED CARDS)
                 const compKeys = Object.keys(competitiveList);
                 const cGrid = document.getElementById('competitiveGrid');
-                if(compKeys.length === 0) {
-                    cGrid.innerHTML = '<p class="text-gray-500 italic text-sm">No team players yet. Add one in the Admin Portal.</p>';
-                } else {
+                if(compKeys.length === 0) cGrid.innerHTML = '<p class="text-gray-500 italic text-sm">No players yet.</p>';
+                else {
                     cGrid.innerHTML = compKeys.map(key => {
                         const p = competitiveList[key];
+                        
+                        let champsHTML = '';
+                        if(p.champs && (p.champs[0] || p.champs[1] || p.champs[2])) {
+                            champsHTML = p.champs.map(c => c ? `<img src="${c}" class="w-8 h-8 rounded-full border border-gray-600 object-cover bg-gray-800">` : '').join('');
+                        } else { champsHTML = `<span class="text-[10px] text-gray-600">No data</span>`; }
+
+                        let linkHTML = p.profileLink ? `<a href="${p.profileLink}" target="_blank" onclick="event.stopPropagation();" class="mt-3 block text-center bg-rrRed hover:bg-red-700 text-white text-[10px] font-bold py-1.5 px-3 rounded w-max"><i class="fas fa-external-link-alt mr-1"></i>View OP.GG</a>` : '';
+
                         return `
-                        <div class="bg-rrCard border border-rrBorder rounded-xl overflow-hidden flex flex-row shadow-lg">
-                            <div class="w-1/3 min-w-[120px] bg-black relative">
-                                <img src="${p.photo || 'https://i.ibb.co/3k15y8B/58833.png'}" class="w-full h-full object-cover">
+                        <div onclick="this.classList.toggle('is-open')" class="player-card relative bg-rrCard border border-rrBorder rounded-xl overflow-hidden shadow-lg cursor-pointer h-56 w-full group">
+                            <div class="img-container bg-black">
+                                <img src="${p.photo}" class="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent pointer-events-none"></div>
+                                <div class="default-info">
+                                    <span class="text-[10px] bg-rrRed text-white px-2 py-0.5 rounded w-max font-bold mb-1 block">${p.game}</span>
+                                    <h3 class="text-2xl font-black text-white uppercase truncate">${p.ign}</h3>
+                                </div>
                             </div>
-                            <div class="p-4 flex flex-col justify-center w-2/3">
-                                <span class="text-[10px] bg-rrRed text-white px-2 py-0.5 rounded w-max font-bold mb-1">${p.game || ''}</span>
-                                <h3 class="text-xl font-black text-white uppercase truncate">${p.ign || ''}</h3>
-                                <p class="text-gray-400 text-xs uppercase font-bold tracking-widest mt-0.5">${p.role || ''}</p>
-                                <p class="text-gray-500 text-[10px] mt-2"><i class="fas fa-shield-alt text-rrRed mr-1"></i> ${p.team || ''}</p>
+                            <div class="expanded-info">
+                                <div class="mb-2">
+                                    <h3 class="text-xl font-black text-white uppercase truncate">${p.ign}</h3>
+                                    <p class="text-rrRed text-xs font-bold tracking-widest uppercase">${p.role}</p>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2 mb-3 border-y border-rrBorder py-2">
+                                    <div><p class="text-[10px] text-gray-500 uppercase font-bold">Team</p><p class="text-sm font-bold text-gray-200 truncate">${p.team}</p></div>
+                                    <div><p class="text-[10px] text-gray-500 uppercase font-bold">Winrate</p><p class="text-sm font-black text-green-500">${p.winrate || 'N/A'}</p></div>
+                                </div>
+                                <div>
+                                    <p class="text-[10px] text-gray-500 uppercase font-bold mb-1">Top Champs</p>
+                                    <div class="flex space-x-2">${champsHTML}</div>
+                                </div>
+                                ${linkHTML}
                             </div>
+                            <div class="absolute top-2 right-2 text-white/40 text-xs z-20 group-hover:text-white"><i class="fas fa-hand-pointer animate-pulse"></i></div>
                         </div>`;
                     }).join('');
                 }
 
                 // RENDER MATCH HISTORY
-                const matchKeys = Object.keys(matchesList);
+                const matchKeys = Object.keys(matchesList).sort((a, b) => new Date(matchesList[b].date) - new Date(matchesList[a].date));
                 const mGrid = document.getElementById('matchesGrid');
-                if(matchKeys.length === 0) {
-                    mGrid.innerHTML = '<p class="text-gray-500 italic text-sm">No match history yet.</p>';
-                } else {
-                    // Sort matches by date descending (newest first)
-                    matchKeys.sort((a, b) => new Date(matchesList[b].date) - new Date(matchesList[a].date));
-                    
+                if(matchKeys.length === 0) mGrid.innerHTML = '<p class="text-gray-500 italic text-sm">No match history yet.</p>';
+                else {
                     mGrid.innerHTML = matchKeys.map(key => {
                         const m = matchesList[key];
-                        let resultColor = m.result === 'Win' ? 'text-green-500' : (m.result === 'Loss' ? 'text-red-500' : 'text-yellow-500');
-                        let borderColor = m.result === 'Win' ? 'border-green-500/30' : (m.result === 'Loss' ? 'border-red-500/30' : 'border-yellow-500/30');
-                        
-                        return `
-                        <div class="bg-rrCard border ${borderColor} rounded-xl p-4 shadow-lg flex justify-between items-center">
-                            <div>
-                                <span class="text-[10px] text-gray-400 uppercase font-bold tracking-wider">${m.type} • ${m.date}</span>
-                                <h3 class="text-lg font-black text-white uppercase mt-1">VS ${m.opponent}</h3>
-                                <p class="text-sm font-bold text-gray-300">Score: ${m.score}</p>
-                            </div>
-                            <div class="text-right">
-                                <h2 class="text-2xl font-black uppercase ${resultColor}">${m.result}</h2>
-                            </div>
-                        </div>`;
+                        let rCol = m.result === 'Win' ? 'text-green-500' : (m.result === 'Loss' ? 'text-red-500' : 'text-yellow-500');
+                        let bCol = m.result === 'Win' ? 'border-green-500/30' : (m.result === 'Loss' ? 'border-red-500/30' : 'border-yellow-500/30');
+                        return `<div class="bg-rrCard border ${bCol} rounded-xl p-4 shadow-lg flex justify-between items-center"><div><span class="text-[10px] text-gray-400 uppercase font-bold tracking-wider">${m.type} • ${m.date}</span><h3 class="text-lg font-black text-white uppercase mt-1">VS ${m.opponent}</h3><p class="text-sm font-bold text-gray-300">Score: ${m.score}</p></div><div class="text-right"><h2 class="text-2xl font-black uppercase ${rCol}">${m.result}</h2></div></div>`;
                     }).join('');
                 }
 
                 // RENDER CREATORS
-                const creatorKeys = Object.keys(creatorsList);
-                const crGrid = document.getElementById('creatorsGrid');
-                if(creatorKeys.length === 0) {
-                    crGrid.innerHTML = '<p class="text-gray-500 italic text-sm">No creators yet. Add one in the Admin Portal.</p>';
-                } else {
-                    crGrid.innerHTML = creatorKeys.map(key => {
+                const crKeys = Object.keys(creatorsList);
+                if(crKeys.length === 0) document.getElementById('creatorsGrid').innerHTML = '<p class="text-gray-500 italic text-sm">No creators yet.</p>';
+                else {
+                    document.getElementById('creatorsGrid').innerHTML = crKeys.map(key => {
                         const c = creatorsList[key];
-                        return `
-                        <div class="bg-rrCard border border-rrBorder rounded-xl overflow-hidden shadow-lg p-4 flex flex-col items-center text-center">
-                            <img src="${c.photo || 'https://i.ibb.co/689L51P/58834.png'}" class="w-24 h-24 rounded-full object-cover border-2 border-blue-500 mb-3">
-                            <h3 class="text-lg font-black text-white uppercase">${c.name || ''}</h3>
-                            <p class="text-blue-400 text-xs font-bold uppercase mb-3">${c.game || ''}</p>
-                            <div class="flex space-x-3 mt-auto pt-2 border-t border-rrBorder w-full justify-center">
-                                ${c.socials && c.socials.fb ? `<a href="${c.socials.fb}" target="_blank" class="text-gray-400 hover:text-blue-500 text-lg"><i class="fab fa-facebook"></i></a>` : ''}
-                                ${c.socials && c.socials.yt ? `<a href="${c.socials.yt}" target="_blank" class="text-gray-400 hover:text-red-500 text-lg"><i class="fab fa-youtube"></i></a>` : ''}
-                                ${c.socials && c.socials.tt ? `<a href="${c.socials.tt}" target="_blank" class="text-gray-400 hover:text-white text-lg"><i class="fab fa-tiktok"></i></a>` : ''}
-                            </div>
-                        </div>`;
+                        return `<div class="bg-rrCard border border-rrBorder rounded-xl overflow-hidden shadow-lg p-4 flex flex-col items-center text-center"><img src="${c.photo}" class="w-24 h-24 rounded-full object-cover border-2 border-blue-500 mb-3"><h3 class="text-lg font-black text-white uppercase">${c.name}</h3><p class="text-blue-400 text-xs font-bold uppercase mb-3">${c.game}</p><div class="flex space-x-3 mt-auto pt-2 border-t border-rrBorder w-full justify-center">${c.socials.fb ? `<a href="${c.socials.fb}" target="_blank" class="text-gray-400 hover:text-blue-500 text-lg"><i class="fab fa-facebook"></i></a>` : ''}${c.socials.yt ? `<a href="${c.socials.yt}" target="_blank" class="text-gray-400 hover:text-red-500 text-lg"><i class="fab fa-youtube"></i></a>` : ''}${c.socials.tt ? `<a href="${c.socials.tt}" target="_blank" class="text-gray-400 hover:text-white text-lg"><i class="fab fa-tiktok"></i></a>` : ''}</div></div>`;
                     }).join('');
                 }
 
                 // RENDER PARTNERS
-                const partnerKeys = Object.keys(partnersList);
-                const pGrid = document.getElementById('partnersGrid');
-                if(partnerKeys.length === 0) {
-                    pGrid.innerHTML = '<p class="text-gray-500 italic text-sm">No partners added yet.</p>';
-                } else {
-                    pGrid.innerHTML = partnerKeys.map(key => {
-                        const p = partnersList[key];
-                        const imgTag = `<img src="${p.logo}" alt="${p.name}" class="h-16 md:h-20 object-contain grayscale hover:grayscale-0 transition duration-300">`;
-                        if(p.link) {
-                            return `<a href="${p.link}" target="_blank" title="${p.name}">${imgTag}</a>`;
-                        }
-                        return `<div title="${p.name}">${imgTag}</div>`;
+                const pKeys = Object.keys(partnersList);
+                if(pKeys.length === 0) document.getElementById('partnersGrid').innerHTML = '<p class="text-gray-500 italic text-sm">No partners added yet.</p>';
+                else {
+                    document.getElementById('partnersGrid').innerHTML = pKeys.map(key => {
+                        const p = partnersList[key]; const imgTag = `<img src="${p.logo}" alt="${p.name}" class="h-16 md:h-20 object-contain grayscale hover:grayscale-0 transition duration-300">`;
+                        return p.link ? `<a href="${p.link}" target="_blank" title="${p.name}">${imgTag}</a>` : `<div title="${p.name}">${imgTag}</div>`;
                     }).join('');
                 }
 
-                // RENDER MANAGE DATA LISTS (ADMIN)
-                document.getElementById('manageCompetitive').innerHTML = (compKeys.length === 0) ? '<p class="text-gray-600">Empty</p>' : 
-                    compKeys.map(key => `
-                    <div class="flex justify-between items-center p-1.5 bg-black rounded mb-1">
-                        <span class="text-gray-300 truncate pr-2">${competitiveList[key].ign}</span>
-                        <button onclick="deleteCompetitive('${key}')" class="text-red-500 hover:text-red-300"><i class="fas fa-times"></i></button>
-                    </div>`).join('');
-
-                document.getElementById('manageMatches').innerHTML = (matchKeys.length === 0) ? '<p class="text-gray-600">Empty</p>' : 
-                    matchKeys.map(key => `
-                    <div class="flex justify-between items-center p-1.5 bg-black rounded mb-1">
-                        <span class="text-gray-300 truncate pr-2">VS ${matchesList[key].opponent}</span>
-                        <button onclick="deleteMatch('${key}')" class="text-red-500 hover:text-red-300"><i class="fas fa-times"></i></button>
-                    </div>`).join('');
-
-                document.getElementById('manageCreators').innerHTML = (creatorKeys.length === 0) ? '<p class="text-gray-600">Empty</p>' : 
-                    creatorKeys.map(key => `
-                    <div class="flex justify-between items-center p-1.5 bg-black rounded mb-1">
-                        <span class="text-gray-300 truncate pr-2">${creatorsList[key].name}</span>
-                        <button onclick="deleteCreator('${key}')" class="text-red-500 hover:text-red-300"><i class="fas fa-times"></i></button>
-                    </div>`).join('');
-                
-                document.getElementById('managePartners').innerHTML = (partnerKeys.length === 0) ? '<p class="text-gray-600">Empty</p>' : 
-                    partnerKeys.map(key => `
-                    <div class="flex justify-between items-center p-1.5 bg-black rounded mb-1">
-                        <span class="text-gray-300 truncate pr-2">${partnersList[key].name}</span>
-                        <button onclick="deletePartner('${key}')" class="text-red-500 hover:text-red-300"><i class="fas fa-times"></i></button>
-                    </div>`).join('');
+                // MANAGE ADMIN LISTS
+                document.getElementById('manageCompetitive').innerHTML = compKeys.length ? compKeys.map(key => `<div class="flex justify-between items-center p-1.5 bg-black rounded mb-1"><span class="text-gray-300 truncate pr-2">${competitiveList[key].ign}</span><button onclick="deleteCompetitive('${key}')" class="text-red-500 hover:text-red-300"><i class="fas fa-times"></i></button></div>`).join('') : '<p class="text-gray-600">Empty</p>';
+                document.getElementById('manageMatches').innerHTML = matchKeys.length ? matchKeys.map(key => `<div class="flex justify-between items-center p-1.5 bg-black rounded mb-1"><span class="text-gray-300 truncate pr-2">VS ${matchesList[key].opponent}</span><button onclick="deleteMatch('${key}')" class="text-red-500 hover:text-red-300"><i class="fas fa-times"></i></button></div>`).join('') : '<p class="text-gray-600">Empty</p>';
+                document.getElementById('manageCreators').innerHTML = crKeys.length ? crKeys.map(key => `<div class="flex justify-between items-center p-1.5 bg-black rounded mb-1"><span class="text-gray-300 truncate pr-2">${creatorsList[key].name}</span><button onclick="deleteCreator('${key}')" class="text-red-500 hover:text-red-300"><i class="fas fa-times"></i></button></div>`).join('') : '<p class="text-gray-600">Empty</p>';
+                document.getElementById('managePartners').innerHTML = pKeys.length ? pKeys.map(key => `<div class="flex justify-between items-center p-1.5 bg-black rounded mb-1"><span class="text-gray-300 truncate pr-2">${partnersList[key].name}</span><button onclick="deletePartner('${key}')" class="text-red-500 hover:text-red-300"><i class="fas fa-times"></i></button></div>`).join('') : '<p class="text-gray-600">Empty</p>';
                     
-            } catch (error) {
-                console.error("Render error:", error);
-            }
+            } catch (error) { console.error("Render error:", error); }
         }
 
-        // Initialize Firebase securely
         try {
-            const firebaseConfig = {
-                apiKey: "AIzaSy87GyUvjxpgvVQpSS_wjh2Sm6HssUd_jbm",
-                authDomain: "riftraiders-348f4.firebaseapp.com",
-                databaseURL: "https://riftraiders-348f4-default-rtdb.asia-southeast1.firebasedatabase.app",
-                projectId: "riftraiders-348f4",
-                storageBucket: "riftraiders-348f4.firebasestorage.app",
-                messagingSenderId: "103200979693",
-                appId: "1:103200979693:web:48d4b7f6e65734f2756ee4"
-            };
-            if (!firebase.apps.length) {
-                firebase.initializeApp(firebaseConfig);
-            }
-            db = firebase.database();
-
+            const firebaseConfig = { apiKey: "AIzaSy87GyUvjxpgvVQpSS_wjh2Sm6HssUd_jbm", authDomain: "riftraiders-348f4.firebaseapp.com", databaseURL: "https://riftraiders-348f4-default-rtdb.asia-southeast1.firebasedatabase.app", projectId: "riftraiders-348f4", storageBucket: "riftraiders-348f4.firebasestorage.app", messagingSenderId: "103200979693", appId: "1:103200979693:web:48d4b7f6e65734f2756ee4" };
+            if (!firebase.apps.length) firebase.initializeApp(firebaseConfig); db = firebase.database();
             db.ref('/').on('value', (snapshot) => {
                 const data = snapshot.val();
-                if (data) {
-                    competitiveList = data.competitive || {};
-                    creatorsList = data.creators || {};
-                    matchesList = data.matches || {};
-                    partnersList = data.partners || {};
-                    if (data.settings && data.settings.logo) {
-                        siteSettings = data.settings;
-                    }
-                } else {
-                    competitiveList = {};
-                    creatorsList = {};
-                    matchesList = {};
-                    partnersList = {};
-                }
+                if (data) { competitiveList = data.competitive || {}; creatorsList = data.creators || {}; matchesList = data.matches || {}; partnersList = data.partners || {}; if (data.settings && data.settings.logo) siteSettings = data.settings; } 
+                else { competitiveList = {}; creatorsList = {}; matchesList = {}; partnersList = {}; }
                 renderSite();
-            }, (errorObject) => {
-                console.error("Firebase Connection Error: ", errorObject);
             });
-        } catch(e) {
-            console.error("Firebase Init Error:", e);
-        }
+        } catch(e) { console.error("Firebase Init Error:", e); }
     </script>
 </body>
 </html>
