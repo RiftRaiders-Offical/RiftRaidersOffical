@@ -31,7 +31,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
-        /* CLASSIC RED ACCENT HEADER LINE */
+        /* RED ACCENT HEADER LINE */
         .section-header-title {
             display: flex;
             align-items: center;
@@ -54,7 +54,7 @@
         }
         .player-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 10px 25px -5px rgba(255, 46, 56, 0.2);
+            box-shadow: 0 10px 25px -5px rgba(255, 46, 56, 0.25);
         }
         .player-card .default-info {
             position: absolute;
@@ -63,7 +63,7 @@
             right: 0;
             padding: 1rem;
             z-index: 10;
-            background: linear-gradient(to top, rgba(10,10,12,0.95), rgba(10,10,12,0.5), transparent);
+            background: linear-gradient(to top, rgba(10,10,12,0.95), rgba(10,10,12,0.6), transparent);
         }
         .player-card .expanded-info {
             position: absolute;
@@ -84,19 +84,29 @@
             pointer-events: auto;
         }
 
-        /* TYPING EFFECT CURSOR */
-        .typing-cursor {
-            display: inline-block;
-            width: 8px;
-            height: 16px;
-            background-color: #ff2e38;
-            margin-left: 4px;
-            animation: blink 0.8s infinite;
-            vertical-align: middle;
+        /* CHAT BUBBLES */
+        .chat-scroll {
+            max-height: 260px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
         }
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
+        .chat-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+        .chat-scroll::-webkit-scrollbar-thumb {
+            background: #222226;
+            border-radius: 4px;
+        }
+
+        /* TYPING INDICATOR DOTS */
+        .typing-dots span {
+            animation: blinkDots 1.4s infinite both;
+        }
+        .typing-dots span:nth-child(2) { animation-delay: .2s; }
+        .typing-dots span:nth-child(3) { animation-delay: .4s; }
+        @keyframes blinkDots {
+            0%, 80%, 100% { opacity: 0; }
+            40% { opacity: 1; }
         }
     </style>
 </head>
@@ -114,8 +124,8 @@
             <div class="flex items-center space-x-3">
                 <img id="siteLogo" src="https://i.ibb.co/689L51P/58834.png" alt="Logo" class="w-9 h-9 object-contain">
                 <div>
-                    <h1 class="text-xl font-black text-white tracking-wider uppercase leading-none">RIFT RAIDERS</h1>
-                    <p class="text-[10px] text-rrRed font-bold tracking-widest uppercase mt-0.5">Competitive gaming. Built to dominate.</p>
+                    <h1 class="text-sm font-black text-white tracking-wider uppercase leading-none">RIFT RAIDERS</h1>
+                    <p class="text-[9px] text-rrRed font-bold tracking-widest uppercase mt-0.5">OFFICIAL GUILD</p>
                 </div>
             </div>
             <div class="flex items-center space-x-2">
@@ -132,39 +142,64 @@
     </header>
 
     <!-- MAIN CONTAINER -->
-    <main class="max-w-4xl mx-auto w-full px-4 py-8 space-y-10">
+    <main class="max-w-4xl mx-auto w-full px-4 py-6 space-y-8">
+
+        <!-- RIFT RAIDERS HERO BANNER (TULAD NG NASA VIDEO) -->
+        <section class="text-left pt-2 pb-1">
+            <h1 class="text-3xl md:text-4xl font-black text-white tracking-tight uppercase">RIFT RAIDERS</h1>
+            <p class="text-xs md:text-sm text-rrRed font-bold uppercase tracking-wider mt-1">Competitive gaming. Built to dominate.</p>
+        </section>
 
         <!-- ABOUT US -->
         <section>
-            <h2 class="section-header-title text-base font-black text-white uppercase tracking-wider mb-1">ABOUT US</h2>
-            <div class="bg-rrCard border border-rrBorder rounded-lg p-4 mt-3">
-                <p class="text-gray-400 text-xs md:text-sm leading-relaxed">
-                    Rift Raiders began its journey in 2024 as a dedicated competitive team. After a year of establishing our official guild in April 2025, we continue to field elite rosters ready to compete at the highest level.
+            <h2 class="section-header-title text-base font-black text-white uppercase tracking-wider mb-2">ABOUT US</h2>
+            <div class="bg-rrCard border border-rrBorder rounded-lg p-4">
+                <p class="text-gray-300 text-xs md:text-sm leading-relaxed">
+                    Rift Raiders began its journey in 2024 as a dedicated competitive team. After a year of climbing the ranks, we expanded in April 2025 by establishing our official guild. Today, we continue to field elite rosters ready to conquer the rift.
                 </p>
             </div>
         </section>
 
-        <!-- AI ASSISTANT SECTION -->
+        <!-- INTERACTIVE AI ASSISTANT WITH USER TYPING CHAT -->
         <section>
             <h2 class="section-header-title text-base font-black text-white uppercase tracking-wider mb-1">AI ASSISTANT</h2>
-            <p class="text-[11px] text-gray-500 uppercase ml-3.5 font-bold mb-3 tracking-wider">TACTICAL AI & STRATEGY HELPER</p>
+            <p class="text-[11px] text-gray-500 uppercase ml-3.5 font-bold mb-3 tracking-wider">TACTICAL HELPER & INTERACTIVE CHAT</p>
             
-            <div class="bg-rrCard border border-rrBorder border-l-4 border-l-rrRed rounded-lg p-4 shadow-lg">
-                <div class="flex items-start space-x-3">
-                    <div class="bg-rrRed/10 p-2.5 rounded-lg border border-rrRed/20 text-rrRed">
-                        <i class="fas fa-robot text-lg"></i>
-                    </div>
-                    <div class="flex-1">
-                        <div class="text-xs md:text-sm text-gray-200 leading-relaxed font-mono min-h-[40px]">
-                            <span id="aiTypingOutput"></span><span class="typing-cursor"></span>
+            <div class="bg-rrCard border border-rrBorder border-l-4 border-l-rrRed rounded-lg p-4 shadow-xl">
+                <!-- Chat Message Area -->
+                <div id="aiChatLog" class="chat-scroll space-y-3 mb-3 pr-1">
+                    <div class="flex items-start space-x-2.5">
+                        <div class="bg-rrRed/20 text-rrRed border border-rrRed/30 p-2 rounded-lg text-xs">
+                            <i class="fas fa-robot"></i>
                         </div>
-                        <div class="mt-3 pt-3 border-t border-rrBorder flex flex-wrap gap-2">
-                            <button onclick="triggerAiTopic('wr')" class="bg-black border border-rrBorder hover:border-rrRed text-gray-300 text-[10px] px-2.5 py-1 rounded font-bold transition">📱 Wild Rift Requirements</button>
-                            <button onclick="triggerAiTopic('pc')" class="bg-black border border-rrBorder hover:border-rrRed text-gray-300 text-[10px] px-2.5 py-1 rounded font-bold transition">💻 LoL PC Requirements</button>
-                            <button onclick="openApplyModal()" class="bg-rrRed/20 text-rrRed border border-rrRed/40 hover:bg-rrRed hover:text-white text-[10px] px-2.5 py-1 rounded font-bold transition">📝 How to Apply</button>
+                        <div class="bg-black/60 border border-rrBorder p-2.5 rounded-lg text-xs text-gray-200 max-w-[85%] leading-relaxed">
+                            Mabuhay! Ako ang AI Assistant ng Rift Raiders. Mag-type ng kahit anong tanong tungkol sa guild, requirements, o apply!
                         </div>
                     </div>
                 </div>
+
+                <!-- Typing Indicator (Lalabas habang nag-iisip/nagta-type ang AI) -->
+                <div id="aiTypingIndicator" class="hidden flex items-center space-x-2 mb-3 text-xs text-rrRed font-bold">
+                    <i class="fas fa-robot"></i>
+                    <span>AI Assistant is typing</span>
+                    <span class="typing-dots"><span>.</span><span>.</span><span>.</span></span>
+                </div>
+
+                <!-- Quick Buttons -->
+                <div class="flex flex-wrap gap-1.5 mb-3 border-t border-rrBorder/50 pt-2.5">
+                    <button onclick="quickAsk('Wild Rift requirements')" class="bg-black border border-rrBorder hover:border-rrRed text-gray-300 text-[10px] px-2.5 py-1 rounded font-bold transition">📱 Wild Rift</button>
+                    <button onclick="quickAsk('LoL PC requirements')" class="bg-black border border-rrBorder hover:border-rrRed text-gray-300 text-[10px] px-2.5 py-1 rounded font-bold transition">💻 LoL PC</button>
+                    <button onclick="quickAsk('Paano mag apply?')" class="bg-rrRed/20 text-rrRed border border-rrRed/40 hover:bg-rrRed hover:text-white text-[10px] px-2.5 py-1 rounded font-bold transition">📝 How to Apply</button>
+                </div>
+
+                <!-- User Input Form -->
+                <form onsubmit="handleUserSubmit(event)" class="flex space-x-2">
+                    <input type="text" id="userChatInput" autocomplete="off" placeholder="Mag-type ng tanong mo dito..." class="flex-1 bg-black border border-rrBorder text-xs text-white px-3 py-2 rounded-md outline-none focus:border-rrRed transition">
+                    <button type="submit" class="bg-rrRed hover:bg-red-600 text-white text-xs font-bold px-4 py-2 rounded-md transition flex items-center space-x-1">
+                        <span>Send</span>
+                        <i class="fas fa-paper-plane text-[10px]"></i>
+                    </button>
+                </form>
             </div>
         </section>
 
@@ -177,7 +212,7 @@
                 <!-- Dynamic Player Cards -->
             </div>
         </section>
-      <!-- MATCH HISTORY -->
+         <!-- MATCH HISTORY -->
         <section>
             <h2 class="section-header-title text-base font-black text-white uppercase tracking-wider mb-1">MATCH HISTORY</h2>
             <p class="text-[11px] text-gray-500 uppercase ml-3.5 font-bold mb-4 tracking-wider">RECENT SCRIMS & TOURNAMENTS</p>
@@ -197,12 +232,12 @@
             </div>
         </section>
 
-        <!-- PARTNERS -->
+        <!-- PARTNERSHIPS -->
         <section>
-            <h2 class="section-header-title text-base font-black text-white uppercase tracking-wider mb-1">OFFICIAL PARTNERS</h2>
-            <p class="text-[11px] text-gray-500 uppercase ml-3.5 font-bold mb-4 tracking-wider">SPONSORS & AFFILIATES</p>
+            <h2 class="section-header-title text-base font-black text-white uppercase tracking-wider mb-1">PARTNERSHIPS</h2>
+            <p class="text-[11px] text-gray-500 uppercase ml-3.5 font-bold mb-4 tracking-wider">SUPPORTED BY</p>
             
-            <div id="partnersGrid" class="bg-rrCard border border-rrBorder rounded-lg p-6 flex flex-wrap justify-center items-center gap-8">
+            <div id="partnersGrid" class="bg-rrCard border border-rrBorder rounded-lg p-6 flex flex-wrap justify-center items-center gap-8 min-h-[80px]">
                 <!-- Dynamic Partners -->
             </div>
         </section>
@@ -226,12 +261,12 @@
                 <!-- Add Player Form -->
                 <div class="bg-black/50 p-4 rounded-lg border border-rrBorder space-y-2.5 text-xs">
                     <h4 class="font-bold text-rrRed uppercase flex items-center"><i class="fas fa-user-plus mr-1.5"></i>Add Player / Roster</h4>
-                    <input type="text" id="cIgn" placeholder="IGN (e.g. Takeku#123)" class="w-full bg-rrCard border border-rrBorder p-2 rounded text-white outline-none">
-                    <input type="text" id="cRole" placeholder="Role (e.g. Mid, Jungle)" class="w-full bg-rrCard border border-rrBorder p-2 rounded text-white outline-none">
-                    <input type="text" id="cTeam" placeholder="Team (e.g. Rift Raiders)" class="w-full bg-rrCard border border-rrBorder p-2 rounded text-white outline-none">
+                    <input type="text" id="cIgn" placeholder="IGN (e.g. TAKEKU)" class="w-full bg-rrCard border border-rrBorder p-2 rounded text-white outline-none">
+                    <input type="text" id="cRole" placeholder="Role (e.g. MID, JUNGLE)" class="w-full bg-rrCard border border-rrBorder p-2 rounded text-white outline-none">
+                    <input type="text" id="cTeam" placeholder="Team (e.g. RIFT RAIDERS)" class="w-full bg-rrCard border border-rrBorder p-2 rounded text-white outline-none">
                     <input type="text" id="cGame" placeholder="Game (e.g. Wild Rift / LoL PC)" class="w-full bg-rrCard border border-rrBorder p-2 rounded text-white outline-none">
-                    <input type="text" id="cWinrate" placeholder="Winrate (e.g. 65%)" class="w-full bg-rrCard border border-rrBorder p-2 rounded text-white outline-none">
-                    <input type="text" id="cProfileLink" placeholder="OP.GG / Profile Link" class="w-full bg-rrCard border border-rrBorder p-2 rounded text-white outline-none">
+                    <input type="text" id="cWinrate" placeholder="Winrate (e.g. N/A or 65%)" class="w-full bg-rrCard border border-rrBorder p-2 rounded text-white outline-none">
+                    <input type="text" id="cProfileLink" placeholder="Profile / OP.GG Link" class="w-full bg-rrCard border border-rrBorder p-2 rounded text-white outline-none">
                     <input type="text" id="cChamp1" placeholder="Top Champ 1 Icon URL" class="w-full bg-rrCard border border-rrBorder p-2 rounded text-white outline-none">
                     <input type="text" id="cChamp2" placeholder="Top Champ 2 Icon URL" class="w-full bg-rrCard border border-rrBorder p-2 rounded text-white outline-none">
                     <input type="text" id="cChamp3" placeholder="Top Champ 3 Icon URL" class="w-full bg-rrCard border border-rrBorder p-2 rounded text-white outline-none">
@@ -318,9 +353,7 @@
             <i class="fas fa-user-shield text-3xl text-rrRed mb-2"></i>
             <h3 class="text-lg font-black text-white uppercase mb-1">Admin Portal</h3>
             <p class="text-xs text-gray-400 mb-4">Enter password to unlock Admin Dashboard.</p>
-            
             <input type="password" id="adminPasswordInput" placeholder="Password" class="w-full bg-black border border-rrBorder p-2.5 rounded text-white text-sm mb-4 text-center focus:border-rrRed outline-none">
-            
             <div class="flex space-x-2">
                 <button onclick="closeAdminModal()" class="w-1/2 bg-black border border-rrBorder text-gray-300 py-2 rounded font-bold text-xs hover:bg-rrBorder">Cancel</button>
                 <button onclick="verifyAdminPassword()" class="w-1/2 bg-rrRed text-white py-2 rounded font-bold text-xs hover:bg-red-600">Login</button>
@@ -341,43 +374,78 @@
                 <iframe src="https://docs.google.com/forms/d/1qTTcHVfRsVXhsfKHv5-7qkZnoe6kMtoN2uLVEYY5XVg/viewform?embedded=true" class="w-full h-[520px]" frameborder="0">Loading...</iframe>
             </div>
         </div>
-                          </div>
-  <!-- JAVASCRIPT LOGIC -->
+    </div>
+    <!-- JAVASCRIPT LOGIC -->
     <script>
-        // ADMIN PASSWORD
         const ADMIN_PASSWORD = "rr123";
 
-        // AI ASSISTANT TYPING ANIMATION LOGIC
-        const defaultAiText = "Mabuhay! Ako ang AI Assistant ng Rift Raiders. Handa akong tumulong sa player stats, requirements, at guild information.";
-        let currentText = defaultAiText;
-        let charIndex = 0;
-        let isTyping = false;
-
-        function typeWriter() {
-            const output = document.getElementById("aiTypingOutput");
-            if (charIndex < currentText.length) {
-                output.innerHTML += currentText.charAt(charIndex);
-                charIndex++;
-                setTimeout(typeWriter, 30);
-            } else {
-                isTyping = false;
-            }
+        // INTERACTIVE AI CHATBOT SYSTEM WITH USER TYPING & SMART ANSWERS
+        function quickAsk(text) {
+            document.getElementById('userChatInput').value = text;
+            handleUserSubmit(new Event('submit'));
         }
 
-        function startAiTyping(newText) {
-            currentText = newText || defaultAiText;
-            document.getElementById("aiTypingOutput").innerHTML = "";
-            charIndex = 0;
-            isTyping = true;
-            typeWriter();
+        function handleUserSubmit(e) {
+            if(e) e.preventDefault();
+            const input = document.getElementById('userChatInput');
+            const message = input.value.trim();
+            if(!message) return;
+
+            // Render User Message
+            const chatLog = document.getElementById('aiChatLog');
+            chatLog.innerHTML += `
+                <div class="flex items-start justify-end space-x-2">
+                    <div class="bg-rrRed text-white p-2.5 rounded-lg text-xs max-w-[85%] leading-relaxed font-medium shadow-md">
+                        ${escapeHtml(message)}
+                    </div>
+                </div>
+            `;
+            input.value = '';
+            chatLog.scrollTop = chatLog.scrollHeight;
+
+            // Show Typing Indicator
+            const typingInd = document.getElementById('aiTypingIndicator');
+            typingInd.classList.remove('hidden');
+
+            // Generate AI Answer after brief delay
+            setTimeout(() => {
+                typingInd.classList.add('hidden');
+                const reply = generateAiReply(message);
+                
+                chatLog.innerHTML += `
+                    <div class="flex items-start space-x-2.5">
+                        <div class="bg-rrRed/20 text-rrRed border border-rrRed/30 p-2 rounded-lg text-xs">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="bg-black/60 border border-rrBorder p-2.5 rounded-lg text-xs text-gray-200 max-w-[85%] leading-relaxed">
+                            ${reply}
+                        </div>
+                    </div>
+                `;
+                chatLog.scrollTop = chatLog.scrollHeight;
+            }, 700);
         }
 
-        function triggerAiTopic(topic) {
-            if (topic === 'wr') {
-                startAiTyping("📱 WILD RIFT REQUIREMENTS: Casual = Emerald Rank+. Competitive = Grandmaster Peak. All-Female/LGBTQ+ = Master Rank+.");
-            } else if (topic === 'pc') {
-                startAiTyping("💻 LOL PC REQUIREMENTS: Minimum Rank = Emerald/Diamond+. Must have active working mic for voice communications & scheduled scrims.");
-            }
+        function generateAiReply(query) {
+    const q = query.toLowerCase();
+    if(q.includes('wild rift') || q.includes('wr')) {
+        return "<b>📱 Wild Rift Requirements:</b><br>• Casual: Emerald Rank & above.<br>• Competitive: Grandmaster Peak.<br>• All-Female / LGBTQ+: Master Rank & above.";
+    } else if(q.includes('pc') || q.includes('league of legends') || q.includes('lol')) {
+        return "<b>💻 LoL PC Requirements:</b><br>• Minimum Rank: Emerald/Diamond+.<br>• Must have active mic for voice communication & scheduled team scrims.";
+    } else if(q.includes('apply') || q.includes('join') || q.includes('form') || q.includes('sali')) {
+        return "<b>📝 How to Apply:</b><br>Click the <b>'Apply'</b> button on the top menu bar to open our Official Guild Google Form!";
+    } else if(q.includes('takeku') || q.includes('roster') || q.includes('player') || q.includes('team')) {
+        return "You can check our full player roster and stats (like TAKEKU) in the <b>MEET THE TEAMS</b> section below! Simply tap/click any player card to view stats.";
+    } else if(q.includes('admin') || q.includes('owner') || q.includes('pass')) {
+        return "The Admin Portal is strictly for official guild officers. Click the lock icon in the header to log in.";
+    } else if(q.includes('hi') || q.includes('hello') || q.includes('kamusta')) {
+        return "Hello! I am the Rift Raiders AI Assistant. What would you like to know about our guild?";
+    } else {
+        return "Thank you for your message! For more details or applications, feel free to click the <b>Apply</b> button or select from the quick options above.";
+    }
+}
+        function escapeHtml(text) {
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
 
         // HIDE LOADING SCREEN
@@ -387,7 +455,6 @@
                 loader.style.opacity = '0';
                 setTimeout(() => { loader.style.display = 'none'; }, 500);
             }
-            startAiTyping(defaultAiText);
         });
 
         // MODAL TOGGLES
@@ -420,7 +487,6 @@
             document.getElementById('adminSection').classList.add('hidden');
             alert("Logged out from Admin Dashboard.");
         }
-
         // FIREBASE DATA HANDLERS
         let competitiveList = {}; let creatorsList = {}; let matchesList = {}; let partnersList = {};
         let siteSettings = { logo: "https://i.ibb.co/689L51P/58834.png" };
@@ -521,7 +587,7 @@
                     document.getElementById('loadingLogo').src = siteSettings.logo;
                 }
 
-                // RENDER PLAYERS
+                // RENDER PLAYERS (EXACT VIDEO LOOK)
                 const compKeys = Object.keys(competitiveList);
                 const cGrid = document.getElementById('competitiveGrid');
                 if(compKeys.length === 0) {
@@ -533,37 +599,38 @@
                         if(p.champs && (p.champs[0] || p.champs[1] || p.champs[2])) {
                             champsHTML = p.champs.map(c => c ? `<img src="${c}" class="w-6 h-6 rounded-full border border-gray-600 object-cover bg-black">` : '').join('');
                         } else { champsHTML = `<span class="text-[10px] text-gray-500">No data</span>`; }
-                        let linkHTML = p.profileLink ? `<a href="${p.profileLink}" target="_blank" onclick="event.stopPropagation();" class="mt-2 block text-center bg-rrRed hover:bg-red-600 text-white text-[10px] font-bold py-1 px-2 rounded"><i class="fas fa-external-link-alt mr-1"></i>View Profile</a>` : '';
+                        
+                        let topLink = p.profileLink ? `<a href="${p.profileLink}" target="_blank" onclick="event.stopPropagation();" class="absolute top-2 right-2 text-gray-400 hover:text-white z-30 p-1"><i class="fas fa-external-link-alt text-xs"></i></a>` : '';
 
                         return `
                         <div onclick="this.classList.toggle('is-open')" class="player-card relative bg-rrCard border border-rrBorder rounded-lg overflow-hidden cursor-pointer h-56 w-full group">
+                            ${topLink}
                             <div class="bg-black h-full w-full relative">
                                 <img src="${p.photo}" class="w-full h-full object-cover opacity-85 group-hover:opacity-100 transition-opacity">
                                 <div class="default-info">
-                                    <h3 class="text-lg font-black text-white uppercase truncate leading-none">${p.ign}</h3>
-                                    <p class="text-rrRed text-[11px] font-bold uppercase tracking-wider mt-0.5">${p.role}</p>
+                                    <span class="bg-rrRed text-[9px] font-black uppercase text-white px-1.5 py-0.5 rounded tracking-wider mb-1 inline-block">OUR ROSTER</span>
+                                    <h3 class="text-base font-black text-white uppercase truncate leading-none">${p.ign}</h3>
                                 </div>
                             </div>
                             <div class="expanded-info">
                                 <div class="mb-1.5">
                                     <h3 class="text-base font-black text-white uppercase truncate leading-none">${p.ign}</h3>
-                                    <p class="text-rrRed text-[10px] font-bold uppercase tracking-wider">${p.role}</p>
+                                    <p class="text-rrRed text-[10px] font-bold uppercase tracking-wider">${p.role || 'MEMBER'}</p>
                                 </div>
-                                <div class="grid grid-cols-2 gap-2 my-1.5 border-y border-rrBorder py-1.5">
+                                <div class="grid grid-cols-2 gap-2 my-2 border-y border-rrBorder py-2">
                                     <div>
-                                        <p class="text-[9px] text-gray-400 uppercase font-bold">Team</p>
-                                        <p class="text-xs font-bold text-gray-200 truncate">${p.team}</p>
+                                        <p class="text-[9px] text-gray-400 uppercase font-bold">TEAM</p>
+                                        <p class="text-xs font-bold text-gray-200 truncate">${p.team || 'RIFT RAIDERS'}</p>
                                     </div>
                                     <div>
-                                        <p class="text-[9px] text-gray-400 uppercase font-bold">Winrate</p>
+                                        <p class="text-[9px] text-gray-400 uppercase font-bold">WINRATE</p>
                                         <p class="text-xs font-black text-green-400">${p.winrate || 'N/A'}</p>
                                     </div>
                                 </div>
                                 <div>
-                                    <p class="text-[9px] text-gray-400 uppercase font-bold mb-1">Top Champs</p>
+                                    <p class="text-[9px] text-gray-400 uppercase font-bold mb-1">TOP CHAMPS</p>
                                     <div class="flex space-x-1">${champsHTML}</div>
                                 </div>
-                                ${linkHTML}
                             </div>
                         </div>`;
                     }).join('');
@@ -579,9 +646,8 @@
                         let rCol = m.result === 'Win' ? 'text-green-400' : (m.result === 'Loss' ? 'text-rrRed' : 'text-yellow-400');
                         return `<div class="bg-rrCard border border-rrBorder rounded-lg p-3.5 flex justify-between items-center"><div><span class="text-[10px] text-gray-500 uppercase font-bold">${m.type} • ${m.date}</span><h3 class="text-sm font-black text-white uppercase mt-0.5">VS ${m.opponent}</h3><p class="text-xs font-bold text-gray-400">Score: ${m.score}</p></div><div><h2 class="text-lg font-black uppercase ${rCol}">${m.result}</h2></div></div>`;
                     }).join('');
-                }
-
-                // RENDER CREATORS
+            }
+        // RENDER CREATORS
                 const crKeys = Object.keys(creatorsList);
                 if(crKeys.length === 0) document.getElementById('creatorsGrid').innerHTML = '<p class="text-gray-500 italic text-xs col-span-full">No creators added yet.</p>';
                 else {
@@ -596,7 +662,7 @@
                 if(pKeys.length === 0) document.getElementById('partnersGrid').innerHTML = '<p class="text-gray-500 italic text-xs text-center">No partners added yet.</p>';
                 else {
                     document.getElementById('partnersGrid').innerHTML = pKeys.map(key => {
-                        const p = partnersList[key]; const imgTag = `<img src="${p.logo}" alt="${p.name}" class="h-12 object-contain grayscale hover:grayscale-0 transition duration-300">`;
+                        const p = partnersList[key]; const imgTag = `<img src="${p.logo}" alt="${p.name}" class="h-10 object-contain grayscale hover:grayscale-0 transition duration-300">`;
                         return p.link ? `<a href="${p.link}" target="_blank" title="${p.name}">${imgTag}</a>` : `<div title="${p.name}">${imgTag}</div>`;
                     }).join('');
                 }
@@ -610,7 +676,7 @@
             } catch (error) { console.error("Render error:", error); }
         }
 
-         // INITIALIZE FIREBASE
+        // INITIALIZE FIREBASE
         try {
             const firebaseConfig = { 
                 apiKey: "AIzaSy87GyUvjxpgvVQpSS_wjh2Sm6HssUd_jbm", 
