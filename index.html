@@ -394,7 +394,7 @@
     </div>
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        const ADMIN_PASSWORD = "rr123";
+        const ADMIN_PASSWORD = "rr2024";
 
         // INTERACTIVE AI CHATBOT SYSTEM WITH USER TYPING & SMART ANSWERS
         function quickAsk(text) {
@@ -443,22 +443,23 @@
             }, 700);
         }
 
-                                async function generateAiReply(query) {
+                                        function generateAiReply(query) {
             const q = query.toLowerCase();
 
-            // DISCORD WEBHOOK (Nakalagay na ang exact Webhook URL mo)
+            // DISCORD WEBHOOK URL
             const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1552359374901747712/JFcyeBrdz8jTZpKZEkFxfWKXBI2yXE_D_QB3-3cw3pahtvhoSE5lfV336mnljC0Xth_2";
             
-            // Direct notification papunta sa #rrwr-suggestions channel ninyo
+            // Notification para sa FORUM CHANNEL (May thread_name)
             if (DISCORD_WEBHOOK_URL) {
                 fetch(DISCORD_WEBHOOK_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         username: "Rift Raiders bot",
+                        thread_name: `📩 Web Feedback: "${query.substring(0, 25)}..."`, // Gagawin itong title sa Forum Post
                         content: `📩 **New AI Chat / Feedback:**\n"${query}"`
                     })
-                }).catch(err => console.log("Webhook error:", err));
+                }).catch(err => console.error("Webhook error:", err));
             }
 
             // SMART BILINGUAL AUTO-REPLY SA WEBSITE
@@ -486,8 +487,7 @@
                     : "Thank you for your message! Our team has received it on Discord. Join our <a href='https://discord.gg/x3M8dZ7fmR' target='_blank' class='text-rrRed underline font-bold'>Discord Server</a> to chat directly with us!";
             }
         }
-
-
+        
         function escapeHtml(text) {
             return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
