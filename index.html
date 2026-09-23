@@ -65,24 +65,27 @@
             z-index: 10;
             background: linear-gradient(to top, rgba(10,10,12,0.95), rgba(10,10,12,0.6), transparent);
         }
-        .player-card .expanded-info {
+                .player-card .expanded-info {
             position: absolute;
             inset: 0;
-            background-color: rgba(20, 20, 22, 0.96);
+            background-color: rgba(20, 20, 22, 0.98);
             padding: 1.25rem;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.3s ease;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
             display: flex;
             flex-direction: column;
             justify-content: center;
             z-index: 20;
         }
-        .player-card:hover .expanded-info,
+
         .player-card.is-open .expanded-info {
             opacity: 1;
             pointer-events: auto;
+            transform: translateY(0);
         }
+
 
         /* CHAT BUBBLES */
         .chat-scroll {
@@ -342,10 +345,23 @@
 
     </main>
 
-    <!-- FOOTER -->
-    <footer class="mt-auto border-t border-rrBorder bg-black py-6 text-center text-xs text-gray-500">
-        <p>&copy; 2026 Rift Raiders. All Rights Reserved.</p>
+    <!-- FOOTER WITH SOCIALS -->
+    <footer class="mt-auto border-t border-rrBorder bg-black py-8 text-center">
+        <!-- Social Media Icons -->
+        <div class="flex justify-center items-center space-x-6 mb-4">
+            <a href="#" class="text-gray-400 hover:text-[#5865F2] text-3xl transition duration-300" title="Join our Discord">
+                <i class="fab fa-discord"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-blue-500 text-3xl transition duration-300" title="Follow us on Facebook">
+                <i class="fab fa-facebook"></i>
+            </a>
+            <a href="mailto:contact@riftraiders.com" class="text-gray-400 hover:text-rrRed text-3xl transition duration-300" title="Email Us">
+                <i class="fas fa-envelope"></i>
+            </a>
+        </div>
+        <p class="text-xs text-gray-500">&copy; 2026 Rift Raiders. All Rights Reserved.</p>
     </footer>
+
 
     <!-- ADMIN PASSWORD MODAL -->
     <div id="adminModal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
@@ -426,24 +442,47 @@
             }, 700);
         }
 
-        function generateAiReply(query) {
-    const q = query.toLowerCase();
-    if(q.includes('wild rift') || q.includes('wr')) {
-        return "<b>📱 Wild Rift Requirements:</b><br>• Casual: Emerald Rank & above.<br>• Competitive: Grandmaster Peak.<br>• All-Female / LGBTQ+: Master Rank & above.";
-    } else if(q.includes('pc') || q.includes('league of legends') || q.includes('lol')) {
-        return "<b>💻 LoL PC Requirements:</b><br>• Minimum Rank: Emerald/Diamond+.<br>• Must have active mic for voice communication & scheduled team scrims.";
-    } else if(q.includes('apply') || q.includes('join') || q.includes('form') || q.includes('sali')) {
-        return "<b>📝 How to Apply:</b><br>Click the <b>'Apply'</b> button on the top menu bar to open our Official Guild Google Form!";
-    } else if(q.includes('takeku') || q.includes('roster') || q.includes('player') || q.includes('team')) {
-        return "You can check our full player roster and stats (like TAKEKU) in the <b>MEET THE TEAMS</b> section below! Simply tap/click any player card to view stats.";
-    } else if(q.includes('admin') || q.includes('owner') || q.includes('pass')) {
-        return "The Admin Portal is strictly for official guild officers. Click the lock icon in the header to log in.";
-    } else if(q.includes('hi') || q.includes('hello') || q.includes('kamusta')) {
-        return "Hello! I am the Rift Raiders AI Assistant. What would you like to know about our guild?";
-    } else {
-        return "Thank you for your message! For more details or applications, feel free to click the <b>Apply</b> button or select from the quick options above.";
-    }
-}
+                function generateAiReply(query) {
+            const q = query.toLowerCase();
+            
+            // Smart Language Detection (kung may halong tagalog words ang tinype)
+            const isTagalog = /(paano|sali|ano|saan|meron|wala|po|kamusta|naman|mag|pano|bakit)/i.test(q);
+
+            if(q.includes('discord') || q.includes('server') || q.includes('dc')) {
+                return isTagalog 
+                    ? "<b>🎮 Discord Server:</b><br>Meron tayong active Discord server para sa comms at tambayan! Pindutin ang <b>Discord icon</b> sa pinakababa ng website (Footer) para makasali."
+                    : "<b>🎮 Discord Server:</b><br>We have an active Discord server! Click the <b>Discord icon</b> at the very bottom of the website (Footer) to join.";
+            } else if(q.includes('facebook') || q.includes('fb') || q.includes('page') || q.includes('social')) {
+                return isTagalog
+                    ? "<b>📱 Facebook Page:</b><br>Nasa pinakababa ng website ang link ng aming official page! Pindutin lang ang <b>Facebook icon</b>."
+                    : "<b>📱 Facebook Page:</b><br>Follow our official page! The link is at the bottom of the website (Facebook icon).";
+            } else if(q.includes('email') || q.includes('contact') || q.includes('message')) {
+                return isTagalog
+                    ? "<b>📧 Contact Us:</b><br>Maaari kang mag-email sa amin gamit ang <b>Envelope icon</b> sa pinakababang bahagi ng website."
+                    : "<b>📧 Contact Us:</b><br>You can email us directly by clicking the <b>Envelope icon</b> at the bottom of the website.";
+            } else if(q.includes('wild rift') || q.includes('wr')) {
+                return "<b>📱 Wild Rift Requirements:</b><br>• Casual: Emerald Rank & above.<br>• Competitive: Grandmaster Peak.<br>• All-Female / LGBTQ+: Master Rank & above.";
+            } else if(q.includes('pc') || q.includes('league of legends') || q.includes('lol')) {
+                return "<b>💻 LoL PC Requirements:</b><br>• Minimum Rank: Emerald/Diamond+.<br>• Must have active mic for voice communication.";
+            } else if(q.includes('apply') || q.includes('join') || q.includes('form') || q.includes('sali')) {
+                return isTagalog
+                    ? "<b>📝 Paano mag-apply:</b><br>I-click ang <b>'Apply'</b> button sa top menu bar o pumunta sa aming Discord server (icon sa ibaba) para makasali!"
+                    : "<b>📝 How to Apply:</b><br>Click the <b>'Apply'</b> button on the top menu bar or join our Discord server (icon at the bottom) to apply!";
+            } else if(q.includes('takeku') || q.includes('roster') || q.includes('player') || q.includes('team')) {
+                return isTagalog
+                    ? "Makikita mo ang stats ng players sa <b>MEET THE TEAMS</b> section sa ibaba! Pindutin ang player card para bumukas ang stats."
+                    : "You can check our player stats in the <b>MEET THE TEAMS</b> section below! Tap a player card to view stats.";
+            } else if(q.includes('hi') || q.includes('hello') || q.includes('kamusta')) {
+                return isTagalog
+                    ? "Hello! Ako ang AI Assistant ng Rift Raiders. Magtanong ka lang tungkol sa guild, Discord, o kung paano sumali!"
+                    : "Hello! I am the Rift Raiders AI Assistant. Ask me anything about the guild, our Discord, or how to join!";
+            } else {
+                return isTagalog
+                    ? "Salamat sa mensahe! Para sumali, i-click ang <b>Apply</b> button, o sumali sa aming Discord gamit ang icon sa pinakababa."
+                    : "Thank you for your message! To join, click the <b>Apply</b> button, or join our Discord using the icon at the bottom.";
+            }
+        }
+
         function escapeHtml(text) {
             return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
@@ -602,22 +641,30 @@
                         
                         let topLink = p.profileLink ? `<a href="${p.profileLink}" target="_blank" onclick="event.stopPropagation();" class="absolute top-2 right-2 text-gray-400 hover:text-white z-30 p-1"><i class="fas fa-external-link-alt text-xs"></i></a>` : '';
 
-                        return `
+                          return `
                         <div onclick="this.classList.toggle('is-open')" class="player-card relative bg-rrCard border border-rrBorder rounded-lg overflow-hidden cursor-pointer h-56 w-full group">
                             ${topLink}
                             <div class="bg-black h-full w-full relative">
                                 <img src="${p.photo}" class="w-full h-full object-cover opacity-85 group-hover:opacity-100 transition-opacity">
                                 <div class="default-info">
-                                    <span class="bg-rrRed text-[9px] font-black uppercase text-white px-1.5 py-0.5 rounded tracking-wider mb-1 inline-block">OUR ROSTER</span>
+                                    <!-- DITO BINAGO: Pinalitan ang 'OUR ROSTER' ng game name mula sa data -->
+                                    <span class="bg-rrRed text-[9px] font-black uppercase text-white px-1.5 py-0.5 rounded tracking-wider mb-1 inline-block">${p.game || 'WILD RIFT'}</span>
                                     <h3 class="text-base font-black text-white uppercase truncate leading-none">${p.ign}</h3>
                                 </div>
                             </div>
+                            
+                            <!-- EXPANDED STATS WITH SIDE PICTURE -->
                             <div class="expanded-info">
-                                <div class="mb-1.5">
-                                    <h3 class="text-base font-black text-white uppercase truncate leading-none">${p.ign}</h3>
-                                    <p class="text-rrRed text-[10px] font-bold uppercase tracking-wider">${p.role || 'MEMBER'}</p>
+                                <!-- Profile Picture + IGN Row -->
+                                <div class="flex items-center space-x-3 mb-3 border-b border-rrBorder pb-3">
+                                    <img src="${p.photo}" class="w-14 h-14 rounded-md border-2 border-rrRed object-cover shadow-lg">
+                                    <div class="overflow-hidden">
+                                        <h3 class="text-base font-black text-white uppercase truncate leading-none">${p.ign}</h3>
+                                        <p class="text-rrRed text-[10px] font-bold uppercase tracking-wider mt-1">${p.role || 'MEMBER'}</p>
+                                    </div>
                                 </div>
-                                <div class="grid grid-cols-2 gap-2 my-2 border-y border-rrBorder py-2">
+                                
+                                <div class="grid grid-cols-2 gap-2 mb-3">
                                     <div>
                                         <p class="text-[9px] text-gray-400 uppercase font-bold">TEAM</p>
                                         <p class="text-xs font-bold text-gray-200 truncate">${p.team || 'RIFT RAIDERS'}</p>
@@ -628,11 +675,13 @@
                                     </div>
                                 </div>
                                 <div>
-                                    <p class="text-[9px] text-gray-400 uppercase font-bold mb-1">TOP CHAMPS</p>
-                                    <div class="flex space-x-1">${champsHTML}</div>
+                                    <p class="text-[9px] text-gray-400 uppercase font-bold mb-1.5">TOP CHAMPS</p>
+                                    <div class="flex space-x-1.5">${champsHTML}</div>
                                 </div>
                             </div>
                         </div>`;
+
+
                     }).join('');
                 }
 
