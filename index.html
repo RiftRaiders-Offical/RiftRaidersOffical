@@ -1,619 +1,328 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rift Raiders Guild</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rift Raiders</title>
+  <style>
+    /* 1. Theme Colors & Base Setup (Dating Dark Theme) */
+    :root {
+      --bg-color: #0a0a0c;
+      --card-bg: #141416;
+      --accent-red: #ff2e38;
+      --accent-blue: #3b82f6;
+      --text-main: #ffffff;
+      --text-muted: #9a9a9e;
+      --border-color: #222226;
+    }
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        rrRed: '#ef4444',
-                        rrDark: '#0f172a',
-                        rrCard: '#1e293b',
-                        rrBorder: '#334155'
-                    }
-                }
-            }
-        }
-    </script>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
 
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      padding: 20px 15px;
+      display: flex;
+      justify-content: center;
+    }
 
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    /* Container na nag-aadjust sa PC at Mobile */
+    .container {
+      width: 100%;
+      max-width: 850px;
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
 
-    <style>
-        /* PLAYER CARD FIXES */
-        .player-card {
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .player-card:hover {
-            transform: translateY(-4px);
-        }
-        .player-card .default-info {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 1rem;
-            z-index: 10;
-            background: linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.4), transparent);
-        }
-        .player-card .expanded-info {
-            position: absolute;
-            inset: 0;
-            background-color: rgba(15, 23, 42, 0.95);
-            padding: 1.25rem;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            z-index: 20;
-        }
-        .player-card:hover .expanded-info,
-        .player-card.is-open .expanded-info {
-            opacity: 1;
-            pointer-events: auto;
-        }
-    </style>
+    /* Header */
+    .header {
+      padding: 10px 0;
+    }
+
+    .brand-title {
+      font-size: 2.2rem;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #ffffff;
+    }
+
+    .brand-subtitle {
+      color: var(--accent-red);
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    /* Section Headers na may Red Line Accent */
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+
+    .section-title::before {
+      content: '';
+      display: inline-block;
+      width: 4px;
+      height: 18px;
+      background-color: var(--accent-red);
+    }
+
+    .section-subtitle {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-left: 14px;
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    /* Standard Cards */
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .card-text {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    /* AI Assistant Card (May Typing Effect) */
+    .ai-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--accent-red);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .typing-container {
+      font-size: 0.95rem;
+      color: #e0e0e0;
+      line-height: 1.5;
+      min-height: 48px;
+    }
+
+    /* Cursor Animation para sa Typing Effect */
+    .cursor {
+      display: inline-block;
+      width: 8px;
+      height: 15px;
+      background-color: var(--accent-red);
+      margin-left: 4px;
+      animation: blink 0.8s infinite;
+      vertical-align: middle;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    /* Teams Grid Layout (Responsive sa PC at Mobile) */
+    .roster-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 15px;
+    }
+
+    .player-card {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 14px;
+    }
+
+    .player-img {
+      width: 90px;
+      height: 110px;
+      object-fit: cover;
+      border-radius: 6px;
+      background-color: #222;
+    }
+
+    .player-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .player-name {
+      font-size: 1.1rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .player-role {
+      font-size: 0.75rem;
+      color: var(--accent-red);
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .player-stats {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    /* Creators Section */
+    .creator-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      max-width: 280px;
+    }
+
+    .creator-avatar {
+      width: 75px;
+      height: 75px;
+      border-radius: 50%;
+      border: 2px solid var(--accent-blue);
+      margin-bottom: 10px;
+      object-fit: cover;
+    }
+
+    /* Media Queries para sa Layout ng Mobile Screen */
+    @media (max-width: 600px) {
+      .brand-title {
+        font-size: 1.8rem;
+      }
+      .creator-card {
+        max-width: 100%;
+      }
+    }
+  </style>
 </head>
-<body class="bg-rrDark text-gray-100 font-sans min-h-screen flex flex-col antialiased">
+<body>
 
-    <!-- LOADING SCREEN -->
-    <div id="loadingScreen" class="fixed inset-0 bg-slate-950 z-[100] flex flex-col items-center justify-center transition-opacity duration-500">
-        <img id="loadingLogo" src="https://i.ibb.co/689L51P/58834.png" alt="Loading..." class="w-24 h-24 mb-4 animate-bounce">
-        <div class="w-12 h-12 border-4 border-rrRed border-t-transparent rounded-full animate-spin"></div>
-    </div>
-
-    <!-- NAVBAR / HEADER -->
-    <header class="bg-slate-950/80 backdrop-blur-md border-b border-rrBorder sticky top-0 z-40 px-4 py-3">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <img id="siteLogo" src="https://i.ibb.co/689L51P/58834.png" alt="Logo" class="w-10 h-10 object-contain">
-                <div>
-                    <h1 class="text-lg font-black text-white tracking-wider uppercase leading-none">RIFT</h1>
-                    <h1 class="text-sm font-black text-rrRed tracking-wider uppercase leading-none">RAIDERS</h1>
-                </div>
-            </div>
-            <div class="flex items-center space-x-2">
-                <button onclick="openAdminModal()" class="bg-slate-900 border border-rrBorder hover:bg-rrRed text-gray-300 hover:text-white px-3 py-2 rounded-lg text-xs font-bold transition flex items-center space-x-1.5">
-                    <i class="fas fa-lock text-rrRed"></i>
-                    <span class="hidden sm:inline">Admin</span>
-                </button>
-                <button onclick="openApplyModal()" class="bg-rrRed hover:bg-red-700 text-white px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition shadow-lg shadow-red-600/30 flex items-center space-x-2">
-                    <i class="fas fa-paper-plane"></i>
-                    <span>Apply Now</span>
-                </button>
-            </div>
-        </div>
+  <div class="container">
+    
+    <!-- HEADER -->
+    <header class="header">
+      <h1 class="brand-title">RIFT RAIDERS</h1>
+      <p class="brand-subtitle">Competitive gaming. Built to dominate.</p>
     </header>
 
+    <!-- ABOUT US -->
+    <section>
+      <h2 class="section-title">ABOUT US</h2>
+      <div class="card">
+        <p class="card-text">
+          Rift Raiders began its journey in 2024 as a dedicated competitive team. After a year of establishing our official guild in April 2025, we continue to field elite rosters ready to compete at the highest level.
+        </p>
+      </div>
+    </section>
+
+    <!-- AI ASSISTANT SECTION (MAY TYPING EFFECT) -->
+    <section>
+      <h2 class="section-title">AI ASSISTANT</h2>
+      <p class="section-subtitle">TACTICAL AI & STRATEGY HELPER</p>
+      <div class="ai-card">
+        <div class="typing-container">
+          <span id="ai-typing-text"></span><span class="cursor"></span>
+        </div>
+      </div>
+    </section>
+
     <!-- MEET THE TEAMS -->
-    <section class="py-12 px-4 max-w-7xl mx-auto w-full">
-        <div class="text-center mb-10">
-            <h2 class="text-3xl md:text-4xl font-black text-white uppercase tracking-wider">MEET THE <span class="text-rrRed">TEAMS</span></h2>
-            <p class="text-gray-400 text-sm mt-2">Our official competitive rosters and players.</p>
+    <section>
+      <h2 class="section-title">MEET THE TEAMS</h2>
+      <p class="section-subtitle">THE OFFICIAL ESPORTS ROSTER (TAP A PLAYER FOR STATS)</p>
+      
+      <div class="roster-grid">
+        <div class="player-card">
+          <img src="https://via.placeholder.com/90x110" alt="Takeku" class="player-img">
+          <div class="player-info">
+            <h3 class="player-name">TAKEKU</h3>
+            <span class="player-role">MID</span>
+            <div class="player-stats">
+              <div>
+                <strong>TEAM</strong><br>
+                RIFT RAIDERS
+              </div>
+              <div>
+                <strong>WINRATE</strong><br>
+                N/A
+              </div>
+            </div>
+            <div style="font-size: 0.7rem; color: #777; margin-top: 6px;">
+              TOP CHAMPS: No data
+            </div>
+          </div>
         </div>
-        <div id="competitiveGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            <!-- Dynamic Player Cards rendered here -->
-        </div>
+      </div>
     </section>
 
     <!-- MATCH HISTORY -->
-    <section class="py-12 px-4 bg-slate-950/50 border-t border-rrBorder w-full">
-        <div class="max-w-7xl mx-auto">
-            <div class="text-center mb-10">
-                <h2 class="text-3xl md:text-4xl font-black text-white uppercase tracking-wider">MATCH <span class="text-rrRed">HISTORY</span></h2>
-                <p class="text-gray-400 text-sm mt-2">Recent competitive scrims and tournament results.</p>
-            </div>
-            <div id="matchesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <!-- Dynamic Match History rendered here -->
-            </div>
-        </div>
-    </section>
-    
-    <!-- CONTENT CREATORS -->
-    <section class="py-12 px-4 max-w-7xl mx-auto w-full">
-        <div class="text-center mb-10">
-            <h2 class="text-3xl md:text-4xl font-black text-white uppercase tracking-wider">CONTENT <span class="text-blue-400">CREATORS</span></h2>
-            <p class="text-gray-400 text-sm mt-2">Official streamers and content creators of Rift Raiders.</p>
-        </div>
-        <div id="creatorsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            <!-- Dynamic Content Creators rendered here -->
-        </div>
+    <section>
+      <h2 class="section-title">MATCH HISTORY</h2>
+      <p class="section-subtitle">RECENT SCRIMS & TOURNAMENTS</p>
+      <div class="card">
+        <p class="card-text" style="font-size: 0.8rem; color: #666;">No match history yet.</p>
+      </div>
     </section>
 
-    <!-- PARTNERS -->
-    <section class="py-12 px-4 bg-slate-950/50 border-t border-rrBorder w-full">
-        <div class="max-w-7xl mx-auto text-center">
-            <h2 class="text-2xl font-black text-white uppercase tracking-wider mb-6">OFFICIAL <span class="text-green-400">PARTNERS</span></h2>
-            <div id="partnersGrid" class="flex flex-wrap justify-center items-center gap-8 md:gap-12 opacity-80">
-                <!-- Dynamic Partners rendered here -->
-            </div>
-        </div>
+    <!-- MEET THE CREATORS -->
+    <section>
+      <h2 class="section-title">MEET THE CREATORS</h2>
+      <p class="section-subtitle">OUR CONTENT CREATORS & STREAMERS</p>
+      <div class="creator-card">
+        <img src="https://via.placeholder.com/75" alt="Takeku" class="creator-avatar">
+        <h3 class="player-name" style="font-size: 0.95rem;">TAKEKU</h3>
+        <span style="font-size: 0.75rem; color: var(--accent-blue); font-weight: 700;">WILDRIFT</span>
+      </div>
     </section>
 
-    <!-- ADMIN SECTION (HIDDEN BY DEFAULT) -->
-    <section id="adminSection" class="hidden py-10 px-4 bg-slate-950 border-t-2 border-rrRed w-full">
-        <div class="max-w-7xl mx-auto">
-            <div class="flex justify-between items-center mb-8 pb-4 border-b border-rrBorder">
-                <div>
-                    <h2 class="text-2xl font-black text-white uppercase flex items-center">
-                        <i class="fas fa-cog text-rrRed mr-3"></i>ADMIN DASHBOARD
-                    </h2>
-                    <p class="text-xs text-gray-400">Manage site rosters, match history, creators, and partners.</p>
-                </div>
-                <button onclick="logoutAdmin()" class="bg-red-600/20 text-red-400 border border-red-500/30 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
-                    Logout
-                </button>
-            </div>
+  </div>
 
-            <!-- ADMIN FORMS GRID -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
-                <!-- Add Player Form -->
-                <div class="bg-rrCard p-5 rounded-xl border border-rrBorder">
-                    <h3 class="text-sm font-black text-rrRed uppercase mb-4 flex items-center"><i class="fas fa-user-plus mr-2"></i>Add Player / Roster</h3>
-                    <div class="grid grid-cols-2 gap-3 text-xs">
-                        <input type="text" id="cIgn" placeholder="IGN (e.g. Takeku#123)" class="bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none focus:border-rrRed">
-                        <input type="text" id="cRole" placeholder="Role (e.g. Mid, Jungle)" class="bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none focus:border-rrRed">
-                        <input type="text" id="cTeam" placeholder="Team (e.g. WR Competitive)" class="bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none focus:border-rrRed">
-                        <input type="text" id="cGame" placeholder="Game (e.g. Wild Rift / LoL PC)" class="bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none focus:border-rrRed">
-                        <input type="text" id="cWinrate" placeholder="Winrate (e.g. 68%)" class="bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none focus:border-rrRed">
-                        <input type="text" id="cProfileLink" placeholder="OP.GG / Profile Link" class="bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none focus:border-rrRed">
-                        <input type="text" id="cChamp1" placeholder="Top Champ 1 Icon URL" class="bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none focus:border-rrRed">
-                        <input type="text" id="cChamp2" placeholder="Top Champ 2 Icon URL" class="bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none focus:border-rrRed">
-                        <input type="text" id="cChamp3" placeholder="Top Champ 3 Icon URL" class="col-span-2 bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none focus:border-rrRed">
-                        <div class="col-span-2">
-                            <label class="block text-[10px] text-gray-400 mb-1 font-bold">PLAYER PHOTO</label>
-                            <input type="file" id="cPhoto" accept="image/*" class="w-full text-gray-400 bg-slate-950 p-1.5 rounded border border-rrBorder">
-                        </div>
-                        <button id="btnCompetitive" onclick="addCompetitive()" class="col-span-2 bg-rrRed hover:bg-red-700 text-white font-bold p-2.5 rounded text-xs uppercase mt-2 transition">Add to Roster</button>
-                    </div>
-                </div>
+  <!-- JAVASCRIPT PARA SA TYPING EFFECT -->
+  <script>
+    // Mensahe na ita-type ng AI Assistant
+    const aiMessage = "Mabuhay! Ako ang AI Assistant ng Rift Raiders. Handa akong tumulong sa pag-analyze ng scrims, player stats, at team strategies.";
+    const typingElement = document.getElementById("ai-typing-text");
+    let charIndex = 0;
 
-                <!-- Add Match Form -->
-                <div class="bg-rrCard p-5 rounded-xl border border-rrBorder flex flex-col justify-between">
-                    <div>
-                        <h3 class="text-sm font-black text-yellow-500 uppercase mb-4 flex items-center"><i class="fas fa-trophy mr-2"></i>Add Match History</h3>
-                        <div class="grid grid-cols-2 gap-3 text-xs">
-                            <input type="text" id="mOpponent" placeholder="Opponent Name" class="bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none focus:border-rrRed">
-                            <input type="text" id="mScore" placeholder="Score (e.g. 2 - 0)" class="bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none focus:border-rrRed">
-                            <select id="mType" class="bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none">
-                                <option value="Scrim">Scrim</option>
-                                <option value="Tournament">Tournament</option>
-                                <option value="Showmatch">Showmatch</option>
-                            </select>
-                            <select id="mResult" class="bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none">
-                                <option value="Win">Win</option>
-                                <option value="Loss">Loss</option>
-                                <option value="Draw">Draw</option>
-                            </select>
-                            <input type="date" id="mDate" class="col-span-2 bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none">
-                        </div>
-                    </div>
-                    <button id="btnMatch" onclick="addMatch()" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold p-2.5 rounded text-xs uppercase mt-4 transition">Add Match Record</button>
-                </div>
+    function startTypingEffect() {
+      if (charIndex < aiMessage.length) {
+        typingElement.innerHTML += aiMessage.charAt(charIndex);
+        charIndex++;
+        setTimeout(startTypingEffect, 35); // Bilis ng pag-type (in milliseconds)
+      }
+    }
 
-                <!-- Add Creator Form -->
-                <div class="bg-rrCard p-5 rounded-xl border border-rrBorder">
-                    <h3 class="text-sm font-black text-blue-400 uppercase mb-4 flex items-center"><i class="fas fa-video mr-2"></i>Add Content Creator</h3>
-                    <div class="grid grid-cols-2 gap-3 text-xs">
-                        <input type="text" id="crName" placeholder="Creator Name" class="bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none">
-                        <input type="text" id="crGame" placeholder="Game / Platform" class="bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none">
-                        <input type="text" id="crFb" placeholder="Facebook URL" class="bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none">
-                        <input type="text" id="crYt" placeholder="YouTube URL" class="bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none">
-                        <input type="text" id="crTt" placeholder="TikTok URL" class="col-span-2 bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none">
-                        <div class="col-span-2">
-                            <label class="block text-[10px] text-gray-400 mb-1 font-bold">CREATOR PHOTO</label>
-                            <input type="file" id="crPhoto" accept="image/*" class="w-full text-gray-400 bg-slate-950 p-1.5 rounded border border-rrBorder">
-                        </div>
-                        <button id="btnCreator" onclick="addCreator()" class="col-span-2 bg-blue-600 hover:bg-blue-700 text-white font-bold p-2.5 rounded text-xs uppercase mt-2 transition">Add Creator</button>
-                    </div>
-                </div>
+    // Pag-load ng page, kusa itong magta-type
+    window.addEventListener("DOMContentLoaded", startTypingEffect);
+  </script>
 
-                <!-- Add Partner Form -->
-                <div class="bg-rrCard p-5 rounded-xl border border-rrBorder flex flex-col justify-between">
-                    <div>
-                        <h3 class="text-sm font-black text-green-400 uppercase mb-4 flex items-center"><i class="fas fa-handshake mr-2"></i>Add Partner</h3>
-                        <div class="grid grid-cols-1 gap-3 text-xs">
-                            <input type="text" id="pName" placeholder="Partner / Sponsor Name" class="bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none">
-                            <input type="text" id="pLink" placeholder="Website / Page Link" class="bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none">
-                            <div>
-                                <label class="block text-[10px] text-gray-400 mb-1 font-bold">PARTNER LOGO</label>
-                                <input type="file" id="pPhoto" accept="image/*" class="w-full text-gray-400 bg-slate-950 p-1.5 rounded border border-rrBorder">
-                            </div>
-                        </div>
-                    </div>
-                    <button id="btnPartner" onclick="addPartner()" class="bg-green-600 hover:bg-green-700 text-white font-bold p-2.5 rounded text-xs uppercase mt-4 transition">Add Partner</button>
-                </div>
-            </div>
-
-            <!-- DELETE / MANAGE ITEMS LIST -->
-            <div class="bg-rrCard p-5 rounded-xl border border-rrBorder">
-                <h3 class="text-sm font-black text-white uppercase mb-4">Manage & Delete Items</h3>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div><p class="text-xs text-rrRed font-bold mb-2">Teams</p><div id="manageCompetitive" class="space-y-1 max-h-32 overflow-y-auto text-xs border border-rrBorder p-2 rounded bg-slate-950"></div></div>
-                    <div><p class="text-xs text-yellow-500 font-bold mb-2">Matches</p><div id="manageMatches" class="space-y-1 max-h-32 overflow-y-auto text-xs border border-rrBorder p-2 rounded bg-slate-950"></div></div>
-                    <div><p class="text-xs text-blue-400 font-bold mb-2">Creators</p><div id="manageCreators" class="space-y-1 max-h-32 overflow-y-auto text-xs border border-rrBorder p-2 rounded bg-slate-950"></div></div>
-                    <div><p class="text-xs text-green-400 font-bold mb-2">Partners</p><div id="managePartners" class="space-y-1 max-h-32 overflow-y-auto text-xs border border-rrBorder p-2 rounded bg-slate-950"></div></div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- FOOTER -->
-    <footer class="mt-auto bg-slate-950 border-t border-rrBorder py-8 px-4 text-center text-xs text-gray-400">
-        <p>&copy; 2026 Rift Raiders Guild. All Rights Reserved.</p>
-    </footer>
-
-    <!-- ADMIN PASSWORD MODAL -->
-    <div id="adminModal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-rrCard border border-rrBorder rounded-2xl p-6 w-full max-w-sm text-center shadow-2xl relative">
-            <i class="fas fa-user-shield text-4xl text-rrRed mb-3"></i>
-            <h3 class="text-xl font-black text-white uppercase mb-1">Admin Access</h3>
-            <p class="text-xs text-gray-400 mb-4">Enter password to unlock Admin Dashboard.</p>
-            
-            <input type="password" id="adminPasswordInput" placeholder="Enter Password" class="w-full bg-slate-950 border border-rrBorder p-2.5 rounded-lg text-white text-sm mb-4 text-center focus:border-rrRed outline-none">
-            
-            <div class="flex space-x-2">
-                <button onclick="closeAdminModal()" class="w-1/2 bg-slate-800 text-gray-300 py-2 rounded-lg font-bold text-xs hover:bg-slate-700">Cancel</button>
-                <button onclick="verifyAdminPassword()" class="w-1/2 bg-rrRed text-white py-2 rounded-lg font-bold text-xs hover:bg-red-700">Login</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- APPLY MODAL -->
-    <div id="applyModal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-rrCard border border-rrBorder rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden relative shadow-2xl">
-            <div class="p-4 border-b border-rrBorder flex justify-between items-center bg-slate-950">
-                <h3 class="font-black text-white text-base uppercase tracking-wider flex items-center">
-                    <i class="fas fa-file-alt text-rrRed mr-2"></i>Rift Raiders Application Form
-                </h3>
-                <button onclick="closeApplyModal()" class="text-gray-400 hover:text-white text-xl p-1"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="p-2 flex-1 overflow-y-auto bg-slate-900">
-                <iframe src="https://docs.google.com/forms/d/1qTTcHVfRsVXhsfKHv5-7qkZnoe6kMtoN2uLVEYY5XVg/viewform?embedded=true" class="w-full h-[550px]" frameborder="0">Loading...</iframe>
-            </div>
-        </div>
-    </div>
-
-    <!-- CHATBOT ASSISTANT -->
-    <div id="chatbotContainer" class="fixed bottom-5 right-5 z-50">
-        <button onclick="toggleChatbot()" class="bg-rrRed text-white p-4 rounded-full shadow-2xl hover:scale-110 transition duration-300 flex items-center justify-center border-2 border-red-500 shadow-red-600/50">
-            <i class="fas fa-robot text-2xl"></i>
-        </button>
-
-        <div id="chatWindow" class="hidden absolute bottom-16 right-0 w-80 md:w-96 bg-rrCard border border-rrBorder rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[480px]">
-            <div class="bg-slate-950 p-3 border-b border-rrBorder flex justify-between items-center">
-                <div class="flex items-center space-x-2">
-                    <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                    <span class="font-black text-sm text-white uppercase tracking-wider">RR Assistant</span>
-                </div>
-                <button onclick="toggleChatbot()" class="text-gray-400 hover:text-white p-1"><i class="fas fa-times"></i></button>
-            </div>
-
-            <div id="chatMessages" class="p-3 flex-1 overflow-y-auto space-y-3 text-xs">
-                <div class="bg-slate-800 p-2.5 rounded-lg text-gray-200 max-w-[85%] border border-slate-700">
-                    Hello, Raider! 🗡️ I'm the RR Assistant. Select a topic below or apply directly!
-                </div>
-            </div>
-
-            <div class="p-2 border-t border-rrBorder bg-slate-950/80 space-y-1">
-                <p class="text-[10px] text-gray-400 font-bold mb-1 uppercase">FREQUENTLY ASKED:</p>
-                <div class="grid grid-cols-2 gap-1">
-                    <button onclick="sendQuickReply('req_wr')" class="text-left bg-rrCard hover:bg-rrRed text-white text-[10px] p-2 rounded border border-rrBorder transition">📱 Wild Rift Requirements</button>
-                    <button onclick="sendQuickReply('req_pc')" class="text-left bg-rrCard hover:bg-rrRed text-white text-[10px] p-2 rounded border border-rrBorder transition">💻 LoL PC Requirements</button>
-                </div>
-                <button onclick="sendQuickReply('apply')" class="w-full text-left bg-rrCard hover:bg-rrRed text-white text-[11px] p-2 rounded border border-rrBorder transition">📝 How to Apply?</button>
-                <button onclick="sendQuickReply('gc')" class="w-full text-left bg-rrCard hover:bg-rrRed text-white text-[11px] p-2 rounded border border-rrBorder transition">💬 Community / Messenger GC</button>
-            </div>
-        </div>
-                            </div>
-        <!-- JAVASCRIPT CODE -->
-    <script>
-        // ADMIN PASSWORD CONFIGURATION
-        const ADMIN_PASSWORD = "rr123";
-
-        // AUTO-HIDE LOADING SCREEN
-        window.addEventListener('load', function() {
-            const loader = document.getElementById('loadingScreen');
-            if (loader) {
-                loader.style.opacity = '0';
-                setTimeout(() => { loader.style.display = 'none'; }, 500);
-            }
-        });
-
-        // UI TOGGLE FUNCTIONS
-        function toggleChatbot() { document.getElementById('chatWindow').classList.toggle('hidden'); }
-        function openApplyModal() { document.getElementById('applyModal').classList.remove('hidden'); }
-        function closeApplyModal() { document.getElementById('applyModal').classList.add('hidden'); }
-
-        function openAdminModal() {
-            document.getElementById('adminModal').classList.remove('hidden');
-            document.getElementById('adminPasswordInput').value = '';
-        }
-
-        function closeAdminModal() {
-            document.getElementById('adminModal').classList.add('hidden');
-        }
-
-        function verifyAdminPassword() {
-            const input = document.getElementById('adminPasswordInput').value;
-            if (input === ADMIN_PASSWORD) {
-                alert("Access Granted! Welcome Admin.");
-                closeAdminModal();
-                const adminSec = document.getElementById('adminSection');
-                adminSec.classList.remove('hidden');
-                adminSec.scrollIntoView({ behavior: 'smooth' });
-            } else {
-                alert("Incorrect Password! Please try again.");
-            }
-        }
-
-        function logoutAdmin() {
-            document.getElementById('adminSection').classList.add('hidden');
-            alert("Admin Logged Out.");
-        }
-
-        // CHATBOT QUICK REPLIES
-        function sendQuickReply(type) {
-            const chatBox = document.getElementById('chatMessages');
-            let userMsg = ""; let botMsg = "";
-
-            if(type === 'req_wr') {
-                userMsg = "Wild Rift Requirements";
-                botMsg = `<b>📱 WILD RIFT REQUIREMENTS:</b><br><br>• <b>Casual:</b> Emerald Rank & above.<br>• <b>Competitive:</b> Grandmaster Peak (Current/Prev Season).<br>• <b>All-Female & LGBTQ+:</b> Master Rank & above.<br><br><button onclick="openApplyModal()" class="bg-rrRed text-white px-3 py-1.5 rounded font-bold hover:bg-red-700 mt-1">Apply for Wild Rift 📝</button>`;
-            } else if(type === 'req_pc') {
-                userMsg = "LoL PC Requirements";
-                botMsg = `<b>💻 LOL PC COMPETITIVE REQUIREMENTS:</b><br><br>• <b>Minimum Rank:</b> Emerald+ / Diamond+<br>• Must have a working mic & active in voice comms.<br>• Available for scheduled practices & scrims.<br>• Ready to provide OP.GG link.<br><br><button onclick="openApplyModal()" class="bg-rrRed text-white px-3 py-1.5 rounded font-bold hover:bg-red-700 mt-1">Apply for LoL PC 📝</button>`;
-            } else if(type === 'apply') {
-                userMsg = "How to apply?";
-                botMsg = `Applying is simple!<br><br>1. Click the <b>Apply Now</b> button.<br>2. Select whether you're applying for Wild Rift or LoL PC.<br>3. Fill out the required details in the form.<br><br><button onclick="openApplyModal()" class="bg-rrRed text-white px-3 py-1.5 rounded font-bold hover:bg-red-700 mt-1">Open Application Form 📝</button>`;
-            } else if(type === 'gc') {
-                userMsg = "Community / GC Links";
-                botMsg = `Please apply first through our application form to get verified and added to our official channels!<br><br>• <a href="https://m.me/j/Abb_o5K2XU7GX6GS/" target="_blank" class="underline text-blue-400 font-bold">Wild Rift Messenger GC</a>`;
-            }
-
-            chatBox.innerHTML += `<div class="bg-rrRed/20 text-white p-2 rounded-lg max-w-[85%] ml-auto border border-rrRed/40 text-right">${userMsg}</div>`;
-            setTimeout(() => {
-                chatBox.innerHTML += `<div class="bg-slate-800 p-2.5 rounded-lg text-gray-200 max-w-[85%] border border-slate-700">${botMsg}</div>`;
-                chatBox.scrollTop = chatBox.scrollHeight;
-            }, 300);
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-
-        // FIREBASE & DATA LOGIC
-        let competitiveList = {}; let creatorsList = {}; let matchesList = {}; let partnersList = {};
-        let siteSettings = { logo: "https://i.ibb.co/689L51P/58834.png" };
-        let db = null;
-
-        function processImage(file, defaultImage, callback) {
-            if (!file) { callback(defaultImage); return; }
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = new Image();
-                img.onload = function() {
-                    try {
-                        const canvas = document.createElement('canvas');
-                        const scaleSize = 300 / img.width;
-                        canvas.width = 300; canvas.height = img.height * scaleSize;
-                        const ctx = canvas.getContext('2d');
-                        ctx.fillStyle = '#000000'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        callback(canvas.toDataURL('image/jpeg', 0.8));
-                    } catch(err) { callback(defaultImage); }
-                };
-                img.onerror = function() { callback(defaultImage); };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        window.addCompetitive = function() {
-            if(!db) return alert("Database disconnected.");
-            const ign = document.getElementById('cIgn').value; const role = document.getElementById('cRole').value;
-            const team = document.getElementById('cTeam').value; const game = document.getElementById('cGame').value;
-            const winrate = document.getElementById('cWinrate').value;
-            const champ1 = document.getElementById('cChamp1').value; const champ2 = document.getElementById('cChamp2').value; const champ3 = document.getElementById('cChamp3').value;
-            const profileLink = document.getElementById('cProfileLink').value;
-            const file = document.getElementById('cPhoto').files[0];
-            
-            if(!ign || !role || !team) return alert("IGN, Role, and Team are required!");
-            const btn = document.getElementById('btnCompetitive'); btn.innerText = "Saving..."; btn.disabled = true;
-
-            processImage(file, "https://i.ibb.co/3k15y8B/58833.png", (base64Img) => {
-                db.ref('competitive').push({
-                    ign: ign, role: role, team: team, game: game,
-                    winrate: winrate || 'N/A',
-                    champs: [champ1, champ2, champ3],
-                    profileLink: profileLink || '',
-                    photo: base64Img
-                }).then(() => {
-                    alert("Team Member Added!");
-                    document.getElementById('cIgn').value = ''; document.getElementById('cRole').value = ''; document.getElementById('cTeam').value = '';
-                    document.getElementById('cWinrate').value = ''; document.getElementById('cChamp1').value = ''; document.getElementById('cChamp2').value = '';
-                    document.getElementById('cChamp3').value = ''; document.getElementById('cProfileLink').value = ''; document.getElementById('cPhoto').value = '';
-                    btn.innerText = "Add to Roster"; btn.disabled = false;
-                });
-            });
-        }
-
-        window.addMatch = function() {
-            if(!db) return;
-            const opponent = document.getElementById('mOpponent').value; const score = document.getElementById('mScore').value;
-            const type = document.getElementById('mType').value; const result = document.getElementById('mResult').value;
-            const date = document.getElementById('mDate').value;
-            if(!opponent || !score || !date) return alert("Please fill Opponent, Score, and Date!");
-            document.getElementById('btnMatch').innerText = "Saving...";
-            db.ref('matches').push({ opponent: opponent, score: score, type: type, result: result, date: date }).then(() => {
-                alert("Match Added!"); document.getElementById('mOpponent').value = ''; document.getElementById('mScore').value = ''; document.getElementById('mDate').value = ''; document.getElementById('btnMatch').innerText = "Add Match Record";
-            });
-        }
-
-        window.addCreator = function() {
-            if(!db) return; const name = document.getElementById('crName').value; const game = document.getElementById('crGame').value;
-            const fb = document.getElementById('crFb').value; const yt = document.getElementById('crYt').value; const tt = document.getElementById('crTt').value; const file = document.getElementById('crPhoto').files[0];
-            if(!name || !game) return alert("Creator Name and Game are required!");
-            document.getElementById('btnCreator').innerText = "Saving...";
-            processImage(file, "https://i.ibb.co/689L51P/58834.png", (b) => { db.ref('creators').push({ name: name, game: game, socials: { fb: fb, yt: yt, tt: tt }, photo: b }).then(() => {
-                alert("Creator Added!"); document.getElementById('crName').value = ''; document.getElementById('crGame').value = ''; document.getElementById('crFb').value = ''; document.getElementById('crYt').value = ''; document.getElementById('crTt').value = ''; document.getElementById('btnCreator').innerText = "Add Creator";
-            }); });
-        }
-
-        window.addPartner = function() {
-            if(!db) return; const name = document.getElementById('pName').value; const link = document.getElementById('pLink').value; const file = document.getElementById('pPhoto').files[0];
-            if(!name || !file) return alert("Partner Name and Logo required!");
-            document.getElementById('btnPartner').innerText = "Saving...";
-            processImage(file, "https://i.ibb.co/689L51P/58834.png", (b) => { db.ref('partners').push({ name: name, link: link, logo: b }).then(() => {
-                alert("Partner Added!"); document.getElementById('pName').value = ''; document.getElementById('pLink').value = ''; document.getElementById('btnPartner').innerText = "Add Partner";
-            }); });
-        }
-
-        window.deleteCompetitive = function(key) { if(confirm('Delete player?')) { db.ref('competitive/' + key).remove(); } }
-        window.deleteCreator = function(key) { if(confirm('Delete creator?')) { db.ref('creators/' + key).remove(); } }
-        window.deleteMatch = function(key) { if(confirm('Delete match?')) { db.ref('matches/' + key).remove(); } }
-        window.deletePartner = function(key) { if(confirm('Delete partner?')) { db.ref('partners/' + key).remove(); } }
-
-        // RENDER SITE CONTENT
-        function renderSite() {
-            try {
-                if(siteSettings.logo) {
-                    document.getElementById('siteLogo').src = siteSettings.logo;
-                    document.getElementById('loadingLogo').src = siteSettings.logo;
-                }
-
-                // RENDER TEAMS / PLAYERS
-                const compKeys = Object.keys(competitiveList);
-                const cGrid = document.getElementById('competitiveGrid');
-                if(compKeys.length === 0) {
-                    cGrid.innerHTML = '<p class="text-gray-500 italic text-sm col-span-full text-center">No roster players added yet.</p>';
-                } else {
-                    cGrid.innerHTML = compKeys.map(key => {
-                        const p = competitiveList[key];
-                        let champsHTML = '';
-                        if(p.champs && (p.champs[0] || p.champs[1] || p.champs[2])) {
-                            champsHTML = p.champs.map(c => c ? `<img src="${c}" class="w-7 h-7 rounded-full border border-gray-600 object-cover bg-slate-800">` : '').join('');
-                        } else { 
-                            champsHTML = `<span class="text-[10px] text-gray-500">No champs</span>`; 
-                        }
-                        let linkHTML = p.profileLink ? `<a href="${p.profileLink}" target="_blank" onclick="event.stopPropagation();" class="mt-2 block text-center bg-rrRed hover:bg-red-700 text-white text-[10px] font-bold py-1.5 px-3 rounded w-full transition"><i class="fas fa-external-link-alt mr-1"></i>View Profile</a>` : '';
-
-                        return `
-                        <div onclick="this.classList.toggle('is-open')" class="player-card relative bg-rrCard border border-rrBorder rounded-xl overflow-hidden shadow-lg cursor-pointer h-64 w-full group">
-                            <div class="img-container bg-black h-full w-full relative">
-                                <img src="${p.photo}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity">
-                                <div class="default-info">
-                                    <span class="text-[9px] bg-rrRed text-white px-2 py-0.5 rounded font-bold mb-1 inline-block uppercase">${p.game || 'Team'}</span>
-                                    <h3 class="text-xl font-black text-white uppercase truncate">${p.ign}</h3>
-                                    <p class="text-rrRed text-xs font-bold uppercase tracking-wider">${p.role}</p>
-                                </div>
-                            </div>
-                            <div class="expanded-info">
-                                <div class="mb-2">
-                                    <h3 class="text-lg font-black text-white uppercase truncate">${p.ign}</h3>
-                                    <p class="text-rrRed text-xs font-bold tracking-widest uppercase">${p.role}</p>
-                                </div>
-                                <div class="grid grid-cols-2 gap-2 mb-2 border-y border-rrBorder py-2">
-                                    <div>
-                                        <p class="text-[9px] text-gray-400 uppercase font-bold">Team</p>
-                                        <p class="text-xs font-bold text-gray-200 truncate">${p.team}</p>
-                                    </div>
-                                    <div>
-                                        <p class="text-[9px] text-gray-400 uppercase font-bold">Winrate</p>
-                                        <p class="text-xs font-black text-green-500">${p.winrate || 'N/A'}</p>
-                                    </div>
-                                </div>
-                                <div>
-                                    <p class="text-[9px] text-gray-400 uppercase font-bold mb-1">Top Champs</p>
-                                    <div class="flex space-x-1.5">${champsHTML}</div>
-                                </div>
-                                ${linkHTML}
-                            </div>
-                            <div class="absolute top-2 right-2 text-white/50 text-xs z-10"><i class="fas fa-hand-pointer"></i></div>
-                        </div>`;
-                    }).join('');
-                }
-
-                // RENDER MATCH HISTORY
-                const matchKeys = Object.keys(matchesList).sort((a, b) => new Date(matchesList[b].date) - new Date(matchesList[a].date));
-                const mGrid = document.getElementById('matchesGrid');
-                if(matchKeys.length === 0) mGrid.innerHTML = '<p class="text-gray-500 italic text-sm col-span-full text-center">No match history yet.</p>';
-                else {
-                    mGrid.innerHTML = matchKeys.map(key => {
-                        const m = matchesList[key];
-                        let rCol = m.result === 'Win' ? 'text-green-500' : (m.result === 'Loss' ? 'text-red-500' : 'text-yellow-500');
-                        let bCol = m.result === 'Win' ? 'border-green-500/30' : (m.result === 'Loss' ? 'border-red-500/30' : 'border-yellow-500/30');
-                        return `<div class="bg-rrCard border ${bCol} rounded-xl p-4 shadow-lg flex justify-between items-center"><div><span class="text-[10px] text-gray-400 uppercase font-bold tracking-wider">${m.type} • ${m.date}</span><h3 class="text-lg font-black text-white uppercase mt-1">VS ${m.opponent}</h3><p class="text-sm font-bold text-gray-300">Score: ${m.score}</p></div><div class="text-right"><h2 class="text-2xl font-black uppercase ${rCol}">${m.result}</h2></div></div>`;
-                    }).join('');
-                }
-
-                // RENDER CREATORS
-                const crKeys = Object.keys(creatorsList);
-                if(crKeys.length === 0) document.getElementById('creatorsGrid').innerHTML = '<p class="text-gray-500 italic text-sm col-span-full text-center">No creators added yet.</p>';
-                else {
-                    document.getElementById('creatorsGrid').innerHTML = crKeys.map(key => {
-                        const c = creatorsList[key];
-                        return `<div class="bg-rrCard border border-rrBorder rounded-xl overflow-hidden shadow-lg p-4 flex flex-col items-center text-center"><img src="${c.photo}" class="w-24 h-24 rounded-full object-cover border-2 border-blue-500 mb-3"><h3 class="text-lg font-black text-white uppercase">${c.name}</h3><p class="text-blue-400 text-xs font-bold uppercase mb-3">${c.game}</p><div class="flex space-x-3 mt-auto pt-2 border-t border-rrBorder w-full justify-center">${c.socials.fb ? `<a href="${c.socials.fb}" target="_blank" class="text-gray-400 hover:text-blue-500 text-lg"><i class="fab fa-facebook"></i></a>` : ''}${c.socials.yt ? `<a href="${c.socials.yt}" target="_blank" class="text-gray-400 hover:text-red-500 text-lg"><i class="fab fa-youtube"></i></a>` : ''}${c.socials.tt ? `<a href="${c.socials.tt}" target="_blank" class="text-gray-400 hover:text-white text-lg"><i class="fab fa-tiktok"></i></a>` : ''}</div></div>`;
-                    }).join('');
-                }
-
-                // RENDER PARTNERS
-                const pKeys = Object.keys(partnersList);
-                if(pKeys.length === 0) document.getElementById('partnersGrid').innerHTML = '<p class="text-gray-500 italic text-sm text-center">No partners added yet.</p>';
-                else {
-                    document.getElementById('partnersGrid').innerHTML = pKeys.map(key => {
-                        const p = partnersList[key]; const imgTag = `<img src="${p.logo}" alt="${p.name}" class="h-16 md:h-20 object-contain grayscale hover:grayscale-0 transition duration-300">`;
-                        return p.link ? `<a href="${p.link}" target="_blank" title="${p.name}">${imgTag}</a>` : `<div title="${p.name}">${imgTag}</div>`;
-                    }).join('');
-                }
-
-                // MANAGE ADMIN LISTS
-                document.getElementById('manageCompetitive').innerHTML = compKeys.length ? compKeys.map(key => `<div class="flex justify-between items-center p-1.5 bg-slate-900 rounded mb-1"><span class="text-gray-300 truncate pr-2">${competitiveList[key].ign}</span><button onclick="deleteCompetitive('${key}')" class="text-red-500 hover:text-red-300"><i class="fas fa-times"></i></button></div>`).join('') : '<p class="text-gray-600">Empty</p>';
-                document.getElementById('manageMatches').innerHTML = matchKeys.length ? matchKeys.map(key => `<div class="flex justify-between items-center p-1.5 bg-slate-900 rounded mb-1"><span class="text-gray-300 truncate pr-2">VS ${matchesList[key].opponent}</span><button onclick="deleteMatch('${key}')" class="text-red-500 hover:text-red-300"><i class="fas fa-times"></i></button></div>`).join('') : '<p class="text-gray-600">Empty</p>';
-                document.getElementById('manageCreators').innerHTML = crKeys.length ? crKeys.map(key => `<div class="flex justify-between items-center p-1.5 bg-slate-900 rounded mb-1"><span class="text-gray-300 truncate pr-2">${creatorsList[key].name}</span><button onclick="deleteCreator('${key}')" class="text-red-500 hover:text-red-300"><i class="fas fa-times"></i></button></div>`).join('') : '<p class="text-gray-600">Empty</p>';
-                document.getElementById('managePartners').innerHTML = pKeys.length ? pKeys.map(key => `<div class="flex justify-between items-center p-1.5 bg-slate-900 rounded mb-1"><span class="text-gray-300 truncate pr-2">${partnersList[key].name}</span><button onclick="deletePartner('${key}')" class="text-red-500 hover:text-red-300"><i class="fas fa-times"></i></button></div>`).join('') : '<p class="text-gray-600">Empty</p>';
-                    
-            } catch (error) { console.error("Render error:", error); }
-        }
-
-        // INITIALIZE FIREBASE REALTIME DATABASE
-        try {
-            const firebaseConfig = { 
-                apiKey: "AIzaSy87GyUvjxpgvVQpSS_wjh2Sm6HssUd_jbm", 
-                authDomain: "riftraiders-348f4.firebaseapp.com", 
-                databaseURL: "https://riftraiders-348f4-default-rtdb.asia-southeast1.firebasedatabase.app", 
-                projectId: "riftraiders-348f4", 
-                storageBucket: "riftraiders-348f4.firebasestorage.app", 
-                messagingSenderId: "103200979693", 
-                appId: "1:103200979693:web:48d4b7f6e65734f2756ee4" 
-            };
-            if (!firebase.apps.length) firebase.initializeApp(firebaseConfig); 
-            db = firebase.database();
-            db.ref('/').on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) { 
-                    competitiveList = data.competitive || {}; 
-                    creatorsList = data.creators || {}; 
-                    matchesList = data.matches || {}; 
-                    partnersList = data.partners || {}; 
-                    if (data.settings && data.settings.logo) siteSettings = data.settings; 
-                } else { 
-                    competitiveList = {}; creatorsList = {}; matchesList = {}; partnersList = {}; 
-                }
-                renderSite();
-            });
-        } catch(e) { console.error("Firebase Init Error:", e); }
-    </script>
 </body>
 </html>
+
