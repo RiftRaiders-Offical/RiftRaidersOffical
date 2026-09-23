@@ -1,74 +1,43 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rift Raiders Guild | Official Website</title>
-    <!-- Tailwind CSS CDN -->
+    <title>Rift Raiders Guild</title>
+
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@600;700&family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
-    <!-- Firebase App & Database -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
                         rrRed: '#ef4444',
-                        rrDark: '#0a0a0c',
-                        rrCard: '#121318',
-                        rrBorder: '#27272a'
-                    },
-                    fontFamily: {
-                        teko: ['Teko', 'sans-serif'],
-                        inter: ['Inter', 'sans-serif'],
+                        rrDark: '#0f172a',
+                        rrCard: '#1e293b',
+                        rrBorder: '#334155'
                     }
                 }
             }
         }
     </script>
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0a0a0c;
-            color: #ffffff;
-        }
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0a0a0c;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #27272a;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #ef4444;
-        }
 
-        /* Player Card Slide Animation */
-        .player-card .expanded-info {
-            transform: translateY(100%);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: absolute;
-            inset: 0;
-            background: rgba(18, 19, 24, 0.95);
-            backdrop-filter: blur(8px);
-            padding: 1rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            z-index: 10;
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <style>
+        /* PLAYER CARD FIXES */
+        .player-card {
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        .player-card:hover .expanded-info,
-        .player-card.is-open .expanded-info {
-            transform: translateY(0);
+        .player-card:hover {
+            transform: translateY(-4px);
         }
         .player-card .default-info {
             position: absolute;
@@ -76,239 +45,208 @@
             left: 0;
             right: 0;
             padding: 1rem;
-            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-            z-index: 5;
+            z-index: 10;
+            background: linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.4), transparent);
+        }
+        .player-card .expanded-info {
+            position: absolute;
+            inset: 0;
+            background-color: rgba(15, 23, 42, 0.95);
+            padding: 1.25rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            z-index: 20;
+        }
+        .player-card:hover .expanded-info,
+        .player-card.is-open .expanded-info {
+            opacity: 1;
+            pointer-events: auto;
         }
     </style>
 </head>
-<body class="bg-rrDark text-gray-100 min-h-screen flex flex-col selection:bg-rrRed selection:text-white">
+<body class="bg-rrDark text-gray-100 font-sans min-h-screen flex flex-col antialiased">
 
-    <!-- 1. LOADING SCREEN -->
-    <div id="loadingScreen" class="fixed inset-0 bg-black z-[100] flex flex-col items-center justify-center transition-opacity duration-500">
-        <div class="relative flex flex-col items-center">
-            <img id="loadingLogo" src="https://i.ibb.co/689L51P/58834.png" alt="Rift Raiders Logo" class="w-32 h-32 md:w-40 md:h-40 object-contain animate-bounce mb-4 drop-shadow-[0_0_20px_rgba(239,68,68,0.8)]">
-            <div class="w-10 h-10 border-4 border-rrRed border-t-transparent rounded-full animate-spin"></div>
-            <p class="text-white font-black tracking-widest text-xs md:text-sm mt-4 animate-pulse font-teko uppercase text-xl">Loading Rift Raiders...</p>
-        </div>
+    <!-- LOADING SCREEN -->
+    <div id="loadingScreen" class="fixed inset-0 bg-slate-950 z-[100] flex flex-col items-center justify-center transition-opacity duration-500">
+        <img id="loadingLogo" src="https://i.ibb.co/689L51P/58834.png" alt="Loading..." class="w-24 h-24 mb-4 animate-bounce">
+        <div class="w-12 h-12 border-4 border-rrRed border-t-transparent rounded-full animate-spin"></div>
     </div>
 
-    <!-- 2. NAVBAR -->
-    <nav class="sticky top-0 z-40 bg-black/80 backdrop-blur-md border-b border-rrBorder">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            <a href="#" class="flex items-center space-x-3 group">
-                <img id="siteLogo" src="https://i.ibb.co/689L51P/58834.png" alt="RR Logo" class="w-10 h-10 object-contain group-hover:scale-110 transition duration-300">
-                <span class="font-teko text-3xl font-bold tracking-wider text-white">RIFT <span class="text-rrRed">RAIDERS</span></span>
-            </a>
-
-            <div class="hidden md:flex items-center space-x-6 text-xs font-bold uppercase tracking-wider">
-                <a href="#hero" class="hover:text-rrRed transition">Home</a>
-                <a href="#divisions" class="hover:text-rrRed transition">Divisions</a>
-                <a href="#teams" class="hover:text-rrRed transition">Meet the Teams</a>
-                <a href="#matches" class="hover:text-rrRed transition">Matches</a>
-                <a href="#creators" class="hover:text-rrRed transition">Creators</a>
-                <a href="#partners" class="hover:text-rrRed transition">Partners</a>
+    <!-- NAVBAR / HEADER -->
+    <header class="bg-slate-950/80 backdrop-blur-md border-b border-rrBorder sticky top-0 z-40 px-4 py-3">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <img id="siteLogo" src="https://i.ibb.co/689L51P/58834.png" alt="Logo" class="w-10 h-10 object-contain">
+                <div>
+                    <h1 class="text-lg font-black text-white tracking-wider uppercase leading-none">RIFT</h1>
+                    <h1 class="text-sm font-black text-rrRed tracking-wider uppercase leading-none">RAIDERS</h1>
+                </div>
             </div>
-
-            <button onclick="openApplyModal()" class="bg-rrRed hover:bg-red-700 text-white font-black text-xs uppercase tracking-wider px-5 py-2.5 rounded-lg transition duration-300 shadow-lg shadow-red-900/30 border border-red-500/50 flex items-center space-x-2">
-                <i class="fas fa-paper-plane"></i>
-                <span>Apply Now</span>
-            </button>
-        </div>
-    </nav>
-
-    <!-- 3. HERO SECTION -->
-    <section id="hero" class="relative py-20 px-4 overflow-hidden border-b border-rrBorder bg-gradient-to-b from-red-950/20 via-black to-rrDark">
-        <div class="max-w-5xl mx-auto text-center relative z-10">
-            <span class="inline-block bg-rrRed/20 text-rrRed border border-rrRed/40 font-bold text-xs uppercase px-4 py-1.5 rounded-full mb-6 tracking-widest animate-pulse">
-                🔥 Now Recruiting Competitive & Casual Players
-            </span>
-            <h1 class="font-teko text-6xl md:text-8xl font-black uppercase tracking-tight text-white leading-none mb-4">
-                DOMINATE THE RIFT WITH <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-rose-600">RIFT RAIDERS</span>
-            </h1>
-            <p class="text-gray-400 text-base md:text-lg max-w-2xl mx-auto mb-8 font-medium">
-                Sali na sa aming gaming community para sa <b>League of Legends: Wild Rift</b> at <b>LoL PC Competitive</b>. Synergize, grow, and conquer tournaments together!
-            </p>
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <button onclick="openApplyModal()" class="w-full sm:w-auto bg-rrRed hover:bg-red-700 text-white font-black text-sm uppercase px-8 py-3.5 rounded-xl shadow-xl shadow-red-600/30 transition duration-300 border border-red-500 flex items-center justify-center space-x-2">
-                    <i class="fas fa-edit"></i>
-                    <span>Fill Application Form</span>
+            <div class="flex items-center space-x-2">
+                <button onclick="openAdminModal()" class="bg-slate-900 border border-rrBorder hover:bg-rrRed text-gray-300 hover:text-white px-3 py-2 rounded-lg text-xs font-bold transition flex items-center space-x-1.5">
+                    <i class="fas fa-lock text-rrRed"></i>
+                    <span class="hidden sm:inline">Admin</span>
                 </button>
-                <button onclick="toggleChatbot()" class="w-full sm:w-auto bg-rrCard hover:bg-gray-800 text-gray-200 font-bold text-sm uppercase px-8 py-3.5 rounded-xl border border-rrBorder transition duration-300 flex items-center justify-center space-x-2">
-                    <i class="fas fa-comments text-rrRed"></i>
-                    <span>Ask RR Assistant</span>
+                <button onclick="openApplyModal()" class="bg-rrRed hover:bg-red-700 text-white px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition shadow-lg shadow-red-600/30 flex items-center space-x-2">
+                    <i class="fas fa-paper-plane"></i>
+                    <span>Apply Now</span>
                 </button>
             </div>
         </div>
-    </section>
+    </header>
 
-    <!-- 4. GAME DIVISIONS SECTION -->
-    <section id="divisions" class="py-16 px-4 max-w-7xl mx-auto w-full border-b border-rrBorder">
-        <div class="text-center mb-12">
-            <h2 class="font-teko text-5xl font-black uppercase tracking-wider text-white">GAME <span class="text-rrRed">DIVISIONS</span></h2>
-            <p class="text-gray-400 text-sm md:text-base">Piliin ang iyong main game at tingnan ang mga kailangang requirements bago mag-apply.</p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <!-- WILD RIFT CARD -->
-            <div class="bg-rrCard border border-rrBorder hover:border-rrRed/50 rounded-2xl p-6 transition duration-300 flex flex-col justify-between">
-                <div>
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center space-x-3">
-                            <i class="fas fa-mobile-alt text-3xl text-rrRed"></i>
-                            <h3 class="font-teko text-3xl font-bold uppercase text-white">Wild Rift</h3>
-                        </div>
-                        <span class="text-xs bg-blue-500/20 text-blue-400 border border-blue-500/30 px-3 py-1 rounded-full font-bold">Mobile</span>
-                    </div>
-                    <ul class="space-y-2 text-sm text-gray-300 mb-6">
-                        <li>• <b>Casual:</b> Emerald Rank & above</li>
-                        <li>• <b>Competitive:</b> Grandmaster Peak (Current or Prev Season)</li>
-                        <li>• <b>All-Female & LGBTQ+:</b> Master Rank & above</li>
-                    </ul>
-                </div>
-                <button onclick="openApplyModal()" class="w-full bg-gray-800 hover:bg-rrRed text-white font-bold text-xs uppercase py-3 rounded-lg border border-rrBorder transition">Apply for Wild Rift</button>
-            </div>
-
-            <!-- LOL PC CARD -->
-            <div class="bg-rrCard border border-rrBorder hover:border-rrRed/50 rounded-2xl p-6 transition duration-300 flex flex-col justify-between">
-                <div>
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center space-x-3">
-                            <i class="fas fa-desktop text-3xl text-rrRed"></i>
-                            <h3 class="font-teko text-3xl font-bold uppercase text-white">LoL PC Competitive</h3>
-                        </div>
-                        <span class="text-xs bg-purple-500/20 text-purple-400 border border-purple-500/30 px-3 py-1 rounded-full font-bold">PC</span>
-                    </div>
-                    <ul class="space-y-2 text-sm text-gray-300 mb-6">
-                        <li>• <b>Minimum Rank:</b> Emerald+ / Diamond+</li>
-                        <li>• Active working mic & available for practice/scrims</li>
-                        <li>• OP.GG link required for roster evaluation</li>
-                    </ul>
-                </div>
-                <button onclick="openApplyModal()" class="w-full bg-gray-800 hover:bg-rrRed text-white font-bold text-xs uppercase py-3 rounded-lg border border-rrBorder transition">Apply for LoL PC</button>
-            </div>
-        </div>
-    </section>
-
-    <!-- 5. MEET THE TEAMS (COMPETITIVE ROSTERS) -->
-    <section id="teams" class="py-16 px-4 max-w-7xl mx-auto w-full border-b border-rrBorder">
-        <div class="text-center mb-12">
-            <h2 class="font-teko text-5xl font-black uppercase tracking-wider text-white">MEET THE <span class="text-rrRed">TEAMS</span></h2>
-            <p class="text-gray-400 text-sm">Ang ating mga opisyal na competitive rosters at players.</p>
-        </div>
-        <div id="competitiveGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
-    </section>
-
-    <!-- 6. MATCH HISTORY -->
-    <section id="matches" class="py-16 px-4 max-w-7xl mx-auto w-full border-b border-rrBorder">
-        <div class="text-center mb-12">
-            <h2 class="font-teko text-5xl font-black uppercase tracking-wider text-white">MATCH <span class="text-rrRed">HISTORY</span></h2>
-            <p class="text-gray-400 text-sm">Mga nagdaang laban at tournament results.</p>
-        </div>
-        <div id="matchesGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto"></div>
-    </section>
-
-    <!-- 7. CONTENT CREATORS -->
-    <section id="creators" class="py-16 px-4 max-w-7xl mx-auto w-full border-b border-rrBorder">
-        <div class="text-center mb-12">
-            <h2 class="font-teko text-5xl font-black uppercase tracking-wider text-white">CONTENT <span class="text-rrRed">CREATORS</span></h2>
-            <p class="text-gray-400 text-sm">Ating official streamers at creators.</p>
-        </div>
-        <div id="creatorsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
-    </section>
-
-    <!-- 8. PARTNERS & SPONSORS -->
-    <section id="partners" class="py-16 px-4 max-w-7xl mx-auto w-full border-b border-rrBorder">
+    <!-- MEET THE TEAMS -->
+    <section class="py-12 px-4 max-w-7xl mx-auto w-full">
         <div class="text-center mb-10">
-            <h2 class="font-teko text-5xl font-black uppercase tracking-wider text-white">OUR <span class="text-rrRed">PARTNERS</span></h2>
+            <h2 class="text-3xl md:text-4xl font-black text-white uppercase tracking-wider">MEET THE <span class="text-rrRed">TEAMS</span></h2>
+            <p class="text-gray-400 text-sm mt-2">Our official competitive rosters and players.</p>
         </div>
-        <div id="partnersGrid" class="flex flex-wrap justify-center items-center gap-8 md:gap-12"></div>
+        <div id="competitiveGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <!-- Dynamic Player Cards rendered here -->
+        </div>
     </section>
 
-    <!-- 9. ADMIN PORTAL (ADMIN MANAGEMENT) -->
-    <section id="adminPortal" class="py-16 px-4 max-w-7xl mx-auto w-full">
-        <div class="bg-rrCard border border-rrBorder rounded-2xl p-6 shadow-2xl space-y-8">
-            <div class="border-b border-rrBorder pb-4 flex justify-between items-center">
-                <h3 class="font-teko text-4xl font-bold uppercase text-white"><i class="fas fa-cog text-rrRed mr-2"></i>Admin Dashboard</h3>
-                <span class="text-xs bg-rrRed/20 text-rrRed px-3 py-1 rounded font-bold border border-rrRed/40">Firebase Connected</span>
+    <!-- MATCH HISTORY -->
+    <section class="py-12 px-4 bg-slate-950/50 border-t border-rrBorder w-full">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl md:text-4xl font-black text-white uppercase tracking-wider">MATCH <span class="text-rrRed">HISTORY</span></h2>
+                <p class="text-gray-400 text-sm mt-2">Recent competitive scrims and tournament results.</p>
+            </div>
+            <div id="matchesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Dynamic Match History rendered here -->
+            </div>
+        </div>
+    </section>
+    
+    <!-- CONTENT CREATORS -->
+    <section class="py-12 px-4 max-w-7xl mx-auto w-full">
+        <div class="text-center mb-10">
+            <h2 class="text-3xl md:text-4xl font-black text-white uppercase tracking-wider">CONTENT <span class="text-blue-400">CREATORS</span></h2>
+            <p class="text-gray-400 text-sm mt-2">Official streamers and content creators of Rift Raiders.</p>
+        </div>
+        <div id="creatorsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <!-- Dynamic Content Creators rendered here -->
+        </div>
+    </section>
+
+    <!-- PARTNERS -->
+    <section class="py-12 px-4 bg-slate-950/50 border-t border-rrBorder w-full">
+        <div class="max-w-7xl mx-auto text-center">
+            <h2 class="text-2xl font-black text-white uppercase tracking-wider mb-6">OFFICIAL <span class="text-green-400">PARTNERS</span></h2>
+            <div id="partnersGrid" class="flex flex-wrap justify-center items-center gap-8 md:gap-12 opacity-80">
+                <!-- Dynamic Partners rendered here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ADMIN SECTION (HIDDEN BY DEFAULT) -->
+    <section id="adminSection" class="hidden py-10 px-4 bg-slate-950 border-t-2 border-rrRed w-full">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex justify-between items-center mb-8 pb-4 border-b border-rrBorder">
+                <div>
+                    <h2 class="text-2xl font-black text-white uppercase flex items-center">
+                        <i class="fas fa-cog text-rrRed mr-3"></i>ADMIN DASHBOARD
+                    </h2>
+                    <p class="text-xs text-gray-400">Manage site rosters, match history, creators, and partners.</p>
+                </div>
+                <button onclick="logoutAdmin()" class="bg-red-600/20 text-red-400 border border-red-500/30 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
+                    Logout
+                </button>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <!-- ADD TEAM MEMBER -->
-                <div class="bg-black/50 p-4 rounded-xl border border-rrBorder space-y-3">
-                    <h4 class="font-bold text-sm text-rrRed uppercase"><i class="fas fa-user-plus mr-1"></i> Add Player / Roster</h4>
-                    <div class="grid grid-cols-2 gap-2 text-xs">
-                        <input id="cIgn" placeholder="IGN (e.g. Takeku#Kushi)" class="bg-rrCard p-2 rounded border border-rrBorder text-white">
-                        <input id="cRole" placeholder="Role (e.g. Mid, Jungle)" class="bg-rrCard p-2 rounded border border-rrBorder text-white">
-                        <input id="cTeam" placeholder="Team (e.g. WR Competitive)" class="bg-rrCard p-2 rounded border border-rrBorder text-white">
-                        <input id="cGame" placeholder="Game (e.g. Wild Rift / LoL PC)" class="bg-rrCard p-2 rounded border border-rrBorder text-white">
-                        <input id="cWinrate" placeholder="Winrate (e.g. 65%)" class="bg-rrCard p-2 rounded border border-rrBorder text-white">
-                        <input id="cProfileLink" placeholder="OP.GG / Profile Link" class="bg-rrCard p-2 rounded border border-rrBorder text-white">
+            <!-- ADMIN FORMS GRID -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+                <!-- Add Player Form -->
+                <div class="bg-rrCard p-5 rounded-xl border border-rrBorder">
+                    <h3 class="text-sm font-black text-rrRed uppercase mb-4 flex items-center"><i class="fas fa-user-plus mr-2"></i>Add Player / Roster</h3>
+                    <div class="grid grid-cols-2 gap-3 text-xs">
+                        <input type="text" id="cIgn" placeholder="IGN (e.g. Takeku#123)" class="bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none focus:border-rrRed">
+                        <input type="text" id="cRole" placeholder="Role (e.g. Mid, Jungle)" class="bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none focus:border-rrRed">
+                        <input type="text" id="cTeam" placeholder="Team (e.g. WR Competitive)" class="bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none focus:border-rrRed">
+                        <input type="text" id="cGame" placeholder="Game (e.g. Wild Rift / LoL PC)" class="bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none focus:border-rrRed">
+                        <input type="text" id="cWinrate" placeholder="Winrate (e.g. 68%)" class="bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none focus:border-rrRed">
+                        <input type="text" id="cProfileLink" placeholder="OP.GG / Profile Link" class="bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none focus:border-rrRed">
+                        <input type="text" id="cChamp1" placeholder="Top Champ 1 Icon URL" class="bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none focus:border-rrRed">
+                        <input type="text" id="cChamp2" placeholder="Top Champ 2 Icon URL" class="bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none focus:border-rrRed">
+                        <input type="text" id="cChamp3" placeholder="Top Champ 3 Icon URL" class="col-span-2 bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none focus:border-rrRed">
+                        <div class="col-span-2">
+                            <label class="block text-[10px] text-gray-400 mb-1 font-bold">PLAYER PHOTO</label>
+                            <input type="file" id="cPhoto" accept="image/*" class="w-full text-gray-400 bg-slate-950 p-1.5 rounded border border-rrBorder">
+                        </div>
+                        <button id="btnCompetitive" onclick="addCompetitive()" class="col-span-2 bg-rrRed hover:bg-red-700 text-white font-bold p-2.5 rounded text-xs uppercase mt-2 transition">Add to Roster</button>
                     </div>
-                    <div class="grid grid-cols-3 gap-2 text-xs">
-                        <input id="cChamp1" placeholder="Champ 1 Image URL" class="bg-rrCard p-2 rounded border border-rrBorder text-white">
-                        <input id="cChamp2" placeholder="Champ 2 Image URL" class="bg-rrCard p-2 rounded border border-rrBorder text-white">
-                        <input id="cChamp3" placeholder="Champ 3 Image URL" class="bg-rrCard p-2 rounded border border-rrBorder text-white">
-                    </div>
-                    <input id="cPhoto" type="file" accept="image/*" class="text-xs text-gray-400 block w-full">
-                    <button id="btnCompetitive" onclick="addCompetitive()" class="w-full bg-rrRed hover:bg-red-700 text-white font-bold text-xs py-2 rounded uppercase">Add to Roster</button>
                 </div>
 
-                <!-- ADD MATCH RESULT -->
-                <div class="bg-black/50 p-4 rounded-xl border border-rrBorder space-y-3">
-                    <h4 class="font-bold text-sm text-yellow-500 uppercase"><i class="fas fa-trophy mr-1"></i> Add Match History</h4>
-                    <div class="grid grid-cols-2 gap-2 text-xs">
-                        <input id="mOpponent" placeholder="Opponent Name" class="bg-rrCard p-2 rounded border border-rrBorder text-white">
-                        <input id="mScore" placeholder="Score (e.g. 2 - 0)" class="bg-rrCard p-2 rounded border border-rrBorder text-white">
-                        <select id="mType" class="bg-rrCard p-2 rounded border border-rrBorder text-white">
-                            <option value="Scrim">Scrim</option>
-                            <option value="Tournament">Tournament</option>
-                        </select>
-                        <select id="mResult" class="bg-rrCard p-2 rounded border border-rrBorder text-white">
-                            <option value="Win">Win</option>
-                            <option value="Loss">Loss</option>
-                            <option value="Draw">Draw</option>
-                        </select>
+                <!-- Add Match Form -->
+                <div class="bg-rrCard p-5 rounded-xl border border-rrBorder flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-sm font-black text-yellow-500 uppercase mb-4 flex items-center"><i class="fas fa-trophy mr-2"></i>Add Match History</h3>
+                        <div class="grid grid-cols-2 gap-3 text-xs">
+                            <input type="text" id="mOpponent" placeholder="Opponent Name" class="bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none focus:border-rrRed">
+                            <input type="text" id="mScore" placeholder="Score (e.g. 2 - 0)" class="bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none focus:border-rrRed">
+                            <select id="mType" class="bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none">
+                                <option value="Scrim">Scrim</option>
+                                <option value="Tournament">Tournament</option>
+                                <option value="Showmatch">Showmatch</option>
+                            </select>
+                            <select id="mResult" class="bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none">
+                                <option value="Win">Win</option>
+                                <option value="Loss">Loss</option>
+                                <option value="Draw">Draw</option>
+                            </select>
+                            <input type="date" id="mDate" class="col-span-2 bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none">
+                        </div>
                     </div>
-                    <input id="mDate" type="date" class="bg-rrCard p-2 rounded border border-rrBorder text-white text-xs w-full">
-                    <button id="btnMatch" onclick="addMatch()" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-bold text-xs py-2 rounded uppercase">Add Match</button>
+                    <button id="btnMatch" onclick="addMatch()" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold p-2.5 rounded text-xs uppercase mt-4 transition">Add Match Record</button>
                 </div>
 
-                <!-- ADD CREATOR -->
-                <div class="bg-black/50 p-4 rounded-xl border border-rrBorder space-y-3">
-                    <h4 class="font-bold text-sm text-blue-400 uppercase"><i class="fas fa-video mr-1"></i> Add Content Creator</h4>
-                    <div class="grid grid-cols-2 gap-2 text-xs">
-                        <input id="crName" placeholder="Creator Name" class="bg-rrCard p-2 rounded border border-rrBorder text-white">
-                        <input id="crGame" placeholder="Game Focus" class="bg-rrCard p-2 rounded border border-rrBorder text-white">
-                        <input id="crFb" placeholder="Facebook Link" class="bg-rrCard p-2 rounded border border-rrBorder text-white">
-                        <input id="crYt" placeholder="YouTube Link" class="bg-rrCard p-2 rounded border border-rrBorder text-white">
-                        <input id="crTt" placeholder="TikTok Link" class="bg-rrCard p-2 rounded border border-rrBorder text-white col-span-2">
+                <!-- Add Creator Form -->
+                <div class="bg-rrCard p-5 rounded-xl border border-rrBorder">
+                    <h3 class="text-sm font-black text-blue-400 uppercase mb-4 flex items-center"><i class="fas fa-video mr-2"></i>Add Content Creator</h3>
+                    <div class="grid grid-cols-2 gap-3 text-xs">
+                        <input type="text" id="crName" placeholder="Creator Name" class="bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none">
+                        <input type="text" id="crGame" placeholder="Game / Platform" class="bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none">
+                        <input type="text" id="crFb" placeholder="Facebook URL" class="bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none">
+                        <input type="text" id="crYt" placeholder="YouTube URL" class="bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none">
+                        <input type="text" id="crTt" placeholder="TikTok URL" class="col-span-2 bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none">
+                        <div class="col-span-2">
+                            <label class="block text-[10px] text-gray-400 mb-1 font-bold">CREATOR PHOTO</label>
+                            <input type="file" id="crPhoto" accept="image/*" class="w-full text-gray-400 bg-slate-950 p-1.5 rounded border border-rrBorder">
+                        </div>
+                        <button id="btnCreator" onclick="addCreator()" class="col-span-2 bg-blue-600 hover:bg-blue-700 text-white font-bold p-2.5 rounded text-xs uppercase mt-2 transition">Add Creator</button>
                     </div>
-                    <input id="crPhoto" type="file" accept="image/*" class="text-xs text-gray-400 block w-full">
-                    <button id="btnCreator" onclick="addCreator()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2 rounded uppercase">Add Creator</button>
                 </div>
 
-                <!-- ADD PARTNER -->
-                <div class="bg-black/50 p-4 rounded-xl border border-rrBorder space-y-3">
-                    <h4 class="font-bold text-sm text-green-400 uppercase"><i class="fas fa-handshake mr-1"></i> Add Partner / Sponsor</h4>
-                    <div class="grid grid-cols-2 gap-2 text-xs">
-                        <input id="pName" placeholder="Partner Name" class="bg-rrCard p-2 rounded border border-rrBorder text-white">
-                        <input id="pLink" placeholder="Partner Website/Page Link" class="bg-rrCard p-2 rounded border border-rrBorder text-white">
+                <!-- Add Partner Form -->
+                <div class="bg-rrCard p-5 rounded-xl border border-rrBorder flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-sm font-black text-green-400 uppercase mb-4 flex items-center"><i class="fas fa-handshake mr-2"></i>Add Partner</h3>
+                        <div class="grid grid-cols-1 gap-3 text-xs">
+                            <input type="text" id="pName" placeholder="Partner / Sponsor Name" class="bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none">
+                            <input type="text" id="pLink" placeholder="Website / Page Link" class="bg-slate-950 border border-rrBorder p-2.5 rounded text-white outline-none">
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-1 font-bold">PARTNER LOGO</label>
+                                <input type="file" id="pPhoto" accept="image/*" class="w-full text-gray-400 bg-slate-950 p-1.5 rounded border border-rrBorder">
+                            </div>
+                        </div>
                     </div>
-                    <input id="pPhoto" type="file" accept="image/*" class="text-xs text-gray-400 block w-full">
-                    <button id="btnPartner" onclick="addPartner()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold text-xs py-2 rounded uppercase">Add Partner</button>
+                    <button id="btnPartner" onclick="addPartner()" class="bg-green-600 hover:bg-green-700 text-white font-bold p-2.5 rounded text-xs uppercase mt-4 transition">Add Partner</button>
                 </div>
             </div>
 
-            <!-- MANAGE LISTS -->
-            <div class="bg-black p-4 rounded border border-rrBorder space-y-4">
-                <h4 class="font-bold text-sm text-gray-300 uppercase border-b border-gray-800 pb-2"><i class="fas fa-trash mr-1"></i> Manage Data</h4>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div><p class="text-xs text-rrRed font-bold mb-2">Teams</p><div id="manageCompetitive" class="space-y-1 max-h-32 overflow-y-auto text-xs border border-rrBorder p-2 rounded"></div></div>
-                    <div><p class="text-xs text-yellow-500 font-bold mb-2">Matches</p><div id="manageMatches" class="space-y-1 max-h-32 overflow-y
-                                       <div><p class="text-xs text-rrRed font-bold mb-2">Teams</p><div id="manageCompetitive" class="space-y-1 max-h-32 overflow-y-auto text-xs border border-rrBorder p-2 rounded"></div></div>
-                    <div><p class="text-xs text-yellow-500 font-bold mb-2">Matches</p><div id="manageMatches" class="space-y-1 max-h-32 overflow-y-auto text-xs border border-rrBorder p-2 rounded"></div></div>
-                    <div><p class="text-xs text-blue-400 font-bold mb-2">Creators</p><div id="manageCreators" class="space-y-1 max-h-32 overflow-y-auto text-xs border border-rrBorder p-2 rounded"></div></div>
-                    <div><p class="text-xs text-green-400 font-bold mb-2">Partners</p><div id="managePartners" class="space-y-1 max-h-32 overflow-y-auto text-xs border border-rrBorder p-2 rounded"></div></div>
+            <!-- DELETE / MANAGE ITEMS LIST -->
+            <div class="bg-rrCard p-5 rounded-xl border border-rrBorder">
+                <h3 class="text-sm font-black text-white uppercase mb-4">Manage & Delete Items</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div><p class="text-xs text-rrRed font-bold mb-2">Teams</p><div id="manageCompetitive" class="space-y-1 max-h-32 overflow-y-auto text-xs border border-rrBorder p-2 rounded bg-slate-950"></div></div>
+                    <div><p class="text-xs text-yellow-500 font-bold mb-2">Matches</p><div id="manageMatches" class="space-y-1 max-h-32 overflow-y-auto text-xs border border-rrBorder p-2 rounded bg-slate-950"></div></div>
+                    <div><p class="text-xs text-blue-400 font-bold mb-2">Creators</p><div id="manageCreators" class="space-y-1 max-h-32 overflow-y-auto text-xs border border-rrBorder p-2 rounded bg-slate-950"></div></div>
+                    <div><p class="text-xs text-green-400 font-bold mb-2">Partners</p><div id="managePartners" class="space-y-1 max-h-32 overflow-y-auto text-xs border border-rrBorder p-2 rounded bg-slate-950"></div></div>
                 </div>
             </div>
         </div>
@@ -319,7 +257,38 @@
         <p>&copy; 2026 Rift Raiders Guild. All Rights Reserved.</p>
     </footer>
 
-    <!-- FLOATING CHATBOT ASSISTANT -->
+    <!-- ADMIN PASSWORD MODAL -->
+    <div id="adminModal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-rrCard border border-rrBorder rounded-2xl p-6 w-full max-w-sm text-center shadow-2xl relative">
+            <i class="fas fa-user-shield text-4xl text-rrRed mb-3"></i>
+            <h3 class="text-xl font-black text-white uppercase mb-1">Admin Access</h3>
+            <p class="text-xs text-gray-400 mb-4">Enter password to unlock Admin Dashboard.</p>
+            
+            <input type="password" id="adminPasswordInput" placeholder="Enter Password" class="w-full bg-slate-950 border border-rrBorder p-2.5 rounded-lg text-white text-sm mb-4 text-center focus:border-rrRed outline-none">
+            
+            <div class="flex space-x-2">
+                <button onclick="closeAdminModal()" class="w-1/2 bg-slate-800 text-gray-300 py-2 rounded-lg font-bold text-xs hover:bg-slate-700">Cancel</button>
+                <button onclick="verifyAdminPassword()" class="w-1/2 bg-rrRed text-white py-2 rounded-lg font-bold text-xs hover:bg-red-700">Login</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- APPLY MODAL -->
+    <div id="applyModal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-rrCard border border-rrBorder rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden relative shadow-2xl">
+            <div class="p-4 border-b border-rrBorder flex justify-between items-center bg-slate-950">
+                <h3 class="font-black text-white text-base uppercase tracking-wider flex items-center">
+                    <i class="fas fa-file-alt text-rrRed mr-2"></i>Rift Raiders Application Form
+                </h3>
+                <button onclick="closeApplyModal()" class="text-gray-400 hover:text-white text-xl p-1"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-2 flex-1 overflow-y-auto bg-slate-900">
+                <iframe src="https://docs.google.com/forms/d/1qTTcHVfRsVXhsfKHv5-7qkZnoe6kMtoN2uLVEYY5XVg/viewform?embedded=true" class="w-full h-[550px]" frameborder="0">Loading...</iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- CHATBOT ASSISTANT -->
     <div id="chatbotContainer" class="fixed bottom-5 right-5 z-50">
         <button onclick="toggleChatbot()" class="bg-rrRed text-white p-4 rounded-full shadow-2xl hover:scale-110 transition duration-300 flex items-center justify-center border-2 border-red-500 shadow-red-600/50">
             <i class="fas fa-robot text-2xl"></i>
@@ -336,40 +305,27 @@
 
             <div id="chatMessages" class="p-3 flex-1 overflow-y-auto space-y-3 text-xs">
                 <div class="bg-slate-800 p-2.5 rounded-lg text-gray-200 max-w-[85%] border border-slate-700">
-                    Kamusta, Raider! 🗡️ Ako ang RR Assistant. Piliin lang ang katanungan sa ibaba o mag-apply agad!
+                    Hello, Raider! 🗡️ I'm the RR Assistant. Select a topic below or apply directly!
                 </div>
             </div>
 
             <div class="p-2 border-t border-rrBorder bg-slate-950/80 space-y-1">
-                <p class="text-[10px] text-gray-400 font-bold mb-1">MGA MADALAS ITANONG:</p>
+                <p class="text-[10px] text-gray-400 font-bold mb-1 uppercase">FREQUENTLY ASKED:</p>
                 <div class="grid grid-cols-2 gap-1">
-                    <button onclick="sendQuickReply('req_wr')" class="text-left bg-rrCard hover:bg-rrRed text-white text-[10px] p-2 rounded border border-rrBorder transition">📱 WR Req</button>
-                    <button onclick="sendQuickReply('req_pc')" class="text-left bg-rrCard hover:bg-rrRed text-white text-[10px] p-2 rounded border border-rrBorder transition">💻 LoL PC Req</button>
+                    <button onclick="sendQuickReply('req_wr')" class="text-left bg-rrCard hover:bg-rrRed text-white text-[10px] p-2 rounded border border-rrBorder transition">📱 Wild Rift Requirements</button>
+                    <button onclick="sendQuickReply('req_pc')" class="text-left bg-rrCard hover:bg-rrRed text-white text-[10px] p-2 rounded border border-rrBorder transition">💻 LoL PC Requirements</button>
                 </div>
-                <button onclick="sendQuickReply('apply')" class="w-full text-left bg-rrCard hover:bg-rrRed text-white text-[11px] p-2 rounded border border-rrBorder transition">📝 Paano Mag-apply?</button>
-                <button onclick="sendQuickReply('gc')" class="w-full text-left bg-rrCard hover:bg-rrRed text-white text-[11px] p-2 rounded border border-rrBorder transition">💬 Community / GC Links</button>
+                <button onclick="sendQuickReply('apply')" class="w-full text-left bg-rrCard hover:bg-rrRed text-white text-[11px] p-2 rounded border border-rrBorder transition">📝 How to Apply?</button>
+                <button onclick="sendQuickReply('gc')" class="w-full text-left bg-rrCard hover:bg-rrRed text-white text-[11px] p-2 rounded border border-rrBorder transition">💬 Community / Messenger GC</button>
             </div>
         </div>
-    </div>
-
-    <!-- APPLY MODAL (GOOGLE FORM) -->
-    <div id="applyModal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-rrCard border border-rrBorder rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden relative shadow-2xl">
-            <div class="p-4 border-b border-rrBorder flex justify-between items-center bg-slate-950">
-                <h3 class="font-black text-white text-base uppercase tracking-wider flex items-center">
-                    <i class="fas fa-file-alt text-rrRed mr-2"></i>Rift Raiders Application Form
-                </h3>
-                <button onclick="closeApplyModal()" class="text-gray-400 hover:text-white text-xl p-1"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="p-2 flex-1 overflow-y-auto bg-slate-900">
-                <iframe src="https://docs.google.com/forms/d/1qTTcHVfRsVXhsfKHv5-7qkZnoe6kMtoN2uLVEYY5XVg/viewform?embedded=true" class="w-full h-[550px]" frameborder="0" marginheight="0" marginwidth="0">Loading...</iframe>
-            </div>
-        </div>
-    </div>
-
-    <!-- DATABASE & SITE SCRIPT -->
+                            </div>
+        <!-- JAVASCRIPT CODE -->
     <script>
-        // Auto Hide Loading Screen
+        // ADMIN PASSWORD CONFIGURATION
+        const ADMIN_PASSWORD = "rr123";
+
+        // AUTO-HIDE LOADING SCREEN
         window.addEventListener('load', function() {
             const loader = document.getElementById('loadingScreen');
             if (loader) {
@@ -378,26 +334,55 @@
             }
         });
 
+        // UI TOGGLE FUNCTIONS
         function toggleChatbot() { document.getElementById('chatWindow').classList.toggle('hidden'); }
         function openApplyModal() { document.getElementById('applyModal').classList.remove('hidden'); }
         function closeApplyModal() { document.getElementById('applyModal').classList.add('hidden'); }
 
+        function openAdminModal() {
+            document.getElementById('adminModal').classList.remove('hidden');
+            document.getElementById('adminPasswordInput').value = '';
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModal').classList.add('hidden');
+        }
+
+        function verifyAdminPassword() {
+            const input = document.getElementById('adminPasswordInput').value;
+            if (input === ADMIN_PASSWORD) {
+                alert("Access Granted! Welcome Admin.");
+                closeAdminModal();
+                const adminSec = document.getElementById('adminSection');
+                adminSec.classList.remove('hidden');
+                adminSec.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                alert("Incorrect Password! Please try again.");
+            }
+        }
+
+        function logoutAdmin() {
+            document.getElementById('adminSection').classList.add('hidden');
+            alert("Admin Logged Out.");
+        }
+
+        // CHATBOT QUICK REPLIES
         function sendQuickReply(type) {
             const chatBox = document.getElementById('chatMessages');
             let userMsg = ""; let botMsg = "";
 
             if(type === 'req_wr') {
                 userMsg = "Wild Rift Requirements";
-                botMsg = `<b>📱 WILD RIFT REQUIREMENTS:</b><br><br>• <b>Casual:</b> Emerald Rank & above.<br>• <b>Competitive:</b> Grandmaster Peak (Current/Prev Season).<br>• <b>All-Female & LGBTQ+:</b> Master Rank & above.<br><br><button onclick="openApplyModal()" class="bg-rrRed text-white px-3 py-1.5 rounded font-bold hover:bg-red-700">Apply for Wild Rift 📝</button>`;
+                botMsg = `<b>📱 WILD RIFT REQUIREMENTS:</b><br><br>• <b>Casual:</b> Emerald Rank & above.<br>• <b>Competitive:</b> Grandmaster Peak (Current/Prev Season).<br>• <b>All-Female & LGBTQ+:</b> Master Rank & above.<br><br><button onclick="openApplyModal()" class="bg-rrRed text-white px-3 py-1.5 rounded font-bold hover:bg-red-700 mt-1">Apply for Wild Rift 📝</button>`;
             } else if(type === 'req_pc') {
                 userMsg = "LoL PC Requirements";
-                botMsg = `<b>💻 LOL PC COMPETITIVE REQUIREMENTS:</b><br><br>• <b>Minimum Rank:</b> Emerald+ / Diamond+<br>• Must have a working mic & active in voice comms.<br>• Available for scheduled practices & scrims.<br>• Ready to provide OP.GG link.<br><br><button onclick="openApplyModal()" class="bg-rrRed text-white px-3 py-1.5 rounded font-bold hover:bg-red-700">Apply for LoL PC 📝</button>`;
+                botMsg = `<b>💻 LOL PC COMPETITIVE REQUIREMENTS:</b><br><br>• <b>Minimum Rank:</b> Emerald+ / Diamond+<br>• Must have a working mic & active in voice comms.<br>• Available for scheduled practices & scrims.<br>• Ready to provide OP.GG link.<br><br><button onclick="openApplyModal()" class="bg-rrRed text-white px-3 py-1.5 rounded font-bold hover:bg-red-700 mt-1">Apply for LoL PC 📝</button>`;
             } else if(type === 'apply') {
-                userMsg = "Paano mag-apply?";
-                botMsg = `Madali lang mag-apply!<br><br>1. I-click ang **Apply Now** button sa ibaba.<br>2. Piliin sa form kung **Wild Rift** o **LoL PC** ang aapplyan mo.<br>3. Sagutan ang mga kailangang detalye.<br><br><button onclick="openApplyModal()" class="bg-rrRed text-white px-3 py-1.5 rounded font-bold hover:bg-red-700">Open Application Form 📝</button>`;
+                userMsg = "How to apply?";
+                botMsg = `Applying is simple!<br><br>1. Click the <b>Apply Now</b> button.<br>2. Select whether you're applying for Wild Rift or LoL PC.<br>3. Fill out the required details in the form.<br><br><button onclick="openApplyModal()" class="bg-rrRed text-white px-3 py-1.5 rounded font-bold hover:bg-red-700 mt-1">Open Application Form 📝</button>`;
             } else if(type === 'gc') {
-                userMsg = "Saan ang Community / GC?";
-                botMsg = `Mag-apply muna sa form para ma-verify at ma-add sa aming official channels!<br><br>• <a href="https://m.me/j/Abb_o5K2XU7GX6GS/" target="_blank" class="underline text-blue-400 font-bold">Wild Rift Messenger GC</a>`;
+                userMsg = "Community / GC Links";
+                botMsg = `Please apply first through our application form to get verified and added to our official channels!<br><br>• <a href="https://m.me/j/Abb_o5K2XU7GX6GS/" target="_blank" class="underline text-blue-400 font-bold">Wild Rift Messenger GC</a>`;
             }
 
             chatBox.innerHTML += `<div class="bg-rrRed/20 text-white p-2 rounded-lg max-w-[85%] ml-auto border border-rrRed/40 text-right">${userMsg}</div>`;
@@ -408,7 +393,7 @@
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
-        // Firebase Operations
+        // FIREBASE & DATA LOGIC
         let competitiveList = {}; let creatorsList = {}; let matchesList = {}; let partnersList = {};
         let siteSettings = { logo: "https://i.ibb.co/689L51P/58834.png" };
         let db = null;
@@ -435,27 +420,6 @@
             reader.readAsDataURL(file);
         }
 
-        window.addMatch = function() {
-            if(!db) return;
-            const opponent = document.getElementById('mOpponent').value; const score = document.getElementById('mScore').value;
-            const type = document.getElementById('mType').value; const result = document.getElementById('mResult').value;
-            const date = document.getElementById('mDate').value;
-            if(!opponent || !score || !date) return alert("Fill Opponent, Score, and Date!");
-            document.getElementById('btnMatch').innerText = "Saving...";
-            db.ref('matches').push({ opponent: opponent, score: score, type: type, result: result, date: date }).then(() => {
-                alert("Match Added!"); document.getElementById('mOpponent').value = ''; document.getElementById('mScore').value = ''; document.getElementById('mDate').value = ''; document.getElementById('btnMatch').innerText = "Add Match";
-            });
-        }
-
-        window.addPartner = function() {
-            if(!db) return; const name = document.getElementById('pName').value; const link = document.getElementById('pLink').value; const file = document.getElementById('pPhoto').files[0];
-            if(!name || !file) return alert("Partner Name and Logo required!");
-            document.getElementById('btnPartner').innerText = "Saving...";
-            processImage(file, "https://i.ibb.co/689L51P/58834.png", (b) => { db.ref('partners').push({ name: name, link: link, logo: b }).then(() => {
-                alert("Partner Added!"); document.getElementById('pName').value = ''; document.getElementById('pLink').value = ''; document.getElementById('btnPartner').innerText = "Add Partner";
-            }); });
-        }
-
         window.addCompetitive = function() {
             if(!db) return alert("Database disconnected.");
             const ign = document.getElementById('cIgn').value; const role = document.getElementById('cRole').value;
@@ -465,7 +429,7 @@
             const profileLink = document.getElementById('cProfileLink').value;
             const file = document.getElementById('cPhoto').files[0];
             
-            if(!ign || !role || !team) return alert("IGN, Role, and Team required!");
+            if(!ign || !role || !team) return alert("IGN, Role, and Team are required!");
             const btn = document.getElementById('btnCompetitive'); btn.innerText = "Saving..."; btn.disabled = true;
 
             processImage(file, "https://i.ibb.co/3k15y8B/58833.png", (base64Img) => {
@@ -480,18 +444,39 @@
                     document.getElementById('cIgn').value = ''; document.getElementById('cRole').value = ''; document.getElementById('cTeam').value = '';
                     document.getElementById('cWinrate').value = ''; document.getElementById('cChamp1').value = ''; document.getElementById('cChamp2').value = '';
                     document.getElementById('cChamp3').value = ''; document.getElementById('cProfileLink').value = ''; document.getElementById('cPhoto').value = '';
-                    btn.innerText = "Add to Team Roster"; btn.disabled = false;
+                    btn.innerText = "Add to Roster"; btn.disabled = false;
                 });
+            });
+        }
+
+        window.addMatch = function() {
+            if(!db) return;
+            const opponent = document.getElementById('mOpponent').value; const score = document.getElementById('mScore').value;
+            const type = document.getElementById('mType').value; const result = document.getElementById('mResult').value;
+            const date = document.getElementById('mDate').value;
+            if(!opponent || !score || !date) return alert("Please fill Opponent, Score, and Date!");
+            document.getElementById('btnMatch').innerText = "Saving...";
+            db.ref('matches').push({ opponent: opponent, score: score, type: type, result: result, date: date }).then(() => {
+                alert("Match Added!"); document.getElementById('mOpponent').value = ''; document.getElementById('mScore').value = ''; document.getElementById('mDate').value = ''; document.getElementById('btnMatch').innerText = "Add Match Record";
             });
         }
 
         window.addCreator = function() {
             if(!db) return; const name = document.getElementById('crName').value; const game = document.getElementById('crGame').value;
             const fb = document.getElementById('crFb').value; const yt = document.getElementById('crYt').value; const tt = document.getElementById('crTt').value; const file = document.getElementById('crPhoto').files[0];
-            if(!name || !game) return alert("Creator Name and Game required!");
+            if(!name || !game) return alert("Creator Name and Game are required!");
             document.getElementById('btnCreator').innerText = "Saving...";
             processImage(file, "https://i.ibb.co/689L51P/58834.png", (b) => { db.ref('creators').push({ name: name, game: game, socials: { fb: fb, yt: yt, tt: tt }, photo: b }).then(() => {
                 alert("Creator Added!"); document.getElementById('crName').value = ''; document.getElementById('crGame').value = ''; document.getElementById('crFb').value = ''; document.getElementById('crYt').value = ''; document.getElementById('crTt').value = ''; document.getElementById('btnCreator').innerText = "Add Creator";
+            }); });
+        }
+
+        window.addPartner = function() {
+            if(!db) return; const name = document.getElementById('pName').value; const link = document.getElementById('pLink').value; const file = document.getElementById('pPhoto').files[0];
+            if(!name || !file) return alert("Partner Name and Logo required!");
+            document.getElementById('btnPartner').innerText = "Saving...";
+            processImage(file, "https://i.ibb.co/689L51P/58834.png", (b) => { db.ref('partners').push({ name: name, link: link, logo: b }).then(() => {
+                alert("Partner Added!"); document.getElementById('pName').value = ''; document.getElementById('pLink').value = ''; document.getElementById('btnPartner').innerText = "Add Partner";
             }); });
         }
 
@@ -500,6 +485,7 @@
         window.deleteMatch = function(key) { if(confirm('Delete match?')) { db.ref('matches/' + key).remove(); } }
         window.deletePartner = function(key) { if(confirm('Delete partner?')) { db.ref('partners/' + key).remove(); } }
 
+        // RENDER SITE CONTENT
         function renderSite() {
             try {
                 if(siteSettings.logo) {
@@ -507,20 +493,55 @@
                     document.getElementById('loadingLogo').src = siteSettings.logo;
                 }
 
-                // RENDER TEAMS
+                // RENDER TEAMS / PLAYERS
                 const compKeys = Object.keys(competitiveList);
                 const cGrid = document.getElementById('competitiveGrid');
-                if(compKeys.length === 0) cGrid.innerHTML = '<p class="text-gray-500 italic text-sm col-span-full text-center">No roster players added yet.</p>';
-                else {
+                if(compKeys.length === 0) {
+                    cGrid.innerHTML = '<p class="text-gray-500 italic text-sm col-span-full text-center">No roster players added yet.</p>';
+                } else {
                     cGrid.innerHTML = compKeys.map(key => {
                         const p = competitiveList[key];
                         let champsHTML = '';
                         if(p.champs && (p.champs[0] || p.champs[1] || p.champs[2])) {
-                            champsHTML = p.champs.map(c => c ? `<img src="${c}" class="w-8 h-8 rounded-full border border-gray-600 object-cover bg-slate-800">` : '').join('');
-                        } else { champsHTML = `<span class="text-[10px] text-gray-500">No data</span>`; }
-                        let linkHTML = p.profileLink ? `<a href="${p.profileLink}" target="_blank" onclick="event.stopPropagation();" class="mt-3 block text-center bg-rrRed hover:bg-red-700 text-white text-[10px] font-bold py-1.5 px-3 rounded w-max"><i class="fas fa-external-link-alt mr-1"></i>View Profile / OP.GG</a>` : '';
+                            champsHTML = p.champs.map(c => c ? `<img src="${c}" class="w-7 h-7 rounded-full border border-gray-600 object-cover bg-slate-800">` : '').join('');
+                        } else { 
+                            champsHTML = `<span class="text-[10px] text-gray-500">No champs</span>`; 
+                        }
+                        let linkHTML = p.profileLink ? `<a href="${p.profileLink}" target="_blank" onclick="event.stopPropagation();" class="mt-2 block text-center bg-rrRed hover:bg-red-700 text-white text-[10px] font-bold py-1.5 px-3 rounded w-full transition"><i class="fas fa-external-link-alt mr-1"></i>View Profile</a>` : '';
 
-                        return `<div onclick="this.classList.toggle('is-open')" class="player-card relative bg-rrCard border border-rrBorder rounded-xl overflow-hidden shadow-lg cursor-pointer h-56 w-full group"><div class="img-container bg-black h-full w-full"><img src="${p.photo}" class="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity"><div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent pointer-events-none"></div><div class="default-info"><span class="text-[10px] bg-rrRed text-white px-2 py-0.5 rounded w-max font-bold mb-1 block">${p.game || 'Team'}</span><h3 class="text-2xl font-black text-white uppercase truncate">${p.ign}</h3></div></div><div class="expanded-info"><div class="mb-2"><h3 class="text-xl font-black text-white uppercase truncate">${p.ign}</h3><p class="text-rrRed text-xs font-bold tracking-widest uppercase">${p.role}</p></div><div class="grid grid-cols-2 gap-2 mb-3 border-y border-rrBorder py-2"><div><p class="text-[10px] text-gray-400 uppercase font-bold">Team</p><p class="text-sm font-bold text-gray-200 truncate">${p.team}</p></div><div><p class="text-[10px] text-gray-400 uppercase font-bold">Winrate</p><p class="text-sm font-black text-green-500">${p.winrate || 'N/A'}</p></div></div><div><p class="text-[10px] text-gray-400 uppercase font-bold mb-1">Top Champs</p><div class="flex space-x-2">${champsHTML}</div></div>${linkHTML}</div><div class="absolute top-2 right-2 text-white/40 text-xs z-20 group-hover:text-white"><i class="fas fa-hand-pointer animate-pulse"></i></div></div>`;
+                        return `
+                        <div onclick="this.classList.toggle('is-open')" class="player-card relative bg-rrCard border border-rrBorder rounded-xl overflow-hidden shadow-lg cursor-pointer h-64 w-full group">
+                            <div class="img-container bg-black h-full w-full relative">
+                                <img src="${p.photo}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity">
+                                <div class="default-info">
+                                    <span class="text-[9px] bg-rrRed text-white px-2 py-0.5 rounded font-bold mb-1 inline-block uppercase">${p.game || 'Team'}</span>
+                                    <h3 class="text-xl font-black text-white uppercase truncate">${p.ign}</h3>
+                                    <p class="text-rrRed text-xs font-bold uppercase tracking-wider">${p.role}</p>
+                                </div>
+                            </div>
+                            <div class="expanded-info">
+                                <div class="mb-2">
+                                    <h3 class="text-lg font-black text-white uppercase truncate">${p.ign}</h3>
+                                    <p class="text-rrRed text-xs font-bold tracking-widest uppercase">${p.role}</p>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2 mb-2 border-y border-rrBorder py-2">
+                                    <div>
+                                        <p class="text-[9px] text-gray-400 uppercase font-bold">Team</p>
+                                        <p class="text-xs font-bold text-gray-200 truncate">${p.team}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-[9px] text-gray-400 uppercase font-bold">Winrate</p>
+                                        <p class="text-xs font-black text-green-500">${p.winrate || 'N/A'}</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="text-[9px] text-gray-400 uppercase font-bold mb-1">Top Champs</p>
+                                    <div class="flex space-x-1.5">${champsHTML}</div>
+                                </div>
+                                ${linkHTML}
+                            </div>
+                            <div class="absolute top-2 right-2 text-white/50 text-xs z-10"><i class="fas fa-hand-pointer"></i></div>
+                        </div>`;
                     }).join('');
                 }
 
@@ -536,7 +557,8 @@
                         return `<div class="bg-rrCard border ${bCol} rounded-xl p-4 shadow-lg flex justify-between items-center"><div><span class="text-[10px] text-gray-400 uppercase font-bold tracking-wider">${m.type} • ${m.date}</span><h3 class="text-lg font-black text-white uppercase mt-1">VS ${m.opponent}</h3><p class="text-sm font-bold text-gray-300">Score: ${m.score}</p></div><div class="text-right"><h2 class="text-2xl font-black uppercase ${rCol}">${m.result}</h2></div></div>`;
                     }).join('');
                 }
-                               // RENDER CREATORS
+
+                // RENDER CREATORS
                 const crKeys = Object.keys(creatorsList);
                 if(crKeys.length === 0) document.getElementById('creatorsGrid').innerHTML = '<p class="text-gray-500 italic text-sm col-span-full text-center">No creators added yet.</p>';
                 else {
@@ -557,21 +579,38 @@
                 }
 
                 // MANAGE ADMIN LISTS
-                document.getElementById('manageCompetitive').innerHTML = compKeys.length ? compKeys.map(key => `<div class="flex justify-between items-center p-1.5 bg-slate-950 rounded mb-1"><span class="text-gray-300 truncate pr-2">${competitiveList[key].ign}</span><button onclick="deleteCompetitive('${key}')" class="text-red-500 hover:text-red-300"><i class="fas fa-times"></i></button></div>`).join('') : '<p class="text-gray-600">Empty</p>';
-                document.getElementById('manageMatches').innerHTML = matchKeys.length ? matchKeys.map(key => `<div class="flex justify-between items-center p-1.5 bg-slate-950 rounded mb-1"><span class="text-gray-300 truncate pr-2">VS ${matchesList[key].opponent}</span><button onclick="deleteMatch('${key}')" class="text-red-500 hover:text-red-300"><i class="fas fa-times"></i></button></div>`).join('') : '<p class="text-gray-600">Empty</p>';
-                document.getElementById('manageCreators').innerHTML = crKeys.length ? crKeys.map(key => `<div class="flex justify-between items-center p-1.5 bg-slate-950 rounded mb-1"><span class="text-gray-300 truncate pr-2">${creatorsList[key].name}</span><button onclick="deleteCreator('${key}')" class="text-red-500 hover:text-red-300"><i class="fas fa-times"></i></button></div>`).join('') : '<p class="text-gray-600">Empty</p>';
-                document.getElementById('managePartners').innerHTML = pKeys.length ? pKeys.map(key => `<div class="flex justify-between items-center p-1.5 bg-slate-950 rounded mb-1"><span class="text-gray-300 truncate pr-2">${partnersList[key].name}</span><button onclick="deletePartner('${key}')" class="text-red-500 hover:text-red-300"><i class="fas fa-times"></i></button></div>`).join('') : '<p class="text-gray-600">Empty</p>';
+                document.getElementById('manageCompetitive').innerHTML = compKeys.length ? compKeys.map(key => `<div class="flex justify-between items-center p-1.5 bg-slate-900 rounded mb-1"><span class="text-gray-300 truncate pr-2">${competitiveList[key].ign}</span><button onclick="deleteCompetitive('${key}')" class="text-red-500 hover:text-red-300"><i class="fas fa-times"></i></button></div>`).join('') : '<p class="text-gray-600">Empty</p>';
+                document.getElementById('manageMatches').innerHTML = matchKeys.length ? matchKeys.map(key => `<div class="flex justify-between items-center p-1.5 bg-slate-900 rounded mb-1"><span class="text-gray-300 truncate pr-2">VS ${matchesList[key].opponent}</span><button onclick="deleteMatch('${key}')" class="text-red-500 hover:text-red-300"><i class="fas fa-times"></i></button></div>`).join('') : '<p class="text-gray-600">Empty</p>';
+                document.getElementById('manageCreators').innerHTML = crKeys.length ? crKeys.map(key => `<div class="flex justify-between items-center p-1.5 bg-slate-900 rounded mb-1"><span class="text-gray-300 truncate pr-2">${creatorsList[key].name}</span><button onclick="deleteCreator('${key}')" class="text-red-500 hover:text-red-300"><i class="fas fa-times"></i></button></div>`).join('') : '<p class="text-gray-600">Empty</p>';
+                document.getElementById('managePartners').innerHTML = pKeys.length ? pKeys.map(key => `<div class="flex justify-between items-center p-1.5 bg-slate-900 rounded mb-1"><span class="text-gray-300 truncate pr-2">${partnersList[key].name}</span><button onclick="deletePartner('${key}')" class="text-red-500 hover:text-red-300"><i class="fas fa-times"></i></button></div>`).join('') : '<p class="text-gray-600">Empty</p>';
                     
             } catch (error) { console.error("Render error:", error); }
         }
 
+        // INITIALIZE FIREBASE REALTIME DATABASE
         try {
-            const firebaseConfig = { apiKey: "AIzaSy87GyUvjxpgvVQpSS_wjh2Sm6HssUd_jbm", authDomain: "riftraiders-348f4.firebaseapp.com", databaseURL: "https://riftraiders-348f4-default-rtdb.asia-southeast1.firebasedatabase.app", projectId: "riftraiders-348f4", storageBucket: "riftraiders-348f4.firebasestorage.app", messagingSenderId: "103200979693", appId: "1:103200979693:web:48d4b7f6e65734f2756ee4" };
-            if (!firebase.apps.length) firebase.initializeApp(firebaseConfig); db = firebase.database();
+            const firebaseConfig = { 
+                apiKey: "AIzaSy87GyUvjxpgvVQpSS_wjh2Sm6HssUd_jbm", 
+                authDomain: "riftraiders-348f4.firebaseapp.com", 
+                databaseURL: "https://riftraiders-348f4-default-rtdb.asia-southeast1.firebasedatabase.app", 
+                projectId: "riftraiders-348f4", 
+                storageBucket: "riftraiders-348f4.firebasestorage.app", 
+                messagingSenderId: "103200979693", 
+                appId: "1:103200979693:web:48d4b7f6e65734f2756ee4" 
+            };
+            if (!firebase.apps.length) firebase.initializeApp(firebaseConfig); 
+            db = firebase.database();
             db.ref('/').on('value', (snapshot) => {
                 const data = snapshot.val();
-                if (data) { competitiveList = data.competitive || {}; creatorsList = data.creators || {}; matchesList = data.matches || {}; partnersList = data.partners || {}; if (data.settings && data.settings.logo) siteSettings = data.settings; } 
-                else { competitiveList = {}; creatorsList = {}; matchesList = {}; partnersList = {}; }
+                if (data) { 
+                    competitiveList = data.competitive || {}; 
+                    creatorsList = data.creators || {}; 
+                    matchesList = data.matches || {}; 
+                    partnersList = data.partners || {}; 
+                    if (data.settings && data.settings.logo) siteSettings = data.settings; 
+                } else { 
+                    competitiveList = {}; creatorsList = {}; matchesList = {}; partnersList = {}; 
+                }
                 renderSite();
             });
         } catch(e) { console.error("Firebase Init Error:", e); }
