@@ -443,44 +443,47 @@
             }, 700);
         }
 
-                        function generateAiReply(query) {
+                                async function generateAiReply(query) {
             const q = query.toLowerCase();
-            
-            // Smart Language Detection (Tagalog / Taglish vs English)
-            const isTagalog = /(paano|sali|ano|saan|meron|wala|po|kamusta|naman|mag|pano|bakit)/i.test(q);
 
-            if(q.includes('discord') || q.includes('server') || q.includes('dc')) {
-                return isTagalog 
-                    ? "<b>🎮 Discord Server:</b><br>Sumali sa aming official Discord server dito:<br><a href='https://discord.gg/x3M8dZ7fmR' target='_blank' class='text-rrRed underline font-bold'>https://discord.gg/x3M8dZ7fmR</a>"
-                    : "<b>🎮 Discord Server:</b><br>Join our official Discord server here:<br><a href='https://discord.gg/x3M8dZ7fmR' target='_blank' class='text-rrRed underline font-bold'>https://discord.gg/x3M8dZ7fmR</a>";
-            } else if(q.includes('facebook') || q.includes('fb') || q.includes('page') || q.includes('social')) {
-                return isTagalog
-                    ? "<b>📱 Facebook Page:</b><br>I-follow ang aming official FB page dito:<br><a href='https://www.facebook.com/share/1EgG3RsrZg/' target='_blank' class='text-rrRed underline font-bold'>Rift Raiders Facebook Page</a>"
-                    : "<b>📱 Facebook Page:</b><br>Follow our official Facebook page here:<br><a href='https://www.facebook.com/share/1EgG3RsrZg/' target='_blank' class='text-rrRed underline font-bold'>Rift Raiders Facebook Page</a>";
-            } else if(q.includes('email') || q.includes('contact') || q.includes('message')) {
-                return isTagalog
-                    ? "<b>📧 Email Us:</b><br>Maaari mo kaming i-email sa:<br><b>riftraiders.wr@gmail.com</b>"
-                    : "<b>📧 Email Us:</b><br>You can reach us directly via email at:<br><b>riftraiders.wr@gmail.com</b>";
+            // DISCORD WEBHOOK (Nakalagay na ang exact Webhook URL mo)
+            const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1552359374901747712/JFcyeBrdz8jTZpKZEkFxfWKXBI2yXE_D_QB3-3cw3pahtvhoSE5lfV336mnljC0Xth_2";
+            
+            // Direct notification papunta sa #rrwr-suggestions channel ninyo
+            if (DISCORD_WEBHOOK_URL) {
+                fetch(DISCORD_WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: "Rift Raiders bot",
+                        content: `📩 **New AI Chat / Feedback:**\n"${query}"`
+                    })
+                }).catch(err => console.log("Webhook error:", err));
+            }
+
+            // SMART BILINGUAL AUTO-REPLY SA WEBSITE
+            const isTagalog = /(paano|sali|ano|saan|meron|wala|po|kamusta|naman|mag|pano|bakit|maganda|salamat|lods)/i.test(q);
+
+            if(q.includes('discord') || q.includes('dc') || q.includes('server')) {
+                return "<b>🎮 Discord Server:</b><br>Sumali sa aming official Discord server dito:<br><a href='https://discord.gg/x3M8dZ7fmR' target='_blank' class='text-rrRed underline font-bold'>https://discord.gg/x3M8dZ7fmR</a>";
+            } else if(q.includes('facebook') || q.includes('fb') || q.includes('page')) {
+                return "<b>📱 Facebook Page:</b><br>I-follow ang aming official FB page dito:<br><a href='https://www.facebook.com/share/1EgG3RsrZg/' target='_blank' class='text-rrRed underline font-bold'>Rift Raiders Facebook Page</a>";
+            } else if(q.includes('email') || q.includes('contact') || q.includes('gmail')) {
+                return "<b>📧 Contact Us:</b><br>Maaari mo kaming i-email sa: <b>riftraiders.wr@gmail.com</b>";
             } else if(q.includes('wild rift') || q.includes('wr')) {
                 return "<b>📱 Wild Rift Requirements:</b><br>• Casual: Emerald Rank & above.<br>• Competitive: Grandmaster Peak.<br>• All-Female / LGBTQ+: Master Rank & above.";
             } else if(q.includes('pc') || q.includes('league of legends') || q.includes('lol')) {
                 return "<b>💻 LoL PC Requirements:</b><br>• Minimum Rank: Emerald/Diamond+.<br>• Must have active mic for voice communication.";
-            } else if(q.includes('apply') || q.includes('join') || q.includes('form') || q.includes('sali')) {
-                return isTagalog
-                    ? "<b>📝 Paano mag-apply:</b><br>I-click ang <b>'Apply'</b> button sa top menu bar o sumali agad sa aming <a href='https://discord.gg/x3M8dZ7fmR' target='_blank' class='text-rrRed underline font-bold'>Discord Server</a>!"
-                    : "<b>📝 How to Apply:</b><br>Click the <b>'Apply'</b> button on the top menu bar or join our <a href='https://discord.gg/x3M8dZ7fmR' target='_blank' class='text-rrRed underline font-bold'>Discord Server</a>!";
-            } else if(q.includes('takeku') || q.includes('roster') || q.includes('player') || q.includes('team')) {
-                return isTagalog
-                    ? "Makikita mo ang stats ng players sa <b>MEET THE TEAMS</b> section sa ibaba! Pindutin ang player card para bumukas ang stats."
-                    : "You can check our player stats in the <b>MEET THE TEAMS</b> section below! Tap a player card to view stats.";
+            } else if(q.includes('apply') || q.includes('join') || q.includes('sali')) {
+                return "<b>📝 Paano mag-apply:</b><br>I-click ang <b>'Apply'</b> button sa top menu bar o sumali sa aming <a href='https://discord.gg/x3M8dZ7fmR' target='_blank' class='text-rrRed underline font-bold'>Discord Server</a>!";
+            } else if(q.includes('ganda') || q.includes('galing') || q.includes('nice') || q.includes('feedback') || q.includes('suggest')) {
+                return "<b>💖 Maraming Salamat!</b><br>Naitala na namin ang iyong feedback at naisend na ito sa aming Admins sa Discord!";
             } else if(q.includes('hi') || q.includes('hello') || q.includes('kamusta')) {
-                return isTagalog
-                    ? "Hello! Ako ang AI Assistant ng Rift Raiders. Magtanong ka lang tungkol sa guild, Discord, o kung paano sumali!"
-                    : "Hello! I am the Rift Raiders AI Assistant. Ask me anything about the guild, our Discord, or how to join!";
+                return "Hello! Ako ang AI Assistant ng Rift Raiders. Magtanong o mag-iwan ka lang ng feedback dito!";
             } else {
                 return isTagalog
-                    ? "Salamat sa mensahe! Para sumali, i-click ang <b>Apply</b> button, o sumali sa aming <a href='https://discord.gg/x3M8dZ7fmR' target='_blank' class='text-rrRed underline font-bold'>Discord Server</a>."
-                    : "Thank you for your message! To join, click the <b>Apply</b> button, or join our <a href='https://discord.gg/x3M8dZ7fmR' target='_blank' class='text-rrRed underline font-bold'>Discord Server</a>.";
+                    ? "Maraming salamat sa mensahe! Naipadala na rin po ito sa aming team sa Discord. Para sa mabilis na usapan, sumali sa aming <a href='https://discord.gg/x3M8dZ7fmR' target='_blank' class='text-rrRed underline font-bold'>Discord Server</a>!"
+                    : "Thank you for your message! Our team has received it on Discord. Join our <a href='https://discord.gg/x3M8dZ7fmR' target='_blank' class='text-rrRed underline font-bold'>Discord Server</a> to chat directly with us!";
             }
         }
 
