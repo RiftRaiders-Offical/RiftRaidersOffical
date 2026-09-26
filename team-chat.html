@@ -16,7 +16,7 @@
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans antialiased h-screen flex flex-col overflow-hidden selection:bg-red-600 selection:text-white">
 
-    <!-- Auth Protection Overlay (Locks chat if not logged in) -->
+    <!-- Auth Protection Overlay -->
     <div id="auth-lock-overlay" class="absolute inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl w-full max-w-md shadow-2xl text-center esports-glow">
             <div class="w-16 h-16 bg-red-600/20 border border-red-500/30 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -45,16 +45,16 @@
     <header class="bg-slate-900 border-b border-red-900/30 px-4 py-3 flex justify-between items-center shadow-xl z-30">
         <div class="flex items-center space-x-3">
             <span class="text-red-500 font-black text-lg sm:text-xl tracking-wider drop-shadow-[0_0_10px_rgba(239,68,68,0.5)]">RIFT RAIDERS</span>
-            <span class="hidden sm:inline-block text-[10px] bg-red-600/20 text-red-400 border border-red-500/30 px-2.5 py-0.5 rounded-full uppercase tracking-widest font-extrabold">Database Live</span>
+            <span class="hidden sm:inline-block text-[10px] bg-red-600/20 text-red-400 border border-red-500/30 px-2.5 py-0.5 rounded-full uppercase tracking-widest font-extrabold">Teams Chat</span>
         </div>
         <div class="flex items-center space-x-2 sm:space-x-3">
             <button onclick="openModal('file-manager-modal')" class="flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg text-xs font-bold transition border border-slate-700">
                 <i class="fas fa-folder-open text-red-500"></i>
                 <span class="hidden sm:inline">Files</span>
             </button>
-            <button id="nav-role-manager-btn" onclick="openModal('role-manager-modal')" class="hidden items-center space-x-1.5 bg-red-600/20 hover:bg-red-600/30 text-red-400 px-3 py-1.5 rounded-lg text-xs font-bold transition border border-red-500/40">
-                <i class="fas fa-users-cog"></i>
-                <span class="hidden sm:inline">Roles</span>
+            <button id="nav-admin-portal-btn" onclick="openModal('admin-portal-modal')" class="hidden items-center space-x-1.5 bg-red-600/20 hover:bg-red-600/30 text-red-400 px-3 py-1.5 rounded-lg text-xs font-bold transition border border-red-500/40">
+                <i class="fas fa-shield-alt"></i>
+                <span class="hidden sm:inline">Admin Portal</span>
             </button>
             <a href="index.html" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 border border-slate-700">
                 <i class="fas fa-arrow-left text-red-500"></i>
@@ -84,7 +84,7 @@
                 <!-- Populated dynamically -->
             </nav>
             <div class="p-3 border-t border-slate-800 text-[10px] text-slate-500 text-center">
-                DB Connected • v2.6 Mobile/PC
+                DB Connected • v2.7 Mobile/PC
             </div>
         </aside>
 
@@ -93,7 +93,7 @@
             <div class="bg-slate-900/60 border-b border-slate-800 px-4 sm:px-6 py-3 flex justify-between items-center backdrop-blur">
                 <h2 id="active-channel-title" class="font-bold text-sm text-slate-200 flex items-center space-x-2">
                     <i class="fa-solid fa-hashtag text-red-500"></i>
-                    <span>general-strategy</span>
+                    <span id="current-channel-label">general-strategy</span>
                 </h2>
                 <div id="admin-channel-controls" class="hidden">
                     <button onclick="deleteCurrentChannel()" class="text-xs bg-red-600/10 hover:bg-red-600/30 text-red-400 border border-red-500/30 px-2.5 py-1 rounded transition">
@@ -127,10 +127,10 @@
             </form>
         </main>
 
-        <!-- Right Sidebar: Roster by Teams -->
+        <!-- Right Sidebar: Members Roster -->
         <aside class="w-64 bg-slate-900/95 border-l border-slate-800 hidden xl:flex flex-col">
             <div class="p-4 border-b border-slate-800 font-semibold text-xs tracking-wider text-slate-400 uppercase flex justify-between items-center">
-                <span>Team Database</span>
+                <span>Members</span>
                 <span class="text-[10px] text-red-400 bg-red-950 px-2 py-0.5 rounded border border-red-800">Synced</span>
             </div>
             <div id="member-list" class="flex-1 overflow-y-auto p-3 space-y-4">
@@ -206,33 +206,36 @@
         </div>
     </div>
 
-    <!-- ADMIN: ROLE & TEAM MANAGER MODAL -->
-    <div id="role-manager-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-        <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl w-full max-w-md shadow-2xl relative esports-glow">
+    <!-- ADMIN PORTAL MODAL (Roles & User Profiles Control) -->
+    <div id="admin-portal-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl w-full max-w-lg shadow-2xl relative esports-glow max-h-[85vh] overflow-y-auto">
             <h3 class="text-lg font-bold text-white mb-2 flex items-center space-x-2">
-                <i class="fas fa-users-cog text-red-500"></i>
-                <span>Admin Role & Team Control</span>
+                <i class="fas fa-shield-alt text-red-500"></i>
+                <span>Admin Portal - Role & User Management</span>
             </h3>
-            <p class="text-xs text-slate-400 mb-4">I-assign ang user sa kani-kanilang Team o Role (Hal. Main Roster, Sub Team, Analyst).</p>
-            <form onsubmit="handleAdminAssignRole(event)" class="space-y-4">
+            <p class="text-xs text-slate-400 mb-6">Dito mo pwedeng i-assign ang mga user sa kani-kanilang Team/Role o i-edit ang kanilang account profiles.</p>
+            
+            <form onsubmit="handleAdminAssignRole(event)" class="space-y-4 bg-slate-950/60 p-4 rounded-xl border border-slate-800 mb-6">
+                <h4 class="text-xs font-bold text-red-400 uppercase tracking-wider">Assign Team / Role</h4>
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">Pumili ng User</label>
-                    <select id="admin-select-user" class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500">
+                    <select id="admin-select-user" class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500" onchange="loadUserIntoAdminForm(this.value)">
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">I-type ang Team / Role Name</label>
-                    <input type="text" id="admin-input-team" placeholder="Hal. Main Roster, Sub-Team" class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500" required>
+                    <label class="block text-xs text-slate-400 mb-1">Team / Role Name</label>
+                    <input type="text" id="admin-input-team" placeholder="Hal. Main Roster, Sub Team, Analyst" class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500" required>
                 </div>
-                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded font-bold text-sm transition shadow-lg shadow-red-600/30">Apply Team Role</button>
+                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded font-bold text-sm transition shadow-lg shadow-red-600/30">Save Team Role</button>
             </form>
-            <button onclick="closeModal('role-manager-modal')" class="absolute top-3 right-3 text-slate-500 hover:text-white"><i class="fas fa-times"></i></button>
+
+            <button onclick="closeModal('admin-portal-modal')" class="absolute top-3 right-3 text-slate-500 hover:text-white"><i class="fas fa-times"></i></button>
         </div>
     </div>
 
     <!-- VIEW PROFILE & EDIT SOCIALS MODAL -->
     <div id="profile-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-        <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl w-full max-w-sm shadow-2xl relative esports-glow text-center">
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl w-full max-w-sm shadow-2xl relative esports-glow text-center max-h-[90vh] overflow-y-auto">
             <button onclick="closeModal('profile-modal')" class="absolute top-3 right-3 text-slate-500 hover:text-white"><i class="fas fa-times"></i></button>
             
             <div class="relative w-20 h-20 mx-auto mb-3">
@@ -246,7 +249,7 @@
 
             <div class="bg-slate-800/50 rounded-lg p-3 border border-slate-800 mb-4 text-left">
                 <span class="text-[10px] uppercase tracking-wider text-slate-400 font-bold block mb-2">Social Links</span>
-                <div id="profile-socials-display" class="space-y-1 text-xs text-slate-300"></div>
+                <div id="profile-socials-display" class="space-y-1.5 text-xs text-slate-300"></div>
             </div>
 
             <div id="edit-socials-section" class="hidden border-t border-slate-800 pt-3 text-left">
@@ -254,7 +257,12 @@
                 <form onsubmit="handleSaveSocials(event)" class="space-y-2">
                     <input type="text" id="social-fb" placeholder="Facebook Link" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1 text-xs text-white focus:outline-none focus:border-red-500">
                     <input type="text" id="social-discord" placeholder="Discord Tag" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1 text-xs text-white focus:outline-none focus:border-red-500">
-                    <button type="submit" class="w-full bg-slate-800 hover:bg-slate-700 text-xs text-white py-1.5 rounded font-bold transition border border-slate-700">Save Socials</button>
+                    <input type="text" id="social-tiktok" placeholder="TikTok Profile" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1 text-xs text-white focus:outline-none focus:border-red-500">
+                    <input type="text" id="social-twitch" placeholder="Twitch Channel" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1 text-xs text-white focus:outline-none focus:border-red-500">
+                    <input type="text" id="social-x" placeholder="X (Twitter) Handle" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1 text-xs text-white focus:outline-none focus:border-red-500">
+                    <input type="text" id="social-youtube" placeholder="YouTube Channel" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1 text-xs text-white focus:outline-none focus:border-red-500">
+                    <input type="text" id="social-spotify" placeholder="Spotify Profile" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1 text-xs text-white focus:outline-none focus:border-red-500">
+                    <button type="submit" class="w-full bg-slate-800 hover:bg-slate-700 text-xs text-white py-1.5 rounded font-bold transition border border-slate-700 mt-1">Save Socials</button>
                 </form>
             </div>
         </div>
@@ -333,10 +341,10 @@
             "Wild Rift": "https://i.ibb.co/279R51P/league-of-legends-wild-rift-logo-png_seeklogo-430791.png"
         };
 
-        // DATABASE INITIALIZATION (LocalStorage Integration)
+        // DATABASE INITIALIZATION
         let dbUsers = JSON.parse(localStorage.getItem('rift_db_users')) || [
-            { username: "Takeku", team: "Management / Owner", game: "League of Legends", pfp: "https://i.ibb.co/689L51P/58834.png", isAdmin: true, socials: { facebook: "fb.com/takeku", discord: "Takeku#0001" } },
-            { username: "ViperPro", team: "Main Roster", game: "Wild Rift", pfp: "https://i.ibb.co/689L51P/58834.png", isAdmin: false, socials: { facebook: "fb.com/viper", discord: "Viper#9999" } }
+            { username: "Takeku", team: "Management / Owner", game: "League of Legends", pfp: "https://i.ibb.co/689L51P/58834.png", isAdmin: true, socials: { facebook: "fb.com/takeku", discord: "Takeku#0001", tiktok: "", twitch: "", x: "", youtube: "", spotify: "" } },
+            { username: "ViperPro", team: "Main Roster", game: "Wild Rift", pfp: "https://i.ibb.co/689L51P/58834.png", isAdmin: false, socials: { facebook: "fb.com/viper", discord: "Viper#9999", tiktok: "", twitch: "", x: "", youtube: "", spotify: "" } }
         ];
 
         let dbChannels = JSON.parse(localStorage.getItem('rift_db_channels')) || ['general-strategy', 'scrims-discussion', 'clips-and-highlights'];
@@ -359,7 +367,12 @@
             if(currentUser) localStorage.setItem('rift_current_user', JSON.stringify(currentUser));
         }
 
-        function openModal(modalId) { document.getElementById(modalId).classList.remove('hidden'); if(modalId === 'role-manager-modal') populateAdminUserSelect(); }
+        function openModal(modalId) { 
+            document.getElementById(modalId).classList.remove('hidden'); 
+            if(modalId === 'admin-portal-modal') {
+                populateAdminUserSelect();
+            }
+        }
         function closeModal(modalId) { document.getElementById(modalId).classList.add('hidden'); }
         function switchModal(closeId, openId) { closeModal(closeId); openModal(openId); }
 
@@ -378,6 +391,9 @@
         function initAppState() {
             renderChannelsList();
             if(currentUser) {
+                // Sync current user status with latest dbUsers data
+                let latestUser = dbUsers.find(u => u.username.toLowerCase() === currentUser.username.toLowerCase());
+                if(latestUser) currentUser = latestUser;
                 document.getElementById('auth-lock-overlay').classList.add('hidden');
                 updateUIAfterAuth();
             } else {
@@ -405,8 +421,7 @@
             if(!currentUser) { openModal('login-modal'); return; }
             currentChannel = channelName;
             renderChannelsList();
-            document.getElementById('active-channel-title').innerHTML = `<i class="fa-solid fa-hashtag text-red-500"></i><span>${channelName}</span>`;
-            document.getElementById('current-channel-label').innerText = `#${channelName}`;
+            document.getElementById('current-channel-label').innerText = channelName;
             document.getElementById('message-input').placeholder = `Message #${channelName}...`;
             loadChannelMessages(channelName);
         }
@@ -455,14 +470,14 @@
                     currentUser = found;
                     currentUser.isAdmin = true;
                 } else {
-                    currentUser = { username: "Takeku", team: "Management / Owner", game: "League of Legends", pfp: "https://i.ibb.co/689L51P/58834.png", isAdmin: true, socials: { facebook: "", discord: "" } };
+                    currentUser = { username: "Takeku", team: "Management / Owner", game: "League of Legends", pfp: "https://i.ibb.co/689L51P/58834.png", isAdmin: true, socials: { facebook: "", discord: "", tiktok: "", twitch: "", x: "", youtube: "", spotify: "" } };
                     dbUsers.push(currentUser);
                 }
             } else {
                 if(found) {
                     currentUser = found;
                 } else {
-                    currentUser = { username: username, team: "Main Roster", game: "League of Legends", pfp: "https://i.ibb.co/689L51P/58834.png", isAdmin: false, socials: { facebook: "", discord: "" } };
+                    currentUser = { username: username, team: "Main Roster", game: "League of Legends", pfp: "https://i.ibb.co/689L51P/58834.png", isAdmin: false, socials: { facebook: "", discord: "", tiktok: "", twitch: "", x: "", youtube: "", spotify: "" } };
                     dbUsers.push(currentUser);
                 }
             }
@@ -474,20 +489,28 @@
 
         function handleRegister(e) {
             e.preventDefault();
+            const newUsername = document.getElementById('reg-username').value.trim();
+            
+            // Check if user already exists
+            if(dbUsers.some(u => u.username.toLowerCase() === newUsername.toLowerCase())) {
+                alert('Username already exists! Please use a different username.');
+                return;
+            }
+
             currentUser = {
-                username: document.getElementById('reg-username').value.trim(),
+                username: newUsername,
                 team: "Main Roster",
                 game: document.getElementById('reg-game').value,
                 pfp: registeredAvatarBase64,
-                isAdmin: false,
-                socials: { facebook: "", discord: "" }
+                isAdmin: newUsername.toLowerCase() === 'takeku',
+                socials: { facebook: "", discord: "", tiktok: "", twitch: "", x: "", youtube: "", spotify: "" }
             };
 
             dbUsers.push(currentUser);
             saveDB();
             initAppState();
             closeModal('register-modal');
-            alert('Account registered and saved to database successfully!');
+            alert('Account registered and saved successfully!');
         }
 
         function updateUIAfterAuth() {
@@ -501,8 +524,8 @@
             if (currentUser.isAdmin) {
                 document.getElementById('add-channel-btn').classList.remove('hidden');
                 document.getElementById('admin-channel-controls').classList.remove('hidden');
-                document.getElementById('nav-role-manager-btn').classList.remove('hidden');
-                document.getElementById('nav-role-manager-btn').classList.add('flex');
+                document.getElementById('nav-admin-portal-btn').classList.remove('hidden');
+                document.getElementById('nav-admin-portal-btn').classList.add('flex');
             }
         }
 
@@ -512,6 +535,16 @@
             dbUsers.forEach(u => {
                 select.innerHTML += `<option value="${u.username}">${u.username} (${u.team})</option>`;
             });
+            if(dbUsers.length > 0) {
+                loadUserIntoAdminForm(dbUsers[0].username);
+            }
+        }
+
+        function loadUserIntoAdminForm(username) {
+            let targetUser = dbUsers.find(u => u.username === username);
+            if(targetUser) {
+                document.getElementById('admin-input-team').value = targetUser.team;
+            }
         }
 
         function handleAdminAssignRole(e) {
@@ -524,8 +557,8 @@
                 targetUser.team = newTeam;
                 saveDB();
                 renderMemberList();
-                closeModal('role-manager-modal');
-                alert(`Successfully assigned ${targetUsername} to team/role: ${newTeam}`);
+                closeModal('admin-portal-modal');
+                alert(`Successfully updated team/role for ${targetUsername}!`);
             }
         }
 
@@ -579,16 +612,28 @@
             document.getElementById('profile-modal-game').innerText = `Main Game: ${user.game}`;
 
             const socialsDisplay = document.getElementById('profile-socials-display');
+            const s = user.socials || {};
             socialsDisplay.innerHTML = `
-                <p><i class="fab fa-facebook text-blue-400 mr-1.5"></i> ${user.socials?.facebook || 'Not provided'}</p>
-                <p><i class="fab fa-discord text-indigo-400 mr-1.5"></i> ${user.socials?.discord || 'Not provided'}</p>
+                ${s.facebook ? `<p><i class="fab fa-facebook text-blue-400 mr-1.5"></i> ${s.facebook}</p>` : ''}
+                ${s.discord ? `<p><i class="fab fa-discord text-indigo-400 mr-1.5"></i> ${s.discord}</p>` : ''}
+                ${s.tiktok ? `<p><i class="fab fa-tiktok text-pink-400 mr-1.5"></i> ${s.tiktok}</p>` : ''}
+                ${s.twitch ? `<p><i class="fab fa-twitch text-purple-400 mr-1.5"></i> ${s.twitch}</p>` : ''}
+                ${s.x ? `<p><i class="fab fa-x-twitter text-slate-200 mr-1.5"></i> ${s.x}</p>` : ''}
+                ${s.youtube ? `<p><i class="fab fa-youtube text-red-500 mr-1.5"></i> ${s.youtube}</p>` : ''}
+                ${s.spotify ? `<p><i class="fab fa-spotify text-green-400 mr-1.5"></i> ${s.spotify}</p>` : ''}
+                ${!s.facebook && !s.discord && !s.tiktok && !s.twitch && !s.x && !s.youtube && !s.spotify ? '<p class="text-slate-500">No social links provided.</p>' : ''}
             `;
 
             const editSection = document.getElementById('edit-socials-section');
-            if(currentUser && (currentUser.username === user.username || currentUser.isAdmin)) {
+            if(currentUser && (currentUser.username.toLowerCase() === user.username.toLowerCase() || currentUser.isAdmin)) {
                 editSection.classList.remove('hidden');
-                document.getElementById('social-fb').value = user.socials?.facebook || '';
-                document.getElementById('social-discord').value = user.socials?.discord || '';
+                document.getElementById('social-fb').value = s.facebook || '';
+                document.getElementById('social-discord').value = s.discord || '';
+                document.getElementById('social-tiktok').value = s.tiktok || '';
+                document.getElementById('social-twitch').value = s.twitch || '';
+                document.getElementById('social-x').value = s.x || '';
+                document.getElementById('social-youtube').value = s.youtube || '';
+                document.getElementById('social-spotify').value = s.spotify || '';
                 window.activeProfileTarget = user.username;
             } else {
                 editSection.classList.add('hidden');
@@ -603,10 +648,15 @@
             if(target) {
                 target.socials = {
                     facebook: document.getElementById('social-fb').value.trim(),
-                    discord: document.getElementById('social-discord').value.trim()
+                    discord: document.getElementById('social-discord').value.trim(),
+                    tiktok: document.getElementById('social-tiktok').value.trim(),
+                    twitch: document.getElementById('social-twitch').value.trim(),
+                    x: document.getElementById('social-x').value.trim(),
+                    youtube: document.getElementById('social-youtube').value.trim(),
+                    spotify: document.getElementById('social-spotify').value.trim()
                 };
                 saveDB();
-                alert('Socials updated successfully!');
+                alert('Social links updated successfully!');
                 closeModal('profile-modal');
                 renderMemberList();
             }
