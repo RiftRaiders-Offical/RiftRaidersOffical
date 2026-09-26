@@ -30,16 +30,16 @@
             <div class="p-4 border-b border-gray-700 font-semibold text-sm tracking-wide text-gray-400 uppercase">
                 Channels & Groups
             </div>
-            <nav class="flex-1 overflow-y-auto p-2 space-y-1">
-                <button class="w-full text-left px-3 py-2 rounded-lg bg-red-600/20 text-red-400 font-medium flex items-center space-x-2">
+           <nav class="flex-1 overflow-y-auto p-2 space-y-1">
+                <button onclick="switchChannel('general-strategy', this)" class="channel-btn w-full text-left px-3 py-2 rounded-lg bg-red-600/20 text-red-400 font-medium flex items-center space-x-2 transition">
                     <i class="fa-solid fa-hashtag"></i>
                     <span>general-strategy</span>
                 </button>
-                <button class="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-700/50 text-gray-300 transition flex items-center space-x-2">
+                <button onclick="switchChannel('scrims-discussion', this)" class="channel-btn w-full text-left px-3 py-2 rounded-lg hover:bg-gray-700/50 text-gray-300 transition flex items-center space-x-2">
                     <i class="fa-solid fa-hashtag"></i>
                     <span>scrims-discussion</span>
                 </button>
-                <button class="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-700/50 text-gray-300 transition flex items-center space-x-2">
+                <button onclick="switchChannel('clips-and-highlights', this)" class="channel-btn w-full text-left px-3 py-2 rounded-lg hover:bg-gray-700/50 text-gray-300 transition flex items-center space-x-2">
                     <i class="fa-solid fa-hashtag"></i>
                     <span>clips-and-highlights</span>
                 </button>
@@ -147,5 +147,26 @@
             clearMedia();
         });
     </script>
+
+    <script>
+    let currentChannel = 'general-strategy';
+
+    function switchChannel(channelName, buttonElement) {
+        currentChannel = channelName;
+        
+        // Alisin ang active design sa lahat ng buttons
+        document.querySelectorAll('.channel-btn').forEach(btn => {
+            btn.classList.remove('bg-red-600/20', 'text-red-400', 'font-medium');
+            btn.classList.add('hover:bg-gray-700/50', 'text-gray-300');
+        });
+        
+        // Lagyan ng active design ang napiling button
+        buttonElement.classList.remove('hover:bg-gray-700/50', 'text-gray-300');
+        buttonElement.classList.add('bg-red-600/20', 'text-red-400', 'font-medium');
+        
+        // Palitan ang placeholder ng text input depende sa napiling channel
+        document.getElementById('message-input').placeholder = `Message #${channelName}...`;
+    }
+</script>
 </body>
 </html>
