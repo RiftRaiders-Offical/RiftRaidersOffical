@@ -1102,7 +1102,82 @@
             }
         });
 
-        initAppState();
+            <!-- Firebase App & Realtime Database CDN SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, set, onValue, push, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // Palitan ito ng iyong sariling Firebase Project Configuration galing sa Firebase Console
+        const firebaseConfig = {
+            apiKey: "YOUR_FIREBASE_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Real-time synchronization para sa Users, Messages, Channels, at Files
+        window.initFirebaseSync = function() {
+            // Sync Users
+            onValue(ref(db, 'rift_users'), (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    dbUsers = Object.values(data);
+                    renderMemberList();
+                    updateAdminNotificationBadge();
+                }
+            });
+
+            // Sync Messages ng kasalukuyang Channel
+            onValue(ref(db, `rift_messages/${currentChannel}`), (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    dbMessages[currentChannel] = Object.values(data);
+                    loadChannelMessages(currentChannel);
+                } else {
+                    dbMessages[currentChannel] = [];
+                    loadChannelMessages(currentChannel);
+                }
+            });
+
+            // Sync Channels
+            onValue(ref(db, 'rift_channels'), (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    dbChannels = Object.values(data);
+                    renderChannelsList();
+                }
+            });
+
+            // Sync Files / Manager
+            onValue(ref(db, 'rift_files'), (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    dbFiles = Object.values(data);
+                    renderAdminFilesList();
+                }
+            });
+        };
+
+        window.saveDBFirebase = function() {
+            set(ref(db, 'rift_users_db'), dbUsers);
+            set(ref(db, 'rift_channels_db'), dbChannels);
+            set(ref(db, 'rift_files_db'), dbFiles);
+            if(currentUser) {
+                currentUser.lastActive = Date.now();
+                set(ref(db, `rift_users_active/${currentUser.username.replace(/[^a-zA-Z0-9]/g, '_')}`), currentUser);
+            }
+        };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initFirebaseSync();
+        });
     </script>
 </body>
 </html>
