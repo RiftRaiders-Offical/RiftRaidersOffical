@@ -19,27 +19,34 @@
                 radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.12) 0%, transparent 40%);
         }
         .glass-panel {
-            background: rgba(18, 18, 26, 0.85);
+            background: rgba(18, 18, 26, 0.9);
             backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.06);
         }
         .glass-card {
-            background: rgba(26, 26, 38, 0.75);
+            background: rgba(26, 26, 38, 0.8);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .mention-highlight {
+            background: rgba(220, 38, 38, 0.2);
+            color: #f87171;
+            padding: 0.1rem 0.3rem;
+            border-radius: 0.25rem;
+            font-weight: 600;
         }
     </style>
 </head>
 <body class="text-slate-100 font-sans antialiased h-[100dvh] flex flex-col md:flex-row overflow-hidden selection:bg-red-600 selection:text-white">
 
-    <!-- Auth Protection Overlay -->
+    <!-- Auth Protection / Login / Register Overlay -->
     <div id="auth-lock-overlay" class="fixed inset-0 bg-[#050508]/95 backdrop-blur-md z-50 flex items-center justify-center p-4">
-        <div class="glass-panel p-8 rounded-2xl w-full max-w-md shadow-2xl text-center">
+        <div class="glass-panel p-6 md:p-8 rounded-2xl w-full max-w-md shadow-2xl text-center">
             <div class="w-16 h-16 bg-red-600/20 border border-red-500/30 rounded-full flex items-center justify-center mx-auto mb-4 overflow-hidden p-2">
-                <img src="https://i.ibb.co/689L51P/58834.png" class="w-full h-full object-contain">
+                <img id="brand-logo-preview" src="https://i.ibb.co/689L51P/58834.png" class="w-full h-full object-contain">
             </div>
             <h2 class="text-xl font-black tracking-wider text-white mb-2">RIFT RAIDERS PORTAL</h2>
-            <p class="text-xs text-slate-400 mb-6 leading-relaxed">Please log in or register your account to access team channels and messages.</p>
+            <p class="text-xs text-slate-400 mb-6 leading-relaxed">Guild verification required. Register your account and wait for Admin approval to access the team chat.</p>
             <div class="space-y-3">
                 <button onclick="openModal('login-modal')" class="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-xl font-bold text-sm transition shadow-lg shadow-red-600/20">
                     Login to Account
@@ -57,20 +64,17 @@
         </div>
     </div>
 
-    <!-- Leftmost Navigation Sidebar (Desktop & Mobile header toggle) -->
+    <!-- Navigation Sidebar -->
     <aside class="w-full md:w-16 glass-panel border-b md:border-b-0 md:border-r border-white/5 flex md:flex-col items-center p-3 md:py-4 justify-between z-30 flex-shrink-0">
         <div class="flex md:flex-col items-center space-x-4 md:space-x-0 md:space-y-6">
             <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-red-600 to-rose-500 flex items-center justify-center shadow-lg shadow-red-600/30 overflow-hidden p-1.5">
-                <img src="https://i.ibb.co/689L51P/58834.png" class="w-full h-full object-contain">
+                <img id="nav-brand-logo" src="https://i.ibb.co/689L51P/58834.png" class="w-full h-full object-contain">
             </div>
-            <div class="hidden md:flex flex-col space-y-3">
+            <div class="flex md:flex-col space-x-3 md:space-x-0 md:space-y-3">
                 <button class="w-10 h-10 rounded-xl bg-red-600/20 text-red-500 border border-red-500/30 flex items-center justify-center transition shadow-md" title="Chat">
                     <i class="fas fa-comment-dots text-sm"></i>
                 </button>
-                <button onclick="openModal('file-manager-modal')" class="w-10 h-10 rounded-xl bg-slate-800/40 hover:bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition" title="Files">
-                    <i class="fas fa-folder text-sm"></i>
-                </button>
-                <button id="nav-admin-portal-btn" onclick="openAdminPortal()" class="hidden w-10 h-10 rounded-xl bg-red-600/10 hover:bg-red-600/20 text-red-400 flex items-center justify-center transition border border-red-500/20" title="Admin Portal">
+                <button id="nav-admin-portal-btn" onclick="openAdminPortal()" class="hidden w-10 h-10 rounded-xl bg-red-600/10 hover:bg-red-600/20 text-red-400 flex items-center justify-center transition border border-red-500/20" title="Admin Portal & File Manager">
                     <i class="fas fa-shield-alt text-sm"></i>
                 </button>
             </div>
@@ -87,16 +91,15 @@
         </div>
     </aside>
 
-    <!-- Main App Container -->
-    <div class="flex flex-1 overflow-hidden flex-col md:flex-row">
+    <!-- Main App Layout Container -->
+    <div class="flex flex-1 overflow-hidden flex-col md:flex-row relative">
         
-        <!-- Sidebar Panel: Channels & Active Users -->
-        <aside class="w-full md:w-72 glass-panel border-r border-white/5 flex flex-col p-4 space-y-3 flex-shrink-0 max-h-[45vh] md:max-h-full overflow-y-auto">
-            <!-- Brand Header -->
+        <!-- Sidebar Panel -->
+        <aside class="w-full md:w-72 glass-panel border-r border-white/5 flex flex-col p-4 space-y-3 flex-shrink-0 max-h-[38vh] md:max-h-full overflow-y-auto">
             <div class="flex items-center justify-between pb-2 border-b border-white/5">
                 <div>
                     <h1 class="text-sm font-black tracking-wider text-white">RIFT RAIDERS</h1>
-                    <span class="text-[10px] text-red-400 font-bold uppercase tracking-widest">Public Database Chat</span>
+                    <span class="text-[10px] text-red-400 font-bold uppercase tracking-widest">Verified Guild Chat</span>
                 </div>
                 <button id="add-channel-btn" onclick="openModal('add-channel-modal')" class="hidden w-7 h-7 rounded-lg bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/30 flex items-center justify-center transition" title="Add Channel">
                     <i class="fas fa-plus text-xs"></i>
@@ -111,11 +114,11 @@
                 </div>
                 <div class="overflow-hidden flex-1">
                     <h2 id="sb-user-name" class="text-xs font-bold text-white truncate">Guest User</h2>
-                    <p id="sb-user-role" class="text-[10px] text-red-400 truncate">Not Logged In</p>
+                    <p id="sb-user-role" class="text-[10px] text-red-400 truncate">Not Verified</p>
                 </div>
             </div>
 
-            <!-- Logout Button Container -->
+            <!-- Logout Button -->
             <div id="logout-container" class="hidden">
                 <button onclick="handleLogout()" class="w-full bg-red-600/10 hover:bg-red-600/20 text-red-400 border border-red-500/30 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-2">
                     <i class="fas fa-sign-out-alt"></i>
@@ -133,11 +136,11 @@
                 </nav>
             </div>
 
-            <!-- Members Section -->
-            <div class="flex flex-col h-40 pt-2 border-t border-white/5">
+            <!-- Online Active Members Section -->
+            <div class="flex flex-col h-36 pt-2 border-t border-white/5">
                 <div class="flex items-center justify-between mb-1.5">
-                    <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Members & Status</span>
-                    <span class="text-[9px] text-green-400 bg-green-950/50 px-1.5 py-0.5 rounded border border-green-800/40">Synced DB</span>
+                    <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Online Members</span>
+                    <span class="text-[9px] text-green-400 bg-green-950/50 px-1.5 py-0.5 rounded border border-green-800/40">Live Sync</span>
                 </div>
                 <div id="member-list" class="space-y-1.5 overflow-y-auto flex-1 pr-1">
                     <!-- Populated dynamically -->
@@ -145,9 +148,8 @@
             </div>
         </aside>
 
-        <!-- Chat Workspace -->
+        <!-- Chat Workspace Area -->
         <main class="flex-1 flex flex-col bg-transparent relative overflow-hidden">
-            <!-- Channel Header bar -->
             <div class="glass-panel border-b border-white/5 px-4 md:px-6 py-3.5 flex justify-between items-center z-10 flex-shrink-0">
                 <div class="flex items-center space-x-2">
                     <i class="fa-solid fa-hashtag text-red-500 text-sm"></i>
@@ -165,6 +167,11 @@
                 <!-- Dynamically loaded messages -->
             </div>
 
+            <!-- Discord-style Mention Suggestions Popup -->
+            <div id="mention-suggestions" class="hidden absolute bottom-16 left-6 glass-panel rounded-xl p-2 w-64 shadow-2xl border border-red-500/30 z-30 max-h-40 overflow-y-auto">
+                <!-- Populated dynamically -->
+            </div>
+
             <!-- Media Preview Bar -->
             <div id="media-preview-container" class="hidden px-6 py-2 bg-[#12121a]/90 border-t border-white/5 flex items-center justify-between flex-shrink-0">
                 <span id="file-name-display" class="text-xs text-slate-400 truncate"></span>
@@ -173,12 +180,12 @@
 
             <!-- Chat Message Input Box -->
             <div class="p-3 md:p-4 bg-transparent flex-shrink-0">
-                <form id="chat-form" class="glass-panel rounded-2xl p-2 flex items-center space-x-2 shadow-xl">
+                <form id="chat-form" class="glass-panel rounded-2xl p-2 flex items-center space-x-2 shadow-xl relative">
                     <label class="cursor-pointer text-slate-400 hover:text-white transition p-2.5" title="Attach file">
                         <i class="fa-solid fa-paperclip text-sm"></i>
                         <input type="file" id="media-input" accept="image/*,video/*,.pdf,.zip" class="hidden" onchange="previewMedia(this)">
                     </label>
-                    <input type="text" id="message-input" placeholder="Type your message..." class="flex-1 bg-transparent border-0 px-2 py-2 text-xs sm:text-sm text-white focus:outline-none placeholder-slate-500" required>
+                    <input type="text" id="message-input" placeholder="Type your message or use @ to mention..." class="flex-1 bg-transparent border-0 px-2 py-2 text-xs sm:text-sm text-white focus:outline-none placeholder-slate-500" autocomplete="off" oninput="handleMessageInput(event)" required>
                     <button type="submit" class="bg-red-600 hover:bg-red-700 text-white w-10 h-10 rounded-xl transition flex items-center justify-center shadow-lg shadow-red-600/30 flex-shrink-0">
                         <i class="fa-solid fa-paper-plane text-xs"></i>
                     </button>
@@ -215,7 +222,8 @@
     <!-- REGISTER MODAL -->
     <div id="register-modal" class="fixed inset-0 bg-[#050508]/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
         <div class="glass-panel p-6 rounded-2xl w-full max-w-md shadow-2xl relative max-h-[90vh] overflow-y-auto">
-            <h3 class="text-lg font-bold text-white mb-4">Create Member Account</h3>
+            <h3 class="text-lg font-bold text-white mb-2">Create Account & Request Verification</h3>
+            <p class="text-xs text-slate-400 mb-4">Register your account. Admin will review and accept your guild membership.</p>
             <form onsubmit="handleRegister(event)" class="space-y-3">
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">Username</label>
@@ -245,10 +253,10 @@
                         </div>
                     </div>
                 </div>
-                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white py-2.5 rounded-xl font-bold text-sm transition mt-2 shadow-lg shadow-red-600/20">Register Account</button>
+                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white py-2.5 rounded-xl font-bold text-sm transition mt-2 shadow-lg shadow-red-600/20">Submit for Approval</button>
             </form>
             <div class="mt-3 text-center text-xs">
-                <button onclick="switchModal('register-modal', 'login-modal')" class="text-slate-400 hover:text-white">Already have an account? Login</button>
+                <button onclick="switchModal('register-modal', 'login-modal')" class="text-slate-400 hover:text-white">Already approved? Login</button>
             </div>
             <button onclick="closeModal('register-modal')" class="absolute top-4 right-4 text-slate-500 hover:text-white"><i class="fas fa-times"></i></button>
         </div>
@@ -270,66 +278,59 @@
         </div>
     </div>
 
-    <!-- ADMIN PORTAL MODAL -->
+    <!-- ADMIN PORTAL & FILE MANAGER MODAL (Admin Only) -->
     <div id="admin-portal-modal" class="fixed inset-0 bg-[#050508]/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-        <div class="glass-panel p-6 rounded-2xl w-full max-w-lg shadow-2xl relative max-h-[85vh] overflow-y-auto">
-            <h3 class="text-lg font-bold text-white mb-2 flex items-center space-x-2">
-                <i class="fas fa-shield-alt text-red-500"></i>
-                <span>Admin Portal - Role & User Management</span>
-            </h3>
-            <p class="text-xs text-slate-400 mb-6">Assign users to teams/roles or delete user accounts here.</p>
-            
-            <form onsubmit="handleAdminAssignRole(event)" class="space-y-4 glass-card p-4 rounded-xl border border-white/5 mb-4">
+        <div class="glass-panel p-6 rounded-2xl w-full max-w-2xl shadow-2xl relative max-h-[90vh] overflow-y-auto space-y-4">
+            <div class="flex justify-between items-center pb-2 border-b border-white/5">
+                <h3 class="text-lg font-bold text-white flex items-center space-x-2">
+                    <i class="fas fa-shield-alt text-red-500"></i>
+                    <span>Admin Portal & Asset Manager</span>
+                </h3>
+                <button onclick="closeModal('admin-portal-modal')" class="text-slate-500 hover:text-white"><i class="fas fa-times"></i></button>
+            </div>
+
+            <!-- Logo Customizer -->
+            <div class="glass-card p-4 rounded-xl border border-white/5">
+                <h4 class="text-xs font-bold text-red-400 uppercase tracking-wider mb-2">Change Site & Bot Logo (Rift Raiders)</h4>
+                <div class="flex items-center space-x-3">
+                    <input type="file" id="admin-logo-file" accept="image/*" class="w-full bg-[#12121a] border border-white/10 rounded-xl px-3 py-1.5 text-xs text-white" onchange="previewNewLogo(this)">
+                    <button type="button" onclick="saveNewLogo()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex-shrink-0">Update Logo</button>
+                </div>
+            </div>
+
+            <!-- Pending Verification Section -->
+            <div class="glass-card p-4 rounded-xl border border-white/5">
+                <h4 class="text-xs font-bold text-red-400 uppercase tracking-wider mb-2">Pending Guild Members (Requests)</h4>
+                <div id="admin-pending-list" class="space-y-2 max-h-36 overflow-y-auto">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <!-- Role Assignment Section -->
+            <form onsubmit="handleAdminAssignRole(event)" class="space-y-3 glass-card p-4 rounded-xl border border-white/5">
                 <h4 class="text-xs font-bold text-red-400 uppercase tracking-wider">Assign Team / Role</h4>
-                <div>
-                    <label class="block text-xs text-slate-400 mb-1">Select User</label>
-                    <select id="admin-select-user" class="w-full bg-[#12121a] border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500" onchange="loadUserIntoAdminForm(this.value)">
-                    </select>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Select User</label>
+                        <select id="admin-select-user" class="w-full bg-[#12121a] border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500" onchange="loadUserIntoAdminForm(this.value)">
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Team / Role Name</label>
+                        <input type="text" id="admin-input-team" placeholder="e.g. Main Roster, Sub Team" class="w-full bg-[#12121a] border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500" required>
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-xs text-slate-400 mb-1">Team / Role Name</label>
-                    <input type="text" id="admin-input-team" placeholder="e.g. Main Roster, Sub Team, Analyst" class="w-full bg-[#12121a] border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500" required>
-                </div>
-                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white py-2.5 rounded-xl font-bold text-sm transition shadow-lg shadow-red-600/20">Save Team Role</button>
+                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-xl font-bold text-xs transition">Save Team Role</button>
             </form>
 
+            <!-- Delete User Section -->
             <div class="glass-card p-4 rounded-xl border border-white/5">
                 <h4 class="text-xs font-bold text-red-400 uppercase tracking-wider mb-2">Delete User Account</h4>
                 <div class="flex space-x-2">
                     <select id="admin-delete-user-select" class="flex-1 bg-[#12121a] border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500">
                     </select>
-                    <button type="button" onclick="handleAdminDeleteUser()" class="bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/30 px-4 py-2 rounded-xl text-xs font-bold transition">Delete User</button>
+                    <button type="button" onclick="handleAdminDeleteUser()" class="bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/30 px-3 py-2 rounded-xl text-xs font-bold transition">Delete</button>
                 </div>
-            </div>
-
-            <button onclick="closeModal('admin-portal-modal')" class="absolute top-4 right-4 text-slate-500 hover:text-white"><i class="fas fa-times"></i></button>
-        </div>
-    </div>
-
-    <!-- FILE MANAGER MODAL -->
-    <div id="file-manager-modal" class="fixed inset-0 bg-[#050508]/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-        <div class="glass-panel p-6 rounded-2xl w-full max-w-2xl shadow-2xl relative h-[80vh] flex flex-col">
-            <div class="flex justify-between items-center pb-3 border-b border-white/5">
-                <h3 class="text-lg font-bold text-white flex items-center space-x-2">
-                    <i class="fas fa-folder-open text-red-500"></i>
-                    <span>Team File Manager & Gallery</span>
-                </h3>
-                <button onclick="closeModal('file-manager-modal')" class="text-slate-500 hover:text-white"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="flex-1 overflow-y-auto py-4 grid grid-cols-2 md:grid-cols-3 gap-4" id="gallery-grid">
-                <div class="glass-card border border-white/5 rounded-xl p-3 flex flex-col items-center justify-center text-center">
-                    <img src="https://i.ibb.co/689L51P/58834.png" class="w-16 h-16 object-contain mb-2">
-                    <p class="text-xs text-slate-300 truncate w-full">rift-raiders-logo.png</p>
-                    <span class="text-[10px] text-slate-500 mt-1">Official Asset</span>
-                </div>
-            </div>
-            <div class="pt-3 border-t border-white/5 flex justify-between items-center">
-                <label class="cursor-pointer bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-2 shadow-lg shadow-red-600/20">
-                    <i class="fas fa-upload"></i>
-                    <span>Upload File</span>
-                    <input type="file" id="fm-upload-input" accept="image/*,video/*,.pdf" class="hidden" onchange="uploadToGallery(this)">
-                </label>
-                <span class="text-xs text-slate-400">Supported: Images, Videos, PDFs</span>
             </div>
         </div>
     </div>
@@ -372,45 +373,62 @@
         </div>
     </div>
 
-    <!-- SCRIPTS / PUBLIC DATABASE CONTROLLER -->
+    <!-- SCRIPTS / CONTROLLER -->
     <script>
-        // Clean game logos without white background (PNG with transparency)
         const gameLogos = {
             "League of Legends": "https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/leagueoflegends.svg",
             "Wild Rift": "https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/riotgames.svg"
         };
 
-        const rrLogoUrl = "https://i.ibb.co/689L51P/58834.png";
+        let currentGlobalLogo = localStorage.getItem('rift_global_logo_v6') || "https://i.ibb.co/689L51P/58834.png";
 
-        // Shared/Public Database Simulation via LocalStorage sync
-        let dbUsers = JSON.parse(localStorage.getItem('rift_db_users_v2')) || [
-            { username: "Rift Raiders", team: "Management / Owner", game: "League of Legends", pfp: rrLogoUrl, isAdmin: true, isBot: true, lastActive: Date.now() },
-            { username: "ViperPro", team: "Main Roster", game: "Wild Rift", pfp: rrLogoUrl, isAdmin: false, isBot: false, lastActive: Date.now() }
+        let dbUsers = JSON.parse(localStorage.getItem('rift_db_users_v6')) || [
+            { username: "Rift Raiders", team: "Management / Owner", game: "League of Legends", pfp: currentGlobalLogo, isAdmin: true, isApproved: true, isBot: true, lastActive: Date.now() },
+            { username: "ViperPro", team: "Main Roster", game: "Wild Rift", pfp: currentGlobalLogo, isAdmin: false, isApproved: true, isBot: false, lastActive: Date.now() }
         ];
 
-        let dbChannels = JSON.parse(localStorage.getItem('rift_db_channels_v2')) || ['general-strategy', 'scrims-discussion', 'clips-and-highlights'];
-        let dbMessages = JSON.parse(localStorage.getItem('rift_db_messages_v2')) || {
+        let dbChannels = JSON.parse(localStorage.getItem('rift_db_channels_v6')) || ['general-strategy', 'scrims-discussion', 'clips-and-highlights'];
+        let dbMessages = JSON.parse(localStorage.getItem('rift_db_messages_v6')) || {
             'general-strategy': [
-                { id: 1, username: "Rift Raiders", team: "Management / Owner", game: "League of Legends", pfp: rrLogoUrl, isAdmin: true, isBot: true, text: "Welcome to Rift Raiders Public Database Chat!", time: "Just now" }
+                { id: 1, username: "Rift Raiders", team: "Management / Owner", game: "League of Legends", pfp: currentGlobalLogo, isAdmin: true, isBot: true, text: "Welcome to Rift Raiders Verified Guild Chat!", time: "Just now" }
             ],
             'scrims-discussion': [],
             'clips-and-highlights': []
         };
 
         let currentChannel = 'general-strategy';
-        let currentUser = JSON.parse(localStorage.getItem('rift_current_user_v2')) || null;
-        let registeredAvatarBase64 = rrLogoUrl;
+        let currentUser = JSON.parse(localStorage.getItem('rift_current_user_v6')) || null;
+        let registeredAvatarBase64 = currentGlobalLogo;
+        let newLogoBase64 = currentGlobalLogo;
 
         function saveDB() {
-            localStorage.setItem('rift_db_users_v2', JSON.stringify(dbUsers));
-            localStorage.setItem('rift_db_channels_v2', JSON.stringify(dbChannels));
-            localStorage.setItem('rift_db_messages_v2', JSON.stringify(dbMessages));
+            localStorage.setItem('rift_global_logo_v6', currentGlobalLogo);
+            localStorage.setItem('rift_db_users_v6', JSON.stringify(dbUsers));
+            localStorage.setItem('rift_db_channels_v6', JSON.stringify(dbChannels));
+            localStorage.setItem('rift_db_messages_v6', JSON.stringify(dbMessages));
             if(currentUser) {
                 currentUser.lastActive = Date.now();
-                localStorage.setItem('rift_current_user_v2', JSON.stringify(currentUser));
+                localStorage.setItem('rift_current_user_v6', JSON.stringify(currentUser));
                 let userInDb = dbUsers.find(u => u.username.toLowerCase() === currentUser.username.toLowerCase());
                 if(userInDb) userInDb.lastActive = Date.now();
             }
+        }
+
+        // Cross-tab / cross-device synchronization event listener
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'rift_db_users_v6' || e.key === 'rift_db_messages_v6' || e.key === 'rift_db_channels_v6') {
+                dbUsers = JSON.parse(localStorage.getItem('rift_db_users_v6')) || dbUsers;
+                dbChannels = JSON.parse(localStorage.getItem('rift_db_channels_v6')) || dbChannels;
+                dbMessages = JSON.parse(localStorage.getItem('rift_db_messages_v6')) || dbMessages;
+                renderMemberList();
+                loadChannelMessages(currentChannel);
+            }
+        });
+
+        function updateAllLogosDisplay() {
+            document.querySelectorAll('#brand-logo-preview, #nav-brand-logo').forEach(img => {
+                if(img) img.src = currentGlobalLogo;
+            });
         }
 
         function openModal(modalId) { document.getElementById(modalId).classList.remove('hidden'); }
@@ -429,15 +447,43 @@
                 closeModal('admin-password-modal');
                 openModal('admin-portal-modal');
                 populateAdminUserSelect();
+                renderAdminPendingList();
             } else {
                 alert('Incorrect admin password!');
             }
         }
 
+        function previewNewLogo(input) {
+            const file = input.files[0];
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    newLogoBase64 = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function saveNewLogo() {
+            currentGlobalLogo = newLogoBase64;
+            dbUsers.forEach(u => {
+                if(u.isAdmin || u.isBot) u.pfp = currentGlobalLogo;
+            });
+            saveDB();
+            updateAllLogosDisplay();
+            renderMemberList();
+            loadChannelMessages(currentChannel);
+            alert('Rift Raiders Logo successfully updated across the portal!');
+        }
+
         function handleLogout() {
             if(confirm('Are you sure you want to log out?')) {
+                if(currentUser) {
+                    currentUser.lastActive = 0; // Mark offline immediately
+                    saveDB();
+                }
                 currentUser = null;
-                localStorage.removeItem('rift_current_user_v2');
+                localStorage.removeItem('rift_current_user_v6');
                 location.reload();
             }
         }
@@ -456,13 +502,21 @@
 
         function initAppState() {
             renderChannelsList();
-            if(currentUser) {
+            updateAllLogosDisplay();
+            
+            let storedUser = localStorage.getItem('rift_current_user_v6');
+            if(storedUser) {
+                currentUser = JSON.parse(storedUser);
                 let latestUser = dbUsers.find(u => u.username.toLowerCase() === currentUser.username.toLowerCase());
                 if(latestUser) {
-                    currentUser = latestUser;
-                } else {
-                    currentUser = null;
-                    localStorage.removeItem('rift_current_user_v2');
+                    if(!latestUser.isApproved && !latestUser.isAdmin) {
+                        alert('Your account is pending admin approval.');
+                        currentUser = null;
+                        localStorage.removeItem('rift_current_user_v6');
+                    } else {
+                        currentUser = latestUser;
+                        currentUser.lastActive = Date.now();
+                    }
                 }
             }
             
@@ -472,6 +526,7 @@
             } else {
                 document.getElementById('auth-lock-overlay').classList.remove('hidden');
             }
+            saveDB();
             renderMemberList();
             loadChannelMessages(currentChannel);
         }
@@ -500,6 +555,10 @@
             loadChannelMessages(channelName);
         }
 
+        function formatMessageText(text) {
+            return text.replace(/@([a-zA-Z0-9_]+)/g, '<span class="mention-highlight">@$1</span>');
+        }
+
         function loadChannelMessages(channelName) {
             const container = document.getElementById('chat-messages');
             if(!container) return;
@@ -519,6 +578,7 @@
             msgs.forEach(m => {
                 const canModify = currentUser && (currentUser.username.toLowerCase() === m.username.toLowerCase() || currentUser.isAdmin);
                 const gameLogo = gameLogos[m.game] || "";
+                const formattedText = formatMessageText(m.text);
                 container.innerHTML += `
                     <div class="flex items-start space-x-3 group relative">
                         <img src="${m.pfp}" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover border border-white/10 flex-shrink-0">
@@ -531,7 +591,7 @@
                                 ${m.isAdmin ? '<span class="text-[9px] bg-red-600 text-white px-1.5 rounded font-extrabold uppercase">Owner</span>' : ''}
                                 <span class="text-[10px] text-slate-500">${m.time}</span>
                             </div>
-                            <p id="msg-text-${m.id}" class="text-slate-300 text-xs sm:text-sm mt-1 leading-relaxed break-words">${m.text}</p>
+                            <p class="text-slate-300 text-xs sm:text-sm mt-1 leading-relaxed break-words">${formattedText}</p>
                         </div>
                         ${canModify ? `
                             <div class="opacity-0 group-hover:opacity-100 transition flex items-center space-x-1 bg-[#12121a] px-2 py-1 rounded-lg border border-white/10 flex-shrink-0">
@@ -571,23 +631,18 @@
             const username = document.getElementById('login-username').value.trim();
             let found = dbUsers.find(u => u.username.toLowerCase() === username.toLowerCase());
 
-            if (username.toLowerCase() === 'rift raiders' || username.toLowerCase() === 'takeku') {
-                if(found) {
-                    currentUser = found;
-                    currentUser.isAdmin = true;
-                } else {
-                    currentUser = { username: "Rift Raiders", team: "Management / Owner", game: "League of Legends", pfp: rrLogoUrl, isAdmin: true, isBot: false, lastActive: Date.now() };
-                    dbUsers.push(currentUser);
-                }
-            } else {
-                if(found) {
-                    currentUser = found;
-                } else {
-                    currentUser = { username: username, team: "Main Roster", game: "League of Legends", pfp: registeredAvatarBase64, isAdmin: false, isBot: false, lastActive: Date.now() };
-                    dbUsers.push(currentUser);
-                }
+            if (!found) {
+                alert('Account not found! Please register first.');
+                return;
             }
 
+            if (!found.isAdmin && !found.isApproved) {
+                alert('Your account is pending admin approval.');
+                return;
+            }
+
+            currentUser = found;
+            currentUser.lastActive = Date.now();
             saveDB();
             initAppState();
             closeModal('login-modal');
@@ -598,26 +653,33 @@
             const newUsername = document.getElementById('reg-username').value.trim();
             
             if(dbUsers.some(u => u.username.toLowerCase() === newUsername.toLowerCase())) {
-                alert('Username already exists! Please use a different username.');
+                alert('Username already exists!');
                 return;
             }
 
-            const isAdminAcc = newUsername.toLowerCase() === 'rift raiders';
+            const isAdminAcc = newUsername.toLowerCase() === 'rift raiders' || newUsername.toLowerCase() === 'takeku';
+
             currentUser = {
                 username: newUsername,
-                team: isAdminAcc ? "Management / Owner" : "Main Roster",
+                team: isAdminAcc ? "Management / Owner" : "Pending Approval",
                 game: document.getElementById('reg-game').value,
-                pfp: registeredAvatarBase64,
+                pfp: isAdminAcc ? currentGlobalLogo : registeredAvatarBase64,
                 isAdmin: isAdminAcc,
+                isApproved: isAdminAcc ? true : false,
                 isBot: false,
                 lastActive: Date.now()
             };
 
             dbUsers.push(currentUser);
             saveDB();
-            initAppState();
             closeModal('register-modal');
-            alert('Account registered and saved successfully!');
+
+            if(currentUser.isApproved) {
+                initAppState();
+                alert('Account registered successfully!');
+            } else {
+                alert('Registration submitted successfully! Please wait for admin approval.');
+            }
         }
 
         function updateUIAfterAuth() {
@@ -647,11 +709,66 @@
             select.innerHTML = '';
             deleteSelect.innerHTML = '';
             
-            dbUsers.forEach(u => {
+            const approvedUsers = dbUsers.filter(u => u.isApproved);
+            approvedUsers.forEach(u => {
                 select.innerHTML += `<option value="${u.username}">${u.username} (${u.team})</option>`;
                 deleteSelect.innerHTML += `<option value="${u.username}">${u.username} (${u.team})</option>`;
             });
-            if(dbUsers.length > 0) loadUserIntoAdminForm(dbUsers[0].username);
+            if(approvedUsers.length > 0) loadUserIntoAdminForm(approvedUsers[0].username);
+        }
+
+        function renderAdminPendingList() {
+            const container = document.getElementById('admin-pending-list');
+            if(!container) return;
+            container.innerHTML = '';
+
+            const pendingUsers = dbUsers.filter(u => !u.isApproved && !u.isAdmin);
+
+            if(pendingUsers.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-500 italic">No pending member requests.</p>`;
+                return;
+            }
+
+            pendingUsers.forEach(u => {
+                container.innerHTML += `
+                    <div class="flex items-center justify-between bg-[#12121a] p-2 rounded-xl border border-white/5">
+                        <div class="flex items-center space-x-2 overflow-hidden">
+                            <img src="${u.pfp}" class="w-7 h-7 rounded-full object-cover flex-shrink-0">
+                            <div class="overflow-hidden">
+                                <p class="text-xs font-bold text-white truncate">${u.username}</p>
+                                <p class="text-[10px] text-slate-400 truncate">${u.game}</p>
+                            </div>
+                        </div>
+                        <div class="flex space-x-1 flex-shrink-0">
+                            <button onclick="approveUser('${u.username}')" class="bg-green-600/20 text-green-400 border border-green-500/30 px-2.5 py-1 rounded-lg text-[10px] font-bold">Accept</button>
+                            <button onclick="rejectUser('${u.username}')" class="bg-red-600/20 text-red-400 border border-red-500/30 px-2.5 py-1 rounded-lg text-[10px] font-bold">Reject</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function approveUser(username) {
+            let user = dbUsers.find(u => u.username === username);
+            if(user) {
+                user.isApproved = true;
+                user.team = "Main Roster";
+                saveDB();
+                renderAdminPendingList();
+                populateAdminUserSelect();
+                renderMemberList();
+                alert(`User ${username} accepted!`);
+            }
+        }
+
+        function rejectUser(username) {
+            if(confirm(`Reject and delete ${username}?`)) {
+                dbUsers = dbUsers.filter(u => u.username !== username);
+                saveDB();
+                renderAdminPendingList();
+                populateAdminUserSelect();
+                alert(`User ${username} rejected.`);
+            }
         }
 
         function loadUserIntoAdminForm(username) {
@@ -669,24 +786,23 @@
                 targetUser.team = newTeam;
                 saveDB();
                 renderMemberList();
-                closeModal('admin-portal-modal');
-                alert(`Successfully updated team/role for ${targetUsername}!`);
+                alert(`Successfully updated team for ${targetUsername}!`);
             }
         }
 
         function handleAdminDeleteUser() {
             const targetUsername = document.getElementById('admin-delete-user-select').value;
             if(targetUsername.toLowerCase() === 'rift raiders') {
-                alert('Cannot delete the primary owner account!');
+                alert('Cannot delete primary owner account!');
                 return;
             }
 
-            if(confirm(`Are you sure you want to delete user ${targetUsername}?`)) {
+            if(confirm(`Delete user ${targetUsername}?`)) {
                 dbUsers = dbUsers.filter(u => u.username !== targetUsername);
                 saveDB();
                 renderMemberList();
                 populateAdminUserSelect();
-                alert(`User ${targetUsername} deleted successfully.`);
+                alert(`User deleted.`);
             }
         }
 
@@ -696,48 +812,69 @@
             container.innerHTML = '';
 
             const now = Date.now();
-            dbUsers.forEach(u => {
-                // Consider online if active within last 5 minutes (300000ms), else offline
-                const isOnline = (now - (u.lastActive || 0)) < 300000;
-                const statusColor = isOnline ? 'bg-green-500' : 'bg-slate-500';
-                const statusText = isOnline ? 'Online' : 'Offline';
+            // Ipakita lamang ang mga online (active within the last 15 seconds)
+            const onlineUsers = dbUsers.filter(u => u.isApproved && (now - (u.lastActive || 0)) < 15000);
 
+            if(onlineUsers.length === 0) {
+                container.innerHTML = `<p class="text-[10px] text-slate-500 italic p-1">No active members online.</p>`;
+                return;
+            }
+
+            onlineUsers.forEach(u => {
                 const gameLogo = gameLogos[u.game] || "";
                 container.innerHTML += `
                     <div class="flex items-center space-x-2.5 p-2 rounded-xl hover:bg-white/5 transition">
                         <div class="relative flex-shrink-0">
                             <img src="${u.pfp}" class="w-8 h-8 rounded-full object-cover border border-white/10">
-                            <span class="absolute bottom-0 right-0 w-2 h-2 ${statusColor} border border-[#050508] rounded-full" title="${statusText}"></span>
+                            <span class="absolute bottom-0 right-0 w-2 h-2 bg-green-500 border border-[#050508] rounded-full" title="Online"></span>
                         </div>
                         <div class="overflow-hidden flex-1 text-left">
                             <div class="flex items-center space-x-1.5">
                                 <p class="text-xs font-semibold text-slate-200 truncate">${u.username}</p>
                                 ${gameLogo ? `<img src="${gameLogo}" class="w-3 h-3 object-contain opacity-80" title="${u.game}">` : ''}
                             </div>
-                            <p class="text-[10px] text-red-400 truncate">${u.team} • <span class="${isOnline ? 'text-green-400' : 'text-slate-400'}">${statusText}</span></p>
+                            <p class="text-[10px] text-red-400 truncate">${u.team} • <span class="text-green-400">Online</span></p>
                         </div>
                     </div>
                 `;
             });
         }
 
-        function uploadToGallery(input) {
-            const file = input.files[0];
-            if(file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const grid = document.getElementById('gallery-grid');
-                    grid.innerHTML += `
-                        <div class="glass-card border border-white/5 rounded-xl p-3 flex flex-col items-center justify-center text-center">
-                            <img src="${e.target.result}" class="w-full h-24 object-cover rounded-lg mb-2">
-                            <p class="text-xs text-slate-300 truncate w-full">${file.name}</p>
-                            <span class="text-[10px] text-green-400 mt-1">Uploaded Successfully</span>
-                        </div>
-                    `;
-                    alert('File uploaded to Gallery!');
+        // Mention Logic
+        function handleMessageInput(e) {
+            const input = e.target;
+            const val = input.value;
+            const mentionBox = document.getElementById('mention-suggestions');
+            const lastAtIndex = val.lastIndexOf('@');
+
+            if (lastAtIndex !== -1 && (lastAtIndex === 0 || val[lastAtIndex - 1] === ' ')) {
+                const query = val.substring(lastAtIndex + 1).toLowerCase();
+                const matches = dbUsers.filter(u => u.isApproved && u.username.toLowerCase().includes(query));
+
+                if (matches.length > 0) {
+                    mentionBox.innerHTML = '';
+                    matches.forEach(m => {
+                        mentionBox.innerHTML += `
+                            <div onclick="insertMention('${m.username}')" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-white/10 cursor-pointer text-xs">
+                                <img src="${m.pfp}" class="w-6 h-6 rounded-full object-cover">
+                                <span class="text-white font-bold">@${m.username}</span>
+                            </div>
+                        `;
+                    });
+                    mentionBox.classList.remove('hidden');
+                    return;
                 }
-                reader.readAsDataURL(file);
             }
+            mentionBox.classList.add('hidden');
+        }
+
+        function insertMention(username) {
+            const input = document.getElementById('message-input');
+            const val = input.value;
+            const lastAtIndex = val.lastIndexOf('@');
+            input.value = val.substring(0, lastAtIndex) + `@${username} `;
+            document.getElementById('mention-suggestions').classList.add('hidden');
+            input.focus();
         }
 
         function handleSendResetEmail(e) {
@@ -755,8 +892,6 @@
             alert('Password updated successfully!');
             closeModal('forgot-modal');
             openModal('login-modal');
-            document.getElementById('forgot-step-1').classList.remove('hidden');
-            document.getElementById('forgot-step-2').classList.add('hidden');
         }
 
         function handleAddChannel(e) {
@@ -773,7 +908,7 @@
         }
 
         function deleteCurrentChannel() {
-            if(dbChannels.length <= 1) { alert('Cannot delete the last remaining channel.'); return; }
+            if(dbChannels.length <= 1) { alert('Cannot delete the last channel.'); return; }
             if(confirm(`Delete #${currentChannel}?`)) {
                 dbChannels = dbChannels.filter(c => c !== currentChannel);
                 delete dbMessages[currentChannel];
@@ -822,13 +957,25 @@
             loadChannelMessages(currentChannel);
             input.value = '';
             clearMedia();
+            document.getElementById('mention-suggestions').classList.add('hidden');
         });
 
-        // Periodic heartbeat to refresh statuses and sync data
+        // Heartbeat timer to update online status every 5 seconds
         setInterval(() => {
-            if(currentUser) saveDB();
+            if(currentUser) {
+                saveDB();
+            }
+            dbUsers = JSON.parse(localStorage.getItem('rift_db_users_v6')) || dbUsers;
+            dbMessages = JSON.parse(localStorage.getItem('rift_db_messages_v6')) || dbMessages;
             renderMemberList();
-        }, 10000);
+        }, 5000);
+
+        window.addEventListener('beforeunload', function() {
+            if(currentUser) {
+                currentUser.lastActive = 0;
+                saveDB();
+            }
+        });
 
         initAppState();
     </script>
