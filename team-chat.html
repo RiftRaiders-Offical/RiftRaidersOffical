@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rift Raiders - Private Team Chat</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-900 text-white font-sans antialiased h-screen flex flex-col">
+
+    <!-- Header / Navbar -->
+    <header class="bg-gray-800 border-b border-gray-700 p-4 flex justify-between items-center shadow-md">
+        <div class="flex items-center space-x-3">
+            <span class="text-red-500 font-bold text-xl tracking-wider">RIFT RAIDERS</span>
+            <span class="text-xs bg-red-600/20 text-red-400 border border-red-500/30 px-2 py-0.5 rounded-full uppercase">Secure Team Portal</span>
+        </div>
+        <div id="user-info" class="text-sm text-gray-300">
+            <span id="current-user-display">Loading user...</span>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="flex flex-1 overflow-hidden">
+        
+        <!-- Sidebar: Group / Channels List -->
+        <aside class="w-64 bg-gray-800 border-r border-gray-700 flex flex-col hidden md:flex">
+            <div class="p-4 border-b border-gray-700 font-semibold text-sm tracking-wide text-gray-400 uppercase">
+                Channels & Groups
+            </div>
+            <nav class="flex-1 overflow-y-auto p-2 space-y-1">
+                <button class="w-full text-left px-3 py-2 rounded-lg bg-red-600/20 text-red-400 font-medium flex items-center space-x-2">
+                    <i class="fa-solid fa-hashtag"></i>
+                    <span>general-strategy</span>
+                </button>
+                <button class="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-700/50 text-gray-300 transition flex items-center space-x-2">
+                    <i class="fa-solid fa-hashtag"></i>
+                    <span>scrims-discussion</span>
+                </button>
+                <button class="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-700/50 text-gray-300 transition flex items-center space-x-2">
+                    <i class="fa-solid fa-hashtag"></i>
+                    <span>clips-and-highlights</span>
+                </button>
+            </nav>
+            <div class="p-4 border-t border-gray-700 text-xs text-gray-500 text-center">
+                Restricted Access Only
+            </div>
+        </aside>
+
+        <!-- Chat Area -->
+        <main class="flex-1 flex flex-col bg-gray-950">
+            
+            <!-- Messages Scroll Box -->
+            <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4">
+                <!-- Sample Message -->
+                <div class="flex items-start space-x-3">
+                    <div class="w-10 h-10 rounded-full bg-red-600 flex items-center justify-center font-bold text-white flex-shrink-0">
+                        <span>A</span>
+                    </div>
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <span class="font-semibold text-sm text-white">Admin / Coach</span>
+                            <span class="text-xs text-gray-500">Just now</span>
+                        </div>
+                        <p class="text-gray-300 text-sm mt-1">Welcome to the official Rift Raiders private secure channel! Send updates, photos, or videos here.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Media Preview Box (Hidden by default) -->
+            <div id="media-preview-container" class="hidden px-4 py-2 bg-gray-900 border-t border-gray-800 flex items-center justify-between">
+                <span id="file-name-display" class="text-xs text-gray-400 truncate"></span>
+                <button onclick="clearMedia()" class="text-red-400 text-xs hover:underline">Remove</button>
+            </div>
+
+            <!-- Input / Message Form -->
+            <form id="chat-form" class="bg-gray-900 border-t border-gray-800 p-4 flex items-center space-x-3">
+                <!-- Media Upload Button -->
+                <label class="cursor-pointer text-gray-400 hover:text-white transition p-2">
+                    <i class="fa-solid fa-paperclip text-lg"></i>
+                    <input type="file" id="media-input" accept="image/*,video/*" class="hidden" onchange="previewMedia(this)">
+                </label>
+
+                <!-- Text Input -->
+                <input type="text" id="message-input" placeholder="Message #general-strategy..." class="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-red-500 transition">
+
+                <!-- Submit Button -->
+                <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-lg font-medium text-sm transition flex items-center space-x-2">
+                    <span>Send</span>
+                    <i class="fa-solid fa-paper-plane text-xs"></i>
+                </button>
+            </form>
+
+        </main>
+    </div>
+
+    <!-- Firebase SDK Scripts (Gamitin ang parehong Firebase config na ginamit mo sa main app) -->
+    <script type="module">
+        // Ilagay dito ang Firebase initialization kung saan nakakonekta ang Firestore at Storage mo.
+        // Halimbawa:
+        // import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        // import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        
+        console.log("Chat system script ready to hook up with Firebase.");
+    </script>
+
+    <script>
+        function previewMedia(input) {
+            const file = input.files[0];
+            if (file) {
+                document.getElementById('media-preview-container').classList.remove('hidden');
+                document.getElementById('file-name-display').innerText = `Attached: ${file.name}`;
+            }
+        }
+
+        function clearMedia() {
+            document.getElementById('media-input').value = '';
+            document.getElementById('media-preview-container').classList.add('hidden');
+        }
+
+        // Simple mock submission placeholder para makita mo agad ang itsura kapag tine-test
+        document.getElementById('chat-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const input = document.getElementById('message-input');
+            if(!input.value.trim()) return;
+
+            const chatMessages = document.getElementById('chat-messages');
+            const newMsg = document.createElement('div');
+            newMsg.className = 'flex items-start space-x-3';
+            newMsg.innerHTML = `
+                <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center font-bold text-white flex-shrink-0">
+                    <span>U</span>
+                </div>
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <span class="font-semibold text-sm text-white">You</span>
+                        <span class="text-xs text-gray-500">Just now</span>
+                    </div>
+                    <p class="text-gray-300 text-sm mt-1">${input.value}</p>
+                </div>
+            `;
+            chatMessages.appendChild(newMsg);
+            input.value = '';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            clearMedia();
+        });
+    </script>
+</body>
+</html>
