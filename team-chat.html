@@ -7,41 +7,62 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Custom Esports Theme Scrollbar & Glow Effects */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #030712; }
-        ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #ef4444; }
-        .esports-glow { box-shadow: 0 0 20px rgba(239, 68, 68, 0.2); }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: #020617; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #dc2626; }
+        .esports-glow { box-shadow: 0 0 25px rgba(220, 38, 38, 0.25); }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans antialiased h-screen flex flex-col overflow-hidden selection:bg-red-600 selection:text-white">
 
-    <!-- Header / Navbar -->
-    <header class="bg-slate-900 border-b border-red-900/30 p-4 flex justify-between items-center shadow-xl z-20">
-        <div class="flex items-center space-x-3">
-            <span class="text-red-500 font-black text-xl tracking-wider drop-shadow-[0_0_10px_rgba(239,68,68,0.5)]">RIFT RAIDERS</span>
-            <span class="text-[10px] bg-red-600/20 text-red-400 border border-red-500/30 px-2.5 py-0.5 rounded-full uppercase tracking-widest font-extrabold">Esports Hub</span>
+    <!-- Auth Protection Overlay (Locks chat if not logged in) -->
+    <div id="auth-lock-overlay" class="absolute inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl w-full max-w-md shadow-2xl text-center esports-glow">
+            <div class="w-16 h-16 bg-red-600/20 border border-red-500/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-lock text-red-500 text-2xl"></i>
+            </div>
+            <h2 class="text-xl font-black tracking-wider text-white mb-2">RESTRICTED ACCESS</h2>
+            <p class="text-xs text-slate-400 mb-6 leading-relaxed">Kailangan mong mag-log in o gumawa ng account para ma-access ang team chat, magbasa ng message history, at makita ang iba pang channels.</p>
+            <div class="space-y-3">
+                <button onclick="openModal('login-modal')" class="w-full bg-red-600 hover:bg-red-700 text-white py-2.5 rounded-xl font-bold text-sm transition shadow-lg shadow-red-600/30">
+                    Login to Account
+                </button>
+                <button onclick="openModal('register-modal')" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2.5 rounded-xl font-bold text-sm transition border border-slate-700">
+                    Create New Account
+                </button>
+            </div>
+            <div class="mt-6 pt-4 border-t border-slate-800/80">
+                <a href="index.html" class="text-xs text-slate-500 hover:text-slate-300 transition flex items-center justify-center space-x-1.5">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Bumalik sa Main Website</span>
+                </a>
+            </div>
         </div>
+    </div>
+
+    <!-- Header / Navbar -->
+    <header class="bg-slate-900 border-b border-red-900/30 px-4 py-3 flex justify-between items-center shadow-xl z-30">
         <div class="flex items-center space-x-3">
-            <!-- File Manager & Gallery Trigger -->
-            <button onclick="openModal('file-manager-modal')" class="hidden sm:flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg text-xs font-bold transition border border-slate-700">
+            <span class="text-red-500 font-black text-lg sm:text-xl tracking-wider drop-shadow-[0_0_10px_rgba(239,68,68,0.5)]">RIFT RAIDERS</span>
+            <span class="hidden sm:inline-block text-[10px] bg-red-600/20 text-red-400 border border-red-500/30 px-2.5 py-0.5 rounded-full uppercase tracking-widest font-extrabold">Database Live</span>
+        </div>
+        <div class="flex items-center space-x-2 sm:space-x-3">
+            <button onclick="openModal('file-manager-modal')" class="flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg text-xs font-bold transition border border-slate-700">
                 <i class="fas fa-folder-open text-red-500"></i>
-                <span>File Manager</span>
+                <span class="hidden sm:inline">Files</span>
             </button>
-            <!-- Admin Role Manager Button -->
             <button id="nav-role-manager-btn" onclick="openModal('role-manager-modal')" class="hidden items-center space-x-1.5 bg-red-600/20 hover:bg-red-600/30 text-red-400 px-3 py-1.5 rounded-lg text-xs font-bold transition border border-red-500/40">
                 <i class="fas fa-users-cog"></i>
-                <span>Manage Roles</span>
+                <span class="hidden sm:inline">Roles</span>
             </button>
-            <!-- Main Website Button -->
             <a href="index.html" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 border border-slate-700">
                 <i class="fas fa-arrow-left text-red-500"></i>
-                <span class="hidden sm:inline">Main Website</span>
+                <span class="hidden sm:inline">Main</span>
             </a>
             <div id="auth-header-btn">
-                <button onclick="openModal('login-modal')" class="bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white px-4 py-1.5 rounded-lg text-xs font-bold transition shadow-lg shadow-red-600/30">
-                    Login / Register
+                <button onclick="openModal('login-modal')" class="bg-gradient-to-r from-red-600 to-rose-600 text-white px-3 sm:px-4 py-1.5 rounded-lg text-xs font-bold transition">
+                    Login
                 </button>
             </div>
         </div>
@@ -51,7 +72,7 @@
     <div class="flex flex-1 overflow-hidden relative">
         
         <!-- Sidebar: Channels List -->
-        <aside class="w-64 bg-slate-900/95 border-r border-slate-800 flex flex-col hidden md:flex">
+        <aside class="w-56 sm:w-64 bg-slate-900/95 border-r border-slate-800 flex flex-col">
             <div class="p-4 border-b border-slate-800 flex justify-between items-center">
                 <span class="font-semibold text-xs tracking-wider text-slate-400 uppercase">Channels</span>
                 <button id="add-channel-btn" onclick="openModal('add-channel-modal')" class="hidden text-slate-400 hover:text-red-400 transition" title="Add Channel">
@@ -60,45 +81,30 @@
             </div>
             
             <nav id="channels-list" class="flex-1 overflow-y-auto p-2 space-y-1">
-                <button onclick="switchChannel('general-strategy', this)" class="channel-btn w-full text-left px-3 py-2 rounded-lg bg-red-600/20 text-red-400 font-medium flex items-center space-x-2 transition text-sm border-l-2 border-red-500">
-                    <i class="fa-solid fa-hashtag"></i>
-                    <span class="truncate">general-strategy</span>
-                </button>
-                <button onclick="switchChannel('scrims-discussion', this)" class="channel-btn w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800/60 text-slate-300 transition flex items-center space-x-2 text-sm border-l-2 border-transparent">
-                    <i class="fa-solid fa-hashtag"></i>
-                    <span class="truncate">scrims-discussion</span>
-                </button>
-                <button onclick="switchChannel('clips-and-highlights', this)" class="channel-btn w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800/60 text-slate-300 transition flex items-center space-x-2 text-sm border-l-2 border-transparent">
-                    <i class="fa-solid fa-hashtag"></i>
-                    <span class="truncate">clips-and-highlights</span>
-                </button>
+                <!-- Populated dynamically -->
             </nav>
-            <div class="p-3 border-t border-slate-800 text-[11px] text-slate-500 text-center">
-                Rift Raiders Esports V2.6
+            <div class="p-3 border-t border-slate-800 text-[10px] text-slate-500 text-center">
+                DB Connected • v2.6 Mobile/PC
             </div>
         </aside>
 
         <!-- Chat Area -->
         <main class="flex-1 flex flex-col bg-slate-950 relative">
-            <!-- Active Channel Header -->
-            <div class="bg-slate-900/60 border-b border-slate-800 px-6 py-3 flex justify-between items-center backdrop-blur">
+            <div class="bg-slate-900/60 border-b border-slate-800 px-4 sm:px-6 py-3 flex justify-between items-center backdrop-blur">
                 <h2 id="active-channel-title" class="font-bold text-sm text-slate-200 flex items-center space-x-2">
                     <i class="fa-solid fa-hashtag text-red-500"></i>
                     <span>general-strategy</span>
                 </h2>
                 <div id="admin-channel-controls" class="hidden">
                     <button onclick="deleteCurrentChannel()" class="text-xs bg-red-600/10 hover:bg-red-600/30 text-red-400 border border-red-500/30 px-2.5 py-1 rounded transition">
-                        <i class="fas fa-trash-alt mr-1"></i> Delete Channel
+                        <i class="fas fa-trash-alt mr-1"></i> Delete
                     </button>
                 </div>
             </div>
 
             <!-- Messages Box -->
-            <div id="chat-messages" class="flex-1 overflow-y-auto p-6 space-y-4">
-                <div class="text-center text-slate-500 text-xs py-4">
-                    <i class="fas fa-shield-alt text-red-500 text-lg mb-1 block"></i>
-                    Welcome to <span id="current-channel-label" class="text-slate-400">#general-strategy</span>. Play to win!
-                </div>
+            <div id="chat-messages" class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
+                <!-- Message History loaded here -->
             </div>
 
             <!-- Media Preview -->
@@ -108,35 +114,35 @@
             </div>
 
             <!-- Chat Input Form -->
-            <form id="chat-form" class="bg-slate-900 border-t border-slate-800 p-4 flex items-center space-x-3">
-                <label class="cursor-pointer text-slate-400 hover:text-white transition p-2" title="Attach file or media">
-                    <i class="fa-solid fa-paperclip text-lg"></i>
+            <form id="chat-form" class="bg-slate-900 border-t border-slate-800 p-3 sm:p-4 flex items-center space-x-2 sm:space-x-3">
+                <label class="cursor-pointer text-slate-400 hover:text-white transition p-2" title="Attach file">
+                    <i class="fa-solid fa-paperclip text-base sm:text-lg"></i>
                     <input type="file" id="media-input" accept="image/*,video/*,.pdf,.zip" class="hidden" onchange="previewMedia(this)">
                 </label>
-                <input type="text" id="message-input" placeholder="Type a message..." class="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-red-500 transition" required>
-                <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-lg font-medium text-sm transition flex items-center space-x-2 shadow-lg shadow-red-600/20">
+                <input type="text" id="message-input" placeholder="Type a message..." class="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-3 sm:px-4 py-2 text-xs sm:text-sm text-white focus:outline-none focus:border-red-500 transition" required>
+                <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 sm:px-5 py-2 rounded-lg font-medium text-xs sm:text-sm transition flex items-center space-x-1.5 shadow-lg shadow-red-600/20">
                     <span>Send</span>
                     <i class="fa-solid fa-paper-plane text-xs"></i>
                 </button>
             </form>
         </main>
 
-        <!-- Right Sidebar: Member Roster Grouped by Team/Role -->
-        <aside class="w-72 bg-slate-900/95 border-l border-slate-800 hidden lg:flex flex-col">
+        <!-- Right Sidebar: Roster by Teams -->
+        <aside class="w-64 bg-slate-900/95 border-l border-slate-800 hidden xl:flex flex-col">
             <div class="p-4 border-b border-slate-800 font-semibold text-xs tracking-wider text-slate-400 uppercase flex justify-between items-center">
-                <span>Roster & Teams</span>
-                <span class="text-[10px] text-red-400 bg-red-950 px-2 py-0.5 rounded border border-red-800">Live</span>
+                <span>Team Database</span>
+                <span class="text-[10px] text-red-400 bg-red-950 px-2 py-0.5 rounded border border-red-800">Synced</span>
             </div>
             <div id="member-list" class="flex-1 overflow-y-auto p-3 space-y-4">
-                <!-- Dynamically populated teams & members -->
+                <!-- Dynamically populated teams -->
             </div>
         </aside>
     </div>
 
     <!-- MODALS -->
 
-    <!-- LOGIN MODAL (Wala nang nakalagay na tip para secret ang admin) -->
-    <div id="login-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+    <!-- LOGIN MODAL -->
+    <div id="login-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
         <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl w-full max-w-sm shadow-2xl relative esports-glow">
             <h3 class="text-lg font-bold text-white mb-4">Login to Portal</h3>
             <form onsubmit="handleLogin(event)" class="space-y-4">
@@ -158,8 +164,8 @@
         </div>
     </div>
 
-    <!-- REGISTER MODAL (Only League of Legends and Wild Rift) -->
-    <div id="register-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+    <!-- REGISTER MODAL -->
+    <div id="register-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
         <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl w-full max-w-md shadow-2xl relative esports-glow">
             <h3 class="text-lg font-bold text-white mb-4">Create Member Account</h3>
             <form onsubmit="handleRegister(event)" class="space-y-3">
@@ -201,23 +207,22 @@
     </div>
 
     <!-- ADMIN: ROLE & TEAM MANAGER MODAL -->
-    <div id="role-manager-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+    <div id="role-manager-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
         <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl w-full max-w-md shadow-2xl relative esports-glow">
             <h3 class="text-lg font-bold text-white mb-2 flex items-center space-x-2">
                 <i class="fas fa-users-cog text-red-500"></i>
                 <span>Admin Role & Team Control</span>
             </h3>
-            <p class="text-xs text-slate-400 mb-4">I-assign ang user sa kani-kanilang Team o Role (Hal. Roster A, Sub Team, Main Roster).</p>
+            <p class="text-xs text-slate-400 mb-4">I-assign ang user sa kani-kanilang Team o Role (Hal. Main Roster, Sub Team, Analyst).</p>
             <form onsubmit="handleAdminAssignRole(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">Pumili ng User</label>
                     <select id="admin-select-user" class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500">
-                        <!-- Populated via JS -->
                     </select>
                 </div>
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">I-type ang Team / Role Name</label>
-                    <input type="text" id="admin-input-team" placeholder="Hal. Main Roster, Sub-Team, Challenger Squad" class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500" required>
+                    <input type="text" id="admin-input-team" placeholder="Hal. Main Roster, Sub-Team" class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500" required>
                 </div>
                 <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded font-bold text-sm transition shadow-lg shadow-red-600/30">Apply Team Role</button>
             </form>
@@ -226,7 +231,7 @@
     </div>
 
     <!-- VIEW PROFILE & EDIT SOCIALS MODAL -->
-    <div id="profile-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+    <div id="profile-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
         <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl w-full max-w-sm shadow-2xl relative esports-glow text-center">
             <button onclick="closeModal('profile-modal')" class="absolute top-3 right-3 text-slate-500 hover:text-white"><i class="fas fa-times"></i></button>
             
@@ -241,16 +246,13 @@
 
             <div class="bg-slate-800/50 rounded-lg p-3 border border-slate-800 mb-4 text-left">
                 <span class="text-[10px] uppercase tracking-wider text-slate-400 font-bold block mb-2">Social Links</span>
-                <div id="profile-socials-display" class="space-y-1 text-xs text-slate-300">
-                    <!-- Socials list -->
-                </div>
+                <div id="profile-socials-display" class="space-y-1 text-xs text-slate-300"></div>
             </div>
 
-            <!-- Edit Socials Form (Visible if current user owns this profile or admin) -->
             <div id="edit-socials-section" class="hidden border-t border-slate-800 pt-3 text-left">
                 <span class="text-[10px] uppercase tracking-wider text-red-400 font-bold block mb-2">Edit My Socials</span>
                 <form onsubmit="handleSaveSocials(event)" class="space-y-2">
-                    <input type="text" id="social-fb" placeholder="Facebook Profile Link" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1 text-xs text-white focus:outline-none focus:border-red-500">
+                    <input type="text" id="social-fb" placeholder="Facebook Link" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1 text-xs text-white focus:outline-none focus:border-red-500">
                     <input type="text" id="social-discord" placeholder="Discord Tag" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1 text-xs text-white focus:outline-none focus:border-red-500">
                     <button type="submit" class="w-full bg-slate-800 hover:bg-slate-700 text-xs text-white py-1.5 rounded font-bold transition border border-slate-700">Save Socials</button>
                 </form>
@@ -259,7 +261,7 @@
     </div>
 
     <!-- FILE MANAGER MODAL -->
-    <div id="file-manager-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+    <div id="file-manager-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
         <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl w-full max-w-2xl shadow-2xl relative h-[80vh] flex flex-col esports-glow">
             <div class="flex justify-between items-center pb-3 border-b border-slate-800">
                 <h3 class="text-lg font-bold text-white flex items-center space-x-2">
@@ -287,7 +289,7 @@
     </div>
 
     <!-- FORGOT PASSWORD MODAL -->
-    <div id="forgot-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+    <div id="forgot-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
         <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl w-full max-w-sm shadow-2xl relative esports-glow">
             <div id="forgot-step-1">
                 <h3 class="text-lg font-bold text-white mb-2">Reset Password</h3>
@@ -313,7 +315,7 @@
     </div>
 
     <!-- ADD CHANNEL MODAL -->
-    <div id="add-channel-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+    <div id="add-channel-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
         <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl w-full max-w-sm shadow-2xl relative esports-glow">
             <h3 class="text-lg font-bold text-white mb-4">Create New Channel</h3>
             <form onsubmit="handleAddChannel(event)" class="space-y-4">
@@ -324,47 +326,38 @@
         </div>
     </div>
 
-    <!-- SCRIPTS -->
+    <!-- SCRIPTS / DATABASE CONTROLLER -->
     <script>
-        // Only two games as requested, PNG transparent logos provided by user
         const gameLogos = {
             "League of Legends": "https://i.ibb.co/3m9R51P/league-of-legends-logo-png_seeklogo-385125.png",
             "Wild Rift": "https://i.ibb.co/279R51P/league-of-legends-wild-rift-logo-png_seeklogo-430791.png"
         };
 
-        let currentChannel = 'general-strategy';
-        let currentUser = {
-            username: "Guest",
-            team: "Unassigned",
-            game: "League of Legends",
-            pfp: "https://i.ibb.co/689L51P/58834.png",
-            isAdmin: false,
-            socials: { facebook: "", discord: "" }
-        };
-
-        // Initial members list with clean data structure
-        let membersList = [
-            { 
-                username: "Takeku", 
-                team: "Management / Owner", 
-                game: "League of Legends", 
-                pfp: "https://i.ibb.co/689L51P/58834.png", 
-                online: true, 
-                isAdmin: true,
-                socials: { facebook: "fb.com/takeku", discord: "Takeku#0001" }
-            },
-            { 
-                username: "ViperPro", 
-                team: "Main Roster", 
-                game: "Wild Rift", 
-                pfp: "https://i.ibb.co/689L51P/58834.png", 
-                online: true, 
-                isAdmin: false,
-                socials: { facebook: "fb.com/viper", discord: "Viper#9999" }
-            }
+        // DATABASE INITIALIZATION (LocalStorage Integration)
+        let dbUsers = JSON.parse(localStorage.getItem('rift_db_users')) || [
+            { username: "Takeku", team: "Management / Owner", game: "League of Legends", pfp: "https://i.ibb.co/689L51P/58834.png", isAdmin: true, socials: { facebook: "fb.com/takeku", discord: "Takeku#0001" } },
+            { username: "ViperPro", team: "Main Roster", game: "Wild Rift", pfp: "https://i.ibb.co/689L51P/58834.png", isAdmin: false, socials: { facebook: "fb.com/viper", discord: "Viper#9999" } }
         ];
 
+        let dbChannels = JSON.parse(localStorage.getItem('rift_db_channels')) || ['general-strategy', 'scrims-discussion', 'clips-and-highlights'];
+        let dbMessages = JSON.parse(localStorage.getItem('rift_db_messages')) || {
+            'general-strategy': [
+                { username: "Takeku", team: "Management / Owner", game: "League of Legends", pfp: "https://i.ibb.co/689L51P/58834.png", isAdmin: true, text: "Welcome to Rift Raiders Database Chat!", time: "Just now" }
+            ],
+            'scrims-discussion': [],
+            'clips-and-highlights': []
+        };
+
+        let currentChannel = 'general-strategy';
+        let currentUser = JSON.parse(localStorage.getItem('rift_current_user')) || null;
         let registeredAvatarBase64 = "https://i.ibb.co/689L51P/58834.png";
+
+        function saveDB() {
+            localStorage.setItem('rift_db_users', JSON.stringify(dbUsers));
+            localStorage.setItem('rift_db_channels', JSON.stringify(dbChannels));
+            localStorage.setItem('rift_db_messages', JSON.stringify(dbMessages));
+            if(currentUser) localStorage.setItem('rift_current_user', JSON.stringify(currentUser));
+        }
 
         function openModal(modalId) { document.getElementById(modalId).classList.remove('hidden'); if(modalId === 'role-manager-modal') populateAdminUserSelect(); }
         function closeModal(modalId) { document.getElementById(modalId).classList.add('hidden'); }
@@ -382,44 +375,100 @@
             }
         }
 
-        function switchChannel(channelName, buttonElement) {
-            currentChannel = channelName;
-            document.querySelectorAll('.channel-btn').forEach(btn => {
-                btn.classList.remove('bg-red-600/20', 'text-red-400', 'font-medium', 'border-red-500');
-                btn.classList.add('hover:bg-slate-800/60', 'text-slate-300', 'border-transparent');
+        function initAppState() {
+            renderChannelsList();
+            if(currentUser) {
+                document.getElementById('auth-lock-overlay').classList.add('hidden');
+                updateUIAfterAuth();
+            } else {
+                document.getElementById('auth-lock-overlay').classList.remove('hidden');
+            }
+            renderMemberList();
+            loadChannelMessages(currentChannel);
+        }
+
+        function renderChannelsList() {
+            const nav = document.getElementById('channels-list');
+            nav.innerHTML = '';
+            dbChannels.forEach(ch => {
+                const isActive = ch === currentChannel;
+                nav.innerHTML += `
+                    <button onclick="switchChannel('${ch}', this)" class="channel-btn w-full text-left px-3 py-2 rounded-lg ${isActive ? 'bg-red-600/20 text-red-400 font-medium border-red-500' : 'hover:bg-slate-800/60 text-slate-300 border-transparent'} transition flex items-center space-x-2 text-sm border-l-2">
+                        <i class="fa-solid fa-hashtag"></i>
+                        <span class="truncate">${ch}</span>
+                    </button>
+                `;
             });
-            buttonElement.classList.remove('hover:bg-slate-800/60', 'text-slate-300', 'border-transparent');
-            buttonElement.classList.add('bg-red-600/20', 'text-red-400', 'font-medium', 'border-red-500');
+        }
+
+        function switchChannel(channelName, buttonElement) {
+            if(!currentUser) { openModal('login-modal'); return; }
+            currentChannel = channelName;
+            renderChannelsList();
             document.getElementById('active-channel-title').innerHTML = `<i class="fa-solid fa-hashtag text-red-500"></i><span>${channelName}</span>`;
             document.getElementById('current-channel-label').innerText = `#${channelName}`;
             document.getElementById('message-input').placeholder = `Message #${channelName}...`;
+            loadChannelMessages(channelName);
         }
 
-        // Secret Admin Check on login (Username 'Takeku' grants admin powers seamlessly)
+        function loadChannelMessages(channelName) {
+            const container = document.getElementById('chat-messages');
+            container.innerHTML = '';
+            const msgs = dbMessages[channelName] || [];
+            
+            if(msgs.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-slate-500 text-xs py-4">
+                        <i class="fas fa-shield-alt text-red-500 text-lg mb-1 block"></i>
+                        Start of <span class="text-slate-400">#${channelName}</span> channel history.
+                    </div>
+                `;
+                return;
+            }
+
+            msgs.forEach(m => {
+                container.innerHTML += `
+                    <div class="flex items-start space-x-3">
+                        <img src="${m.pfp}" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover border border-slate-700 flex-shrink-0">
+                        <div>
+                            <div class="flex items-center space-x-2">
+                                <span class="font-semibold text-xs sm:text-sm text-white">${m.username}</span>
+                                <span class="text-[10px] text-slate-400">(${m.team})</span>
+                                ${m.isAdmin ? '<span class="text-[9px] bg-red-600 text-white px-1.5 rounded font-bold uppercase">Owner</span>' : ''}
+                                <span class="text-[10px] text-slate-500">${m.time}</span>
+                            </div>
+                            <p class="text-slate-300 text-xs sm:text-sm mt-1">${m.text}</p>
+                        </div>
+                    </div>
+                `;
+            });
+            container.scrollTop = container.scrollHeight;
+        }
+
         function handleLogin(e) {
             e.preventDefault();
             const username = document.getElementById('login-username').value.trim();
-            
-            let found = membersList.find(m => m.username.toLowerCase() === username.toLowerCase());
+            let found = dbUsers.find(u => u.username.toLowerCase() === username.toLowerCase());
+
             if (username.toLowerCase() === 'takeku') {
                 if(found) {
                     currentUser = found;
                     currentUser.isAdmin = true;
                 } else {
                     currentUser = { username: "Takeku", team: "Management / Owner", game: "League of Legends", pfp: "https://i.ibb.co/689L51P/58834.png", isAdmin: true, socials: { facebook: "", discord: "" } };
-                    membersList.push({ ...currentUser, online: true });
+                    dbUsers.push(currentUser);
                 }
             } else {
                 if(found) {
                     currentUser = found;
                 } else {
                     currentUser = { username: username, team: "Main Roster", game: "League of Legends", pfp: "https://i.ibb.co/689L51P/58834.png", isAdmin: false, socials: { facebook: "", discord: "" } };
-                    membersList.push({ ...currentUser, online: true });
+                    dbUsers.push(currentUser);
                 }
             }
 
-            updateUIAfterAuth();
-            renderMemberList();
+            saveDB();
+            initAppState();
             closeModal('login-modal');
         }
 
@@ -434,14 +483,15 @@
                 socials: { facebook: "", discord: "" }
             };
 
-            membersList.push({ ...currentUser, online: true });
-            updateUIAfterAuth();
-            renderMemberList();
+            dbUsers.push(currentUser);
+            saveDB();
+            initAppState();
             closeModal('register-modal');
-            alert('Account created and registered successfully!');
+            alert('Account registered and saved to database successfully!');
         }
 
         function updateUIAfterAuth() {
+            document.getElementById('auth-lock-overlay').classList.add('hidden');
             document.getElementById('auth-header-btn').innerHTML = `
                 <div onclick="openProfileModal('${currentUser.username}')" class="flex items-center space-x-2 bg-slate-800 hover:bg-slate-700 cursor-pointer px-3 py-1 rounded-lg border border-slate-700 transition">
                     <img src="${currentUser.pfp}" class="w-6 h-6 rounded-full object-cover">
@@ -459,8 +509,8 @@
         function populateAdminUserSelect() {
             const select = document.getElementById('admin-select-user');
             select.innerHTML = '';
-            membersList.forEach(m => {
-                select.innerHTML += `<option value="${m.username}">${m.username} (${m.team})</option>`;
+            dbUsers.forEach(u => {
+                select.innerHTML += `<option value="${u.username}">${u.username} (${u.team})</option>`;
             });
         }
 
@@ -469,25 +519,25 @@
             const targetUsername = document.getElementById('admin-select-user').value;
             const newTeam = document.getElementById('admin-input-team').value.trim();
 
-            let targetMember = membersList.find(m => m.username === targetUsername);
-            if(targetMember) {
-                targetMember.team = newTeam;
+            let targetUser = dbUsers.find(u => u.username === targetUsername);
+            if(targetUser) {
+                targetUser.team = newTeam;
+                saveDB();
                 renderMemberList();
                 closeModal('role-manager-modal');
                 alert(`Successfully assigned ${targetUsername} to team/role: ${newTeam}`);
             }
         }
 
-        // Render member list grouped by their Team/Role dynamically
         function renderMemberList() {
             const container = document.getElementById('member-list');
+            if(!container) return;
             container.innerHTML = '';
 
-            // Group members by team
             let teamsMap = {};
-            membersList.forEach(m => {
-                if(!teamsMap[m.team]) teamsMap[m.team] = [];
-                teamsMap[m.team].push(m);
+            dbUsers.forEach(u => {
+                if(!teamsMap[u.team]) teamsMap[u.team] = [];
+                teamsMap[u.team].push(u);
             });
 
             for(let teamName in teamsMap) {
@@ -495,53 +545,51 @@
                     <p class="text-[10px] font-extrabold uppercase tracking-wider text-red-500 mb-2 border-b border-slate-800 pb-1">${teamName}</p>
                     <div class="space-y-2">`;
                 
-                teamsMap[teamName].forEach(m => {
-                    const logoUrl = gameLogos[m.game] || "https://i.ibb.co/3m9R51P/league-of-legends-logo-png_seeklogo-385125.png";
+                teamsMap[teamName].forEach(u => {
+                    const logoUrl = gameLogos[u.game] || gameLogos["League of Legends"];
                     teamHtml += `
-                        <div onclick="openProfileModal('${m.username}')" class="flex items-center space-x-2.5 p-1.5 rounded-lg hover:bg-slate-800/60 cursor-pointer transition">
+                        <div onclick="openProfileModal('${u.username}')" class="flex items-center space-x-2.5 p-1.5 rounded-lg hover:bg-slate-800/60 cursor-pointer transition">
                             <div class="relative flex-shrink-0">
-                                <img src="${m.pfp}" class="w-8 h-8 rounded-full object-cover border border-slate-700">
+                                <img src="${u.pfp}" class="w-8 h-8 rounded-full object-cover border border-slate-700">
                                 <span class="absolute bottom-0 right-0 w-2 h-2 bg-green-500 border border-slate-900 rounded-full"></span>
                             </div>
                             <div class="overflow-hidden flex-1">
-                                <p class="text-xs font-semibold text-slate-200 truncate">${m.username} ${m.isAdmin ? '<span class="text-[8px] bg-red-600 text-white px-1 rounded ml-1">Owner</span>' : ''}</p>
+                                <p class="text-xs font-semibold text-slate-200 truncate">${u.username} ${u.isAdmin ? '<span class="text-[8px] bg-red-600 text-white px-1 rounded ml-1">Owner</span>' : ''}</p>
                                 <div class="flex items-center space-x-1">
                                     <img src="${logoUrl}" class="w-3 h-3 object-contain">
-                                    <p class="text-[10px] text-slate-400 truncate">${m.game}</p>
+                                    <p class="text-[10px] text-slate-400 truncate">${u.game}</p>
                                 </div>
                             </div>
                         </div>
                     `;
                 });
-
                 teamHtml += `</div></div>`;
                 container.innerHTML += teamHtml;
             }
         }
 
         function openProfileModal(username) {
-            const member = membersList.find(m => m.username === username);
-            if(!member) return;
+            const user = dbUsers.find(u => u.username === username);
+            if(!user) return;
 
-            document.getElementById('profile-modal-pfp').src = member.pfp;
-            document.getElementById('profile-modal-game-logo').src = gameLogos[member.game] || "";
-            document.getElementById('profile-modal-username').innerText = member.username;
-            document.getElementById('profile-modal-role').innerText = member.team;
-            document.getElementById('profile-modal-game').innerText = `Main Game: ${member.game}`;
+            document.getElementById('profile-modal-pfp').src = user.pfp;
+            document.getElementById('profile-modal-game-logo').src = gameLogos[user.game] || "";
+            document.getElementById('profile-modal-username').innerText = user.username;
+            document.getElementById('profile-modal-role').innerText = user.team;
+            document.getElementById('profile-modal-game').innerText = `Main Game: ${user.game}`;
 
             const socialsDisplay = document.getElementById('profile-socials-display');
             socialsDisplay.innerHTML = `
-                <p><i class="fab fa-facebook text-blue-400 mr-1.5"></i> ${member.socials?.facebook || 'Not provided'}</p>
-                <p><i class="fab fa-discord text-indigo-400 mr-1.5"></i> ${member.socials?.discord || 'Not provided'}</p>
+                <p><i class="fab fa-facebook text-blue-400 mr-1.5"></i> ${user.socials?.facebook || 'Not provided'}</p>
+                <p><i class="fab fa-discord text-indigo-400 mr-1.5"></i> ${user.socials?.discord || 'Not provided'}</p>
             `;
 
-            // Allow edit if current user is viewing their own profile or is admin
             const editSection = document.getElementById('edit-socials-section');
-            if(currentUser.username === member.username || currentUser.isAdmin) {
+            if(currentUser && (currentUser.username === user.username || currentUser.isAdmin)) {
                 editSection.classList.remove('hidden');
-                document.getElementById('social-fb').value = member.socials?.facebook || '';
-                document.getElementById('social-discord').value = member.socials?.discord || '';
-                window.activeProfileTarget = member.username;
+                document.getElementById('social-fb').value = user.socials?.facebook || '';
+                document.getElementById('social-discord').value = user.socials?.discord || '';
+                window.activeProfileTarget = user.username;
             } else {
                 editSection.classList.add('hidden');
             }
@@ -551,12 +599,13 @@
 
         function handleSaveSocials(e) {
             e.preventDefault();
-            let target = membersList.find(m => m.username === window.activeProfileTarget);
+            let target = dbUsers.find(u => u.username === window.activeProfileTarget);
             if(target) {
                 target.socials = {
                     facebook: document.getElementById('social-fb').value.trim(),
                     discord: document.getElementById('social-discord').value.trim()
                 };
+                saveDB();
                 alert('Socials updated successfully!');
                 closeModal('profile-modal');
                 renderMemberList();
@@ -576,7 +625,7 @@
                             <span class="text-[10px] text-green-400 mt-1">Uploaded Successfully</span>
                         </div>
                     `;
-                    alert('File uploaded to Gallery & File Manager!');
+                    alert('File uploaded to Gallery!');
                 }
                 reader.readAsDataURL(file);
             }
@@ -594,7 +643,7 @@
             const p1 = document.getElementById('new-password').value;
             const p2 = document.getElementById('confirm-password').value;
             if(p1 !== p2) { alert('Passwords do not match!'); return; }
-            alert('Password successfully updated!');
+            alert('Password updated successfully!');
             closeModal('forgot-modal');
             openModal('login-modal');
             document.getElementById('forgot-step-1').classList.remove('hidden');
@@ -604,23 +653,24 @@
         function handleAddChannel(e) {
             e.preventDefault();
             const name = document.getElementById('new-channel-name').value.trim().toLowerCase().replace(/\s+/g, '-');
-            if(!name) return;
+            if(!name || dbChannels.includes(name)) return;
 
-            const channelsList = document.getElementById('channels-list');
-            const newBtn = document.createElement('button');
-            newBtn.onclick = function() { switchChannel(name, this); };
-            newBtn.className = 'channel-btn w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800/60 text-slate-300 transition flex items-center space-x-2 text-sm border-l-2 border-transparent';
-            newBtn.innerHTML = `<i class="fa-solid fa-hashtag"></i><span class="truncate">${name}</span>`;
-            channelsList.appendChild(newBtn);
-
+            dbChannels.push(name);
+            dbMessages[name] = [];
+            saveDB();
+            renderChannelsList();
             closeModal('add-channel-modal');
             document.getElementById('new-channel-name').value = '';
         }
 
         function deleteCurrentChannel() {
+            if(dbChannels.length <= 1) { alert('Hindi pwedeng tanggalin ang huling channel.'); return; }
             if(confirm(`Delete #${currentChannel}?`)) {
-                alert(`Channel deleted.`);
-                location.reload();
+                dbChannels = dbChannels.filter(c => c !== currentChannel);
+                delete dbMessages[currentChannel];
+                currentChannel = dbChannels[0];
+                saveDB();
+                initAppState();
             }
         }
 
@@ -639,31 +689,32 @@
 
         document.getElementById('chat-form').addEventListener('submit', function(e) {
             e.preventDefault();
+            if(!currentUser) { openModal('login-modal'); return; }
+
             const input = document.getElementById('message-input');
             if(!input.value.trim()) return;
 
-            const chatMessages = document.getElementById('chat-messages');
-            const newMsg = document.createElement('div');
-            newMsg.className = 'flex items-start space-x-3';
-            newMsg.innerHTML = `
-                <img src="${currentUser.pfp}" class="w-10 h-10 rounded-full object-cover border border-slate-700 flex-shrink-0">
-                <div>
-                    <div class="flex items-center space-x-2">
-                        <span class="font-semibold text-sm text-white">${currentUser.username}</span>
-                        <span class="text-[10px] text-slate-400">(${currentUser.team})</span>
-                        ${currentUser.isAdmin ? '<span class="text-[10px] bg-red-600 text-white px-1.5 py-0.2 rounded font-bold uppercase">Owner</span>' : ''}
-                        <span class="text-xs text-slate-500">Just now</span>
-                    </div>
-                    <p class="text-slate-300 text-sm mt-1">${input.value}</p>
-                </div>
-            `;
-            chatMessages.appendChild(newMsg);
+            const msgObj = {
+                username: currentUser.username,
+                team: currentUser.team,
+                game: currentUser.game,
+                pfp: currentUser.pfp,
+                isAdmin: currentUser.isAdmin,
+                text: input.value.trim(),
+                time: "Just now"
+            };
+
+            if(!dbMessages[currentChannel]) dbMessages[currentChannel] = [];
+            dbMessages[currentChannel].push(msgObj);
+            saveDB();
+
+            loadChannelMessages(currentChannel);
             input.value = '';
-            chatMessages.scrollTop = chatMessages.scrollHeight;
             clearMedia();
         });
 
-        renderMemberList();
+        // Run application setup on load
+        initAppState();
     </script>
 </body>
 </html>
