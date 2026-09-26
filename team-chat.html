@@ -6,6 +6,13 @@
     <title>Rift Raiders - Private Team Chat Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            emailjs.init("YOUR_EMAILJS_PUBLIC_KEY"); // Palitan ng iyong EmailJS Public Key
+        })();
+    </script>
     <style>
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -74,9 +81,13 @@
                 <button class="w-10 h-10 rounded-xl bg-red-600/20 text-red-500 border border-red-500/30 flex items-center justify-center transition shadow-md" title="Chat">
                     <i class="fas fa-comment-dots text-sm"></i>
                 </button>
-                <button id="nav-admin-portal-btn" onclick="openAdminPortal()" class="hidden w-10 h-10 rounded-xl bg-red-600/10 hover:bg-red-600/20 text-red-400 flex items-center justify-center transition border border-red-500/20" title="Admin Portal & File Manager">
-                    <i class="fas fa-shield-alt text-sm"></i>
-                </button>
+                <!-- Admin Portal Button with Notification Badge -->
+                <div class="relative">
+                    <button id="nav-admin-portal-btn" onclick="openAdminPortal()" class="hidden w-10 h-10 rounded-xl bg-red-600/10 hover:bg-red-600/20 text-red-400 flex items-center justify-center transition border border-red-500/20 relative" title="Admin Portal">
+                        <i class="fas fa-shield-alt text-sm"></i>
+                    </button>
+                    <span id="admin-notif-badge" class="hidden absolute -top-1 -right-1 w-4 h-4 bg-red-600 text-white text-[9px] font-black rounded-full flex items-center justify-center shadow-md animate-pulse">0</span>
+                </div>
             </div>
         </div>
         <div class="flex md:flex-col items-center space-x-3 md:space-x-0 md:space-y-4">
@@ -230,7 +241,7 @@
                     <input type="text" id="reg-username" class="w-full bg-[#12121a] border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500" required>
                 </div>
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">Email Address</label>
+                    <label class="block text-xs text-slate-400 mb-1">Email Address (for notification)</label>
                     <input type="email" id="reg-email" class="w-full bg-[#12121a] border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500" required>
                 </div>
                 <div>
@@ -380,15 +391,16 @@
             "Wild Rift": "https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/riotgames.svg"
         };
 
-        let currentGlobalLogo = localStorage.getItem('rift_global_logo_v6') || "https://i.ibb.co/689L51P/58834.png";
+        let currentGlobalLogo = localStorage.getItem('rift_global_logo_v8') || "https://i.ibb.co/689L51P/58834.png";
 
-        let dbUsers = JSON.parse(localStorage.getItem('rift_db_users_v6')) || [
-            { username: "Rift Raiders", team: "Management / Owner", game: "League of Legends", pfp: currentGlobalLogo, isAdmin: true, isApproved: true, isBot: true, lastActive: Date.now() },
-            { username: "ViperPro", team: "Main Roster", game: "Wild Rift", pfp: currentGlobalLogo, isAdmin: false, isApproved: true, isBot: false, lastActive: Date.now() }
+        let dbUsers = JSON.parse(localStorage.getItem('rift_db_users_v8')) || [
+            { username: "Rift Raiders", team: "Management / Owner", game: "League of Legends", email: "riftraiders.wr@gmail.com", pfp: currentGlobalLogo, isAdmin: true, isApproved: true, isBot: true, lastActive: Date.now() },
+            { username: "takeku", team: "Management / Owner", game: "League of Legends", email: "daerwin123@gmail.com", pfp: currentGlobalLogo, isAdmin: true, isApproved: true, isBot: false, lastActive: Date.now() },
+            { username: "ViperPro", team: "Main Roster", game: "Wild Rift", email: "viper@gmail.com", pfp: currentGlobalLogo, isAdmin: false, isApproved: true, isBot: false, lastActive: Date.now() }
         ];
 
-        let dbChannels = JSON.parse(localStorage.getItem('rift_db_channels_v6')) || ['general-strategy', 'scrims-discussion', 'clips-and-highlights'];
-        let dbMessages = JSON.parse(localStorage.getItem('rift_db_messages_v6')) || {
+        let dbChannels = JSON.parse(localStorage.getItem('rift_db_channels_v8')) || ['general-strategy', 'scrims-discussion', 'clips-and-highlights'];
+        let dbMessages = JSON.parse(localStorage.getItem('rift_db_messages_v8')) || {
             'general-strategy': [
                 { id: 1, username: "Rift Raiders", team: "Management / Owner", game: "League of Legends", pfp: currentGlobalLogo, isAdmin: true, isBot: true, text: "Welcome to Rift Raiders Verified Guild Chat!", time: "Just now" }
             ],
@@ -397,30 +409,30 @@
         };
 
         let currentChannel = 'general-strategy';
-        let currentUser = JSON.parse(localStorage.getItem('rift_current_user_v6')) || null;
+        let currentUser = JSON.parse(localStorage.getItem('rift_current_user_v8')) || null;
         let registeredAvatarBase64 = currentGlobalLogo;
         let newLogoBase64 = currentGlobalLogo;
 
         function saveDB() {
-            localStorage.setItem('rift_global_logo_v6', currentGlobalLogo);
-            localStorage.setItem('rift_db_users_v6', JSON.stringify(dbUsers));
-            localStorage.setItem('rift_db_channels_v6', JSON.stringify(dbChannels));
-            localStorage.setItem('rift_db_messages_v6', JSON.stringify(dbMessages));
+            localStorage.setItem('rift_global_logo_v8', currentGlobalLogo);
+            localStorage.setItem('rift_db_users_v8', JSON.stringify(dbUsers));
+            localStorage.setItem('rift_db_channels_v8', JSON.stringify(dbChannels));
+            localStorage.setItem('rift_db_messages_v8', JSON.stringify(dbMessages));
             if(currentUser) {
                 currentUser.lastActive = Date.now();
-                localStorage.setItem('rift_current_user_v6', JSON.stringify(currentUser));
+                localStorage.setItem('rift_current_user_v8', JSON.stringify(currentUser));
                 let userInDb = dbUsers.find(u => u.username.toLowerCase() === currentUser.username.toLowerCase());
                 if(userInDb) userInDb.lastActive = Date.now();
             }
         }
 
-        // Cross-tab / cross-device synchronization event listener
         window.addEventListener('storage', function(e) {
-            if (e.key === 'rift_db_users_v6' || e.key === 'rift_db_messages_v6' || e.key === 'rift_db_channels_v6') {
-                dbUsers = JSON.parse(localStorage.getItem('rift_db_users_v6')) || dbUsers;
-                dbChannels = JSON.parse(localStorage.getItem('rift_db_channels_v6')) || dbChannels;
-                dbMessages = JSON.parse(localStorage.getItem('rift_db_messages_v6')) || dbMessages;
+            if (e.key === 'rift_db_users_v8' || e.key === 'rift_db_messages_v8' || e.key === 'rift_db_channels_v8') {
+                dbUsers = JSON.parse(localStorage.getItem('rift_db_users_v8')) || dbUsers;
+                dbChannels = JSON.parse(localStorage.getItem('rift_db_channels_v8')) || dbChannels;
+                dbMessages = JSON.parse(localStorage.getItem('rift_db_messages_v8')) || dbMessages;
                 renderMemberList();
+                updateAdminNotificationBadge();
                 loadChannelMessages(currentChannel);
             }
         });
@@ -429,6 +441,18 @@
             document.querySelectorAll('#brand-logo-preview, #nav-brand-logo').forEach(img => {
                 if(img) img.src = currentGlobalLogo;
             });
+        }
+
+        function updateAdminNotificationBadge() {
+            const badge = document.getElementById('admin-notif-badge');
+            if(!badge) return;
+            const pendingCount = dbUsers.filter(u => !u.isApproved && !u.isAdmin).length;
+            if(pendingCount > 0) {
+                badge.innerText = pendingCount;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
         }
 
         function openModal(modalId) { document.getElementById(modalId).classList.remove('hidden'); }
@@ -479,11 +503,11 @@
         function handleLogout() {
             if(confirm('Are you sure you want to log out?')) {
                 if(currentUser) {
-                    currentUser.lastActive = 0; // Mark offline immediately
+                    currentUser.lastActive = 0;
                     saveDB();
                 }
                 currentUser = null;
-                localStorage.removeItem('rift_current_user_v6');
+                localStorage.removeItem('rift_current_user_v8');
                 location.reload();
             }
         }
@@ -503,8 +527,9 @@
         function initAppState() {
             renderChannelsList();
             updateAllLogosDisplay();
+            updateAdminNotificationBadge();
             
-            let storedUser = localStorage.getItem('rift_current_user_v6');
+            let storedUser = localStorage.getItem('rift_current_user_v8');
             if(storedUser) {
                 currentUser = JSON.parse(storedUser);
                 let latestUser = dbUsers.find(u => u.username.toLowerCase() === currentUser.username.toLowerCase());
@@ -512,7 +537,7 @@
                     if(!latestUser.isApproved && !latestUser.isAdmin) {
                         alert('Your account is pending admin approval.');
                         currentUser = null;
-                        localStorage.removeItem('rift_current_user_v6');
+                        localStorage.removeItem('rift_current_user_v8');
                     } else {
                         currentUser = latestUser;
                         currentUser.lastActive = Date.now();
@@ -651,6 +676,7 @@
         function handleRegister(e) {
             e.preventDefault();
             const newUsername = document.getElementById('reg-username').value.trim();
+            const emailInput = document.getElementById('reg-email').value.trim();
             
             if(dbUsers.some(u => u.username.toLowerCase() === newUsername.toLowerCase())) {
                 alert('Username already exists!');
@@ -663,6 +689,7 @@
                 username: newUsername,
                 team: isAdminAcc ? "Management / Owner" : "Pending Approval",
                 game: document.getElementById('reg-game').value,
+                email: emailInput,
                 pfp: isAdminAcc ? currentGlobalLogo : registeredAvatarBase64,
                 isAdmin: isAdminAcc,
                 isApproved: isAdminAcc ? true : false,
@@ -736,7 +763,7 @@
                             <img src="${u.pfp}" class="w-7 h-7 rounded-full object-cover flex-shrink-0">
                             <div class="overflow-hidden">
                                 <p class="text-xs font-bold text-white truncate">${u.username}</p>
-                                <p class="text-[10px] text-slate-400 truncate">${u.game}</p>
+                                <p class="text-[10px] text-slate-400 truncate">${u.email || u.game}</p>
                             </div>
                         </div>
                         <div class="flex space-x-1 flex-shrink-0">
@@ -754,10 +781,27 @@
                 user.isApproved = true;
                 user.team = "Main Roster";
                 saveDB();
+                
+                // EmailJS notification from riftraiders.wr@gmail.com
+                const templateParams = {
+                    to_email: user.email || "daerwin123@gmail.com",
+                    to_name: user.username,
+                    from_name: "Rift Raiders",
+                    reply_to: "riftraiders.wr@gmail.com"
+                };
+
+                emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams)
+                    .then(function(response) {
+                        console.log('Email sent successfully from riftraiders.wr@gmail.com!', response.status, response.text);
+                    }, function(error) {
+                        console.log('Failed to send email:', error);
+                    });
+
                 renderAdminPendingList();
                 populateAdminUserSelect();
                 renderMemberList();
-                alert(`User ${username} accepted!`);
+                updateAdminNotificationBadge();
+                alert(`User ${username} accepted and approval email sent from riftraiders.wr@gmail.com!`);
             }
         }
 
@@ -767,6 +811,7 @@
                 saveDB();
                 renderAdminPendingList();
                 populateAdminUserSelect();
+                updateAdminNotificationBadge();
                 alert(`User ${username} rejected.`);
             }
         }
@@ -792,8 +837,8 @@
 
         function handleAdminDeleteUser() {
             const targetUsername = document.getElementById('admin-delete-user-select').value;
-            if(targetUsername.toLowerCase() === 'rift raiders') {
-                alert('Cannot delete primary owner account!');
+            if(targetUsername.toLowerCase() === 'rift raiders' || targetUsername.toLowerCase() === 'takeku') {
+                alert('Cannot delete primary owner accounts!');
                 return;
             }
 
@@ -812,7 +857,6 @@
             container.innerHTML = '';
 
             const now = Date.now();
-            // Ipakita lamang ang mga online (active within the last 15 seconds)
             const onlineUsers = dbUsers.filter(u => u.isApproved && (now - (u.lastActive || 0)) < 15000);
 
             if(onlineUsers.length === 0) {
@@ -840,7 +884,6 @@
             });
         }
 
-        // Mention Logic
         function handleMessageInput(e) {
             const input = e.target;
             const val = input.value;
@@ -960,14 +1003,15 @@
             document.getElementById('mention-suggestions').classList.add('hidden');
         });
 
-        // Heartbeat timer to update online status every 5 seconds
         setInterval(() => {
             if(currentUser) {
                 saveDB();
             }
-            dbUsers = JSON.parse(localStorage.getItem('rift_db_users_v6')) || dbUsers;
-            dbMessages = JSON.parse(localStorage.getItem('rift_db_messages_v6')) || dbMessages;
+            dbUsers = JSON.parse(localStorage.getItem('rift_db_users_v8')) || dbUsers;
+            dbChannels = JSON.parse(localStorage.getItem('rift_db_channels_v8')) || dbChannels;
+            dbMessages = JSON.parse(localStorage.getItem('rift_db_messages_v8')) || dbMessages;
             renderMemberList();
+            updateAdminNotificationBadge();
         }, 5000);
 
         window.addEventListener('beforeunload', function() {
