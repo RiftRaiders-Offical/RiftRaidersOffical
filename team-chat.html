@@ -87,7 +87,7 @@
         <!-- User Profile Footer sa Sidebar -->
         <div class="p-3 bg-slate-950 border-t border-slate-800 flex items-center justify-between">
             <div class="cursor-pointer flex items-center space-x-2" onclick="openEditProfile()">
-                <div class="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center font-bold text-xs text-white">TR</div>
+                <img id="sb-user-avatar" src="https://via.placeholder.com/150" class="w-8 h-8 rounded-full object-cover bg-slate-800 border border-slate-700">
                 <div>
                     <p id="sb-user-name" class="text-xs font-bold text-white">Username</p>
                     <p id="sb-user-role" class="text-[10px] text-slate-400">Role</p>
@@ -167,11 +167,15 @@
         </div>
     </div>
 
-    <!-- EDIT PROFILE MODAL -->
+    <!-- EDIT PROFILE & PHOTO MODAL -->
     <div id="edit-profile-modal" class="hidden fixed inset-0 bg-slate-950/80 z-50 flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl max-w-sm w-full relative">
-            <h3 class="text-lg font-bold text-red-500 mb-4">Edit Profile & Socials</h3>
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl max-w-sm w-full relative max-h-[90vh] overflow-y-auto">
+            <h3 class="text-lg font-bold text-red-500 mb-4">Edit Profile & Avatar</h3>
             <form onsubmit="handleSaveProfile(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Upload Profile Picture (File)</label>
+                    <input type="file" id="edit-avatar-file" accept="image/*" class="w-full bg-slate-800 border border-slate-700 rounded px-2 py-1 text-xs text-slate-300 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:bg-red-600 file:text-white hover:file:bg-red-700">
+                </div>
                 <div>
                     <label class="block text-xs font-medium text-slate-300 mb-1">Main Game</label>
                     <input type="text" id="edit-game" class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-1.5 text-xs text-white">
@@ -204,7 +208,7 @@
         </div>
     </div>
 
-    <!-- ADMIN PASSWORD MODAL (Box Style - Nakatago ang Password Clue) -->
+    <!-- ADMIN PASSWORD MODAL -->
     <div id="admin-password-modal" class="hidden fixed inset-0 bg-slate-950/85 z-50 flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-red-600/50 p-6 rounded-xl max-w-sm w-full shadow-2xl relative">
             <h3 class="text-lg font-bold text-red-500 mb-1">Admin Authentication</h3>
@@ -213,12 +217,11 @@
             <form onsubmit="handleAdminAuth(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs font-medium text-slate-300 mb-1">Admin Password</label>
-                    <!-- TANGGAL NA ANG 'rr2024' SA PLACEHOLDER PARA HINDI HALATA -->
                     <input type="password" id="admin-portal-pass-input" required placeholder="Enter password..." class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500">
                 </div>
                 <div class="flex space-x-2">
                     <button type="submit" class="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 rounded text-xs font-bold">Verify & Enter</button>
-                    <button type="button" onclick="closeModal('admin-password-modal')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded text-xs font-medium">Cancel</button>
+                    <button type="button" onclick="closeModal('admin-password-modal')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-2 rounded text-xs font-medium">Cancel</button>
                 </div>
             </form>
         </div>
@@ -231,19 +234,16 @@
             <p class="text-xs text-slate-400 mb-4">Manage users, approvals, and website configurations.</p>
             
             <div class="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
-                <!-- Section 1: Pending Approvals -->
                 <div class="bg-slate-950 p-3 rounded border border-slate-800">
                     <h3 class="text-xs font-bold text-white mb-2 uppercase tracking-wide">Pending Registrations</h3>
                     <div id="admin-pending-list" class="space-y-2 text-xs text-slate-300"></div>
                 </div>
 
-                <!-- Section 2: Manage Users / Ban -->
                 <div class="bg-slate-950 p-3 rounded border border-slate-800">
                     <h3 class="text-xs font-bold text-white mb-2 uppercase tracking-wide">Registered Members</h3>
                     <div id="admin-members-list" class="space-y-2 text-xs text-slate-300 max-h-36 overflow-y-auto"></div>
                 </div>
 
-                <!-- Section 3: Edit Website Branding & Logo/Title -->
                 <div class="bg-slate-950 p-3 rounded border border-slate-800">
                     <h3 class="text-xs font-bold text-white mb-2 uppercase tracking-wide">Edit Website Branding & Logo</h3>
                     <div class="space-y-3">
@@ -396,8 +396,11 @@
             
             const userNameEl = document.getElementById('sb-user-name');
             const userRoleEl = document.getElementById('sb-user-role');
+            const userAvatarEl = document.getElementById('sb-user-avatar');
+
             if (userNameEl) userNameEl.innerText = currentUser.username;
             if (userRoleEl) userRoleEl.innerText = currentUser.role || (currentUser.isAdmin ? "Admin" : "Member");
+            if (userAvatarEl && currentUser.pfp) userAvatarEl.src = currentUser.pfp;
             
             const adminBtn = document.getElementById('nav-admin-portal-btn');
             const addChanBtn = document.getElementById('add-channel-btn');
@@ -504,7 +507,10 @@
                 let gameIconTag = user.game === 'League of Legends' ? '[LoL]' : user.game === 'Wild Rift' ? '[WR]' : '';
                 memberListEl.innerHTML += `
                     <div class="flex items-center justify-between py-1 text-xs text-slate-300 cursor-pointer hover:bg-slate-800 px-1 rounded" onclick="viewUserProfile('${user.username}')">
-                        <span>${gameIconTag} ${user.username} ${user.isAdmin ? '<span class="text-red-400">(Admin)</span>' : ''}</span>
+                        <div class="flex items-center space-x-2">
+                            <img src="${user.pfp || 'https://via.placeholder.com/150'}" class="w-5 h-5 rounded-full object-cover">
+                            <span>${gameIconTag} ${user.username} ${user.isAdmin ? '<span class="text-red-400">(Admin)</span>' : ''}</span>
+                        </div>
                         <span class="w-2 h-2 rounded-full ${isOnline ? 'bg-green-500' : 'bg-slate-600'}"></span>
                     </div>`;
             });
@@ -575,11 +581,13 @@
             document.getElementById('edit-fb').value = currentUser.socials?.fb || '';
             document.getElementById('edit-x').value = currentUser.socials?.x || '';
             document.getElementById('edit-spotify').value = currentUser.socials?.spotify || '';
+            document.getElementById('edit-avatar-file').value = '';
             openModal('edit-profile-modal');
         }
 
         function handleSaveProfile(e) {
             e.preventDefault();
+            
             currentUser.game = document.getElementById('edit-game').value;
             currentUser.socials = {
                 tiktok: document.getElementById('edit-tiktok').value,
@@ -589,11 +597,25 @@
                 spotify: document.getElementById('edit-spotify').value
             };
 
+            const avatarFileEl = document.getElementById('edit-avatar-file');
+            if (avatarFileEl.files && avatarFileEl.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    currentUser.pfp = event.target.result;
+                    finalizeProfileSave();
+                };
+                reader.readAsDataURL(avatarFileEl.files[0]);
+            } else {
+                finalizeProfileSave();
+            }
+        }
+
+        function finalizeProfileSave() {
             let index = dbUsers.findIndex(u => u.username === currentUser.username);
             if (index !== -1) dbUsers[index] = currentUser;
 
             saveDB();
-            alert('Profile updated successfully!');
+            alert('Profile and avatar updated successfully!');
             closeModal('edit-profile-modal');
             initAppState();
         }
@@ -637,7 +659,10 @@
             const membersListEl = document.getElementById('admin-members-list');
             membersListEl.innerHTML = dbUsers.map(u => `
                 <div class="flex items-center justify-between bg-slate-900 p-2 rounded border border-slate-800">
-                    <span>${u.username} ${u.isAdmin ? '<span class="text-red-400 font-bold">(Admin)</span>' : ''}</span>
+                    <div class="flex items-center space-x-2">
+                        <img src="${u.pfp || 'https://via.placeholder.com/150'}" class="w-6 h-6 rounded-full object-cover">
+                        <span>${u.username} ${u.isAdmin ? '<span class="text-red-400 font-bold">(Admin)</span>' : ''}</span>
+                    </div>
                     ${u.username !== 'Takeku' ? `<button onclick="banUser('${u.username}')" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-2 py-1 rounded text-[10px] font-bold">Remove</button>` : ''}
                 </div>
             `).join('');
