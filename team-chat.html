@@ -12,6 +12,9 @@
             emailjs.init("YOUR_PUBLIC_KEY");
         })();
     </script>
+    <!-- Firebase SDKs (Compat version para madaling gamitin sa script tags) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <style>
         body {
             background-color: #0b0c10;
@@ -267,42 +270,91 @@
         </div>
     </div>
 
-    <!-- CONTROLLER SCRIPT -->
+    <!-- CONTROLLER SCRIPT (FIREBASE INTEGRATED) -->
     <script>
-        let dbUsers = JSON.parse(localStorage.getItem('riftRaidersUsers')) || [];
-        let dbMessages = JSON.parse(localStorage.getItem('rift_db_messages')) || {};
-        let dbChannels = JSON.parse(localStorage.getItem('rift_db_channels')) || ['general', 'wild-rift', 'league-of-legends'];
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB7GyUvjxpgvVOpSS_wjH25m6HssUd_jbM",
+            authDomain: "riftraiders-348f4.firebaseapp.com",
+            databaseURL: "https://riftraiders-348f4-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "riftraiders-348f4",
+            storageBucket: "riftraiders-348f4.firebasestorage.app",
+            messagingSenderId: "103200979693",
+            appId: "1:103200979693:web:48d4b7f6e65734f2756ae4"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        let dbUsers = [];
+        let dbMessages = {};
+        let dbChannels = ['general', 'wild-rift', 'league-of-legends'];
         let currentChannel = dbChannels[0];
         let currentUser = JSON.parse(localStorage.getItem('rift_current_user')) || null;
         let currentMediaData = null;
         let currentMediaName = null;
         let lastPendingCount = 0;
 
-        if (!dbUsers.find(u => u.username.toLowerCase() === 'takeku')) {
-            dbUsers.push({
-                username: 'Takeku',
-                password: 'Kushime07092004.',
-                email: 'admin@riftraiders.com',
-                isAdmin: true,
-                isApproved: true,
-                role: 'Admin / Owner',
-                team: 'Management',
-                game: 'League of Legends',
-                pfp: 'https://api.dicebear.com/7.x/identicon/svg?seed=Takeku',
-                socials: { tiktok: '', discord: '', fb: '', x: '', spotify: '' }
+        // Sync data from Firebase
+        function initFirebaseListeners() {
+            // Listen to Users
+            database.ref('users').on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    dbUsers = Object.values(data);
+                } else {
+                    // Seed initial admin if empty
+                    dbUsers = [{
+                        username: 'Takeku',
+                        password: 'Kushime07092004.',
+                        email: 'admin@riftraiders.com',
+                        isAdmin: true,
+                        isApproved: true,
+                        role: 'Admin / Owner',
+                        team: 'Management',
+                        game: 'League of Legends',
+                        pfp: 'https://api.dicebear.com/7.x/identicon/svg?seed=Takeku',
+                        socials: { tiktok: '', discord: '', fb: '', x: '', spotify: '' }
+                    }];
+                    database.ref('users/Takeku').set(dbUsers[0]);
+                }
+
+                // Check pending for real-time admin pop-out notification
+                let pendingUsers = dbUsers.filter(u => !u.isApproved && !u.isAdmin);
+                if (pendingUsers.length > lastPendingCount && currentUser && currentUser.isAdmin) {
+                    alert("May bagong nag-register na user na naghihintay ng approval!");
+                    renderAdminPortalData();
+                }
+                lastPendingCount = pendingUsers.length;
+
+                renderMemberList();
+                if (document.getElementById('admin-portal-modal') && !document.getElementById('admin-portal-modal').classList.contains('hidden')) {
+                    renderAdminPortalData();
+                }
             });
-            saveDB();
+
+            // Listen to Channels
+            database.ref('channels').on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    dbChannels = data;
+                } else {
+                    database.ref('channels').set(dbChannels);
+                }
+                renderChannels();
+            });
+
+            // Listen to Messages
+            database.ref('messages').on('value', (snapshot) => {
+                const data = snapshot.val();
+                dbMessages = data || {};
+                loadChannelMessages(currentChannel);
+            });
         }
 
-        function saveDB() {
-            localStorage.setItem('riftRaidersUsers', JSON.stringify(dbUsers));
-            localStorage.setItem('rift_db_messages', JSON.stringify(dbMessages));
-            localStorage.setItem('rift_db_channels', JSON.stringify(dbChannels));
-            if (currentUser) {
-                localStorage.setItem('rift_current_user', JSON.stringify(currentUser));
-            } else {
-                localStorage.removeItem('rift_current_user');
-            }
+        function saveUserToFirebase(userObj) {
+            database.ref('users/' + userObj.username).set(userObj);
         }
 
         function openModal(modalId) {
@@ -323,7 +375,6 @@
             const usernameInput = document.getElementById('login-username').value.trim();
             const passwordInput = document.getElementById('login-password').value;
 
-            dbUsers = JSON.parse(localStorage.getItem('riftRaidersUsers')) || dbUsers;
             let found = dbUsers.find(u => u.username.toLowerCase() === usernameInput.toLowerCase());
 
             if (!found) {
@@ -343,7 +394,8 @@
 
             currentUser = found;
             currentUser.lastActive = Date.now();
-            saveDB();
+            database.ref('users/' + currentUser.username + '/lastActive').set(currentUser.lastActive);
+            localStorage.setItem('rift_current_user', JSON.stringify(currentUser));
             
             initAppState();
             closeModal('auth-lock-overlay');
@@ -355,8 +407,6 @@
             const emailInput = document.getElementById('reg-email').value.trim();
             const passwordInput = document.getElementById('reg-password').value;
             const gameInput = document.getElementById('reg-game').value;
-
-            dbUsers = JSON.parse(localStorage.getItem('riftRaidersUsers')) || dbUsers;
 
             if (dbUsers.some(u => u.username.toLowerCase() === newUsername.toLowerCase())) {
                 alert('Username already exists! Please choose another one.');
@@ -378,8 +428,7 @@
                 socials: { tiktok: '', discord: '', fb: '', x: '', spotify: '' }
             };
 
-            dbUsers.push(newUser);
-            saveDB();
+            saveUserToFirebase(newUser);
             
             if (isAdminAcc) {
                 alert('Registration successful! Logged in as Admin.');
@@ -395,7 +444,7 @@
 
         function handleLogout() {
             currentUser = null;
-            saveDB();
+            localStorage.removeItem('rift_current_user');
             document.getElementById('auth-lock-overlay')?.classList.remove('hidden');
             document.getElementById('logout-container')?.classList.add('hidden');
             document.getElementById('login-username').value = '';
@@ -457,8 +506,7 @@
                 newChan = newChan.trim().toLowerCase().replace(/\s+/g, '-');
                 if (newChan && !dbChannels.includes(newChan)) {
                     dbChannels.push(newChan);
-                    saveDB();
-                    renderChannels();
+                    database.ref('channels').set(dbChannels);
                 } else {
                     alert("Channel already exists or invalid name.");
                 }
@@ -505,14 +553,13 @@
         }
 
         function renderMemberList() {
-            dbUsers = JSON.parse(localStorage.getItem('riftRaidersUsers')) || dbUsers;
             const memberListEl = document.getElementById('member-list');
             if (!memberListEl) return;
             memberListEl.innerHTML = '';
             
             dbUsers.forEach(user => {
                 if (!user.isApproved && !user.isAdmin) return;
-                let isOnline = user.lastActive && (Date.now() - user.lastActive < 10000);
+                let isOnline = user.lastActive && (Date.now() - user.lastActive < 15000);
                 let userTeamTag = user.team && user.team !== 'Unassigned' ? `<span class="text-[9px] text-red-400 font-medium block">${user.team}</span>` : '';
                 let userPfp = user.pfp || `https://api.dicebear.com/7.x/identicon/svg?seed=${user.username}`;
                 
@@ -626,9 +673,8 @@
         }
 
         function finalizeProfileSave() {
-            let index = dbUsers.findIndex(u => u.username === currentUser.username);
-            if (index !== -1) dbUsers[index] = currentUser;
-            saveDB();
+            saveUserToFirebase(currentUser);
+            localStorage.setItem('rift_current_user', JSON.stringify(currentUser));
             alert('Profile updated successfully!');
             closeModal('edit-profile-modal');
             initAppState();
@@ -652,9 +698,7 @@
         }
 
         function renderAdminPortalData() {
-            dbUsers = JSON.parse(localStorage.getItem('riftRaidersUsers')) || dbUsers;
             let pendingUsers = dbUsers.filter(u => !u.isApproved && !u.isAdmin);
-            lastPendingCount = pendingUsers.length;
 
             const pendingContainer = document.getElementById('admin-pending-list');
             if (pendingContainer) {
@@ -706,16 +750,15 @@
         }
 
         function approveUser(username) {
-            dbUsers = JSON.parse(localStorage.getItem('riftRaidersUsers')) || dbUsers;
             let targetUser = dbUsers.find(u => u.username.toLowerCase() === username.toLowerCase());
             
             if (targetUser) {
                 targetUser.isApproved = true;
                 targetUser.role = 'Member';
                 targetUser.team = targetUser.team && targetUser.team !== 'Unassigned' ? targetUser.team : 'Team Alpha';
-                saveDB();
+                
+                saveUserToFirebase(targetUser);
                 renderAdminPortalData();
-                renderMemberList();
 
                 if (targetUser.email) {
                     let templateParams = {
@@ -731,29 +774,25 @@
                             alert(`Approved ${targetUser.username}, but failed to send email: ` + JSON.stringify(error));
                         });
                 } else {
-                    alert(`Successfully approved ${targetUser.username}! (No email address found)`);
+                    alert(`Successfully approved ${targetUser.username}!`);
                 }
             }
         }
 
         function updateUserTeam(username) {
-            dbUsers = JSON.parse(localStorage.getItem('riftRaidersUsers')) || dbUsers;
             let targetUser = dbUsers.find(u => u.username.toLowerCase() === username.toLowerCase());
             let inputField = document.getElementById(`team-input-${username}`);
             if (targetUser && inputField) {
                 targetUser.team = inputField.value.trim() || 'Unassigned';
-                saveDB();
-                renderMemberList();
+                saveUserToFirebase(targetUser);
                 alert(`Updated team/role for ${username}!`);
             }
         }
 
         function banUser(username) {
             if (confirm(`Remove ${username} from the system?`)) {
-                dbUsers = dbUsers.filter(u => u.username.toLowerCase() !== username.toLowerCase());
-                saveDB();
+                database.ref('users/' + username).remove();
                 renderAdminPortalData();
-                renderMemberList();
             }
         }
 
@@ -798,8 +837,7 @@
                 if(!dbMessages[currentChannel]) dbMessages[currentChannel] = [];
                 dbMessages[currentChannel].push(newMsg);
                 
-                saveDB();
-                loadChannelMessages(currentChannel);
+                database.ref('messages').set(dbMessages);
                 input.value = '';
                 clearMedia();
             }
@@ -813,16 +851,14 @@
             let newText = prompt("Edit message:", msg.text);
             if (newText !== null && newText.trim() !== "") {
                 msg.text = newText.trim();
-                saveDB();
-                loadChannelMessages(currentChannel);
+                database.ref('messages').set(dbMessages);
             }
         }
 
         function deleteMessage(msgId) {
             if (confirm("Delete this message?")) {
                 dbMessages[currentChannel] = (dbMessages[currentChannel] || []).filter(m => m.id !== msgId);
-                saveDB();
-                loadChannelMessages(currentChannel);
+                database.ref('messages').set(dbMessages);
             }
         }
 
@@ -846,27 +882,16 @@
             currentMediaName = null;
         }
 
-        // Real-time listener para sa bagong nag-register at auto-popup notification kung bukas ang portal
+        // Active heartbeat and initialize firebase sync
         setInterval(() => {
             if(currentUser) {
                 currentUser.lastActive = Date.now();
-                saveDB();
+                database.ref('users/' + currentUser.username + '/lastActive').set(currentUser.lastActive);
             }
-            dbUsers = JSON.parse(localStorage.getItem('riftRaidersUsers')) || dbUsers;
-            dbChannels = JSON.parse(localStorage.getItem('rift_db_channels')) || dbChannels;
-            dbMessages = JSON.parse(localStorage.getItem('rift_db_messages')) || dbMessages;
-            renderMemberList();
+        }, 10000);
 
-            let currentPending = dbUsers.filter(u => !u.isApproved && !u.isAdmin);
-            let adminModal = document.getElementById('admin-portal-modal');
-            
-            if (adminModal && !adminModal.classList.contains('hidden')) {
-                if (currentPending.length > lastPendingCount) {
-                    renderAdminPortalData();
-                    alert("May bagong nag-register na user na naghihintay ng approval!");
-                }
-            }
-        }, 2000);
+        // Start Firebase listeners on load
+        initFirebaseListeners();
 
         if (currentUser) initAppState();
         
