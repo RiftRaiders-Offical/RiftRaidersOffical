@@ -613,11 +613,14 @@
         }
 
         function viewUserProfile(username) {
-            let user = dbUsers.find(u => u && u.username === username);
-            if (!user) return;
+            let user = dbUsers.find(u => u && u.username && u.username.toLowerCase() === username.toLowerCase());
+            if (!user) {
+                alert("User profile not found.");
+                return;
+            }
 
             document.getElementById('profile-avatar').src = user.pfp || `https://api.dicebear.com/7.x/identicon/svg?seed=${username}`;
-            document.getElementById('profile-username').innerText = user.username;
+            document.getElementById('profile-username').innerText = user.username || username;
             document.getElementById('profile-team').innerText = `Team / Role: ${user.team || 'Unassigned'}`;
             document.getElementById('profile-game').innerText = `Main Game: ${user.game || 'Not specified'}`;
             document.getElementById('profile-role-badge').innerText = user.role || (user.isAdmin ? 'Admin' : 'Member');
@@ -678,14 +681,18 @@
         }
 
         function openAdminPasswordModal() {
-            if (!currentUser || !currentUser.isAdmin) return;
+            if (!currentUser || !currentUser.isAdmin) {
+                alert("Unauthorized action.");
+                return;
+            }
             document.getElementById('admin-portal-pass-input').value = '';
             openModal('admin-password-modal');
         }
 
         function handleAdminAuth(e) {
             e.preventDefault();
-            if (document.getElementById('admin-portal-pass-input').value !== "rr2024") {
+            const passVal = document.getElementById('admin-portal-pass-input').value;
+            if (passVal !== "rr2024") {
                 alert("Incorrect admin password!");
                 return;
             }
