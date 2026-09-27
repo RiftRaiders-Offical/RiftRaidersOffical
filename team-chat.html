@@ -270,6 +270,16 @@
         </div>
     </div>
 
+    <!-- ONE TIME NOTIFICATION POPUP FOR NEW REGISTRATION -->
+    <div id="admin-notification-toast" class="hidden fixed bottom-5 right-5 bg-[#12141c] border border-red-600 text-white p-4 rounded-xl shadow-2xl z-50 max-w-xs flex items-start space-x-3">
+        <span class="text-red-500 text-lg font-bold">⚠️</span>
+        <div class="flex-1">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-red-500">New Registration!</h4>
+            <p id="admin-notification-text" class="text-xs text-slate-300 mt-1">A new user requires your verification.</p>
+            <button type="button" onclick="dismissNotification()" class="mt-2 text-[10px] bg-red-600 hover:bg-red-700 px-2.5 py-1 rounded font-bold text-white">Dismiss</button>
+        </div>
+    </div>
+
     <!-- CONTROLLER SCRIPT -->
     <script>
         const firebaseConfig = {
@@ -293,6 +303,7 @@
         let currentMediaData = null;
         let currentMediaName = null;
         let lastPendingCount = 0;
+        let hasShownNewUserNotification = false;
 
         function initFirebaseListeners() {
             database.ref('users').on('value', (snapshot) => {
@@ -316,8 +327,16 @@
                 }
 
                 let pendingUsers = dbUsers.filter(u => u && !u.isApproved && !u.isAdmin);
-                if (pendingUsers.length > lastPendingCount && currentUser && currentUser.isAdmin) {
-                    renderAdminPortalData();
+                
+                // Show a single popout notification only if there are pending users and it hasn't been shown yet for the current count
+                if (pendingUsers.length > 0 && currentUser && currentUser.isAdmin) {
+                    if (pendingUsers.length !== lastPendingCount) {
+                        hasShownNewUserNotification = false;
+                    }
+                    if (!hasShownNewUserNotification) {
+                        showAdminNotification(`New user registration waiting for verification.`);
+                        hasShownNewUserNotification = true;
+                    }
                 }
                 lastPendingCount = pendingUsers.length;
 
@@ -342,6 +361,19 @@
                 dbMessages = data || {};
                 loadChannelMessages(currentChannel);
             });
+        }
+
+        function showAdminNotification(text) {
+            const toast = document.getElementById('admin-notification-toast');
+            const toastText = document.getElementById('admin-notification-text');
+            if (toast && toastText) {
+                toastText.innerText = text;
+                toast.classList.remove('hidden');
+            }
+        }
+
+        function dismissNotification() {
+            document.getElementById('admin-notification-toast')?.classList.add('hidden');
         }
 
         function saveUserToFirebase(userObj) {
@@ -863,7 +895,7 @@
         function deleteMessage(msgId) {
             if (confirm("Delete this message?")) {
                 dbMessages[currentChannel] = (dbMessages[currentChannel] || []).filter(m => m && m.id !== msgId);
-                database.ref('messages').set(dbMessages);
+                database.ref('messages'].set(dbMessages);
             }
         }
 
