@@ -2,159 +2,970 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Discord Style Chat</title>
-    <style>
-        body { background-color: #313338; color: #dbdee1; font-family: sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; }
-        #chat-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
-        .message { display: flex; flex-direction: column; position: relative; }
-        .message-header { font-weight: bold; color: #fff; font-size: 14px; }
-        .message-content { font-size: 14px; margin-top: 4px; }
-        .message img { max-width: 300px; border-radius: 8px; margin-top: 8px; }
-        .reply-preview-box { background: #2b2d31; padding: 5px 10px; font-size: 12px; border-left: 4px solid #5865f2; margin-bottom: 5px; display: none; justify-content: space-between; align-items: center; }
-        .mentioned { background-color: rgba(88, 101, 242, 0.3); padding: 2px 4px; border-radius: 4px; color: #c9cdfb; font-weight: bold; }
-        #input-container { background: #383a40; padding: 20px; display: flex; flex-direction: column; gap: 5px; }
-        .active-reply-banner { background: #2b2d31; padding: 8px; font-size: 12px; display: none; justify-content: space-between; border-radius: 4px; }
-        .input-row { display: flex; gap: 10px; }
-        input[type="text"] { flex: 1; background: #383a40; border: none; padding: 10px; border-radius: 8px; color: #fff; outline: none; background: #1e1f22; }
-        button { background: #5865f2; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; }
-        button:hover { background: #4752c4; }
-        #notification-popout { position: fixed; top: 20px; right: 20px; background: #232428; border-left: 5px solid #fbee21; padding: 15px; border-radius: 5px; display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.5); z-index: 1000; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="main-site-title">Rift Raiders Portal</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Firebase App (Core) SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <!-- Firebase Database SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            emailjs.init("rWY7d-DtzHuaGrj28");
+        })();
+    </script>
 </head>
-<body>
+<body class="bg-[#0b0c10] text-slate-100 font-sans antialiased min-h-screen flex flex-col">
 
-    <!-- Notification Popout para sa Mentions -->
-    <div id="notification-popout">
-        <strong id="notif-title">May nag-mention sa iyo!</strong>
-        <p id="notif-body" style="margin: 5px 0 0 0; font-size: 13px;"></p>
+    <!-- AUTH LOCK OVERLAY (LOGIN / REGISTER) -->
+    <div id="auth-lock-overlay" class="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4">
+        
+        <!-- LOGIN BOX -->
+        <div id="login-modal" class="bg-[#0f1117] border border-red-600/40 rounded-xl w-full max-w-md p-6 shadow-2xl">
+            <div class="text-center mb-6">
+                <h1 id="sidebar-brand-title" class="text-2xl font-black text-red-600 tracking-wider">RIFT RAIDERS</h1>
+                <p class="text-xs text-slate-400 mt-1">Sign in to access your guild portal</p>
+            </div>
+            
+            <form onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Username</label>
+                    <input type="text" id="login-username" required class="w-full bg-[#151821] border border-slate-700 rounded px-3 py-2 text-sm text-white focus:border-red-600 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Password</label>
+                    <input type="password" id="login-password" required class="w-full bg-[#151821] border border-slate-700 rounded px-3 py-2 text-sm text-white focus:border-red-600 outline-none">
+                </div>
+                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded text-sm transition shadow-lg shadow-red-600/30">Login</button>
+            </form>
+
+            <div class="mt-4 text-center text-xs text-slate-400">
+                Don't have an account? 
+                <button type="button" onclick="switchModal('login-modal', 'register-modal')" class="text-red-500 font-bold hover:underline">Register here</button>
+            </div>
+        </div>
+
+        <!-- REGISTER BOX -->
+        <div id="register-modal" class="hidden bg-[#0f1117] border border-red-600/40 rounded-xl w-full max-w-md p-6 shadow-2xl">
+            <div class="text-center mb-6">
+                <h2 class="text-2xl font-black text-red-600 tracking-wider">CREATE ACCOUNT</h2>
+                <p class="text-xs text-slate-400 mt-1">Join Rift Raiders community</p>
+            </div>
+            
+            <form id="register-form-element" onsubmit="handleRegister(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Username</label>
+                    <input type="text" id="reg-username" required class="w-full bg-[#151821] border border-slate-700 rounded px-3 py-2 text-sm text-white focus:border-red-600 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Email Address</label>
+                    <input type="email" id="reg-email" required class="w-full bg-[#151821] border border-slate-700 rounded px-3 py-2 text-sm text-white focus:border-red-600 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Password</label>
+                    <input type="password" id="reg-password" required class="w-full bg-[#151821] border border-slate-700 rounded px-3 py-2 text-sm text-white focus:border-red-600 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Main Game</label>
+                    <select id="reg-game" class="w-full bg-[#151821] border border-slate-700 rounded px-3 py-2 text-sm text-white focus:border-red-600 outline-none">
+                        <option value="League of Legends">League of Legends</option>
+                        <option value="Wild Rift">Wild Rift</option>
+                        <option value="Valorant">Valorant</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded text-sm transition shadow-lg shadow-red-600/30">Register</button>
+            </form>
+
+            <div class="mt-4 text-center text-xs text-slate-400">
+                Already have an account? 
+                <button type="button" onclick="switchModal('register-modal', 'login-modal')" class="text-red-500 font-bold hover:underline">Login here</button>
+            </div>
+        </div>
     </div>
 
-    <div id="chat-container"></div>
+    <!-- MAIN APP CONTAINER -->
+    <div class="flex flex-1 h-screen overflow-hidden">
+        
+        <!-- SIDEBAR -->
+        <aside class="w-64 bg-[#0f1117] border-r border-slate-800 flex flex-col justify-between hidden md:flex">
+            <div>
+                <!-- Brand Header -->
+                <div class="p-4 border-b border-slate-800 flex items-center justify-between">
+                    <span class="font-black text-red-600 tracking-wider">RIFT RAIDERS</span>
+                </div>
 
-    <div id="input-container">
-        <div id="active-reply" class="active-reply-banner">
-            <span id="reply-text-info">Replying to...</span>
-            <button onclick="cancelReply()" style="background:transparent; color:#f23f43; padding:0; cursor:pointer;">Cancel</button>
-        </div>
-        <div class="input-row">
-            <input type="text" id="username-input" placeholder="Username mo" style="width: 150px;">
-            <input type="text" id="message-input" placeholder="Mag-message... (Gamitin ang @ para mag-mention)">
-            <input type="file" id="file-input" accept="image/*" style="display: none;" onchange="previewFile()">
-            <button onclick="document.getElementById('file-input').click()">📷</button>
-            <button onclick="sendMessage()">Send</button>
-        </div>
-        <div id="file-preview-name" style="font-size: 11px; color: #949ba4;"></div>
+                <!-- Channels List -->
+                <div class="p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Channels</span>
+                        <button type="button" id="add-channel-btn" onclick="addChannel()" class="hidden text-slate-400 hover:text-white text-xs font-bold">+</button>
+                    </div>
+                    <div id="channel-list" class="space-y-1"></div>
+                </div>
+
+                <!-- Members List -->
+                <div class="p-4 border-t border-slate-800">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-2">Members</span>
+                    <div id="member-list" class="space-y-1 max-h-48 overflow-y-auto"></div>
+                </div>
+            </div>
+
+            <!-- Current Logged User Profile Bottom Box -->
+            <div class="p-4 border-t border-slate-800 bg-[#0b0c10]/50">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2 overflow-hidden cursor-pointer" onclick="openEditProfile()">
+                        <img id="sb-user-avatar" src="" class="w-8 h-8 rounded-full object-cover border border-red-600/40">
+                        <div class="truncate">
+                            <div id="sb-user-name" class="text-xs font-bold text-white truncate">User</div>
+                            <div id="sb-user-role" class="text-[10px] text-slate-400 truncate">Member</div>
+                        </div>
+                    </div>
+                    <button type="button" onclick="handleLogout()" class="text-slate-400 hover:text-red-500 text-xs p-1" title="Logout">🚪</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- CHAT AREA -->
+        <main class="flex-1 flex flex-col bg-[#0b0c10]">
+            <!-- Top Chat Header -->
+            <header class="h-14 border-b border-slate-800 bg-[#0f1117] px-4 flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <span class="text-red-500 font-bold text-lg">#</span>
+                    <h2 id="current-channel-title" class="text-white font-bold text-sm">general</h2>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <button type="button" id="nav-admin-portal-btn" onclick="openAdminPasswordModal()" class="hidden bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white border border-red-600/40 px-3 py-1.5 rounded text-xs font-bold transition">Admin Portal</button>
+                </div>
+            </header>
+
+            <!-- Messages Box -->
+            <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4"></div>
+
+            <!-- Message Input Form -->
+            <div class="p-4 border-t border-slate-800 bg-[#0f1117]">
+                <div id="media-preview-container" class="hidden mb-2 p-2 bg-[#151821] border border-slate-700 rounded flex items-center justify-between text-xs">
+                    <span id="file-name-display" class="text-slate-300 truncate">Attachment</span>
+                    <button type="button" onclick="clearMedia()" class="text-red-500 font-bold hover:underline">Remove</button>
+                </div>
+                
+                <form onsubmit="handleSendMessage(event)" class="relative flex items-center">
+                    <div id="mention-suggestions" class="hidden absolute bottom-12 left-0 bg-[#151821] border border-slate-700 rounded shadow-lg max-h-32 overflow-y-auto w-48 z-20"></div>
+                    
+                    <input type="text" id="message-input" placeholder="Type a message... (use @ to mention)" autocomplete="off" class="w-full bg-[#151821] border border-slate-700 rounded-l px-4 py-2.5 text-sm text-white focus:border-red-600 outline-none">
+                    
+                    <label class="bg-[#151821] border-y border-slate-700 px-3 py-2.5 cursor-pointer text-slate-400 hover:text-white flex items-center" title="Attach File">
+                        📎 <input type="file" id="media-input" onchange="previewMedia(this)" class="hidden">
+                    </label>
+                    
+                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold px-5 py-2.5 rounded-r text-sm transition">Send</button>
+                </form>
+            </div>
+        </main>
     </div>
 
+    <!-- ADMIN PASSWORD MODAL -->
+    <div id="admin-password-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+        <div class="bg-[#0f1117] border border-red-600/40 rounded-xl w-full max-w-sm p-6 shadow-2xl">
+            <h3 class="text-lg font-bold text-white mb-2">Admin Authentication</h3>
+            <p class="text-xs text-slate-400 mb-4">Please enter the admin password to access the portal.</p>
+            <form onsubmit="handleAdminAuth(event)">
+                <input type="password" id="admin-portal-pass-input" placeholder="Enter admin password" required class="w-full bg-[#151821] border border-slate-700 rounded px-3 py-2 text-sm text-white mb-4 focus:border-red-600 outline-none">
+                <div class="flex justify-end space-x-2">
+                    <button type="button" onclick="closeModal('admin-password-modal')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs px-3 py-2 rounded">Cancel</button>
+                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-4 py-2 rounded">Confirm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADMIN PORTAL MODAL -->
+    <div id="admin-portal-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+        <div class="bg-[#0f1117] border border-red-600/40 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 shadow-2xl">
+            <div class="flex justify-between items-center pb-4 border-b border-slate-800 mb-4">
+                <h2 class="text-xl font-bold text-red-500 flex items-center gap-2">🛠️ Admin Portal</h2>
+                <button type="button" onclick="closeModal('admin-portal-modal')" class="text-slate-400 hover:text-white text-lg font-bold">&times;</button>
+            </div>
+            
+            <div class="space-y-6">
+                <!-- Pending Approvals Section -->
+                <div>
+                    <h3 class="text-sm font-bold text-slate-300 mb-2">Pending User Approvals</h3>
+                    <div id="admin-pending-list" class="space-y-2"></div>
+                </div>
+
+                <!-- Members Management Section -->
+                <div>
+                    <h3 class="text-sm font-bold text-slate-300 mb-2">Manage All Members & Roles</h3>
+                    <div id="admin-members-list" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
+                </div>
+
+                <!-- Website Branding Section -->
+                <div class="border-t border-slate-800 pt-4">
+                    <h3 class="text-sm font-bold text-slate-300 mb-2">Website Branding</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Site Title</label>
+                            <input type="text" id="admin-site-title-input" class="w-full bg-[#151821] border border-slate-700 rounded px-3 py-1.5 text-xs text-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Brand Text</label>
+                            <input type="text" id="admin-brand-text-input" class="w-full bg-[#151821] border border-slate-700 rounded px-3 py-1.5 text-xs text-white">
+                        </div>
+                    </div>
+                    <button type="button" onclick="updateWebsiteBranding()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-4 py-2 rounded">Save Branding</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- USER PROFILE VIEW MODAL -->
+    <div id="profile-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+        <div class="bg-[#0f1117] border border-red-600/40 rounded-xl w-full max-w-md p-6 shadow-2xl text-center">
+            <img id="profile-avatar" src="" class="w-20 h-20 rounded-full object-cover mx-auto mb-3 border-2 border-red-600">
+            <h3 id="profile-username" class="text-lg font-bold text-white">Username</h3>
+            <span id="profile-role-badge" class="bg-red-600 text-white text-[10px] px-2 py-0.5 rounded font-bold">Member</span>
+            
+            <div class="mt-4 text-left space-y-2 text-xs bg-[#151821] p-3 rounded border border-slate-800">
+                <p id="profile-team" class="text-slate-300">Team / Role: Unassigned</p>
+                <p id="profile-game" class="text-slate-300">Main Game: League of Legends</p>
+                <div class="border-t border-slate-700 pt-2 mt-2">
+                    <span class="font-bold text-slate-400 block mb-1">Social Links:</span>
+                    <div id="profile-socials-list" class="space-y-1"></div>
+                </div>
+            </div>
+            
+            <button type="button" onclick="closeModal('profile-modal')" class="mt-5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-4 py-2 rounded">Close</button>
+        </div>
+    </div>
+
+    <!-- EDIT PROFILE MODAL -->
+    <div id="edit-profile-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+        <div class="bg-[#0f1117] border border-red-600/40 rounded-xl w-full max-w-md p-6 shadow-2xl">
+            <h3 class="text-lg font-bold text-white mb-4">Edit Profile</h3>
+            <form onsubmit="handleSaveProfile(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Avatar Image File</label>
+                    <input type="file" id="edit-avatar-file" accept="image/*" class="w-full bg-[#151821] border border-slate-700 rounded px-3 py-1.5 text-xs text-white">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Main Game</label>
+                    <input type="text" id="edit-game" class="w-full bg-[#151821] border border-slate-700 rounded px-3 py-1.5 text-xs text-white">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">TikTok Link</label>
+                    <input type="text" id="edit-tiktok" class="w-full bg-[#151821] border border-slate-700 rounded px-3 py-1.5 text-xs text-white">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Discord Tag</label>
+                    <input type="text" id="edit-discord" class="w-full bg-[#151821] border border-slate-700 rounded px-3 py-1.5 text-xs text-white">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Facebook Page Link</label>
+                    <input type="text" id="edit-fb" class="w-full bg-[#151821] border border-slate-700 rounded px-3 py-1.5 text-xs text-white">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">X (Twitter) Link</label>
+                    <input type="text" id="edit-x" class="w-full bg-[#151821] border border-slate-700 rounded px-3 py-1.5 text-xs text-white">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Spotify Link</label>
+                    <input type="text" id="edit-spotify" class="w-full bg-[#151821] border border-slate-700 rounded px-3 py-1.5 text-xs text-white">
+                </div>
+                <div class="flex justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closeModal('edit-profile-modal')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs px-3 py-2 rounded">Cancel</button>
+                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-4 py-2 rounded">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADMIN NOTIFICATION TOAST -->
+    <div id="admin-notification-toast" class="hidden fixed bottom-4 right-4 z-50 bg-[#151821] border border-red-600 p-4 rounded-xl shadow-2xl flex items-center space-x-3">
+        <span class="text-red-500 font-bold">🔔</span>
+        <div>
+            <div id="admin-notification-text" class="text-xs text-white font-medium">New notification</div>
+        </div>
+        <button type="button" onclick="dismissNotification()" class="text-slate-400 hover:text-white text-xs font-bold ml-2">✕</button>
+    </div>
+
+    <!-- CONTROLLER SCRIPT -->
     <script>
-        let replyingToId = null;
-        let currentUser = "User_" + Math.floor(Math.random() * 1000);
-        document.getElementById('username-input').value = currentUser;
+        const firebaseConfig = {
+            apiKey: "AIzaSyB7GyUvjxpgvVOpSS_wjH25m6HssUd_jbM",
+            authDomain: "riftraiders-348f4.firebaseapp.com",
+            databaseURL: "https://riftraiders-348f4-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "riftraiders-348f4",
+            storageBucket: "riftraiders-348f4.firebasestorage.app",
+            messagingSenderId: "103200979693",
+            appId: "1:103200979693:web:48d4b7f6e65734f2756ae4"
+        };
 
-        async function fetchMessages() {
-            const res = await fetch('http://localhost:3000/api/messages');
-            const messages = await res.json();
-            const container = document.getElementById('chat-container');
-            container.innerHTML = '';
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
 
-            messages.forEach(msg => {
-                const div = document.createElement('div');
-                div.className = 'message';
+        let dbUsers = [];
+        let dbMessages = {};
+        let dbChannels = ['general', 'wild-rift', 'league-of-legends'];
+        let currentChannel = dbChannels[0];
+        let currentUser = JSON.parse(localStorage.getItem('rift_current_user')) || null;
+        let currentMediaData = null;
+        let currentMediaName = null;
+        let lastPendingCount = 0;
+        let hasShownNewUserNotification = false;
 
-                let replyHtml = '';
-                if (msg.reply_to_id) {
-                    replyHtml = `<div style="font-size: 11px; color: #949ba4; border-left: 2px solid #4e5058; padding-left: 6px; margin-bottom: 4px;">
-                        ↳ <b>@${msg.reply_username}</b>: ${msg.reply_content || '[Image]'}
-                    </div>`;
+        function initFirebaseListeners() {
+            database.ref('users').on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    dbUsers = Object.values(data);
+                } else {
+                    dbUsers = [{
+                        username: 'Takeku',
+                        password: 'Kushime07092004.',
+                        email: 'admin@riftraiders.com',
+                        isAdmin: true,
+                        isApproved: true,
+                        role: 'Admin / Owner',
+                        team: 'Management',
+                        game: 'League of Legends',
+                        pfp: 'https://api.dicebear.com/7.x/identicon/svg?seed=Takeku',
+                        socials: { tiktok: '', discord: '', fb: '', x: '', spotify: '' }
+                    }];
+                    database.ref('users/Takeku').set(dbUsers[0]);
                 }
 
-                // Format Mentions
-                let formattedContent = msg.content;
-                if (msg.mentioned_user) {
-                    formattedContent = formattedContent.replace(`@${msg.mentioned_user}`, `<span class="mentioned">@${msg.mentioned_user}</span>`);
-                    
-                    // Kung ikaw ang na-mention, mag-pop out ang notification
-                    if (msg.mentioned_user === document.getElementById('username-input').value && msg.username !== currentUser) {
-                        showNotification(msg.username, msg.content);
+                if (currentUser) {
+                    let updatedSelf = dbUsers.find(u => u && u.username && u.username.toLowerCase() === currentUser.username.toLowerCase());
+                    if (updatedSelf) {
+                        currentUser = updatedSelf;
+                        localStorage.setItem('rift_current_user', JSON.stringify(currentUser));
                     }
                 }
 
-                div.innerHTML = `
-                    ${replyHtml}
-                    <div class="message-header">${msg.username} <span style="font-size:10px; color:#949ba4;">${new Date(msg.created_at).toLocaleTimeString()}</span></div>
-                    <div class="message-content">${formattedContent}</div>
-                    ${msg.image_url ? `<img src="http://localhost:3000${msg.image_url}" />` : ''}
-                    <button onclick="setReply(${msg.id}, '${msg.username}', '${msg.content.replace(/'/g, "\\'")}')" style="background:transparent; color:#949ba4; font-size:11px; width:fit-content; padding:2px; margin-top:4px; cursor:pointer;">Reply</button>
-                `;
-                container.appendChild(div);
+                let pendingUsers = dbUsers.filter(u => u && !u.isApproved && !u.isAdmin);
+                
+                if (pendingUsers.length > 0 && currentUser && currentUser.isAdmin) {
+                    if (pendingUsers.length !== lastPendingCount) {
+                        hasShownNewUserNotification = false;
+                    }
+                    if (!hasShownNewUserNotification) {
+                        showAdminNotification(`New user registration waiting for verification.`);
+                        hasShownNewUserNotification = true;
+                    }
+                }
+                lastPendingCount = pendingUsers.length;
+
+                renderMemberList();
+                if (document.getElementById('admin-portal-modal') && !document.getElementById('admin-portal-modal').classList.contains('hidden')) {
+                    renderAdminPortalData();
+                }
             });
-            container.scrollTop = container.scrollHeight;
+
+            database.ref('channels').on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    dbChannels = data;
+                } else {
+                    database.ref('channels').set(dbChannels);
+                }
+                renderChannels();
+            });
+
+            database.ref('messages').on('value', (snapshot) => {
+                const data = snapshot.val();
+                dbMessages = data || {};
+                loadChannelMessages(currentChannel);
+            });
         }
 
-        function setReply(id, username, content) {
-            replyingToId = id;
-            document.getElementById('active-reply').style.display = 'flex';
-            document.getElementById('reply-text-info').innerText = `Replying to @${username}: "${content.substring(0, 30)}..."`;
-        }
-
-        function cancelReply() {
-            replyingToId = null;
-            document.getElementById('active-reply').style.display = 'none';
-        }
-
-        function previewFile() {
-            const file = document.getElementById('file-input').files[0];
-            if (file) {
-                document.getElementById('file-preview-name').innerText = `Attached: ${file.name}`;
+        function showAdminNotification(text) {
+            const toast = document.getElementById('admin-notification-toast');
+            const toastText = document.getElementById('admin-notification-text');
+            if (toast && toastText) {
+                toastText.innerText = text;
+                toast.classList.remove('hidden');
             }
         }
 
-        async function sendMessage() {
-            currentUser = document.getElementById('username-input').value;
-            const content = document.getElementById('message-input').value;
-            const fileInput = document.getElementById('file-input');
+        function dismissNotification() {
+            document.getElementById('admin-notification-toast')?.classList.add('hidden');
+        }
 
-            if (!content && fileInput.files.length === 0) return;
+        function saveUserToFirebase(userObj) {
+            if (userObj && userObj.username) {
+                database.ref('users/' + userObj.username).set(userObj);
+            }
+        }
 
-            // Detect kung may @mention sa text
-            let mentionedUser = null;
-            const mentionMatch = content.match(/@(\w+)/);
-            if (mentionMatch) {
-                mentionedUser = mentionMatch[1];
+        function openModal(modalId) {
+            document.getElementById(modalId)?.classList.remove('hidden');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId)?.classList.add('hidden');
+        }
+
+        function switchModal(closeId, openId) {
+            closeModal(closeId);
+            openModal(openId);
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const usernameInput = document.getElementById('login-username').value.trim();
+            const passwordInput = document.getElementById('login-password').value;
+
+            if (!dbUsers || dbUsers.length === 0) {
+                alert('Database is still syncing. Please try again.');
+                return;
             }
 
-            const formData = new FormData();
-            formData.append('username', currentUser);
-            formData.append('content', content);
-            if (replyingToId) formData.append('reply_to_id', replyingToId);
-            if (mentionedUser) formData.append('mentioned_user', mentionedUser);
-            if (fileInput.files[0]) formData.append('image', fileInput.files[0]);
+            let found = dbUsers.find(u => u && u.username && u.username.toLowerCase() === usernameInput.toLowerCase());
 
-            await fetch('http://localhost:3000/api/messages', {
-                method: 'POST',
-                body: formData
+            if (!found) {
+                alert('Account not found! Please register first.');
+                return;
+            }
+
+            if (found.password && found.password !== passwordInput) {
+                alert('Incorrect password!');
+                return;
+            }
+
+            if (!found.isAdmin && !found.isApproved) {
+                alert('Your account is still pending admin approval.');
+                return;
+            }
+
+            currentUser = found;
+            currentUser.lastActive = Date.now();
+            database.ref('users/' + currentUser.username + '/lastActive').set(currentUser.lastActive);
+            localStorage.setItem('rift_current_user', JSON.stringify(currentUser));
+            
+            document.getElementById('auth-lock-overlay')?.classList.add('hidden');
+            initAppState();
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            const newUsername = document.getElementById('reg-username').value.trim();
+            const emailInput = document.getElementById('reg-email').value.trim();
+            const passwordInput = document.getElementById('reg-password').value;
+            const gameInput = document.getElementById('reg-game').value;
+
+            if (dbUsers.some(u => u && u.username && u.username.toLowerCase() === newUsername.toLowerCase())) {
+                alert('Username already exists! Please choose another one.');
+                return;
+            }
+
+            const isAdminAcc = newUsername.toLowerCase() === 'takeku';
+
+            const newUser = {
+                username: newUsername,
+                password: passwordInput,
+                email: emailInput,
+                game: gameInput,
+                isAdmin: isAdminAcc,
+                isApproved: isAdminAcc, 
+                role: isAdminAcc ? 'Admin / Owner' : 'Pending Approval',
+                team: 'Unassigned',
+                pfp: `https://api.dicebear.com/7.x/identicon/svg?seed=${newUsername}`,
+                socials: { tiktok: '', discord: '', fb: '', x: '', spotify: '' }
+            };
+
+            saveUserToFirebase(newUser);
+            
+            if (isAdminAcc) {
+                alert('Registration successful! Logged in as Admin.');
+                switchModal('register-modal', 'login-modal');
+            } else {
+                alert('Registration successful! Please wait for Admin approval before logging in.');
+                document.getElementById('register-form-element').reset();
+                switchModal('register-modal', 'login-modal');
+            }
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            localStorage.removeItem('rift_current_user');
+            document.getElementById('auth-lock-overlay')?.classList.remove('hidden');
+            document.getElementById('login-username').value = '';
+            document.getElementById('login-password').value = '';
+        }
+
+        function initAppState() {
+            if (!currentUser) return;
+            document.getElementById('auth-lock-overlay')?.classList.add('hidden');
+            
+            document.getElementById('sb-user-name').innerText = currentUser.username;
+            document.getElementById('sb-user-role').innerText = currentUser.team && currentUser.team !== 'Unassigned' ? currentUser.team : (currentUser.role || "Member");
+            
+            if (currentUser.pfp) {
+                document.getElementById('sb-user-avatar').src = currentUser.pfp;
+            } else {
+                document.getElementById('sb-user-avatar').src = `https://api.dicebear.com/7.x/identicon/svg?seed=${currentUser.username}`;
+            }
+            
+            if (currentUser.isAdmin) {
+                document.getElementById('nav-admin-portal-btn')?.classList.remove('hidden');
+                document.getElementById('add-channel-btn')?.classList.remove('hidden');
+            } else {
+                document.getElementById('nav-admin-portal-btn')?.classList.add('hidden');
+                document.getElementById('add-channel-btn')?.classList.add('hidden');
+            }
+            
+            renderChannels();
+            loadChannelMessages(currentChannel);
+            renderMemberList();
+        }
+
+        function renderChannels() {
+            const channelListEl = document.getElementById('channel-list');
+            if (!channelListEl) return;
+            channelListEl.innerHTML = '';
+            
+            dbChannels.forEach(channel => {
+                const isActive = channel === currentChannel;
+                channelListEl.innerHTML += `
+                    <button type="button" onclick="switchChannel('${channel}')" class="w-full text-left px-3 py-2 rounded text-sm font-medium ${isActive ? 'bg-red-600 text-white shadow-md shadow-red-600/30' : 'text-slate-300 hover:bg-[#151821]'}">
+                        # ${channel}
+                    </button>`;
             });
-
-            // Reset inputs
-            document.getElementById('message-input').value = '';
-            document.getElementById('file-input').value = '';
-            document.getElementById('file-preview-name').innerText = '';
-            cancelReply();
-            fetchMessages();
         }
 
-        function showNotification(sender, text) {
-            const notif = document.getElementById('notification-popout');
-            document.getElementById('notif-body').innerText = `${sender}: ${text}`;
-            notif.style.display = 'block';
-            setTimeout(() => {
-                notif.style.display = 'none';
-            }, 4000);
+        function switchChannel(channelName) {
+            currentChannel = channelName;
+            document.getElementById('current-channel-title').innerText = channelName;
+            renderChannels();
+            loadChannelMessages(channelName);
         }
 
-        // Auto-refresh chat every 3 seconds para maging real-time
-        setInterval(fetchMessages, 3000);
-        fetchMessages();
+        function addChannel() {
+            if (!currentUser || !currentUser.isAdmin) return;
+            let newChan = prompt("Enter new channel name:");
+            if (newChan) {
+                newChan = newChan.trim().toLowerCase().replace(/\s+/g, '-');
+                if (newChan && !dbChannels.includes(newChan)) {
+                    dbChannels.push(newChan);
+                    database.ref('channels').set(dbChannels);
+                } else {
+                    alert("Channel already exists or invalid name.");
+                }
+            }
+        }
+
+        function loadChannelMessages(channelName) {
+            currentChannel = channelName;
+            const chatContainer = document.getElementById('chat-messages');
+            if (!chatContainer) return;
+            
+            chatContainer.innerHTML = '';
+            let msgs = dbMessages[channelName] || [];
+            
+            msgs.forEach(msg => {
+                if (!msg) return;
+                let isOwner = currentUser && (currentUser.username === msg.username || currentUser.isAdmin);
+                let actionButtons = isOwner ? `
+                    <span class="float-right text-xs space-x-2">
+                        <button type="button" onclick="editMessage(${msg.id})" class="text-slate-400 hover:text-white">Edit</button>
+                        <button type="button" onclick="deleteMessage(${msg.id})" class="text-red-500 hover:text-red-400">Delete</button>
+                    </span>` : '';
+
+                let senderUser = dbUsers.find(u => u && u.username === msg.username);
+                let senderPfp = senderUser?.pfp || `https://api.dicebear.com/7.x/identicon/svg?seed=${msg.username}`;
+                let senderTeam = senderUser?.team && senderUser.team !== 'Unassigned' ? `<span class="bg-red-950 text-red-400 text-[10px] px-1.5 py-0.5 rounded ml-1 border border-red-600/30">${senderUser.team}</span>` : '';
+                let badgeHtml = msg.isAdmin ? `<span class="bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded ml-1 font-bold">Admin</span>` : '';
+                let gameTag = msg.game ? `<span class="bg-[#151821] text-slate-300 text-[10px] px-1.5 py-0.5 rounded ml-1 border border-slate-700/50">${msg.game}</span>` : '';
+
+                chatContainer.innerHTML += `
+                    <div class="mb-4 flex items-start space-x-3">
+                        <img src="${senderPfp}" class="w-8 h-8 rounded-full object-cover bg-slate-800 border border-red-600/30 cursor-pointer mt-0.5" onclick="viewUserProfile('${msg.username}')">
+                        <div class="flex-1">
+                            <div>
+                                <span class="text-red-500 font-bold text-xs cursor-pointer hover:underline" onclick="viewUserProfile('${msg.username}')">${msg.username}</span>
+                                ${badgeHtml} ${senderTeam} ${gameTag}
+                                <span class="text-slate-500 text-[10px] ml-2">${msg.time || ''}</span>
+                                ${actionButtons}
+                            </div>
+                            <div class="text-slate-200 text-sm mt-0.5">${msg.text}</div>
+                        </div>
+                    </div>`;
+            });
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function renderMemberList() {
+            const memberListEl = document.getElementById('member-list');
+            if (!memberListEl) return;
+            memberListEl.innerHTML = '';
+            
+            dbUsers.forEach(user => {
+                if (!user || (!user.isApproved && !user.isAdmin)) return;
+                let isOnline = user.lastActive && (Date.now() - user.lastActive < 15000);
+                let userTeamTag = user.team && user.team !== 'Unassigned' ? `<span class="text-[9px] text-red-400 font-medium block">${user.team}</span>` : '';
+                let userPfp = user.pfp || `https://api.dicebear.com/7.x/identicon/svg?seed=${user.username}`;
+                
+                memberListEl.innerHTML += `
+                    <div class="flex items-center justify-between py-1 px-1.5 text-xs text-slate-300 cursor-pointer hover:bg-[#151821] rounded" onclick="viewUserProfile('${user.username}')">
+                        <div class="flex items-center space-x-2">
+                            <img src="${userPfp}" class="w-7 h-7 rounded-full object-cover border border-red-600/30">
+                            <div>
+                                <div class="font-bold text-white flex items-center space-x-1">
+                                    <span>${user.username}</span>
+                                    ${user.isAdmin ? '<span class="text-[9px] bg-red-600 text-white px-1 rounded">Admin</span>' : ''}
+                                </div>
+                                ${userTeamTag}
+                            </div>
+                        </div>
+                        <span class="w-2 h-2 rounded-full ${isOnline ? 'bg-red-500 shadow-sm shadow-red-500' : 'bg-slate-600'}"></span>
+                    </div>`;
+            });
+        }
+
+        const messageInput = document.getElementById('message-input');
+        if (messageInput) {
+            messageInput.addEventListener('input', function(e) {
+                let val = e.target.value;
+                let mentionSuggestions = document.getElementById('mention-suggestions');
+                if (!mentionSuggestions) return;
+
+                let lastAtIndex = val.lastIndexOf('@');
+                if (lastAtIndex !== -1 && (lastAtIndex === 0 || val[lastAtIndex - 1] === ' ')) {
+                    let query = val.substring(lastAtIndex + 1).toLowerCase();
+                    let matchedUsers = dbUsers.filter(u => u && u.username && u.username.toLowerCase().startsWith(query));
+                    
+                    if (matchedUsers.length > 0) {
+                        mentionSuggestions.innerHTML = matchedUsers.map(u => 
+                            `<div onclick="insertMention('${u.username}')" class="p-1.5 hover:bg-[#151821] cursor-pointer text-xs text-white">@${u.username}</div>`
+                        ).join('');
+                        mentionSuggestions.classList.remove('hidden');
+                    } else {
+                        mentionSuggestions.classList.add('hidden');
+                    }
+                } else {
+                    mentionSuggestions.classList.add('hidden');
+                }
+            });
+        }
+
+        function insertMention(username) {
+            let input = document.getElementById('message-input');
+            let val = input.value;
+            let lastAtIndex = val.lastIndexOf('@');
+            input.value = val.substring(0, lastAtIndex) + `@${username} `;
+            document.getElementById('mention-suggestions').classList.add('hidden');
+            input.focus();
+        }
+
+        function viewUserProfile(username) {
+            let user = dbUsers.find(u => u && u.username && u.username.toLowerCase() === username.toLowerCase());
+            if (!user) {
+                alert("User profile not found.");
+                return;
+            }
+
+            document.getElementById('profile-avatar').src = user.pfp || `https://api.dicebear.com/7.x/identicon/svg?seed=${username}`;
+            document.getElementById('profile-username').innerText = user.username || username;
+            document.getElementById('profile-team').innerText = `Team / Role: ${user.team || 'Unassigned'}`;
+            document.getElementById('profile-game').innerText = `Main Game: ${user.game || 'Not specified'}`;
+            document.getElementById('profile-role-badge').innerText = user.role || (user.isAdmin ? 'Admin' : 'Member');
+
+            let socials = user.socials || {};
+            document.getElementById('profile-socials-list').innerHTML = `
+                <p>TikTok: ${socials.tiktok ? `<a href="${socials.tiktok}" target="_blank" class="text-red-500 hover:underline">${socials.tiktok}</a>` : '<span class="text-slate-600">None</span>'}</p>
+                <p>Discord: ${socials.discord ? `<span class="text-slate-300">${socials.discord}</span>` : '<span class="text-slate-600">None</span>'}</p>
+                <p>FB Page: ${socials.fb ? `<a href="${socials.fb}" target="_blank" class="text-red-500 hover:underline">${socials.fb}</a>` : '<span class="text-slate-600">None</span>'}</p>
+                <p>X (Twitter): ${socials.x ? `<a href="${socials.x}" target="_blank" class="text-slate-300 hover:underline">${socials.x}</a>` : '<span class="text-slate-600">None</span>'}</p>
+                <p>Spotify: ${socials.spotify ? `<a href="${socials.spotify}" target="_blank" class="text-green-400 hover:underline">${socials.spotify}</a>` : '<span class="text-slate-600">None</span>'}</p>
+            `;
+            openModal('profile-modal');
+        }
+
+        function openEditProfile() {
+            if (!currentUser) return;
+            document.getElementById('edit-game').value = currentUser.game || '';
+            document.getElementById('edit-tiktok').value = currentUser.socials?.tiktok || '';
+            document.getElementById('edit-discord').value = currentUser.socials?.discord || '';
+            document.getElementById('edit-fb').value = currentUser.socials?.fb || '';
+            document.getElementById('edit-x').value = currentUser.socials?.x || '';
+            document.getElementById('edit-spotify').value = currentUser.socials?.spotify || '';
+            document.getElementById('edit-avatar-file').value = '';
+            openModal('edit-profile-modal');
+        }
+
+        function handleSaveProfile(e) {
+            e.preventDefault();
+            currentUser.game = document.getElementById('edit-game').value;
+            currentUser.socials = {
+                tiktok: document.getElementById('edit-tiktok').value,
+                discord: document.getElementById('edit-discord').value,
+                fb: document.getElementById('edit-fb').value,
+                x: document.getElementById('edit-x').value,
+                spotify: document.getElementById('edit-spotify').value
+            };
+
+            const avatarFileEl = document.getElementById('edit-avatar-file');
+            if (avatarFileEl.files && avatarFileEl.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    currentUser.pfp = event.target.result;
+                    finalizeProfileSave();
+                };
+                reader.readAsDataURL(avatarFileEl.files[0]);
+            } else {
+                finalizeProfileSave();
+            }
+        }
+
+        function finalizeProfileSave() {
+            saveUserToFirebase(currentUser);
+            localStorage.setItem('rift_current_user', JSON.stringify(currentUser));
+            alert('Profile updated successfully!');
+            closeModal('edit-profile-modal');
+            initAppState();
+        }
+
+        function openAdminPasswordModal() {
+            if (!currentUser || !currentUser.isAdmin) {
+                alert("Unauthorized action.");
+                return;
+            }
+            const passInput = document.getElementById('admin-portal-pass-input');
+            if (passInput) passInput.value = '';
+            openModal('admin-password-modal');
+        }
+
+        function handleAdminAuth(e) {
+            e.preventDefault();
+            const passInput = document.getElementById('admin-portal-pass-input');
+            const passVal = passInput ? passInput.value.trim() : '';
+            
+            if (passVal !== "rr2024") {
+                alert("Incorrect admin password!");
+                return;
+            }
+            
+            closeModal('admin-password-modal');
+            renderAdminPortalData();
+            openModal('admin-portal-modal');
+        }
+
+        function renderAdminPortalData() {
+            let pendingUsers = dbUsers.filter(u => u && !u.isApproved && !u.isAdmin);
+
+            const pendingContainer = document.getElementById('admin-pending-list');
+            if (pendingContainer) {
+                pendingContainer.innerHTML = pendingUsers.length === 0 ? 
+                    `<p class="text-slate-500 italic p-2">No pending user registrations.</p>` :
+                    pendingUsers.map(u => `
+                        <div class="flex items-center justify-between bg-[#12141c] p-2.5 rounded border border-red-600/30 mb-2">
+                            <div>
+                                <span class="font-bold text-white">${u.username}</span> 
+                                <span class="text-red-400 text-[11px]">(${u.game || 'League of Legends'})</span>
+                                <span class="block text-[10px] text-slate-400">Email: ${u.email || 'No email provided'}</span>
+                            </div>
+                            <button type="button" onclick="approveUser('${u.username}')" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs font-bold transition shadow">Approve</button>
+                        </div>
+                    `).join('');
+            }
+
+            const membersContainer = document.getElementById('admin-members-list');
+            if (membersContainer) {
+                membersContainer.innerHTML = dbUsers
+                    .filter(u => u && u.username)
+                    .map(u => {
+                        let memberPfp = u.pfp || `https://api.dicebear.com/7.x/identicon/svg?seed=${u.username}`;
+                        return `
+                        <div class="flex items-center justify-between bg-[#12141c] p-2.5 rounded border border-red-600/20 mb-2">
+                            <div class="flex items-center space-x-3">
+                                <img src="${memberPfp}" class="w-8 h-8 rounded-full object-cover border border-red-600/40">
+                                <div>
+                                    <div class="font-bold text-white text-xs flex items-center space-x-1">
+                                        <span>${u.username}</span>
+                                        ${u.isAdmin ? '<span class="text-red-500 text-[9px]">(Admin)</span>' : ''}
+                                        ${!u.isApproved && !u.isAdmin ? '<span class="text-yellow-500 text-[9px]">(Pending)</span>' : ''}
+                                    </div>
+                                    <div class="text-[10px] text-slate-400">Game: ${u.game || 'N/A'}</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <div>
+                                    <label class="block text-[9px] text-slate-400 mb-0.5">Team / Role</label>
+                                    <input type="text" id="team-input-${u.username}" value="${u.team || 'Unassigned'}" class="bg-[#0b0c10] border border-slate-700 rounded px-2 py-1 text-xs text-white w-28 focus:border-red-600">
+                                </div>
+                                <button type="button" onclick="updateUserTeam('${u.username}')" class="bg-red-600 hover:bg-red-700 text-white px-2.5 py-1.5 rounded text-[10px] font-bold mt-3">Save</button>
+                                ${u.username.toLowerCase() !== 'takeku' ? `<button type="button" onclick="banUser('${u.username}')" class="bg-slate-800 hover:bg-red-950 text-red-400 px-2 py-1.5 rounded text-[10px] font-bold mt-3">Remove</button>` : ''}
+                            </div>
+                        </div>
+                    `;}).join('');
+            }
+
+            document.getElementById('admin-site-title-input').value = localStorage.getItem('rift_site_title') || 'Rift Raiders Portal';
+            document.getElementById('admin-brand-text-input').value = localStorage.getItem('rift_brand_text') || 'Rift Raiders';
+        }
+
+        function approveUser(username) {
+            let targetUser = dbUsers.find(u => u && u.username && u.username.toLowerCase() === username.toLowerCase());
+            
+            if (targetUser) {
+                targetUser.isApproved = true;
+                targetUser.role = 'Member';
+                targetUser.team = targetUser.team && targetUser.team !== 'Unassigned' ? targetUser.team : 'Team Alpha';
+                
+                saveUserToFirebase(targetUser);
+                renderAdminPortalData();
+
+                if (targetUser.email) {
+                    let templateParams = {
+                        to_email: targetUser.email,
+                        to_name: targetUser.username,
+                        message: "Your account has been approved by the Admin! You can now log in to the Rift Raiders portal."
+                    };
+
+                    emailjs.send("service_riftraiders", "template_riftraiders", templateParams)
+                        .then(function(response) {
+                            alert(`Successfully approved ${targetUser.username} and sent email notification via EmailJS!`);
+                        }, function(error) {
+                            alert(`Approved ${targetUser.username}, but failed to send email: ` + JSON.stringify(error));
+                        });
+                } else {
+                    alert(`Successfully approved ${targetUser.username}!`);
+                }
+            }
+        }
+
+        function updateUserTeam(username) {
+            let targetUser = dbUsers.find(u => u && u.username && u.username.toLowerCase() === username.toLowerCase());
+            let inputField = document.getElementById(`team-input-${username}`);
+            if (targetUser && inputField) {
+                targetUser.team = inputField.value.trim() || 'Unassigned';
+                saveUserToFirebase(targetUser);
+                alert(`Updated team/role for ${username}!`);
+            }
+        }
+
+        function banUser(username) {
+            if (confirm(`Remove ${username} from the system?`)) {
+                database.ref('users/' + username).remove();
+                renderAdminPortalData();
+            }
+        }
+
+        function updateWebsiteBranding() {
+            let newTitle = document.getElementById('admin-site-title-input').value.trim();
+            let newBrand = document.getElementById('admin-brand-text-input').value.trim();
+
+            if (newTitle) {
+                document.title = newTitle;
+                localStorage.setItem('rift_site_title', newTitle);
+                let mainTitleEl = document.getElementById('main-site-title');
+                if(mainTitleEl) mainTitleEl.innerText = newTitle;
+            }
+            if (newBrand) {
+                localStorage.setItem('rift_brand_text', newBrand);
+                let brandTitleEl = document.getElementById('sidebar-brand-title');
+                if(brandTitleEl) brandTitleEl.innerText = newBrand;
+            }
+            alert("Website branding updated successfully!");
+        }
+
+        function handleSendMessage(event) {
+            event.preventDefault();
+            const input = document.getElementById('message-input');
+            const text = input.value.trim();
+            
+            if((text !== '' || currentMediaData) && currentUser) {
+                let finalMsg = text;
+                if(currentMediaData) {
+                    finalMsg += `<br><a href="${currentMediaData}" download="${currentMediaName}" class="text-red-400 underline text-[10px]">📎 ${currentMediaName}</a>`;
+                }
+
+                const newMsg = {
+                    id: Date.now(),
+                    username: currentUser.username,
+                    game: currentUser.game,
+                    isAdmin: currentUser.isAdmin,
+                    text: finalMsg,
+                    time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+                };
+
+                if(!dbMessages[currentChannel]) dbMessages[currentChannel] = [];
+                dbMessages[currentChannel].push(newMsg);
+                
+                database.ref('messages').set(dbMessages);
+                input.value = '';
+                clearMedia();
+            }
+        }
+
+        function editMessage(msgId) {
+            let msgs = dbMessages[currentChannel] || [];
+            let msg = msgs.find(m => m && m.id === msgId);
+            if (!msg) return;
+
+            let newText = prompt("Edit message:", msg.text);
+            if (newText !== null && newText.trim() !== "") {
+                msg.text = newText.trim();
+                database.ref('messages').set(dbMessages);
+            }
+        }
+
+        function deleteMessage(msgId) {
+            if (confirm("Delete this message?")) {
+                dbMessages[currentChannel] = (dbMessages[currentChannel] || []).filter(m => m && m.id !== msgId);
+                database.ref('messages').set(dbMessages);
+            }
+        }
+
+        function previewMedia(input) {
+            if (input.files && input.files[0]) {
+                currentMediaName = input.files[0].name;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    currentMediaData = e.target.result;
+                    document.getElementById('media-preview-container')?.classList.remove('hidden');
+                    document.getElementById('file-name-display').innerText = currentMediaName;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function clearMedia() {
+            document.getElementById('media-input').value = '';
+            document.getElementById('media-preview-container')?.classList.add('hidden');
+            currentMediaData = null;
+            currentMediaName = null;
+        }
+
+        setInterval(() => {
+            if(currentUser) {
+                currentUser.lastActive = Date.now();
+                database.ref('users/' + currentUser.username + '/lastActive').set(currentUser.lastActive);
+            }
+        }, 10000);
+
+        initFirebaseListeners();
+
+        if (currentUser) {
+            initAppState();
+        }
+        
+        let savedTitle = localStorage.getItem('rift_site_title');
+        if (savedTitle) {
+            document.title = savedTitle;
+            let mainTitleEl = document.getElementById('main-site-title');
+            if(mainTitleEl) mainTitleEl.innerText = savedTitle;
+        }
+
+        let savedBrand = localStorage.getItem('rift_brand_text');
+        if (savedBrand) {
+            let brandTitleEl = document.getElementById('sidebar-brand-title');
+            if(brandTitleEl) brandTitleEl.innerText = savedBrand;
+        }
     </script>
 </body>
 </html>
