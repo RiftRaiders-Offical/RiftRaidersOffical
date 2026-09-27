@@ -12,7 +12,7 @@
             emailjs.init("rWY7d-DtzHuaGrj28");
         })();
     </script>
-    <!-- Firebase SDKs (Compat version para madaling gamitin sa script tags) -->
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <style>
@@ -47,7 +47,7 @@
                 </form>
 
                 <p class="text-xs text-center text-slate-400 mt-4">
-                    Don't have an account? <button onclick="switchModal('login-modal', 'register-modal')" class="text-red-500 underline font-medium">Register here</button>
+                    Don't have an account? <button type="button" onclick="switchModal('login-modal', 'register-modal')" class="text-red-500 underline font-medium">Register here</button>
                 </p>
             </div>
 
@@ -80,7 +80,7 @@
                 </form>
 
                 <p class="text-xs text-center text-slate-400 mt-4">
-                    Already have an account? <button onclick="switchModal('register-modal', 'login-modal')" class="text-red-500 underline font-medium">Login here</button>
+                    Already have an account? <button type="button" onclick="switchModal('register-modal', 'login-modal')" class="text-red-500 underline font-medium">Login here</button>
                 </p>
             </div>
 
@@ -92,7 +92,7 @@
         <div>
             <div class="p-4 border-b border-red-600/20 flex justify-between items-center bg-[#0d0f15]">
                 <h1 id="sidebar-brand-title" class="font-black text-red-600 text-base tracking-wider uppercase">Rift Raiders</h1>
-                <button id="add-channel-btn" onclick="addChannel()" class="hidden text-xs bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-2 py-1 rounded transition">+ Add</button>
+                <button type="button" id="add-channel-btn" onclick="addChannel()" class="hidden text-xs bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-2 py-1 rounded transition">+ Add</button>
             </div>
             <div class="p-3">
                 <p class="text-[10px] uppercase font-semibold text-slate-500 px-3 mb-2 tracking-widest">Channels</p>
@@ -110,7 +110,7 @@
                 </div>
             </div>
             <div id="logout-container" class="hidden">
-                <button onclick="handleLogout()" class="text-xs text-slate-400 hover:text-red-500">Logout</button>
+                <button type="button" onclick="handleLogout()" class="text-xs text-slate-400 hover:text-red-500">Logout</button>
             </div>
         </div>
     </aside>
@@ -123,7 +123,7 @@
                 <span id="current-channel-title" class="font-semibold text-sm text-white">general</span>
             </div>
             <div>
-                <button id="nav-admin-portal-btn" onclick="openAdminPasswordModal()" class="hidden bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-1.5 rounded font-bold transition shadow-md shadow-red-600/30">Admin Portal</button>
+                <button type="button" id="nav-admin-portal-btn" onclick="openAdminPasswordModal()" class="hidden bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-1.5 rounded font-bold transition shadow-md shadow-red-600/30">Admin Portal</button>
             </div>
         </header>
 
@@ -131,7 +131,7 @@
 
         <div id="media-preview-container" class="hidden px-6 py-2 bg-[#12141c] border-t border-red-600/20 flex items-center justify-between">
             <span id="file-name-display" class="text-xs text-blue-400">Attachment</span>
-            <button onclick="clearMedia()" class="text-xs text-red-500 hover:underline">Remove</button>
+            <button type="button" onclick="clearMedia()" class="text-xs text-red-500 hover:underline">Remove</button>
         </div>
 
         <div id="mention-suggestions" class="hidden absolute bottom-16 left-6 bg-[#12141c] border border-red-600/30 rounded shadow-lg w-48 z-10 p-1"></div>
@@ -170,7 +170,7 @@
                     <p class="font-semibold text-slate-400 uppercase tracking-widest text-[9px] mb-1">Connected Socials</p>
                     <div id="profile-socials-list" class="space-y-1 text-slate-300"></div>
                 </div>
-                <button onclick="closeModal('profile-modal')" class="mt-5 w-full bg-slate-800 hover:bg-slate-700 text-xs py-2 rounded text-white font-medium transition">Close Profile</button>
+                <button type="button" onclick="closeModal('profile-modal')" class="mt-5 w-full bg-slate-800 hover:bg-slate-700 text-xs py-2 rounded text-white font-medium transition">Close Profile</button>
             </div>
         </div>
     </div>
@@ -262,17 +262,16 @@
                             <label class="block text-[10px] text-slate-400 mb-1">Sidebar Brand Text</label>
                             <input type="text" id="admin-brand-text-input" class="w-full bg-[#12141c] border border-slate-700 rounded px-3 py-1.5 text-xs text-white">
                         </div>
-                        <button onclick="updateWebsiteBranding()" class="w-full bg-red-600 hover:bg-red-700 text-white py-1.5 rounded text-xs font-bold">Save Branding</button>
+                        <button type="button" onclick="updateWebsiteBranding()" class="w-full bg-red-600 hover:bg-red-700 text-white py-1.5 rounded text-xs font-bold">Save Branding</button>
                     </div>
                 </div>
             </div>
-            <button onclick="closeModal('admin-portal-modal')" class="mt-5 w-full bg-slate-800 hover:bg-slate-700 text-xs py-2 rounded text-white font-medium transition">Close Dashboard</button>
+            <button type="button" onclick="closeModal('admin-portal-modal')" class="mt-5 w-full bg-slate-800 hover:bg-slate-700 text-xs py-2 rounded text-white font-medium transition">Close Dashboard</button>
         </div>
     </div>
 
-    <!-- CONTROLLER SCRIPT (FIREBASE INTEGRATED) -->
+    <!-- CONTROLLER SCRIPT -->
     <script>
-        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyB7GyUvjxpgvVOpSS_wjH25m6HssUd_jbM",
             authDomain: "riftraiders-348f4.firebaseapp.com",
@@ -283,7 +282,6 @@
             appId: "1:103200979693:web:48d4b7f6e65734f2756ae4"
         };
 
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
@@ -296,15 +294,12 @@
         let currentMediaName = null;
         let lastPendingCount = 0;
 
-        // Sync data from Firebase
         function initFirebaseListeners() {
-            // Listen to Users
             database.ref('users').on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
                     dbUsers = Object.values(data);
                 } else {
-                    // Seed initial admin if empty
                     dbUsers = [{
                         username: 'Takeku',
                         password: 'Kushime07092004.',
@@ -320,7 +315,6 @@
                     database.ref('users/Takeku').set(dbUsers[0]);
                 }
 
-                // Check pending for real-time admin pop-out notification
                 let pendingUsers = dbUsers.filter(u => !u.isApproved && !u.isAdmin);
                 if (pendingUsers.length > lastPendingCount && currentUser && currentUser.isAdmin) {
                     alert("May bagong nag-register na user na naghihintay ng approval!");
@@ -334,7 +328,6 @@
                 }
             });
 
-            // Listen to Channels
             database.ref('channels').on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
@@ -345,7 +338,6 @@
                 renderChannels();
             });
 
-            // Listen to Messages
             database.ref('messages').on('value', (snapshot) => {
                 const data = snapshot.val();
                 dbMessages = data || {};
@@ -486,7 +478,7 @@
             dbChannels.forEach(channel => {
                 const isActive = channel === currentChannel;
                 channelListEl.innerHTML += `
-                    <button onclick="switchChannel('${channel}')" class="w-full text-left px-3 py-2 rounded text-sm font-medium ${isActive ? 'bg-red-600 text-white shadow-md shadow-red-600/30' : 'text-slate-300 hover:bg-[#151821]'}">
+                    <button type="button" onclick="switchChannel('${channel}')" class="w-full text-left px-3 py-2 rounded text-sm font-medium ${isActive ? 'bg-red-600 text-white shadow-md shadow-red-600/30' : 'text-slate-300 hover:bg-[#151821]'}">
                         # ${channel}
                     </button>`;
             });
@@ -525,8 +517,8 @@
                 let isOwner = currentUser && (currentUser.username === msg.username || currentUser.isAdmin);
                 let actionButtons = isOwner ? `
                     <span class="float-right text-xs space-x-2">
-                        <button onclick="editMessage(${msg.id})" class="text-slate-400 hover:text-white">Edit</button>
-                        <button onclick="deleteMessage(${msg.id})" class="text-red-500 hover:text-red-400">Delete</button>
+                        <button type="button" onclick="editMessage(${msg.id})" class="text-slate-400 hover:text-white">Edit</button>
+                        <button type="button" onclick="deleteMessage(${msg.id})" class="text-red-500 hover:text-red-400">Delete</button>
                     </span>` : '';
 
                 let senderUser = dbUsers.find(u => u.username === msg.username);
@@ -711,7 +703,7 @@
                                 <span class="text-red-400 text-[11px]">(${u.game || 'League of Legends'})</span>
                                 <span class="block text-[10px] text-slate-400">Email: ${u.email || 'No email provided'}</span>
                             </div>
-                            <button onclick="approveUser('${u.username}')" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs font-bold transition shadow">Approve</button>
+                            <button type="button" onclick="approveUser('${u.username}')" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs font-bold transition shadow">Approve</button>
                         </div>
                     `).join('');
             }
@@ -738,8 +730,8 @@
                                 <label class="block text-[9px] text-slate-400 mb-0.5">Team / Role</label>
                                 <input type="text" id="team-input-${u.username}" value="${u.team || 'Unassigned'}" class="bg-[#0b0c10] border border-slate-700 rounded px-2 py-1 text-xs text-white w-28 focus:border-red-600">
                             </div>
-                            <button onclick="updateUserTeam('${u.username}')" class="bg-red-600 hover:bg-red-700 text-white px-2.5 py-1.5 rounded text-[10px] font-bold mt-3">Save</button>
-                            ${u.username.toLowerCase() !== 'takeku' ? `<button onclick="banUser('${u.username}')" class="bg-slate-800 hover:bg-red-950 text-red-400 px-2 py-1.5 rounded text-[10px] font-bold mt-3">Remove</button>` : ''}
+                            <button type="button" onclick="updateUserTeam('${u.username}')" class="bg-red-600 hover:bg-red-700 text-white px-2.5 py-1.5 rounded text-[10px] font-bold mt-3">Save</button>
+                            ${u.username.toLowerCase() !== 'takeku' ? `<button type="button" onclick="banUser('${u.username}')" class="bg-slate-800 hover:bg-red-950 text-red-400 px-2 py-1.5 rounded text-[10px] font-bold mt-3">Remove</button>` : ''}
                         </div>
                     </div>
                 `;}).join('');
@@ -882,7 +874,6 @@
             currentMediaName = null;
         }
 
-        // Active heartbeat and initialize firebase sync
         setInterval(() => {
             if(currentUser) {
                 currentUser.lastActive = Date.now();
@@ -890,7 +881,6 @@
             }
         }, 10000);
 
-        // Start Firebase listeners on load
         initFirebaseListeners();
 
         if (currentUser) initAppState();
