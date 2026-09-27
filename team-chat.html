@@ -737,42 +737,55 @@
         }
 
         function handleRegister(e) {
-            e.preventDefault();
-            const newUsername = document.getElementById('reg-username').value.trim();
-            const emailInput = document.getElementById('reg-email').value.trim();
-            const passwordInput = document.getElementById('reg-password').value;
-            
-            if(dbUsers.some(u => u.username.toLowerCase() === newUsername.toLowerCase())) {
-                alert('Username already exists!');
-                return;
-            }
+    e.preventDefault();
+    const newUsername = document.getElementById('reg-username').value.trim();
+    const emailInput = document.getElementById('reg-email').value.trim();
+    const passwordInput = document.getElementById('reg-password').value;
 
-            const isAdminAcc = newUsername.toLowerCase() === 'rift raiders' || newUsername.toLowerCase() === 'takeku';
+    if(dbUsers.some(u => u.username.toLowerCase() === newUsername.toLowerCase())) {
+        alert('Username already exists!');
+        return;
+    }
 
-            currentUser = {
-                username: newUsername,
-                team: isAdminAcc ? "Management / Owner" : "Pending Approval",
-                game: document.getElementById('reg-game').value,
-                password: passwordInput,
-                email: emailInput,
-                pfp: isAdminAcc ? currentGlobalLogo : registeredAvatarBase64,
-                socials: "",
-                isAdmin: isAdminAcc,
-                isApproved: isAdminAcc ? true : false,
-                isBot: false,
-                lastActive: Date.now()
-            };
+    const isAdminAcc = newUsername.toLowerCase() === 'rift raiders' || newUsername.toLowerCase() === 'takeku';
 
-            dbUsers.push(currentUser);
-            saveDB();
-            closeModal('register-modal');
+    currentUser = {
+        username: newUsername,
+        team: isAdminAcc ? "Management / Owner" : "Pending Approval",
+        game: document.getElementById('reg-game').value,
+        password: passwordInput,
+        email: emailInput,
+        pfp: isAdminAcc ? currentGlobalLogo : registeredAvatarBase64,
+        socials: "",
+        isAdmin: isAdminAcc,
+        isApproved: isAdminAcc ? true : false,
+        isBot: false,
+        lastActive: Date.now()
+    };
 
-            if(currentUser.isApproved) {
-                initAppState();
-                alert('Account registered successfully!');
-            } else {
-                alert('Registration submitted successfully! Please wait for admin approval.');
-            }
+    dbUsers.push(currentUser);
+    
+    // I-save sa LocalStorage para sa fallback
+    saveDB();
+
+    // I-save agad sa Firebase Cloud (Realtime Database) para makita ng iba/admin
+    if (typeof ref !== 'undefined' && typeof set !== 'undefined' && typeof db !== 'undefined') {
+        const safeUsername = currentUser.username.replace(/[^a-zA-Z0-9]/g, '_');
+        set(ref(db, 'rift_users/' + safeUsername), currentUser)
+            .then(() => {
+                if(typeof saveDBFirebase === 'function') saveDBFirebase();
+            })
+            .catch(err => console.error("Firebase save error:", err));
+    }
+
+    closeModal('register-modal');
+
+    if(currentUser.isApproved) {
+        initAppState();
+        alert('Account registered successfully!');
+    } else {
+        alert('Registration submitted successfully! Please wait for admin approval.');
+    }
         }
 
         function handleSaveSocials(e) {
