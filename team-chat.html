@@ -14,7 +14,7 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
         (function() {
-            emailjs.init("YOUR_EMAILJS_PUBLIC_KEY"); // Palitan kung kinakailangan
+            emailjs.init("YOUR_EMAILJS_PUBLIC_KEY"); // Palitan ng iyong totoong EmailJS Public Key kung gagamitin
         })();
     </script>
 </head>
@@ -740,38 +740,30 @@
             initAppState();
         }
 
-      function openAdminPasswordModal() {
-    if (!currentUser || !currentUser.isAdmin) {
-        alert("Unauthorized action.");
-        return;
-    }
-    const passInput = document.getElementById('admin-portal-pass-input');
-    if (passInput) passInput.value = '';
-    
-    // Siguraduhing ito ang tinatawag para lumabas ang password box
-    const passModal = document.getElementById('admin-password-modal');
-    if (passModal) passModal.classList.remove('hidden');
-}
+        function openAdminPasswordModal() {
+            if (!currentUser || !currentUser.isAdmin) {
+                alert("Unauthorized action.");
+                return;
+            }
+            const passInput = document.getElementById('admin-portal-pass-input');
+            if (passInput) passInput.value = '';
+            openModal('admin-password-modal');
+        }
 
-function handleAdminAuth(e) {
-    e.preventDefault();
-    const passInput = document.getElementById('admin-portal-pass-input');
-    const passVal = passInput ? passInput.value.trim() : '';
-    
-    if (passVal !== "rr2024") {
-        alert("Incorrect admin password!");
-        return;
-    }
-    
-    // Isara ang password modal
-    const passModal = document.getElementById('admin-password-modal');
-    if (passModal) passModal.classList.add('hidden');
-    
-    // I-load at buksan ang mismong Admin Portal modal
-    renderAdminPortalData();
-    const portalModal = document.getElementById('admin-portal-modal');
-    if (portalModal) portalModal.classList.remove('hidden');
-}
+        function handleAdminAuth(e) {
+            e.preventDefault();
+            const passInput = document.getElementById('admin-portal-pass-input');
+            const passVal = passInput ? passInput.value.trim() : '';
+            
+            if (passVal !== "rr2024") {
+                alert("Incorrect admin password!");
+                return;
+            }
+            
+            closeModal('admin-password-modal');
+            renderAdminPortalData();
+            openModal('admin-portal-modal');
+        }
 
         function renderAdminPortalData() {
             let pendingUsers = dbUsers.filter(u => u && !u.isApproved && !u.isAdmin);
