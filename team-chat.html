@@ -5,65 +5,73 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="main-site-title">Rift Raiders Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom Hexagon / Dark Tech Pattern background para gayahin ang estiko ng imahe */
+        body {
+            background-color: #0b0c10;
+            background-image: radial-gradient(circle, #151821 10%, transparent 10%);
+            background-size: 20px 20px;
+        }
+    </style>
 </head>
-<body class="bg-slate-950 text-slate-100 h-screen flex overflow-hidden">
+<body class="text-slate-100 h-screen flex overflow-hidden">
 
-    <!-- AUTH LOCK OVERLAY (Kung hindi naka-login) -->
-    <div id="auth-lock-overlay" class="fixed inset-0 bg-slate-950/95 z-50 flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-red-600/40 p-8 rounded-xl max-w-md w-full shadow-2xl relative">
+    <!-- AUTH LOCK OVERLAY -->
+    <div id="auth-lock-overlay" class="fixed inset-0 bg-[#0b0c10]/95 z-50 flex items-center justify-center p-4">
+        <div class="bg-[#12141c] border border-red-600/50 p-8 rounded-xl max-w-md w-full shadow-2xl relative">
             
             <!-- Login Form -->
             <div id="login-modal">
-                <h2 class="text-2xl font-bold text-red-500 mb-2">Rift Raiders Login</h2>
+                <h2 class="text-2xl font-black tracking-wider text-red-600 mb-2 uppercase">Rift Raiders Login</h2>
                 <p class="text-xs text-slate-400 mb-6">Enter your credentials to access the portal.</p>
                 
                 <form onsubmit="handleLogin(event)" class="space-y-4">
                     <div>
                         <label class="block text-xs font-medium text-slate-300 mb-1">Username</label>
-                        <input type="text" id="login-username" required class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500">
+                        <input type="text" id="login-username" required class="w-full bg-[#0b0c10] border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-red-600">
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-slate-300 mb-1">Password</label>
-                        <input type="password" id="login-password" required class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500">
+                        <input type="password" id="login-password" required class="w-full bg-[#0b0c10] border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-red-600">
                     </div>
-                    <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded text-sm font-bold transition">Login to Account</button>
+                    <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded text-sm font-bold transition shadow-lg shadow-red-600/30">Login to Account</button>
                 </form>
 
                 <p class="text-xs text-center text-slate-400 mt-4">
-                    Don't have an account? <button onclick="switchModal('login-modal', 'register-modal')" class="text-red-400 underline font-medium">Register here</button>
+                    Don't have an account? <button onclick="switchModal('login-modal', 'register-modal')" class="text-red-500 underline font-medium">Register here</button>
                 </p>
             </div>
 
             <!-- Register Form -->
             <div id="register-modal" class="hidden">
-                <h2 class="text-2xl font-bold text-red-500 mb-2">Create Account</h2>
+                <h2 class="text-2xl font-black tracking-wider text-red-600 mb-2 uppercase">Create Account</h2>
                 <p class="text-xs text-slate-400 mb-6">Join the Rift Raiders portal.</p>
                 
                 <form onsubmit="handleRegister(event)" class="space-y-3">
                     <div>
                         <label class="block text-xs font-medium text-slate-300 mb-1">Username</label>
-                        <input type="text" id="reg-username" required class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500">
+                        <input type="text" id="reg-username" required class="w-full bg-[#0b0c10] border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-red-600">
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-slate-300 mb-1">Email</label>
-                        <input type="email" id="reg-email" required class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500">
+                        <input type="email" id="reg-email" required class="w-full bg-[#0b0c10] border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-red-600">
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-slate-300 mb-1">Password</label>
-                        <input type="password" id="reg-password" required class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500">
+                        <input type="password" id="reg-password" required class="w-full bg-[#0b0c10] border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-red-600">
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-slate-300 mb-1">Main Game</label>
-                        <select id="reg-game" class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500">
+                        <select id="reg-game" class="w-full bg-[#0b0c10] border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-red-600">
                             <option value="League of Legends">League of Legends</option>
                             <option value="Wild Rift">Wild Rift</option>
                         </select>
                     </div>
-                    <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded text-sm font-bold transition">Register</button>
+                    <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded text-sm font-bold transition shadow-lg shadow-red-600/30">Register</button>
                 </form>
 
                 <p class="text-xs text-center text-slate-400 mt-4">
-                    Already have an account? <button onclick="switchModal('register-modal', 'login-modal')" class="text-red-400 underline font-medium">Login here</button>
+                    Already have an account? <button onclick="switchModal('register-modal', 'login-modal')" class="text-red-500 underline font-medium">Login here</button>
                 </p>
             </div>
 
@@ -71,44 +79,43 @@
     </div>
 
     <!-- MAIN APP LAYOUT -->
-    <!-- Sidebar: Channels -->
-    <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between">
+    <aside class="w-64 bg-[#101218] border-r border-red-600/20 flex flex-col justify-between">
         <div>
-            <div class="p-4 border-b border-slate-800 flex justify-between items-center">
-                <h1 id="sidebar-brand-title" class="font-bold text-red-500 text-lg tracking-wider">Rift Raiders</h1>
+            <div class="p-4 border-b border-red-600/20 flex justify-between items-center bg-[#0d0f15]">
+                <h1 id="sidebar-brand-title" class="font-black text-red-600 text-base tracking-wider uppercase">Rift Raiders</h1>
                 <button id="add-channel-btn" onclick="addChannel()" class="hidden text-xs bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-2 py-1 rounded transition">+ Add</button>
             </div>
             <div class="p-3">
-                <p class="text-[10px] uppercase font-semibold text-slate-500 px-3 mb-2">Channels</p>
+                <p class="text-[10px] uppercase font-semibold text-slate-500 px-3 mb-2 tracking-widest">Channels</p>
                 <div id="channel-list" class="space-y-1"></div>
             </div>
         </div>
 
-        <!-- User Profile Footer sa Sidebar -->
-        <div class="p-3 bg-slate-950 border-t border-slate-800 flex items-center justify-between">
+        <!-- User Profile Footer -->
+        <div class="p-3 bg-[#0b0c10] border-t border-red-600/20 flex items-center justify-between">
             <div class="cursor-pointer flex items-center space-x-2" onclick="openEditProfile()">
-                <img id="sb-user-avatar" src="https://via.placeholder.com/150" class="w-8 h-8 rounded-full object-cover bg-slate-800 border border-slate-700">
+                <img id="sb-user-avatar" src="https://via.placeholder.com/150" class="w-8 h-8 rounded-full object-cover bg-slate-800 border border-red-600/50">
                 <div>
                     <p id="sb-user-name" class="text-xs font-bold text-white">Username</p>
-                    <p id="sb-user-role" class="text-[10px] text-slate-400">Role</p>
+                    <p id="sb-user-role" class="text-[10px] text-red-500 font-medium">Role</p>
                 </div>
             </div>
             <div id="logout-container" class="hidden">
-                <button onclick="handleLogout()" class="text-xs text-slate-400 hover:text-red-400">Logout</button>
+                <button onclick="handleLogout()" class="text-xs text-slate-400 hover:text-red-500">Logout</button>
             </div>
         </div>
     </aside>
 
     <!-- Chat & Center Interface -->
-    <main class="flex-1 flex flex-col bg-slate-950">
+    <main class="flex-1 flex flex-col bg-[#0b0c10]">
         <!-- Top Nav / Header -->
-        <header class="h-14 border-b border-slate-800 px-6 flex items-center justify-between bg-slate-900/50">
+        <header class="h-14 border-b border-red-600/20 px-6 flex items-center justify-between bg-[#101218]/80">
             <div class="flex items-center space-x-2">
-                <span class="text-red-500 font-bold">#</span>
+                <span class="text-red-600 font-bold">#</span>
                 <span id="current-channel-title" class="font-semibold text-sm text-white">general</span>
             </div>
             <div>
-                <button id="nav-admin-portal-btn" onclick="openAdminPasswordModal()" class="hidden bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-1.5 rounded font-bold transition">Admin Portal</button>
+                <button id="nav-admin-portal-btn" onclick="openAdminPasswordModal()" class="hidden bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-1.5 rounded font-bold transition shadow-md shadow-red-600/30">Admin Portal</button>
             </div>
         </header>
 
@@ -116,49 +123,49 @@
         <div id="chat-messages" class="flex-1 p-6 overflow-y-auto space-y-4"></div>
 
         <!-- Media Preview Container -->
-        <div id="media-preview-container" class="hidden px-6 py-2 bg-slate-900 border-t border-slate-800 flex items-center justify-between">
+        <div id="media-preview-container" class="hidden px-6 py-2 bg-[#12141c] border-t border-red-600/20 flex items-center justify-between">
             <span id="file-name-display" class="text-xs text-blue-400">Attachment</span>
-            <button onclick="clearMedia()" class="text-xs text-red-400 hover:underline">Remove</button>
+            <button onclick="clearMedia()" class="text-xs text-red-500 hover:underline">Remove</button>
         </div>
 
         <!-- Mention Suggestions Box -->
-        <div id="mention-suggestions" class="hidden absolute bottom-16 left-6 bg-slate-800 border border-slate-700 rounded shadow-lg w-48 z-10 p-1"></div>
+        <div id="mention-suggestions" class="hidden absolute bottom-16 left-6 bg-[#12141c] border border-red-600/30 rounded shadow-lg w-48 z-10 p-1"></div>
 
         <!-- Message Input Form -->
-        <div class="p-4 bg-slate-900 border-t border-slate-800">
+        <div class="p-4 bg-[#101218] border-t border-red-600/20">
             <form onsubmit="handleSendMessage(event)" class="relative flex items-center">
-                <input type="text" id="message-input" placeholder="Type a message or use @ to mention..." autocomplete="off" class="w-full bg-slate-800 border border-slate-700 rounded-lg pl-4 pr-24 py-2.5 text-sm text-white focus:outline-none focus:border-red-500">
+                <input type="text" id="message-input" placeholder="Type a message or use @ to mention..." autocomplete="off" class="w-full bg-[#0b0c10] border border-slate-700 rounded-lg pl-4 pr-24 py-2.5 text-sm text-white focus:outline-none focus:border-red-600">
                 <div class="absolute right-2 flex items-center space-x-2">
                     <label class="cursor-pointer text-slate-400 hover:text-white text-sm">
                         📎<input type="file" id="media-input" onchange="previewMedia(this)" class="hidden">
                     </label>
-                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs font-bold transition">Send</button>
+                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs font-bold transition shadow">Send</button>
                 </div>
             </form>
         </div>
     </main>
 
     <!-- Right Sidebar: Member List -->
-    <aside class="w-60 bg-slate-900 border-l border-slate-800 p-4 flex flex-col">
+    <aside class="w-60 bg-[#101218] border-l border-red-600/20 p-4 flex flex-col">
         <h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Members</h3>
         <div id="member-list" class="space-y-1.5 overflow-y-auto flex-1"></div>
     </aside>
 
-    <!-- DISCORD-STYLE PROFILE MODAL -->
-    <div id="profile-modal" class="hidden fixed inset-0 bg-slate-950/80 z-50 flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-xl max-w-sm w-full overflow-hidden shadow-2xl relative">
-            <div class="h-20 bg-gradient-to-r from-red-900 to-slate-900"></div>
+    <!-- PROFILE MODAL -->
+    <div id="profile-modal" class="hidden fixed inset-0 bg-[#0b0c10]/85 z-50 flex items-center justify-center p-4">
+        <div class="bg-[#12141c] border border-red-600/30 rounded-xl max-w-sm w-full overflow-hidden shadow-2xl relative">
+            <div class="h-20 bg-gradient-to-r from-red-700 to-[#12141c]"></div>
             <div class="px-6 pb-6 relative">
                 <div class="-mt-10 mb-3 flex justify-between items-end">
-                    <img id="profile-avatar" src="https://via.placeholder.com/150" class="w-20 h-20 rounded-full border-4 border-slate-900 object-cover bg-slate-800">
-                    <span id="profile-role-badge" class="bg-red-600 text-white text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wider">Member</span>
+                    <img id="profile-avatar" src="https://via.placeholder.com/150" class="w-20 h-20 rounded-full border-4 border-[#12141c] object-cover bg-slate-800">
+                    <span id="profile-role-badge" class="bg-red-600 text-white text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wider shadow">Member</span>
                 </div>
 
                 <h2 id="profile-username" class="text-lg font-bold text-white">Username</h2>
-                <p id="profile-team" class="text-xs text-red-400 font-semibold mb-1">Team: Unassigned</p>
+                <p id="profile-team" class="text-xs text-red-500 font-semibold mb-1">Team: Unassigned</p>
                 <p id="profile-game" class="text-xs text-slate-400 font-medium mb-4">Game: League of Legends</p>
 
-                <div class="bg-slate-950/60 border border-slate-800/80 rounded-lg p-3 space-y-2 text-xs">
+                <div class="bg-[#0b0c10] border border-red-600/20 rounded-lg p-3 space-y-2 text-xs">
                     <p class="font-semibold text-slate-400 uppercase tracking-widest text-[9px] mb-1">Connected Socials</p>
                     <div id="profile-socials-list" class="space-y-1 text-slate-300"></div>
                 </div>
@@ -168,38 +175,38 @@
         </div>
     </div>
 
-    <!-- EDIT PROFILE & PHOTO MODAL -->
-    <div id="edit-profile-modal" class="hidden fixed inset-0 bg-slate-950/80 z-50 flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl max-w-sm w-full relative max-h-[90vh] overflow-y-auto">
-            <h3 class="text-lg font-bold text-red-500 mb-4">Edit Profile & Avatar</h3>
+    <!-- EDIT PROFILE MODAL -->
+    <div id="edit-profile-modal" class="hidden fixed inset-0 bg-[#0b0c10]/85 z-50 flex items-center justify-center p-4">
+        <div class="bg-[#12141c] border border-red-600/30 p-6 rounded-xl max-w-sm w-full relative max-h-[90vh] overflow-y-auto">
+            <h3 class="text-lg font-bold text-red-600 mb-4 uppercase">Edit Profile</h3>
             <form onsubmit="handleSaveProfile(event)" class="space-y-3">
                 <div>
                     <label class="block text-xs font-medium text-slate-300 mb-1">Upload Profile Picture (File)</label>
-                    <input type="file" id="edit-avatar-file" accept="image/*" class="w-full bg-slate-800 border border-slate-700 rounded px-2 py-1 text-xs text-slate-300 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:bg-red-600 file:text-white hover:file:bg-red-700">
+                    <input type="file" id="edit-avatar-file" accept="image/*" class="w-full bg-[#0b0c10] border border-slate-700 rounded px-2 py-1 text-xs text-slate-300 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:bg-red-600 file:text-white hover:file:bg-red-700">
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-slate-300 mb-1">Main Game</label>
-                    <input type="text" id="edit-game" class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-1.5 text-xs text-white">
+                    <input type="text" id="edit-game" class="w-full bg-[#0b0c10] border border-slate-700 rounded px-3 py-1.5 text-xs text-white">
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-slate-300 mb-1">TikTok Link</label>
-                    <input type="url" id="edit-tiktok" placeholder="https://tiktok.com/@..." class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-1.5 text-xs text-white">
+                    <input type="url" id="edit-tiktok" class="w-full bg-[#0b0c10] border border-slate-700 rounded px-3 py-1.5 text-xs text-white">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Discord Tag / Link</label>
-                    <input type="text" id="edit-discord" placeholder="username#0000" class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-1.5 text-xs text-white">
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Discord Tag</label>
+                    <input type="text" id="edit-discord" class="w-full bg-[#0b0c10] border border-slate-700 rounded px-3 py-1.5 text-xs text-white">
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-slate-300 mb-1">FB Page Link</label>
-                    <input type="url" id="edit-fb" placeholder="https://facebook.com/..." class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-1.5 text-xs text-white">
+                    <input type="url" id="edit-fb" class="w-full bg-[#0b0c10] border border-slate-700 rounded px-3 py-1.5 text-xs text-white">
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-slate-300 mb-1">X (Twitter) Link</label>
-                    <input type="url" id="edit-x" placeholder="https://x.com/..." class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-1.5 text-xs text-white">
+                    <input type="url" id="edit-x" class="w-full bg-[#0b0c10] border border-slate-700 rounded px-3 py-1.5 text-xs text-white">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Spotify Profile Link</label>
-                    <input type="url" id="edit-spotify" placeholder="https://spotify.com/..." class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-1.5 text-xs text-white">
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Spotify Link</label>
+                    <input type="url" id="edit-spotify" class="w-full bg-[#0b0c10] border border-slate-700 rounded px-3 py-1.5 text-xs text-white">
                 </div>
                 <div class="flex space-x-2 pt-2">
                     <button type="submit" class="flex-1 bg-red-600 hover:bg-red-700 text-white py-1.5 rounded text-xs font-bold">Save Changes</button>
@@ -210,18 +217,18 @@
     </div>
 
     <!-- ADMIN PASSWORD MODAL -->
-    <div id="admin-password-modal" class="hidden fixed inset-0 bg-slate-950/85 z-50 flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-red-600/50 p-6 rounded-xl max-w-sm w-full shadow-2xl relative">
-            <h3 class="text-lg font-bold text-red-500 mb-1">Admin Authentication</h3>
+    <div id="admin-password-modal" class="hidden fixed inset-0 bg-[#0b0c10]/85 z-50 flex items-center justify-center p-4">
+        <div class="bg-[#12141c] border border-red-600/50 p-6 rounded-xl max-w-sm w-full shadow-2xl relative">
+            <h3 class="text-lg font-bold text-red-600 mb-1">Admin Authentication</h3>
             <p class="text-xs text-slate-400 mb-4">Enter admin password to access the portal.</p>
             
             <form onsubmit="handleAdminAuth(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs font-medium text-slate-300 mb-1">Admin Password</label>
-                    <input type="password" id="admin-portal-pass-input" required placeholder="Enter password..." class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500">
+                    <input type="password" id="admin-portal-pass-input" required class="w-full bg-[#0b0c10] border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-red-600">
                 </div>
                 <div class="flex space-x-2">
-                    <button type="submit" class="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 rounded text-xs font-bold">Verify & Enter</button>
+                    <button type="submit" class="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 rounded text-xs font-bold">Verify</button>
                     <button type="button" onclick="closeModal('admin-password-modal')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-2 rounded text-xs font-medium">Cancel</button>
                 </div>
             </form>
@@ -229,34 +236,34 @@
     </div>
 
     <!-- ADMIN PORTAL DASHBOARD MODAL -->
-    <div id="admin-portal-modal" class="hidden fixed inset-0 bg-slate-950/85 z-50 flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-red-600/50 p-6 rounded-xl max-w-2xl w-full shadow-2xl relative">
-            <h2 class="text-xl font-bold text-red-500 mb-1">Admin Portal Dashboard</h2>
+    <div id="admin-portal-modal" class="hidden fixed inset-0 bg-[#0b0c10]/85 z-50 flex items-center justify-center p-4">
+        <div class="bg-[#12141c] border border-red-600/50 p-6 rounded-xl max-w-2xl w-full shadow-2xl relative">
+            <h2 class="text-xl font-bold text-red-600 mb-1 uppercase tracking-wider">Admin Portal Dashboard</h2>
             <p class="text-xs text-slate-400 mb-4">Manage users, approvals, team roles, and website branding.</p>
             
             <div class="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
-                <div class="bg-slate-950 p-3 rounded border border-slate-800">
+                <div class="bg-[#0b0c10] p-3 rounded border border-red-600/20">
                     <h3 class="text-xs font-bold text-white mb-2 uppercase tracking-wide">Pending Registrations</h3>
                     <div id="admin-pending-list" class="space-y-2 text-xs text-slate-300"></div>
                 </div>
 
-                <div class="bg-slate-950 p-3 rounded border border-slate-800">
+                <div class="bg-[#0b0c10] p-3 rounded border border-red-600/20">
                     <h3 class="text-xs font-bold text-white mb-2 uppercase tracking-wide">Registered Members & Team Roles</h3>
                     <div id="admin-members-list" class="space-y-2 text-xs text-slate-300 max-h-48 overflow-y-auto"></div>
                 </div>
 
-                <div class="bg-slate-950 p-3 rounded border border-slate-800">
-                    <h3 class="text-xs font-bold text-white mb-2 uppercase tracking-wide">Edit Website Branding & Logo</h3>
+                <div class="bg-[#0b0c10] p-3 rounded border border-red-600/20">
+                    <h3 class="text-xs font-bold text-white mb-2 uppercase tracking-wide">Edit Website Branding</h3>
                     <div class="space-y-3">
                         <div>
                             <label class="block text-[10px] text-slate-400 mb-1">Website Title</label>
-                            <input type="text" id="admin-site-title-input" placeholder="New Website Title..." class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-1.5 text-xs text-white">
+                            <input type="text" id="admin-site-title-input" class="w-full bg-[#12141c] border border-slate-700 rounded px-3 py-1.5 text-xs text-white">
                         </div>
                         <div>
-                            <label class="block text-[10px] text-slate-400 mb-1">Sidebar Brand/Logo Text</label>
-                            <input type="text" id="admin-brand-text-input" placeholder="Rift Raiders..." class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-1.5 text-xs text-white">
+                            <label class="block text-[10px] text-slate-400 mb-1">Sidebar Brand Text</label>
+                            <input type="text" id="admin-brand-text-input" class="w-full bg-[#12141c] border border-slate-700 rounded px-3 py-1.5 text-xs text-white">
                         </div>
-                        <button onclick="updateWebsiteBranding()" class="w-full bg-red-600 hover:bg-red-700 text-white py-1.5 rounded text-xs font-bold">Save Website Branding</button>
+                        <button onclick="updateWebsiteBranding()" class="w-full bg-red-600 hover:bg-red-700 text-white py-1.5 rounded text-xs font-bold">Save Branding</button>
                     </div>
                 </div>
             </div>
@@ -302,13 +309,11 @@
         }
 
         function openModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) modal.classList.remove('hidden');
+            document.getElementById(modalId)?.classList.remove('hidden');
         }
 
         function closeModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) modal.classList.add('hidden');
+            document.getElementById(modalId)?.classList.add('hidden');
         }
 
         function switchModal(closeId, openId) {
@@ -383,41 +388,29 @@
         function handleLogout() {
             currentUser = null;
             saveDB();
-            const lockOverlay = document.getElementById('auth-lock-overlay');
-            const logoutCont = document.getElementById('logout-container');
-            if (lockOverlay) lockOverlay.classList.remove('hidden');
-            if (logoutCont) logoutCont.classList.add('hidden');
-            
+            document.getElementById('auth-lock-overlay')?.classList.remove('hidden');
+            document.getElementById('logout-container')?.classList.add('hidden');
             document.getElementById('login-username').value = '';
             document.getElementById('login-password').value = '';
         }
 
         function initAppState() {
             if (!currentUser) return;
-            const lockOverlay = document.getElementById('auth-lock-overlay');
-            if (lockOverlay) lockOverlay.classList.add('hidden');
+            document.getElementById('auth-lock-overlay')?.classList.add('hidden');
             
-            const userNameEl = document.getElementById('sb-user-name');
-            const userRoleEl = document.getElementById('sb-user-role');
-            const userAvatarEl = document.getElementById('sb-user-avatar');
-
-            if (userNameEl) userNameEl.innerText = currentUser.username;
-            if (userRoleEl) userRoleEl.innerText = currentUser.team ? `${currentUser.team}` : (currentUser.role || "Member");
-            if (userAvatarEl && currentUser.pfp) userAvatarEl.src = currentUser.pfp;
+            document.getElementById('sb-user-name').innerText = currentUser.username;
+            document.getElementById('sb-user-role').innerText = currentUser.team && currentUser.team !== 'Unassigned' ? currentUser.team : (currentUser.role || "Member");
+            if (currentUser.pfp) document.getElementById('sb-user-avatar').src = currentUser.pfp;
             
-            const adminBtn = document.getElementById('nav-admin-portal-btn');
-            const addChanBtn = document.getElementById('add-channel-btn');
-            const logoutCont = document.getElementById('logout-container');
-
             if (currentUser.isAdmin) {
-                if (adminBtn) adminBtn.classList.remove('hidden');
-                if (addChanBtn) addChanBtn.classList.remove('hidden');
+                document.getElementById('nav-admin-portal-btn')?.classList.remove('hidden');
+                document.getElementById('add-channel-btn')?.classList.remove('hidden');
             } else {
-                if (adminBtn) adminBtn.classList.add('hidden');
-                if (addChanBtn) addChanBtn.classList.add('hidden');
+                document.getElementById('nav-admin-portal-btn')?.classList.add('hidden');
+                document.getElementById('add-channel-btn')?.classList.add('hidden');
             }
             
-            if (logoutCont) logoutCont.classList.remove('hidden');
+            document.getElementById('logout-container')?.classList.remove('hidden');
             renderChannels();
             loadChannelMessages(currentChannel);
             renderMemberList();
@@ -431,7 +424,7 @@
             dbChannels.forEach(channel => {
                 const isActive = channel === currentChannel;
                 channelListEl.innerHTML += `
-                    <button onclick="switchChannel('${channel}')" class="w-full text-left px-3 py-2 rounded text-sm font-medium ${isActive ? 'bg-red-600 text-white' : 'text-slate-300 hover:bg-slate-800'}">
+                    <button onclick="switchChannel('${channel}')" class="w-full text-left px-3 py-2 rounded text-sm font-medium ${isActive ? 'bg-red-600 text-white shadow-md shadow-red-600/30' : 'text-slate-300 hover:bg-[#151821]'}">
                         # ${channel}
                     </button>`;
             });
@@ -445,10 +438,7 @@
         }
 
         function addChannel() {
-            if (!currentUser || !currentUser.isAdmin) {
-                alert("Admin access required.");
-                return;
-            }
+            if (!currentUser || !currentUser.isAdmin) return;
             let newChan = prompt("Enter new channel name:");
             if (newChan) {
                 newChan = newChan.trim().toLowerCase().replace(/\s+/g, '-');
@@ -472,29 +462,25 @@
             
             msgs.forEach(msg => {
                 let isOwner = currentUser && (currentUser.username === msg.username || currentUser.isAdmin);
-                let actionButtons = '';
-                
-                if (isOwner) {
-                    actionButtons = `
-                        <span class="float-right text-xs space-x-2">
-                            <button onclick="editMessage(${msg.id})" class="text-slate-400 hover:text-white">Edit</button>
-                            <button onclick="deleteMessage(${msg.id})" class="text-red-400 hover:text-red-300">Delete</button>
-                        </span>`;
-                }
+                let actionButtons = isOwner ? `
+                    <span class="float-right text-xs space-x-2">
+                        <button onclick="editMessage(${msg.id})" class="text-slate-400 hover:text-white">Edit</button>
+                        <button onclick="deleteMessage(${msg.id})" class="text-red-500 hover:text-red-400">Delete</button>
+                    </span>` : '';
 
                 let senderUser = dbUsers.find(u => u.username === msg.username);
                 let senderPfp = senderUser?.pfp || 'https://via.placeholder.com/150';
-                let senderTeam = senderUser?.team ? `<span class="bg-blue-600/30 text-blue-300 text-[10px] px-1.5 py-0.5 rounded ml-1 border border-blue-500/30">${senderUser.team}</span>` : '';
+                let senderTeam = senderUser?.team && senderUser.team !== 'Unassigned' ? `<span class="bg-red-950 text-red-400 text-[10px] px-1.5 py-0.5 rounded ml-1 border border-red-600/30">${senderUser.team}</span>` : '';
 
                 let badgeHtml = msg.isAdmin ? `<span class="bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded ml-1 font-bold">Admin</span>` : '';
-                let gameTag = msg.game ? `<span class="bg-slate-800 text-slate-300 text-[10px] px-1.5 py-0.5 rounded ml-1">${msg.game}</span>` : '';
+                let gameTag = msg.game ? `<span class="bg-[#151821] text-slate-300 text-[10px] px-1.5 py-0.5 rounded ml-1 border border-slate-700/50">${msg.game}</span>` : '';
 
                 chatContainer.innerHTML += `
                     <div class="mb-4 flex items-start space-x-3">
-                        <img src="${senderPfp}" class="w-8 h-8 rounded-full object-cover bg-slate-800 border border-slate-700 cursor-pointer mt-0.5" onclick="viewUserProfile('${msg.username}')">
+                        <img src="${senderPfp}" class="w-8 h-8 rounded-full object-cover bg-slate-800 border border-red-600/30 cursor-pointer mt-0.5" onclick="viewUserProfile('${msg.username}')">
                         <div class="flex-1">
                             <div>
-                                <span class="text-red-400 font-bold text-xs cursor-pointer hover:underline" onclick="viewUserProfile('${msg.username}')">${msg.username}</span>
+                                <span class="text-red-500 font-bold text-xs cursor-pointer hover:underline" onclick="viewUserProfile('${msg.username}')">${msg.username}</span>
                                 ${badgeHtml} ${senderTeam} ${gameTag}
                                 <span class="text-slate-500 text-[10px] ml-2">${msg.time || ''}</span>
                                 ${actionButtons}
@@ -514,12 +500,12 @@
             dbUsers.forEach(user => {
                 if (!user.isApproved && !user.isAdmin) return;
                 let isOnline = user.lastActive && (Date.now() - user.lastActive < 10000);
-                let userTeamTag = user.team && user.team !== 'Unassigned' ? `<span class="text-[9px] text-blue-400 block">${user.team}</span>` : '';
+                let userTeamTag = user.team && user.team !== 'Unassigned' ? `<span class="text-[9px] text-red-400 font-medium block">${user.team}</span>` : '';
                 
                 memberListEl.innerHTML += `
-                    <div class="flex items-center justify-between py-1 px-1.5 text-xs text-slate-300 cursor-pointer hover:bg-slate-800 rounded" onclick="viewUserProfile('${user.username}')">
+                    <div class="flex items-center justify-between py-1 px-1.5 text-xs text-slate-300 cursor-pointer hover:bg-[#151821] rounded" onclick="viewUserProfile('${user.username}')">
                         <div class="flex items-center space-x-2">
-                            <img src="${user.pfp || 'https://via.placeholder.com/150'}" class="w-7 h-7 rounded-full object-cover border border-slate-700">
+                            <img src="${user.pfp || 'https://via.placeholder.com/150'}" class="w-7 h-7 rounded-full object-cover border border-red-600/30">
                             <div>
                                 <div class="font-bold text-white flex items-center space-x-1">
                                     <span>${user.username}</span>
@@ -528,7 +514,7 @@
                                 ${userTeamTag}
                             </div>
                         </div>
-                        <span class="w-2 h-2 rounded-full ${isOnline ? 'bg-green-500' : 'bg-slate-600'}"></span>
+                        <span class="w-2 h-2 rounded-full ${isOnline ? 'bg-red-500 shadow-sm shadow-red-500' : 'bg-slate-600'}"></span>
                     </div>`;
             });
         }
@@ -547,7 +533,7 @@
                     
                     if (matchedUsers.length > 0) {
                         mentionSuggestions.innerHTML = matchedUsers.map(u => 
-                            `<div onclick="insertMention('${u.username}')" class="p-1 hover:bg-slate-700 cursor-pointer text-xs text-white">@${u.username}</div>`
+                            `<div onclick="insertMention('${u.username}')" class="p-1.5 hover:bg-[#151821] cursor-pointer text-xs text-white">@${u.username}</div>`
                         ).join('');
                         mentionSuggestions.classList.remove('hidden');
                     } else {
@@ -579,12 +565,11 @@
             document.getElementById('profile-role-badge').innerText = user.role || (user.isAdmin ? 'Admin' : 'Member');
 
             let socials = user.socials || {};
-            let socialsContainer = document.getElementById('profile-socials-list');
-            socialsContainer.innerHTML = `
-                <p>TikTok: ${socials.tiktok ? `<a href="${socials.tiktok}" target="_blank" class="text-red-400 hover:underline">${socials.tiktok}</a>` : '<span class="text-slate-600">None</span>'}</p>
-                <p>Discord: ${socials.discord ? `<span class="text-blue-400">${socials.discord}</span>` : '<span class="text-slate-600">None</span>'}</p>
-                <p>FB Page: ${socials.fb ? `<a href="${socials.fb}" target="_blank" class="text-blue-400 hover:underline">${socials.fb}</a>` : '<span class="text-slate-600">None</span>'}</p>
-                <p>X (Twitter): ${socials.x ? `<a href="${socials.x}" target="_blank" class="text-slate-200 hover:underline">${socials.x}</a>` : '<span class="text-slate-600">None</span>'}</p>
+            document.getElementById('profile-socials-list').innerHTML = `
+                <p>TikTok: ${socials.tiktok ? `<a href="${socials.tiktok}" target="_blank" class="text-red-500 hover:underline">${socials.tiktok}</a>` : '<span class="text-slate-600">None</span>'}</p>
+                <p>Discord: ${socials.discord ? `<span class="text-slate-300">${socials.discord}</span>` : '<span class="text-slate-600">None</span>'}</p>
+                <p>FB Page: ${socials.fb ? `<a href="${socials.fb}" target="_blank" class="text-red-500 hover:underline">${socials.fb}</a>` : '<span class="text-slate-600">None</span>'}</p>
+                <p>X (Twitter): ${socials.x ? `<a href="${socials.x}" target="_blank" class="text-slate-300 hover:underline">${socials.x}</a>` : '<span class="text-slate-600">None</span>'}</p>
                 <p>Spotify: ${socials.spotify ? `<a href="${socials.spotify}" target="_blank" class="text-green-400 hover:underline">${socials.spotify}</a>` : '<span class="text-slate-600">None</span>'}</p>
             `;
 
@@ -605,7 +590,6 @@
 
         function handleSaveProfile(e) {
             e.preventDefault();
-            
             currentUser.game = document.getElementById('edit-game').value;
             currentUser.socials = {
                 tiktok: document.getElementById('edit-tiktok').value,
@@ -631,26 +615,21 @@
         function finalizeProfileSave() {
             let index = dbUsers.findIndex(u => u.username === currentUser.username);
             if (index !== -1) dbUsers[index] = currentUser;
-
             saveDB();
-            alert('Profile and avatar updated successfully!');
+            alert('Profile updated successfully!');
             closeModal('edit-profile-modal');
             initAppState();
         }
 
         function openAdminPasswordModal() {
-            if (!currentUser || !currentUser.isAdmin) {
-                alert("Access denied. Admin only.");
-                return;
-            }
+            if (!currentUser || !currentUser.isAdmin) return;
             document.getElementById('admin-portal-pass-input').value = '';
             openModal('admin-password-modal');
         }
 
         function handleAdminAuth(e) {
             e.preventDefault();
-            let passInput = document.getElementById('admin-portal-pass-input').value;
-            if (passInput !== "rr2024") {
+            if (document.getElementById('admin-portal-pass-input').value !== "rr2024") {
                 alert("Incorrect admin password!");
                 return;
             }
@@ -660,28 +639,23 @@
         }
 
         function renderAdminPortalData() {
-            const pendingListEl = document.getElementById('admin-pending-list');
             let pendingUsers = dbUsers.filter(u => !u.isApproved && !u.isAdmin);
-            
-            if (pendingUsers.length === 0) {
-                pendingListEl.innerHTML = `<p class="text-slate-500 italic">No pending user registrations.</p>`;
-            } else {
-                pendingListEl.innerHTML = pendingUsers.map(u => `
-                    <div class="flex items-center justify-between bg-slate-900 p-2 rounded border border-slate-800">
+            document.getElementById('admin-pending-list').innerHTML = pendingUsers.length === 0 ? 
+                `<p class="text-slate-500 italic">No pending user registrations.</p>` :
+                pendingUsers.map(u => `
+                    <div class="flex items-center justify-between bg-[#12141c] p-2 rounded border border-red-600/20">
                         <span><b>${u.username}</b> (${u.game})</span>
-                        <button onclick="approveUser('${u.username}')" class="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded text-[10px] font-bold">Approve</button>
+                        <button onclick="approveUser('${u.username}')" class="bg-red-600 hover:bg-red-700 text-white px-2.5 py-1 rounded text-[10px] font-bold">Approve</button>
                     </div>
                 `).join('');
-            }
 
-            const membersListEl = document.getElementById('admin-members-list');
-            membersListEl.innerHTML = dbUsers.map(u => `
-                <div class="flex items-center justify-between bg-slate-900 p-2.5 rounded border border-slate-800 mb-2">
+            document.getElementById('admin-members-list').innerHTML = dbUsers.map(u => `
+                <div class="flex items-center justify-between bg-[#12141c] p-2.5 rounded border border-red-600/20 mb-2">
                     <div class="flex items-center space-x-3">
-                        <img src="${u.pfp || 'https://via.placeholder.com/150'}" class="w-8 h-8 rounded-full object-cover">
+                        <img src="${u.pfp || 'https://via.placeholder.com/150'}" class="w-8 h-8 rounded-full object-cover border border-red-600/40">
                         <div>
                             <div class="font-bold text-white text-xs">
-                                ${u.username} ${u.isAdmin ? '<span class="text-red-400">(Admin)</span>' : ''}
+                                ${u.username} ${u.isAdmin ? '<span class="text-red-500">(Admin)</span>' : ''}
                             </div>
                             <div class="text-[10px] text-slate-400">Game: ${u.game || 'N/A'}</div>
                         </div>
@@ -689,10 +663,10 @@
                     <div class="flex items-center space-x-2">
                         <div>
                             <label class="block text-[9px] text-slate-400 mb-0.5">Team / Role</label>
-                            <input type="text" id="team-input-${u.username}" value="${u.team || 'Unassigned'}" class="bg-slate-800 border border-slate-700 rounded px-2 py-1 text-xs text-white w-28">
+                            <input type="text" id="team-input-${u.username}" value="${u.team || 'Unassigned'}" class="bg-[#0b0c10] border border-slate-700 rounded px-2 py-1 text-xs text-white w-28 focus:border-red-600">
                         </div>
-                        <button onclick="updateUserTeam('${u.username}')" class="bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1.5 rounded text-[10px] font-bold mt-3">Save</button>
-                        ${u.username !== 'Takeku' ? `<button onclick="banUser('${u.username}')" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-2 py-1.5 rounded text-[10px] font-bold mt-3">Remove</button>` : ''}
+                        <button onclick="updateUserTeam('${u.username}')" class="bg-red-600 hover:bg-red-700 text-white px-2.5 py-1.5 rounded text-[10px] font-bold mt-3">Save</button>
+                        ${u.username !== 'Takeku' ? `<button onclick="banUser('${u.username}')" class="bg-slate-800 hover:bg-red-950 text-red-400 px-2 py-1.5 rounded text-[10px] font-bold mt-3">Remove</button>` : ''}
                     </div>
                 </div>
             `).join('');
@@ -726,7 +700,7 @@
         }
 
         function banUser(username) {
-            if (confirm(`Are you sure you want to remove ${username} from the system?`)) {
+            if (confirm(`Remove ${username} from the system?`)) {
                 dbUsers = dbUsers.filter(u => u.username.toLowerCase() !== username.toLowerCase());
                 saveDB();
                 renderAdminPortalData();
@@ -743,13 +717,11 @@
                 localStorage.setItem('rift_site_title', newTitle);
                 document.getElementById('main-site-title').innerText = newTitle;
             }
-
             if (newBrand) {
                 localStorage.setItem('rift_brand_text', newBrand);
                 document.getElementById('sidebar-brand-title').innerText = newBrand;
             }
-
-            alert("Website branding and logo updated successfully!");
+            alert("Website branding updated successfully!");
         }
 
         function handleSendMessage(event) {
@@ -760,7 +732,7 @@
             if((text !== '' || currentMediaData) && currentUser) {
                 let finalMsg = text;
                 if(currentMediaData) {
-                    finalMsg += `<br><a href="${currentMediaData}" download="${currentMediaName}" class="text-blue-400 underline text-[10px]">📎 ${currentMediaName}</a>`;
+                    finalMsg += `<br><a href="${currentMediaData}" download="${currentMediaName}" class="text-red-400 underline text-[10px]">📎 ${currentMediaName}</a>`;
                 }
 
                 const newMsg = {
@@ -777,7 +749,6 @@
                 
                 saveDB();
                 loadChannelMessages(currentChannel);
-                
                 input.value = '';
                 clearMedia();
             }
@@ -810,20 +781,16 @@
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     currentMediaData = e.target.result;
-                    const preview = document.getElementById('media-preview-container');
-                    const nameDisplay = document.getElementById('file-name-display');
-                    if (preview) preview.classList.remove('hidden');
-                    if (nameDisplay) nameDisplay.innerText = currentMediaName;
+                    document.getElementById('media-preview-container')?.classList.remove('hidden');
+                    document.getElementById('file-name-display').innerText = currentMediaName;
                 };
                 reader.readAsDataURL(input.files[0]);
             }
         }
 
         function clearMedia() {
-            const mediaInput = document.getElementById('media-input');
-            const preview = document.getElementById('media-preview-container');
-            if (mediaInput) mediaInput.value = '';
-            if (preview) preview.classList.add('hidden');
+            document.getElementById('media-input').value = '';
+            document.getElementById('media-preview-container')?.classList.add('hidden');
             currentMediaData = null;
             currentMediaName = null;
         }
@@ -838,21 +805,17 @@
             renderMemberList();
         }, 5000);
 
-        if (currentUser) {
-            initAppState();
-        }
+        if (currentUser) initAppState();
         
         let savedTitle = localStorage.getItem('rift_site_title');
         if (savedTitle) {
             document.title = savedTitle;
-            const mainTitleEl = document.getElementById('main-site-title');
-            if(mainTitleEl) mainTitleEl.innerText = savedTitle;
+            document.getElementById('main-site-title').innerText = savedTitle;
         }
 
         let savedBrand = localStorage.getItem('rift_brand_text');
         if (savedBrand) {
-            const sidebarBrandEl = document.getElementById('sidebar-brand-title');
-            if(sidebarBrandEl) sidebarBrandEl.innerText = savedBrand;
+            document.getElementById('sidebar-brand-title').innerText = savedBrand;
         }
     </script>
 </body>
