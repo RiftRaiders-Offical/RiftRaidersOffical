@@ -765,13 +765,13 @@
 
     dbUsers.push(currentUser);
     
-    // I-save sa LocalStorage para sa fallback
+    // 1. Save sa LocalStorage
     saveDB();
 
-    // I-save agad sa Firebase Cloud (Realtime Database) para makita ng iba/admin
-    if (typeof ref !== 'undefined' && typeof set !== 'undefined' && typeof db !== 'undefined') {
+    // 2. I-save agad sa Firebase Cloud Realtime Database para mag-sync sa iba
+    if (window.FB_DB && window.FB_ref && window.FB_set) {
         const safeUsername = currentUser.username.replace(/[^a-zA-Z0-9]/g, '_');
-        set(ref(db, 'rift_users/' + safeUsername), currentUser)
+        window.FB_set(window.FB_ref(window.FB_DB, 'rift_users/' + safeUsername), currentUser)
             .then(() => {
                 if(typeof saveDBFirebase === 'function') saveDBFirebase();
             })
@@ -786,7 +786,8 @@
     } else {
         alert('Registration submitted successfully! Please wait for admin approval.');
     }
-        }
+}
+
 
         function handleSaveSocials(e) {
             e.preventDefault();
@@ -1115,14 +1116,14 @@
             }
         });
 
-            <!-- Firebase App & Realtime Database CDN SDK -->
+                <!-- Firebase App & Realtime Database CDN SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, set, onValue, push, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Palitan ito ng iyong sariling Firebase Project Configuration galing sa Firebase Console
+        // Palitan ang mga ito ng totoong detalye mula sa iyong Firebase Project Console
         const firebaseConfig = {
-            apiKey: "YOUR_FIREBASE_API_KEY",
+            apiKey: "ILAGAY_ANG_TOTOONG_API_KEY_DITO",
             authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
             databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
             projectId: "YOUR_PROJECT_ID",
@@ -1131,14 +1132,17 @@
             appId: "YOUR_APP_ID"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+        const database = getDatabase(app);
 
-        // Real-time synchronization para sa Users, Messages, Channels, at Files
+        // I-expose sa window para magamit ng buong app nang walang error
+        window.FB_DB = database;
+        window.FB_ref = ref;
+        window.FB_set = set;
+        window.FB_onValue = onValue;
+
         window.initFirebaseSync = function() {
-            // Sync Users
-            onValue(ref(db, 'rift_users'), (snapshot) => {
+            window.FB_onValue(window.FB_ref(window.FB_DB, 'rift_users'), (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
                     dbUsers = Object.values(data);
@@ -1147,8 +1151,46 @@
                 }
             });
 
-            // Sync Messages ng kasalukuyang Channel
-            onValue(ref(db, `rift_messages/${currentChannel}`), (snapshot) => {
+            window.FB_onValue(window.FB_ref(window.FB_DB, `rift_messages/${currentChannel}`), (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    dbMessages[currentChannel] = Object.values(data);
+                    loadChannelMessages(currentChannel);
+                } else {
+    <!-- Firebase App & Realtime Database CDN SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, set, onValue, push, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "ILAGAY_ANG_TOTOONG_API_KEY_DITO",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        window.FB_DB = database;
+        window.FB_ref = ref;
+        window.FB_set = set;
+        window.FB_onValue = onValue;
+
+        window.initFirebaseSync = function() {
+            window.FB_onValue(window.FB_ref(window.FB_DB, 'rift_users'), (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    dbUsers = Object.values(data);
+                    renderMemberList();
+                    updateAdminNotificationBadge();
+                }
+            });
+
+            window.FB_onValue(window.FB_ref(window.FB_DB, `rift_messages/${currentChannel}`), (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
                     dbMessages[currentChannel] = Object.values(data);
@@ -1159,32 +1201,21 @@
                 }
             });
 
-            // Sync Channels
-            onValue(ref(db, 'rift_channels'), (snapshot) => {
+            window.FB_onValue(window.FB_ref(window.FB_DB, 'rift_channels'), (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
                     dbChannels = Object.values(data);
                     renderChannelsList();
                 }
             });
-
-            // Sync Files / Manager
-            onValue(ref(db, 'rift_files'), (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    dbFiles = Object.values(data);
-                    renderAdminFilesList();
-                }
-            });
         };
 
         window.saveDBFirebase = function() {
-            set(ref(db, 'rift_users_db'), dbUsers);
-            set(ref(db, 'rift_channels_db'), dbChannels);
-            set(ref(db, 'rift_files_db'), dbFiles);
+            window.FB_set(window.FB_ref(window.FB_DB, 'rift_users_db'), dbUsers);
+            window.FB_set(window.FB_ref(window.FB_DB, 'rift_channels_db'), dbChannels);
             if(currentUser) {
                 currentUser.lastActive = Date.now();
-                set(ref(db, `rift_users_active/${currentUser.username.replace(/[^a-zA-Z0-9]/g, '_')}`), currentUser);
+                window.FB_set(window.FB_ref(window.FB_DB, `rift_users_active/${currentUser.username.replace(/[^a-zA-Z0-9]/g, '_')}`), currentUser);
             }
         };
 
