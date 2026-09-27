@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rift Raiders Portal</title>
+    <title id="main-site-title">Rift Raiders Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-950 text-slate-100 h-screen flex overflow-hidden">
@@ -75,7 +75,7 @@
     <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between">
         <div>
             <div class="p-4 border-b border-slate-800 flex justify-between items-center">
-                <h1 class="font-bold text-red-500 text-lg tracking-wider">Rift Raiders</h1>
+                <h1 id="sidebar-brand-title" class="font-bold text-red-500 text-lg tracking-wider">Rift Raiders</h1>
                 <button id="add-channel-btn" onclick="addChannel()" class="hidden text-xs bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-2 py-1 rounded transition">+ Add</button>
             </div>
             <div class="p-3">
@@ -110,7 +110,7 @@
                 <span id="current-channel-title" class="font-semibold text-sm text-white">general</span>
             </div>
             <div>
-                <button id="nav-admin-portal-btn" onclick="promptAdminPassword()" class="hidden bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-1.5 rounded font-bold transition">Admin Portal</button>
+                <button id="nav-admin-portal-btn" onclick="openAdminPasswordModal()" class="hidden bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-1.5 rounded font-bold transition">Admin Portal</button>
             </div>
         </header>
 
@@ -153,10 +153,7 @@
     <!-- DISCORD-STYLE PROFILE MODAL -->
     <div id="profile-modal" class="hidden fixed inset-0 bg-slate-950/80 z-50 flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 rounded-xl max-w-sm w-full overflow-hidden shadow-2xl relative">
-            <!-- Header Banner -->
             <div class="h-20 bg-gradient-to-r from-red-900 to-slate-900"></div>
-            
-            <!-- Avatar & Details Container -->
             <div class="px-6 pb-6 relative">
                 <div class="-mt-10 mb-3 flex justify-between items-end">
                     <img id="profile-avatar" src="https://via.placeholder.com/150" class="w-20 h-20 rounded-full border-4 border-slate-900 object-cover bg-slate-800">
@@ -166,12 +163,9 @@
                 <h2 id="profile-username" class="text-lg font-bold text-white">Username</h2>
                 <p id="profile-game" class="text-xs text-red-400 font-medium mb-4">Game: League of Legends</p>
 
-                <!-- Social Links Box -->
                 <div class="bg-slate-950/60 border border-slate-800/80 rounded-lg p-3 space-y-2 text-xs">
                     <p class="font-semibold text-slate-400 uppercase tracking-widest text-[9px] mb-1">Connected Socials</p>
-                    <div id="profile-socials-list" class="space-y-1 text-slate-300">
-                        <!-- Dynamic Social Links -->
-                    </div>
+                    <div id="profile-socials-list" class="space-y-1 text-slate-300"></div>
                 </div>
 
                 <button onclick="closeModal('profile-modal')" class="mt-5 w-full bg-slate-800 hover:bg-slate-700 text-xs py-2 rounded text-white font-medium transition">Close Profile</button>
@@ -216,7 +210,26 @@
         </div>
     </div>
 
-    <!-- ADMIN PORTAL MODAL (Website-style Interface) -->
+    <!-- ADMIN PASSWORD MODAL (Box Style) -->
+    <div id="admin-password-modal" class="hidden fixed inset-0 bg-slate-950/85 z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-red-600/50 p-6 rounded-xl max-w-sm w-full shadow-2xl relative">
+            <h3 class="text-lg font-bold text-red-500 mb-1">Admin Authentication</h3>
+            <p class="text-xs text-slate-400 mb-4">Enter admin password to access the portal.</p>
+            
+            <form onsubmit="handleAdminAuth(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Admin Password</label>
+                    <input type="password" id="admin-portal-pass-input" required placeholder="Enter rr2024" class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500">
+                </div>
+                <div class="flex space-x-2">
+                    <button type="submit" class="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 rounded text-xs font-bold">Verify & Enter</button>
+                    <button type="button" onclick="closeModal('admin-password-modal')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded text-xs font-medium">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADMIN PORTAL DASHBOARD MODAL -->
     <div id="admin-portal-modal" class="hidden fixed inset-0 bg-slate-950/85 z-50 flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-red-600/50 p-6 rounded-xl max-w-lg w-full shadow-2xl relative">
             <h2 class="text-xl font-bold text-red-500 mb-1">Admin Portal Dashboard</h2>
@@ -226,25 +239,28 @@
                 <!-- Section 1: Pending Approvals -->
                 <div class="bg-slate-950 p-3 rounded border border-slate-800">
                     <h3 class="text-xs font-bold text-white mb-2 uppercase tracking-wide">Pending Registrations</h3>
-                    <div id="admin-pending-list" class="space-y-2 text-xs text-slate-300">
-                        <!-- Loaded dynamically -->
-                    </div>
+                    <div id="admin-pending-list" class="space-y-2 text-xs text-slate-300"></div>
                 </div>
 
                 <!-- Section 2: Manage Users / Ban -->
                 <div class="bg-slate-950 p-3 rounded border border-slate-800">
                     <h3 class="text-xs font-bold text-white mb-2 uppercase tracking-wide">Registered Members</h3>
-                    <div id="admin-members-list" class="space-y-2 text-xs text-slate-300 max-h-36 overflow-y-auto">
-                        <!-- Loaded dynamically -->
-                    </div>
+                    <div id="admin-members-list" class="space-y-2 text-xs text-slate-300 max-h-36 overflow-y-auto"></div>
                 </div>
 
-                <!-- Section 3: Branding -->
+                <!-- Section 3: Edit Website Branding & Logo/Title -->
                 <div class="bg-slate-950 p-3 rounded border border-slate-800">
-                    <h3 class="text-xs font-bold text-white mb-2 uppercase tracking-wide">Website Branding</h3>
-                    <div class="flex space-x-2">
-                        <input type="text" id="admin-site-title-input" placeholder="New Website Title..." class="flex-1 bg-slate-800 border border-slate-700 rounded px-3 py-1.5 text-xs text-white">
-                        <button onclick="updateSiteTitle()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs font-bold">Update Title</button>
+                    <h3 class="text-xs font-bold text-white mb-2 uppercase tracking-wide">Edit Website Branding & Logo</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-[10px] text-slate-400 mb-1">Website Title</label>
+                            <input type="text" id="admin-site-title-input" placeholder="New Website Title..." class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-1.5 text-xs text-white">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-slate-400 mb-1">Sidebar Brand/Logo Text</label>
+                            <input type="text" id="admin-brand-text-input" placeholder="Rift Raiders..." class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-1.5 text-xs text-white">
+                        </div>
+                        <button onclick="updateWebsiteBranding()" class="w-full bg-red-600 hover:bg-red-700 text-white py-1.5 rounded text-xs font-bold">Save Website Branding</button>
                     </div>
                 </div>
             </div>
@@ -595,25 +611,29 @@
             initAppState();
         }
 
-        // --- ADMIN PORTAL MODAL CONTROLS ---
-        function promptAdminPassword() {
+        // --- ADMIN PASSWORD & PORTAL MODALS ---
+        function openAdminPasswordModal() {
             if (!currentUser || !currentUser.isAdmin) {
                 alert("Access denied. Admin only.");
                 return;
             }
+            document.getElementById('admin-portal-pass-input').value = '';
+            openModal('admin-password-modal');
+        }
 
-            let adminPassPrompt = prompt("Enter Admin Portal Password:");
-            if (adminPassPrompt !== "rr2024") {
+        function handleAdminAuth(e) {
+            e.preventDefault();
+            let passInput = document.getElementById('admin-portal-pass-input').value;
+            if (passInput !== "rr2024") {
                 alert("Incorrect admin password!");
                 return;
             }
-
+            closeModal('admin-password-modal');
             renderAdminPortalData();
             openModal('admin-portal-modal');
         }
 
         function renderAdminPortalData() {
-            // Render Pending Users
             const pendingListEl = document.getElementById('admin-pending-list');
             let pendingUsers = dbUsers.filter(u => !u.isApproved && !u.isAdmin);
             
@@ -628,7 +648,6 @@
                 `).join('');
             }
 
-            // Render Members List for Banning
             const membersListEl = document.getElementById('admin-members-list');
             membersListEl.innerHTML = dbUsers.map(u => `
                 <div class="flex items-center justify-between bg-slate-900 p-2 rounded border border-slate-800">
@@ -636,6 +655,10 @@
                     ${u.username !== 'Takeku' ? `<button onclick="banUser('${u.username}')" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-2 py-1 rounded text-[10px] font-bold">Remove</button>` : ''}
                 </div>
             `).join('');
+
+            // Load current branding values
+            document.getElementById('admin-site-title-input').value = localStorage.getItem('rift_site_title') || 'Rift Raiders Portal';
+            document.getElementById('admin-brand-text-input').value = localStorage.getItem('rift_brand_text') || 'Rift Raiders';
         }
 
         function approveUser(username) {
@@ -659,13 +682,22 @@
             }
         }
 
-        function updateSiteTitle() {
+        function updateWebsiteBranding() {
             let newTitle = document.getElementById('admin-site-title-input').value.trim();
+            let newBrand = document.getElementById('admin-brand-text-input').value.trim();
+
             if (newTitle) {
                 document.title = newTitle;
                 localStorage.setItem('rift_site_title', newTitle);
-                alert("Website title updated successfully!");
+                document.getElementById('main-site-title').innerText = newTitle;
             }
+
+            if (newBrand) {
+                localStorage.setItem('rift_brand_text', newBrand);
+                document.getElementById('sidebar-brand-title').innerText = newBrand;
+            }
+
+            alert("Website branding and logo updated successfully!");
         }
 
         // --- MESSAGING & MEDIA ---
@@ -756,11 +788,22 @@
             renderMemberList();
         }, 5000);
 
-        // Auto-init kung may active session
+        // Auto-init kung may active session at saved branding
         if (currentUser) {
             initAppState();
-            let savedTitle = localStorage.getItem('rift_site_title');
-            if (savedTitle) document.title = savedTitle;
+        }
+        
+        let savedTitle = localStorage.getItem('rift_site_title');
+        if (savedTitle) {
+            document.title = savedTitle;
+            const mainTitleEl = document.getElementById('main-site-title');
+            if(mainTitleEl) mainTitleEl.innerText = savedTitle;
+        }
+
+        let savedBrand = localStorage.getItem('rift_brand_text');
+        if (savedBrand) {
+            const sidebarBrandEl = document.getElementById('sidebar-brand-title');
+            if(sidebarBrandEl) sidebarBrandEl.innerText = savedBrand;
         }
     </script>
 </body>
