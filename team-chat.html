@@ -34,7 +34,7 @@
                 </p>
             </div>
 
-            <!-- Register Form (Nakatago muna) -->
+            <!-- Register Form -->
             <div id="register-modal" class="hidden">
                 <h2 class="text-2xl font-bold text-red-500 mb-2">Create Account</h2>
                 <p class="text-xs text-slate-400 mb-6">Join the Rift Raiders portal.</p>
@@ -80,9 +80,7 @@
             </div>
             <div class="p-3">
                 <p class="text-[10px] uppercase font-semibold text-slate-500 px-3 mb-2">Channels</p>
-                <div id="channel-list" class="space-y-1">
-                    <!-- Dynamic Channels -->
-                </div>
+                <div id="channel-list" class="space-y-1"></div>
             </div>
         </div>
 
@@ -115,9 +113,7 @@
         </header>
 
         <!-- Messages Area -->
-        <div id="chat-messages" class="flex-1 p-6 overflow-y-auto space-y-4">
-            <!-- Dynamic Messages -->
-        </div>
+        <div id="chat-messages" class="flex-1 p-6 overflow-y-auto space-y-4"></div>
 
         <!-- Media Preview Container -->
         <div id="media-preview-container" class="hidden px-6 py-2 bg-slate-900 border-t border-slate-800 flex items-center justify-between">
@@ -145,9 +141,7 @@
     <!-- Right Sidebar: Member List -->
     <aside class="w-60 bg-slate-900 border-l border-slate-800 p-4 flex flex-col">
         <h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Members</h3>
-        <div id="member-list" class="space-y-1 overflow-y-auto flex-1">
-            <!-- Dynamic Member List -->
-        </div>
+        <div id="member-list" class="space-y-1 overflow-y-auto flex-1"></div>
     </aside>
 
     <!-- DISCORD-STYLE PROFILE MODAL -->
@@ -210,7 +204,7 @@
         </div>
     </div>
 
-    <!-- ADMIN PASSWORD MODAL (Box Style) -->
+    <!-- ADMIN PASSWORD MODAL (Box Style - Nakatago ang Password Clue) -->
     <div id="admin-password-modal" class="hidden fixed inset-0 bg-slate-950/85 z-50 flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-red-600/50 p-6 rounded-xl max-w-sm w-full shadow-2xl relative">
             <h3 class="text-lg font-bold text-red-500 mb-1">Admin Authentication</h3>
@@ -219,7 +213,8 @@
             <form onsubmit="handleAdminAuth(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs font-medium text-slate-300 mb-1">Admin Password</label>
-                    <input type="password" id="admin-portal-pass-input" required placeholder="Enter rr2024" class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500">
+                    <!-- TANGGAL NA ANG 'rr2024' SA PLACEHOLDER PARA HINDI HALATA -->
+                    <input type="password" id="admin-portal-pass-input" required placeholder="Enter password..." class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500">
                 </div>
                 <div class="flex space-x-2">
                     <button type="submit" class="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 rounded text-xs font-bold">Verify & Enter</button>
@@ -271,7 +266,6 @@
 
     <!-- CONTROLLER SCRIPT -->
     <script>
-        // --- DATABASE & STATE SETUP ---
         let dbUsers = JSON.parse(localStorage.getItem('riftRaidersUsers')) || [];
         let dbMessages = JSON.parse(localStorage.getItem('rift_db_messages')) || {};
         let dbChannels = JSON.parse(localStorage.getItem('rift_db_channels')) || ['general', 'wild-rift', 'league-of-legends'];
@@ -280,7 +274,6 @@
         let currentMediaData = null;
         let currentMediaName = null;
 
-        // Awtomatikong pag-setup ng Takeku Admin account
         if (!dbUsers.find(u => u.username === 'Takeku')) {
             dbUsers.push({
                 username: 'Takeku',
@@ -306,7 +299,6 @@
             }
         }
 
-        // --- MODAL CONTROLS ---
         function openModal(modalId) {
             const modal = document.getElementById(modalId);
             if (modal) modal.classList.remove('hidden');
@@ -322,7 +314,6 @@
             openModal(openId);
         }
 
-        // --- AUTHENTICATION & REGISTRATION ---
         function handleLogin(e) {
             e.preventDefault();
             const usernameInput = document.getElementById('login-username').value.trim();
@@ -398,7 +389,6 @@
             document.getElementById('login-password').value = '';
         }
 
-        // --- APP STATE & UI ---
         function initAppState() {
             if (!currentUser) return;
             const lockOverlay = document.getElementById('auth-lock-overlay');
@@ -427,7 +417,6 @@
             renderMemberList();
         }
 
-        // --- CHANNELS & MESSAGES ---
         function renderChannels() {
             const channelListEl = document.getElementById('channel-list');
             if (!channelListEl) return;
@@ -504,7 +493,6 @@
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        // --- MEMBER LIST & MENTIONS ---
         function renderMemberList() {
             const memberListEl = document.getElementById('member-list');
             if (!memberListEl) return;
@@ -557,7 +545,6 @@
             input.focus();
         }
 
-        // --- DISCORD-STYLE PROFILE VIEW MODAL ---
         function viewUserProfile(username) {
             let user = dbUsers.find(u => u.username === username);
             if (!user) return;
@@ -611,7 +598,6 @@
             initAppState();
         }
 
-        // --- ADMIN PASSWORD & PORTAL MODALS ---
         function openAdminPasswordModal() {
             if (!currentUser || !currentUser.isAdmin) {
                 alert("Access denied. Admin only.");
@@ -656,7 +642,6 @@
                 </div>
             `).join('');
 
-            // Load current branding values
             document.getElementById('admin-site-title-input').value = localStorage.getItem('rift_site_title') || 'Rift Raiders Portal';
             document.getElementById('admin-brand-text-input').value = localStorage.getItem('rift_brand_text') || 'Rift Raiders';
         }
@@ -700,7 +685,6 @@
             alert("Website branding and logo updated successfully!");
         }
 
-        // --- MESSAGING & MEDIA ---
         function handleSendMessage(event) {
             event.preventDefault();
             const input = document.getElementById('message-input');
@@ -777,7 +761,6 @@
             currentMediaName = null;
         }
 
-        // Real-time loop
         setInterval(() => {
             if(currentUser) {
                 currentUser.lastActive = Date.now();
@@ -788,7 +771,6 @@
             renderMemberList();
         }, 5000);
 
-        // Auto-init kung may active session at saved branding
         if (currentUser) {
             initAppState();
         }
