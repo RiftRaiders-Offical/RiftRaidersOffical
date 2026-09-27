@@ -9,7 +9,6 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
         (function() {
-            // Palitan ang 'YOUR_PUBLIC_KEY' ng iyong totoong EmailJS Public Key
             emailjs.init("YOUR_PUBLIC_KEY");
         })();
     </script>
@@ -101,7 +100,7 @@
         <!-- User Profile Footer -->
         <div class="p-3 bg-[#0b0c10] border-t border-red-600/20 flex items-center justify-between">
             <div class="cursor-pointer flex items-center space-x-2" onclick="openEditProfile()">
-                <img id="sb-user-avatar" src="https://via.placeholder.com/150" class="w-8 h-8 rounded-full object-cover bg-slate-800 border border-red-600/50">
+                <img id="sb-user-avatar" src="https://api.dicebear.com/7.x/identicon/svg?seed=user" class="w-8 h-8 rounded-full object-cover bg-slate-800 border border-red-600/50">
                 <div>
                     <p id="sb-user-name" class="text-xs font-bold text-white">Username</p>
                     <p id="sb-user-role" class="text-[10px] text-red-500 font-medium">Role</p>
@@ -158,7 +157,7 @@
             <div class="h-20 bg-gradient-to-r from-red-700 to-[#12141c]"></div>
             <div class="px-6 pb-6 relative">
                 <div class="-mt-10 mb-3 flex justify-between items-end">
-                    <img id="profile-avatar" src="https://via.placeholder.com/150" class="w-20 h-20 rounded-full border-4 border-[#12141c] object-cover bg-slate-800">
+                    <img id="profile-avatar" src="https://api.dicebear.com/7.x/identicon/svg?seed=user" class="w-20 h-20 rounded-full border-4 border-[#12141c] object-cover bg-slate-800">
                     <span id="profile-role-badge" class="bg-red-600 text-white text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wider shadow">Member</span>
                 </div>
                 <h2 id="profile-username" class="text-lg font-bold text-white">Username</h2>
@@ -288,7 +287,7 @@
                 role: 'Admin / Owner',
                 team: 'Management',
                 game: 'League of Legends',
-                pfp: 'https://via.placeholder.com/150',
+                pfp: 'https://api.dicebear.com/7.x/identicon/svg?seed=Takeku',
                 socials: { tiktok: '', discord: '', fb: '', x: '', spotify: '' }
             });
             saveDB();
@@ -374,7 +373,7 @@
                 isApproved: isAdminAcc, 
                 role: isAdminAcc ? 'Admin / Owner' : 'Pending Approval',
                 team: 'Unassigned',
-                pfp: 'https://via.placeholder.com/150',
+                pfp: `https://api.dicebear.com/7.x/identicon/svg?seed=${newUsername}`,
                 socials: { tiktok: '', discord: '', fb: '', x: '', spotify: '' }
             };
 
@@ -477,7 +476,7 @@
                     </span>` : '';
 
                 let senderUser = dbUsers.find(u => u.username === msg.username);
-                let senderPfp = senderUser?.pfp || 'https://via.placeholder.com/150';
+                let senderPfp = senderUser?.pfp || `https://api.dicebear.com/7.x/identicon/svg?seed=${msg.username}`;
                 let senderTeam = senderUser?.team && senderUser.team !== 'Unassigned' ? `<span class="bg-red-950 text-red-400 text-[10px] px-1.5 py-0.5 rounded ml-1 border border-red-600/30">${senderUser.team}</span>` : '';
                 let badgeHtml = msg.isAdmin ? `<span class="bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded ml-1 font-bold">Admin</span>` : '';
                 let gameTag = msg.game ? `<span class="bg-[#151821] text-slate-300 text-[10px] px-1.5 py-0.5 rounded ml-1 border border-slate-700/50">${msg.game}</span>` : '';
@@ -513,7 +512,7 @@
                 memberListEl.innerHTML += `
                     <div class="flex items-center justify-between py-1 px-1.5 text-xs text-slate-300 cursor-pointer hover:bg-[#151821] rounded" onclick="viewUserProfile('${user.username}')">
                         <div class="flex items-center space-x-2">
-                            <img src="${user.pfp || 'https://via.placeholder.com/150'}" class="w-7 h-7 rounded-full object-cover border border-red-600/30">
+                            <img src="${user.pfp || 'https://api.dicebear.com/7.x/identicon/svg?seed=' + user.username}" class="w-7 h-7 rounded-full object-cover border border-red-600/30">
                             <div>
                                 <div class="font-bold text-white flex items-center space-x-1">
                                     <span>${user.username}</span>
@@ -566,7 +565,7 @@
             let user = dbUsers.find(u => u.username === username);
             if (!user) return;
 
-            document.getElementById('profile-avatar').src = user.pfp || 'https://via.placeholder.com/150';
+            document.getElementById('profile-avatar').src = user.pfp || `https://api.dicebear.com/7.x/identicon/svg?seed=${username}`;
             document.getElementById('profile-username').innerText = user.username;
             document.getElementById('profile-team').innerText = `Team / Role: ${user.team || 'Unassigned'}`;
             document.getElementById('profile-game').innerText = `Main Game: ${user.game || 'Not specified'}`;
@@ -664,7 +663,7 @@
             document.getElementById('admin-members-list').innerHTML = dbUsers.map(u => `
                 <div class="flex items-center justify-between bg-[#12141c] p-2.5 rounded border border-red-600/20 mb-2">
                     <div class="flex items-center space-x-3">
-                        <img src="${u.pfp || 'https://via.placeholder.com/150'}" class="w-8 h-8 rounded-full object-cover border border-red-600/40">
+                        <img src="${u.pfp || 'https://api.dicebear.com/7.x/identicon/svg?seed=' + u.username}" class="w-8 h-8 rounded-full object-cover border border-red-600/40">
                         <div>
                             <div class="font-bold text-white text-xs">
                                 ${u.username} ${u.isAdmin ? '<span class="text-red-500">(Admin)</span>' : ''}
