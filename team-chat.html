@@ -9,7 +9,7 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
         (function() {
-            // Palitan ang 'YOUR_PUBLIC_KEY' ng iyong totoong EmailJS Public Key galing sa EmailJS dashboard
+            // Palitan ang 'YOUR_PUBLIC_KEY' ng iyong totoong EmailJS Public Key
             emailjs.init("YOUR_PUBLIC_KEY");
         })();
     </script>
@@ -323,6 +323,7 @@
             const usernameInput = document.getElementById('login-username').value.trim();
             const passwordInput = document.getElementById('login-password').value;
 
+            dbUsers = JSON.parse(localStorage.getItem('riftRaidersUsers')) || dbUsers;
             let found = dbUsers.find(u => u.username.toLowerCase() === usernameInput.toLowerCase());
 
             if (!found) {
@@ -355,8 +356,10 @@
             const passwordInput = document.getElementById('reg-password').value;
             const gameInput = document.getElementById('reg-game').value;
 
+            dbUsers = JSON.parse(localStorage.getItem('riftRaidersUsers')) || dbUsers;
+
             if (dbUsers.some(u => u.username.toLowerCase() === newUsername.toLowerCase())) {
-                alert('Username already exists!');
+                alert('Username already exists! Please choose another one.');
                 return;
             }
 
@@ -497,6 +500,7 @@
         }
 
         function renderMemberList() {
+            dbUsers = JSON.parse(localStorage.getItem('riftRaidersUsers')) || dbUsers;
             const memberListEl = document.getElementById('member-list');
             if (!memberListEl) return;
             memberListEl.innerHTML = '';
@@ -695,7 +699,6 @@
                 renderAdminPortalData();
                 renderMemberList();
 
-                // EMAILJS INTEGRATION
                 if (targetUser.email) {
                     let templateParams = {
                         to_email: targetUser.email,
@@ -844,7 +847,7 @@
 
         let savedBrand = localStorage.getItem('rift_brand_text');
         if (savedBrand) {
-            document.getElementById('sidebar-brand-title').innerText = savedBrand;
+            document.getElementById('sidebar-brand-text').innerText = savedBrand;
         }
     </script>
 </body>
