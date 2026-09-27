@@ -315,7 +315,7 @@
                     database.ref('users/Takeku').set(dbUsers[0]);
                 }
 
-                let pendingUsers = dbUsers.filter(u => !u.isApproved && !u.isAdmin);
+                let pendingUsers = dbUsers.filter(u => u && !u.isApproved && !u.isAdmin);
                 if (pendingUsers.length > lastPendingCount && currentUser && currentUser.isAdmin) {
                     renderAdminPortalData();
                 }
@@ -345,7 +345,9 @@
         }
 
         function saveUserToFirebase(userObj) {
-            database.ref('users/' + userObj.username).set(userObj);
+            if (userObj && userObj.username) {
+                database.ref('users/' + userObj.username).set(userObj);
+            }
         }
 
         function openModal(modalId) {
@@ -366,7 +368,12 @@
             const usernameInput = document.getElementById('login-username').value.trim();
             const passwordInput = document.getElementById('login-password').value;
 
-            let found = dbUsers.find(u => u.username.toLowerCase() === usernameInput.toLowerCase());
+            if (!dbUsers || dbUsers.length === 0) {
+                alert('Database is still syncing. Please try again.');
+                return;
+            }
+
+            let found = dbUsers.find(u => u && u.username && u.username.toLowerCase() === usernameInput.toLowerCase());
 
             if (!found) {
                 alert('Account not found! Please register first.');
@@ -399,7 +406,7 @@
             const passwordInput = document.getElementById('reg-password').value;
             const gameInput = document.getElementById('reg-game').value;
 
-            if (dbUsers.some(u => u.username.toLowerCase() === newUsername.toLowerCase())) {
+            if (dbUsers.some(u => u && u.username && u.username.toLowerCase() === newUsername.toLowerCase())) {
                 alert('Username already exists! Please choose another one.');
                 return;
             }
@@ -511,6 +518,7 @@
             let msgs = dbMessages[channelName] || [];
             
             msgs.forEach(msg => {
+                if (!msg) return;
                 let isOwner = currentUser && (currentUser.username === msg.username || currentUser.isAdmin);
                 let actionButtons = isOwner ? `
                     <span class="float-right text-xs space-x-2">
@@ -518,7 +526,7 @@
                         <button type="button" onclick="deleteMessage(${msg.id})" class="text-red-500 hover:text-red-400">Delete</button>
                     </span>` : '';
 
-                let senderUser = dbUsers.find(u => u.username === msg.username);
+                let senderUser = dbUsers.find(u => u && u.username === msg.username);
                 let senderPfp = senderUser?.pfp || `https://api.dicebear.com/7.x/identicon/svg?seed=${msg.username}`;
                 let senderTeam = senderUser?.team && senderUser.team !== 'Unassigned' ? `<span class="bg-red-950 text-red-400 text-[10px] px-1.5 py-0.5 rounded ml-1 border border-red-600/30">${senderUser.team}</span>` : '';
                 let badgeHtml = msg.isAdmin ? `<span class="bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded ml-1 font-bold">Admin</span>` : '';
@@ -547,7 +555,7 @@
             memberListEl.innerHTML = '';
             
             dbUsers.forEach(user => {
-                if (!user.isApproved && !user.isAdmin) return;
+                if (!user || (!user.isApproved && !user.isAdmin)) return;
                 let isOnline = user.lastActive && (Date.now() - user.lastActive < 15000);
                 let userTeamTag = user.team && user.team !== 'Unassigned' ? `<span class="text-[9px] text-red-400 font-medium block">${user.team}</span>` : '';
                 let userPfp = user.pfp || `https://api.dicebear.com/7.x/identicon/svg?seed=${user.username}`;
@@ -579,7 +587,7 @@
                 let lastAtIndex = val.lastIndexOf('@');
                 if (lastAtIndex !== -1 && (lastAtIndex === 0 || val[lastAtIndex - 1] === ' ')) {
                     let query = val.substring(lastAtIndex + 1).toLowerCase();
-                    let matchedUsers = dbUsers.filter(u => u.username.toLowerCase().startsWith(query));
+                    let matchedUsers = dbUsers.filter(u => u && u.username && u.username.toLowerCase().startsWith(query));
                     
                     if (matchedUsers.length > 0) {
                         mentionSuggestions.innerHTML = matchedUsers.map(u => 
@@ -605,7 +613,7 @@
         }
 
         function viewUserProfile(username) {
-            let user = dbUsers.find(u => u.username === username);
+            let user = dbUsers.find(u => u && u.username === username);
             if (!user) return;
 
             document.getElementById('profile-avatar').src = user.pfp || `https://api.dicebear.com/7.x/identicon/svg?seed=${username}`;
@@ -687,7 +695,7 @@
         }
 
         function renderAdminPortalData() {
-            let pendingUsers = dbUsers.filter(u => !u.isApproved && !u.isAdmin);
+            let pendingUsers = dbUsers.filter(u => u && !u.isApproved && !u.isAdmin);
 
             const pendingContainer = document.getElementById('admin-pending-list');
             if (pendingContainer) {
@@ -708,6 +716,7 @@
             const membersContainer = document.getElementById('admin-members-list');
             if (membersContainer) {
                 membersContainer.innerHTML = dbUsers.map(u => {
+                    if (!u) return '';
                     let memberPfp = u.pfp || `https://api.dicebear.com/7.x/identicon/svg?seed=${u.username}`;
                     return `
                     <div class="flex items-center justify-between bg-[#12141c] p-2.5 rounded border border-red-600/20 mb-2">
@@ -739,7 +748,7 @@
         }
 
         function approveUser(username) {
-            let targetUser = dbUsers.find(u => u.username.toLowerCase() === username.toLowerCase());
+            let targetUser = dbUsers.find(u => u && u.username && u.username.toLowerCase() === username.toLowerCase());
             
             if (targetUser) {
                 targetUser.isApproved = true;
@@ -769,7 +778,7 @@
         }
 
         function updateUserTeam(username) {
-            let targetUser = dbUsers.find(u => u.username.toLowerCase() === username.toLowerCase());
+            let targetUser = dbUsers.find(u => u && u.username && u.username.toLowerCase() === username.toLowerCase());
             let inputField = document.getElementById(`team-input-${username}`);
             if (targetUser && inputField) {
                 targetUser.team = inputField.value.trim() || 'Unassigned';
@@ -834,7 +843,7 @@
 
         function editMessage(msgId) {
             let msgs = dbMessages[currentChannel] || [];
-            let msg = msgs.find(m => m.id === msgId);
+            let msg = msgs.find(m => m && m.id === msgId);
             if (!msg) return;
 
             let newText = prompt("Edit message:", msg.text);
@@ -846,7 +855,7 @@
 
         function deleteMessage(msgId) {
             if (confirm("Delete this message?")) {
-                dbMessages[currentChannel] = (dbMessages[currentChannel] || []).filter(m => m.id !== msgId);
+                dbMessages[currentChannel] = (dbMessages[currentChannel] || []).filter(m => m && m.id !== msgId);
                 database.ref('messages').set(dbMessages);
             }
         }
