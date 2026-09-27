@@ -216,24 +216,64 @@
         </div>
     </div>
 
-    <!-- ADMIN PASSWORD MODAL -->
-    <div id="admin-password-modal" class="hidden fixed inset-0 bg-[#0b0c10]/85 z-50 flex items-center justify-center p-4">
-        <div class="bg-[#12141c] border border-red-600/50 p-6 rounded-xl max-w-sm w-full shadow-2xl relative">
-            <h3 class="text-lg font-bold text-red-600 mb-1">Admin Authentication</h3>
-            <p class="text-xs text-slate-400 mb-4">Enter admin password to access the portal.</p>
-            <form onsubmit="handleAdminAuth(event)" class="space-y-4">
+    <!-- ADMIN PORTAL MODAL -->
+    <div id="admin-portal-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+        <div class="bg-[#0f1117] border border-red-600/40 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 shadow-2xl">
+            <div class="flex justify-between items-center pb-4 border-b border-slate-800 mb-4">
+                <h2 class="text-xl font-bold text-red-500 flex items-center gap-2">🛠️ Admin Portal</h2>
+                <button type="button" onclick="closeModal('admin-portal-modal')" class="text-slate-400 hover:text-white text-lg font-bold">&times;</button>
+            </div>
+            
+            <div class="space-y-6">
+                <!-- Pending Approvals Section -->
                 <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Admin Password</label>
-                    <input type="password" id="admin-portal-pass-input" required class="w-full bg-[#0b0c10] border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-red-600">
+                    <h3 class="text-sm font-bold text-slate-300 mb-2">Pending User Approvals</h3>
+                    <div id="admin-pending-list" class="space-y-2">
+                        <!-- Dito mapupunta ang mga pending users -->
+                    </div>
                 </div>
-                <div class="flex space-x-2">
-                    <button type="submit" class="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 rounded text-xs font-bold">Verify</button>
-                    <button type="button" onclick="closeModal('admin-password-modal')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-2 rounded text-xs font-medium">Cancel</button>
+
+                <!-- Members Management Section -->
+                <div>
+                    <h3 class="text-sm font-bold text-slate-300 mb-2">Manage All Members & Roles</h3>
+                    <div id="admin-members-list" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                        <!-- Dito mapupunta ang listahan ng members -->
+                    </div>
+                </div>
+
+                <!-- Website Branding Section -->
+                <div class="border-t border-slate-800 pt-4">
+                    <h3 class="text-sm font-bold text-slate-300 mb-2">Website Branding</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Site Title</label>
+                            <input type="text" id="admin-site-title-input" class="w-full bg-[#151821] border border-slate-700 rounded px-3 py-1.5 text-xs text-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Brand Text</label>
+                            <input type="text" id="admin-brand-text-input" class="w-full bg-[#151821] border border-slate-700 rounded px-3 py-1.5 text-xs text-white">
+                        </div>
+                    </div>
+                    <button type="button" onclick="updateWebsiteBranding()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-4 py-2 rounded">Save Branding</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+   <!-- ADMIN PASSWORD MODAL -->
+    <div id="admin-password-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+        <div class="bg-[#0f1117] border border-red-600/40 rounded-xl w-full max-w-sm p-6 shadow-2xl">
+            <h3 class="text-lg font-bold text-white mb-2">Admin Authentication</h3>
+            <p class="text-xs text-slate-400 mb-4">Please enter the admin password to access the portal.</p>
+            <form onsubmit="handleAdminAuth(event)">
+                <input type="password" id="admin-portal-pass-input" placeholder="Enter admin password" required class="w-full bg-[#151821] border border-slate-700 rounded px-3 py-2 text-sm text-white mb-4 focus:border-red-600 outline-none">
+                <div class="flex justify-end space-x-2">
+                    <button type="button" onclick="closeModal('admin-password-modal')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs px-3 py-2 rounded">Cancel</button>
+                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-4 py-2 rounded">Confirm</button>
                 </div>
             </form>
         </div>
     </div>
-
     <!-- ADMIN PORTAL DASHBOARD MODAL -->
     <div id="admin-portal-modal" class="hidden fixed inset-0 bg-[#0b0c10]/85 z-50 flex items-center justify-center p-4">
         <div class="bg-[#12141c] border border-red-600/50 p-6 rounded-xl max-w-2xl w-full shadow-2xl relative">
