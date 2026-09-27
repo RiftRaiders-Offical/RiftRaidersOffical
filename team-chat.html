@@ -407,7 +407,12 @@
             
             document.getElementById('sb-user-name').innerText = currentUser.username;
             document.getElementById('sb-user-role').innerText = currentUser.team && currentUser.team !== 'Unassigned' ? currentUser.team : (currentUser.role || "Member");
-            if (currentUser.pfp) document.getElementById('sb-user-avatar').src = currentUser.pfp;
+            
+            if (currentUser.pfp) {
+                document.getElementById('sb-user-avatar').src = currentUser.pfp;
+            } else {
+                document.getElementById('sb-user-avatar').src = `https://api.dicebear.com/7.x/identicon/svg?seed=${currentUser.username}`;
+            }
             
             if (currentUser.isAdmin) {
                 document.getElementById('nav-admin-portal-btn')?.classList.remove('hidden');
@@ -508,11 +513,12 @@
                 if (!user.isApproved && !user.isAdmin) return;
                 let isOnline = user.lastActive && (Date.now() - user.lastActive < 10000);
                 let userTeamTag = user.team && user.team !== 'Unassigned' ? `<span class="text-[9px] text-red-400 font-medium block">${user.team}</span>` : '';
+                let userPfp = user.pfp || `https://api.dicebear.com/7.x/identicon/svg?seed=${user.username}`;
                 
                 memberListEl.innerHTML += `
                     <div class="flex items-center justify-between py-1 px-1.5 text-xs text-slate-300 cursor-pointer hover:bg-[#151821] rounded" onclick="viewUserProfile('${user.username}')">
                         <div class="flex items-center space-x-2">
-                            <img src="${user.pfp || 'https://api.dicebear.com/7.x/identicon/svg?seed=' + user.username}" class="w-7 h-7 rounded-full object-cover border border-red-600/30">
+                            <img src="${userPfp}" class="w-7 h-7 rounded-full object-cover border border-red-600/30">
                             <div>
                                 <div class="font-bold text-white flex items-center space-x-1">
                                     <span>${user.username}</span>
@@ -660,10 +666,12 @@
                     </div>
                 `).join('');
 
-            document.getElementById('admin-members-list').innerHTML = dbUsers.map(u => `
+            document.getElementById('admin-members-list').innerHTML = dbUsers.map(u => {
+                let memberPfp = u.pfp || `https://api.dicebear.com/7.x/identicon/svg?seed=${u.username}`;
+                return `
                 <div class="flex items-center justify-between bg-[#12141c] p-2.5 rounded border border-red-600/20 mb-2">
                     <div class="flex items-center space-x-3">
-                        <img src="${u.pfp || 'https://api.dicebear.com/7.x/identicon/svg?seed=' + u.username}" class="w-8 h-8 rounded-full object-cover border border-red-600/40">
+                        <img src="${memberPfp}" class="w-8 h-8 rounded-full object-cover border border-red-600/40">
                         <div>
                             <div class="font-bold text-white text-xs">
                                 ${u.username} ${u.isAdmin ? '<span class="text-red-500">(Admin)</span>' : ''}
@@ -680,7 +688,7 @@
                         ${u.username.toLowerCase() !== 'takeku' ? `<button onclick="banUser('${u.username}')" class="bg-slate-800 hover:bg-red-950 text-red-400 px-2 py-1.5 rounded text-[10px] font-bold mt-3">Remove</button>` : ''}
                     </div>
                 </div>
-            `).join('');
+            `;}).join('');
 
             document.getElementById('admin-site-title-input').value = localStorage.getItem('rift_site_title') || 'Rift Raiders Portal';
             document.getElementById('admin-brand-text-input').value = localStorage.getItem('rift_brand_text') || 'Rift Raiders';
