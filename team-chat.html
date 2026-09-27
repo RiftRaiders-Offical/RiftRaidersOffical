@@ -276,6 +276,7 @@
         let currentUser = JSON.parse(localStorage.getItem('rift_current_user')) || null;
         let currentMediaData = null;
         let currentMediaName = null;
+        let lastPendingCount = 0;
 
         if (!dbUsers.find(u => u.username.toLowerCase() === 'takeku')) {
             dbUsers.push({
@@ -653,42 +654,52 @@
         function renderAdminPortalData() {
             dbUsers = JSON.parse(localStorage.getItem('riftRaidersUsers')) || dbUsers;
             let pendingUsers = dbUsers.filter(u => !u.isApproved && !u.isAdmin);
+            lastPendingCount = pendingUsers.length;
 
-            document.getElementById('admin-pending-list').innerHTML = pendingUsers.length === 0 ? 
-                `<p class="text-slate-500 italic">No pending user registrations.</p>` :
-                pendingUsers.map(u => `
-                    <div class="flex items-center justify-between bg-[#12141c] p-2 rounded border border-red-600/20">
-                        <div>
-                            <b>${u.username}</b> (${u.game})
-                            <span class="block text-[10px] text-slate-400">${u.email || 'No email provided'}</span>
-                        </div>
-                        <button onclick="approveUser('${u.username}')" class="bg-red-600 hover:bg-red-700 text-white px-2.5 py-1 rounded text-[10px] font-bold">Approve</button>
-                    </div>
-                `).join('');
-
-            document.getElementById('admin-members-list').innerHTML = dbUsers.map(u => {
-                let memberPfp = u.pfp || `https://api.dicebear.com/7.x/identicon/svg?seed=${u.username}`;
-                return `
-                <div class="flex items-center justify-between bg-[#12141c] p-2.5 rounded border border-red-600/20 mb-2">
-                    <div class="flex items-center space-x-3">
-                        <img src="${memberPfp}" class="w-8 h-8 rounded-full object-cover border border-red-600/40">
-                        <div>
-                            <div class="font-bold text-white text-xs">
-                                ${u.username} ${u.isAdmin ? '<span class="text-red-500">(Admin)</span>' : ''}
+            const pendingContainer = document.getElementById('admin-pending-list');
+            if (pendingContainer) {
+                pendingContainer.innerHTML = pendingUsers.length === 0 ? 
+                    `<p class="text-slate-500 italic p-2">No pending user registrations.</p>` :
+                    pendingUsers.map(u => `
+                        <div class="flex items-center justify-between bg-[#12141c] p-2.5 rounded border border-red-600/30 mb-2">
+                            <div>
+                                <span class="font-bold text-white">${u.username}</span> 
+                                <span class="text-red-400 text-[11px]">(${u.game || 'League of Legends'})</span>
+                                <span class="block text-[10px] text-slate-400">Email: ${u.email || 'No email provided'}</span>
                             </div>
-                            <div class="text-[10px] text-slate-400">Game: ${u.game || 'N/A'} | Email: ${u.email || 'N/A'}</div>
+                            <button onclick="approveUser('${u.username}')" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs font-bold transition shadow">Approve</button>
+                        </div>
+                    `).join('');
+            }
+
+            const membersContainer = document.getElementById('admin-members-list');
+            if (membersContainer) {
+                membersContainer.innerHTML = dbUsers.map(u => {
+                    let memberPfp = u.pfp || `https://api.dicebear.com/7.x/identicon/svg?seed=${u.username}`;
+                    return `
+                    <div class="flex items-center justify-between bg-[#12141c] p-2.5 rounded border border-red-600/20 mb-2">
+                        <div class="flex items-center space-x-3">
+                            <img src="${memberPfp}" class="w-8 h-8 rounded-full object-cover border border-red-600/40">
+                            <div>
+                                <div class="font-bold text-white text-xs flex items-center space-x-1">
+                                    <span>${u.username}</span>
+                                    ${u.isAdmin ? '<span class="text-red-500 text-[9px]">(Admin)</span>' : ''}
+                                    ${!u.isApproved && !u.isAdmin ? '<span class="text-yellow-500 text-[9px]">(Pending)</span>' : ''}
+                                </div>
+                                <div class="text-[10px] text-slate-400">Game: ${u.game || 'N/A'}</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div>
+                                <label class="block text-[9px] text-slate-400 mb-0.5">Team / Role</label>
+                                <input type="text" id="team-input-${u.username}" value="${u.team || 'Unassigned'}" class="bg-[#0b0c10] border border-slate-700 rounded px-2 py-1 text-xs text-white w-28 focus:border-red-600">
+                            </div>
+                            <button onclick="updateUserTeam('${u.username}')" class="bg-red-600 hover:bg-red-700 text-white px-2.5 py-1.5 rounded text-[10px] font-bold mt-3">Save</button>
+                            ${u.username.toLowerCase() !== 'takeku' ? `<button onclick="banUser('${u.username}')" class="bg-slate-800 hover:bg-red-950 text-red-400 px-2 py-1.5 rounded text-[10px] font-bold mt-3">Remove</button>` : ''}
                         </div>
                     </div>
-                    <div class="flex items-center space-x-2">
-                        <div>
-                            <label class="block text-[9px] text-slate-400 mb-0.5">Team / Role</label>
-                            <input type="text" id="team-input-${u.username}" value="${u.team || 'Unassigned'}" class="bg-[#0b0c10] border border-slate-700 rounded px-2 py-1 text-xs text-white w-28 focus:border-red-600">
-                        </div>
-                        <button onclick="updateUserTeam('${u.username}')" class="bg-red-600 hover:bg-red-700 text-white px-2.5 py-1.5 rounded text-[10px] font-bold mt-3">Save</button>
-                        ${u.username.toLowerCase() !== 'takeku' ? `<button onclick="banUser('${u.username}')" class="bg-slate-800 hover:bg-red-950 text-red-400 px-2 py-1.5 rounded text-[10px] font-bold mt-3">Remove</button>` : ''}
-                    </div>
-                </div>
-            `;}).join('');
+                `;}).join('');
+            }
 
             document.getElementById('admin-site-title-input').value = localStorage.getItem('rift_site_title') || 'Rift Raiders Portal';
             document.getElementById('admin-brand-text-input').value = localStorage.getItem('rift_brand_text') || 'Rift Raiders';
@@ -835,6 +846,7 @@
             currentMediaName = null;
         }
 
+        // Real-time listener para sa bagong nag-register at auto-popup notification kung bukas ang portal
         setInterval(() => {
             if(currentUser) {
                 currentUser.lastActive = Date.now();
@@ -844,7 +856,17 @@
             dbChannels = JSON.parse(localStorage.getItem('rift_db_channels')) || dbChannels;
             dbMessages = JSON.parse(localStorage.getItem('rift_db_messages')) || dbMessages;
             renderMemberList();
-        }, 3000);
+
+            let currentPending = dbUsers.filter(u => !u.isApproved && !u.isAdmin);
+            let adminModal = document.getElementById('admin-portal-modal');
+            
+            if (adminModal && !adminModal.classList.contains('hidden')) {
+                if (currentPending.length > lastPendingCount) {
+                    renderAdminPortalData();
+                    alert("May bagong nag-register na user na naghihintay ng approval!");
+                }
+            }
+        }, 2000);
 
         if (currentUser) initAppState();
         
