@@ -479,18 +479,25 @@
                         </span>`;
                 }
 
+                // Hanapin ang profile picture ng user mula sa database para laging updated
+                let senderUser = dbUsers.find(u => u.username === msg.username);
+                let senderPfp = senderUser?.pfp || 'https://via.placeholder.com/150';
+
                 let badgeHtml = msg.isAdmin ? `<span class="bg-red-600 text-white text-[10px] px-1 rounded ml-1">Admin</span>` : '';
                 let gameTag = msg.game ? `<span class="bg-slate-800 text-slate-300 text-[10px] px-1 rounded ml-1">${msg.game}</span>` : '';
 
                 chatContainer.innerHTML += `
-                    <div class="mb-3 pl-2 border-l-2 border-red-500 relative">
-                        <div>
-                            <span class="text-red-400 font-bold text-xs cursor-pointer hover:underline" onclick="viewUserProfile('${msg.username}')">${msg.username}</span>
-                            ${badgeHtml} ${gameTag}
-                            <span class="text-slate-500 text-[10px] ml-2">${msg.time || ''}</span>
-                            ${actionButtons}
+                    <div class="mb-4 flex items-start space-x-3">
+                        <img src="${senderPfp}" class="w-8 h-8 rounded-full object-cover bg-slate-800 border border-slate-700 cursor-pointer mt-0.5" onclick="viewUserProfile('${msg.username}')">
+                        <div class="flex-1">
+                            <div>
+                                <span class="text-red-400 font-bold text-xs cursor-pointer hover:underline" onclick="viewUserProfile('${msg.username}')">${msg.username}</span>
+                                ${badgeHtml} ${gameTag}
+                                <span class="text-slate-500 text-[10px] ml-2">${msg.time || ''}</span>
+                                ${actionButtons}
+                            </div>
+                            <div class="text-slate-200 text-sm mt-0.5">${msg.text}</div>
                         </div>
-                        <div class="text-slate-200 text-sm mt-1">${msg.text}</div>
                     </div>`;
             });
             chatContainer.scrollTop = chatContainer.scrollHeight;
