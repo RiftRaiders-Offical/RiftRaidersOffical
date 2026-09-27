@@ -392,11 +392,10 @@
     </div>
 
     <!-- SCRIPT CONTROLLER -->
-    <script>
+<script>
     // --- DATABASE & ADMIN SETUP ---
     let dbUsers = JSON.parse(localStorage.getItem('riftRaidersUsers')) || [];
     
-    // Awtomatikong nilalagay ang Admin Account mo kung wala pa
     if (!dbUsers.find(u => u.username === 'Takeku')) {
         dbUsers.push({
             username: 'Takeku',
@@ -412,7 +411,7 @@
 
     let currentUser = null;
     let dbMessages = JSON.parse(localStorage.getItem('rift_db_messages_v8')) || {};
-    let dbChannels = JSON.parse(localStorage.getItem('rift_db_channels_v8')) || [{name: 'general-strategy'}];
+    let dbChannels = JSON.parse(localStorage.getItem('rift_db_channels_v8')) || [{name: 'general-strategy'}, {name: 'wild-rift'}, {name: 'league-of-legends'}];
     let currentChannel = 'general-strategy';
     let currentMediaData = null;
     let currentMediaName = null;
@@ -423,19 +422,15 @@
         localStorage.setItem('rift_db_channels_v8', JSON.stringify(dbChannels));
     }
 
-    // --- MODAL CONTROLS (Para lumabas ang Login/Register) ---
+    // --- MODAL CONTROLS ---
     function openModal(modalId) {
         const modal = document.getElementById(modalId);
-        if (modal) {
-            modal.classList.remove('hidden');
-        }
+        if (modal) modal.classList.remove('hidden');
     }
 
     function closeModal(modalId) {
         const modal = document.getElementById(modalId);
-        if (modal) {
-            modal.classList.add('hidden');
-        }
+        if (modal) modal.classList.add('hidden');
     }
 
     function switchModal(closeId, openId) {
@@ -527,14 +522,36 @@
             if (addChanBtn) addChanBtn.classList.remove('hidden');
         } else {
             if (adminBtn) adminBtn.classList.add('hidden');
-            if (addChanBtn) addChanBtn.classList.add('hidden');
+            if (addChanBtn) adminBtn.classList.add('hidden');
         }
         
         if (logoutCont) logoutCont.classList.remove('hidden');
+        renderChannels();
         loadChannelMessages(currentChannel);
+        renderMemberList();
     }
 
-    // --- CHAT FUNCTIONS ---
+    // --- CHANNELS & UI RENDERING ---
+    function renderChannels() {
+        const channelListEl = document.getElementById('channel-list');
+        if (!channelListEl) return;
+        channelListEl.innerHTML = '';
+        
+        dbChannels.forEach(channel => {
+            const isActive = channel.name === currentChannel;
+            channelListEl.innerHTML += `
+                <button onclick="switchChannel('${channel.name}')" class="w-full text-left px-3 py-2 rounded text-sm font-medium ${isActive ? 'bg-red-600 text-white' : 'text-slate-300 hover:bg-slate-800'}">
+                    # ${channel.name}
+                </button>`;
+        });
+    }
+
+    function switchChannel(channelName) {
+        currentChannel = channelName;
+        renderChannels();
+        loadChannelMessages(channelName);
+    }
+
     function loadChannelMessages(channelName) {
         currentChannel = channelName;
         const chatContainer = document.getElementById('chat-messages');
@@ -544,24 +561,88 @@
         let msgs = dbMessages[channelName] || [];
         
         msgs.forEach(msg => {
+            let isOwner = currentUser && (currentUser.username === msg.username || currentUser.isAdmin);
+            let actionButtons = '';
+            
+            if (isOwner) {
+                actionButtons = `
+                    <span class="float-right text-xs space-x-2">
+                        <button onclick="editMessage(${msg.id})" class="text-slate-400 hover:text-white">Edit</button>
+                        <button onclick="deleteMessage(${msg.id})" class="text-red-400 hover:text-red-300">Delete</button>
+                    </span>`;
+            }
+
+            let badgeHtml = msg.isAdmin ? `<span class="bg-red-600 text-white text-[10px] px-1 rounded ml-1">Admin</span>` : '';
+            let gameTag = msg.game ? `<span class="bg-slate-800 text-slate-300 text-[10px] px-1 rounded ml-1">${msg.game}</span>` : '';
+
             chatContainer.innerHTML += `
-                <div class="mb-3 pl-2 border-l-2 border-red-500">
-                    <span class="text-red-400 font-bold text-xs">${msg.username}: </span>
-                    <span class="text-slate-200 text-sm ml-1">${msg.text}</span>
+                <div class="mb-3 pl-2 border-l-2 border-red-500 relative group">
+                    <div>
+                        <span class="text-red-400 font-bold text-xs">${msg.username}</span>
+                        ${badgeHtml} ${gameTag}
+                        <span class="text-slate-500 text-[10px] ml-2">${msg.time || ''}</span>
+                        ${actionButtons}
+                    </div>
+                    <div class="text-slate-200 text-sm mt-1">${msg.text}</div>
                 </div>`;
         });
         chatContainer.scrollTop = chatContainer.scrollHeight;
     }
 
+    function renderMemberList() {
+        const memberListEl = document.getElementById('member-list');
+        if (!memberListEl) return;
+        memberListEl.innerHTML = '';
+        
+        dbUsers.forEach(user => {
+            memberListEl.innerHTML += `
+                <div class="flex items-center justify-between py-1 text-xs text-slate-300">
+                    <span>${user.username} ${user.isAdmin ? '(Admin)' : ''}</span>
+                    <span class="w-2 h-2 rounded-full ${user.lastActive && Date.now() - user.lastActive < 10000 ? 'bg-green-500' : 'bg-slate-600'}"></span>
+                </div>`;
+        });
+    }
+
+    // --- MESSAGE ACTIONS (Edit & Delete) ---
+    function editMessage(msgId) {
+        let msgs = dbMessages[currentChannel] || [];
+        let msg = msgs.find(m => m.id === msgId);
+        if (!msg) return;
+
+        let newText = prompt("Edit message:", msg.text);
+        if (newText !== null && newText.trim() !== "") {
+            msg.text = newText.trim();
+            saveDB();
+            loadChannelMessages(currentChannel);
+        }
+    }
+
+    function deleteMessage(msgId) {
+        if (confirm("Are you sure you want to delete this message?")) {
+            dbMessages[currentChannel] = (dbMessages[currentChannel] || []).filter(m => m.id !== msgId);
+            saveDB();
+            loadChannelMessages(currentChannel);
+        }
+    }
+
+    // --- SEND MESSAGE & MEDIA ---
     function handleSendMessage(event) {
         event.preventDefault();
         const input = document.getElementById('message-input');
-        const message = input.value;
-        if(message.trim() !== '' && currentUser) {
+        const text = input.value.trim();
+        
+        if((text !== '' || currentMediaData) && currentUser) {
+            let finalMsg = text;
+            if(currentMediaData) {
+                finalMsg += `<br><a href="${currentMediaData}" download="${currentMediaName}" class="text-blue-400 underline text-[10px]">📎 ${currentMediaName}</a>`;
+            }
+
             const newMsg = {
                 id: Date.now(),
                 username: currentUser.username,
-                text: message,
+                game: currentUser.game,
+                isAdmin: currentUser.isAdmin,
+                text: finalMsg,
                 time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
             };
 
@@ -570,15 +651,22 @@
             
             saveDB();
             loadChannelMessages(currentChannel);
+            
             input.value = '';
+            clearMedia();
         }
     }
 
     function previewMedia(input) {
         if (input.files && input.files[0]) {
             currentMediaName = input.files[0].name;
-            document.getElementById('media-preview-container').classList.remove('hidden');
-            document.getElementById('file-name-display').innerText = currentMediaName;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentMediaData = e.target.result;
+                document.getElementById('media-preview-container').classList.remove('hidden');
+                document.getElementById('file-name-display').innerText = currentMediaName;
+            };
+            reader.readAsDataURL(input.files[0]);
         }
     }
 
@@ -590,7 +678,7 @@
     }
 
     function openAdminPortal() {
-        alert("Admin portal is currently under construction.");
+        alert("Admin portal functionality goes here.");
     }
 
     function handleSaveSocials(event) {
@@ -600,10 +688,24 @@
         
         const socialsContainer = document.getElementById('user-current-socials');
         if (socialsContainer) {
-            socialsContainer.innerHTML = <a href="${url}" target="_blank" class="text-red-400 hover:underline">${platform}</a>;
+            socialsContainer.innerHTML = `<a href="${url}" target="_blank" class="text-red-400 hover:underline">${platform}</a>`;
         }
         closeModal('socials-modal');
     }
+
+    // Real-time loop
+    setInterval(() => {
+        if(currentUser) {
+            currentUser.lastActive = Date.now();
+            saveDB();
+        }
+        dbChannels = JSON.parse(localStorage.getItem('rift_db_channels_v8')) || dbChannels;
+        dbMessages = JSON.parse(localStorage.getItem('rift_db_messages_v8')) || dbMessages;
+        renderMemberList();
+    }, 5000);
+
+    // Initialize on load
+    if (currentUser) initAppState();
 </script>
     <script>
         // --- DATABASE / LOCAL STORAGE SETUP ---
