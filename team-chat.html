@@ -5,8 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="main-site-title">Rift Raiders Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            // Palitan ang 'YOUR_PUBLIC_KEY' ng iyong totoong EmailJS Public Key galing sa EmailJS dashboard
+            emailjs.init("YOUR_PUBLIC_KEY");
+        })();
+    </script>
     <style>
-        /* Custom Hexagon / Dark Tech Pattern background para gayahin ang estiko ng imahe */
         body {
             background-color: #0b0c10;
             background-image: radial-gradient(circle, #151821 10%, transparent 10%);
@@ -108,7 +115,6 @@
 
     <!-- Chat & Center Interface -->
     <main class="flex-1 flex flex-col bg-[#0b0c10]">
-        <!-- Top Nav / Header -->
         <header class="h-14 border-b border-red-600/20 px-6 flex items-center justify-between bg-[#101218]/80">
             <div class="flex items-center space-x-2">
                 <span class="text-red-600 font-bold">#</span>
@@ -119,19 +125,15 @@
             </div>
         </header>
 
-        <!-- Messages Area -->
         <div id="chat-messages" class="flex-1 p-6 overflow-y-auto space-y-4"></div>
 
-        <!-- Media Preview Container -->
         <div id="media-preview-container" class="hidden px-6 py-2 bg-[#12141c] border-t border-red-600/20 flex items-center justify-between">
             <span id="file-name-display" class="text-xs text-blue-400">Attachment</span>
             <button onclick="clearMedia()" class="text-xs text-red-500 hover:underline">Remove</button>
         </div>
 
-        <!-- Mention Suggestions Box -->
         <div id="mention-suggestions" class="hidden absolute bottom-16 left-6 bg-[#12141c] border border-red-600/30 rounded shadow-lg w-48 z-10 p-1"></div>
 
-        <!-- Message Input Form -->
         <div class="p-4 bg-[#101218] border-t border-red-600/20">
             <form onsubmit="handleSendMessage(event)" class="relative flex items-center">
                 <input type="text" id="message-input" placeholder="Type a message or use @ to mention..." autocomplete="off" class="w-full bg-[#0b0c10] border border-slate-700 rounded-lg pl-4 pr-24 py-2.5 text-sm text-white focus:outline-none focus:border-red-600">
@@ -145,7 +147,6 @@
         </div>
     </main>
 
-    <!-- Right Sidebar: Member List -->
     <aside class="w-60 bg-[#101218] border-l border-red-600/20 p-4 flex flex-col">
         <h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Members</h3>
         <div id="member-list" class="space-y-1.5 overflow-y-auto flex-1"></div>
@@ -160,16 +161,13 @@
                     <img id="profile-avatar" src="https://via.placeholder.com/150" class="w-20 h-20 rounded-full border-4 border-[#12141c] object-cover bg-slate-800">
                     <span id="profile-role-badge" class="bg-red-600 text-white text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wider shadow">Member</span>
                 </div>
-
                 <h2 id="profile-username" class="text-lg font-bold text-white">Username</h2>
                 <p id="profile-team" class="text-xs text-red-500 font-semibold mb-1">Team: Unassigned</p>
                 <p id="profile-game" class="text-xs text-slate-400 font-medium mb-4">Game: League of Legends</p>
-
                 <div class="bg-[#0b0c10] border border-red-600/20 rounded-lg p-3 space-y-2 text-xs">
                     <p class="font-semibold text-slate-400 uppercase tracking-widest text-[9px] mb-1">Connected Socials</p>
                     <div id="profile-socials-list" class="space-y-1 text-slate-300"></div>
                 </div>
-
                 <button onclick="closeModal('profile-modal')" class="mt-5 w-full bg-slate-800 hover:bg-slate-700 text-xs py-2 rounded text-white font-medium transition">Close Profile</button>
             </div>
         </div>
@@ -181,7 +179,7 @@
             <h3 class="text-lg font-bold text-red-600 mb-4 uppercase">Edit Profile</h3>
             <form onsubmit="handleSaveProfile(event)" class="space-y-3">
                 <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Upload Profile Picture (File)</label>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Upload Profile Picture</label>
                     <input type="file" id="edit-avatar-file" accept="image/*" class="w-full bg-[#0b0c10] border border-slate-700 rounded px-2 py-1 text-xs text-slate-300 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:bg-red-600 file:text-white hover:file:bg-red-700">
                 </div>
                 <div>
@@ -221,7 +219,6 @@
         <div class="bg-[#12141c] border border-red-600/50 p-6 rounded-xl max-w-sm w-full shadow-2xl relative">
             <h3 class="text-lg font-bold text-red-600 mb-1">Admin Authentication</h3>
             <p class="text-xs text-slate-400 mb-4">Enter admin password to access the portal.</p>
-            
             <form onsubmit="handleAdminAuth(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs font-medium text-slate-300 mb-1">Admin Password</label>
@@ -267,7 +264,6 @@
                     </div>
                 </div>
             </div>
-
             <button onclick="closeModal('admin-portal-modal')" class="mt-5 w-full bg-slate-800 hover:bg-slate-700 text-xs py-2 rounded text-white font-medium transition">Close Dashboard</button>
         </div>
     </div>
@@ -282,14 +278,15 @@
         let currentMediaData = null;
         let currentMediaName = null;
 
-        if (!dbUsers.find(u => u.username === 'Takeku')) {
+        if (!dbUsers.find(u => u.username.toLowerCase() === 'takeku')) {
             dbUsers.push({
                 username: 'Takeku',
                 password: 'Kushime07092004.',
+                email: 'admin@riftraiders.com',
                 isAdmin: true,
                 isApproved: true,
                 role: 'Admin / Owner',
-                team: 'Management / Team Alpha',
+                team: 'Management',
                 game: 'League of Legends',
                 pfp: 'https://via.placeholder.com/150',
                 socials: { tiktok: '', discord: '', fb: '', x: '', spotify: '' }
@@ -339,7 +336,7 @@
             }
 
             if (!found.isAdmin && !found.isApproved) {
-                alert('Your account is pending admin approval.');
+                alert('Your account is still pending admin approval.');
                 return;
             }
 
@@ -381,8 +378,16 @@
             dbUsers.push(newUser);
             saveDB();
             
-            alert(isAdminAcc ? 'Registration successful! Logged in as Admin.' : 'Registration successful! Please wait for Admin approval.');
-            switchModal('register-modal', 'login-modal');
+            if (isAdminAcc) {
+                alert('Registration successful! Logged in as Admin.');
+                switchModal('register-modal', 'login-modal');
+            } else {
+                alert('Registration successful! Please wait for Admin approval before logging in.');
+                document.getElementById('reg-username').value = '';
+                document.getElementById('reg-email').value = '';
+                document.getElementById('reg-password').value = '';
+                switchModal('register-modal', 'login-modal');
+            }
         }
 
         function handleLogout() {
@@ -471,7 +476,6 @@
                 let senderUser = dbUsers.find(u => u.username === msg.username);
                 let senderPfp = senderUser?.pfp || 'https://via.placeholder.com/150';
                 let senderTeam = senderUser?.team && senderUser.team !== 'Unassigned' ? `<span class="bg-red-950 text-red-400 text-[10px] px-1.5 py-0.5 rounded ml-1 border border-red-600/30">${senderUser.team}</span>` : '';
-
                 let badgeHtml = msg.isAdmin ? `<span class="bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded ml-1 font-bold">Admin</span>` : '';
                 let gameTag = msg.game ? `<span class="bg-[#151821] text-slate-300 text-[10px] px-1.5 py-0.5 rounded ml-1 border border-slate-700/50">${msg.game}</span>` : '';
 
@@ -572,7 +576,6 @@
                 <p>X (Twitter): ${socials.x ? `<a href="${socials.x}" target="_blank" class="text-slate-300 hover:underline">${socials.x}</a>` : '<span class="text-slate-600">None</span>'}</p>
                 <p>Spotify: ${socials.spotify ? `<a href="${socials.spotify}" target="_blank" class="text-green-400 hover:underline">${socials.spotify}</a>` : '<span class="text-slate-600">None</span>'}</p>
             `;
-
             openModal('profile-modal');
         }
 
@@ -639,12 +642,17 @@
         }
 
         function renderAdminPortalData() {
+            dbUsers = JSON.parse(localStorage.getItem('riftRaidersUsers')) || dbUsers;
             let pendingUsers = dbUsers.filter(u => !u.isApproved && !u.isAdmin);
+
             document.getElementById('admin-pending-list').innerHTML = pendingUsers.length === 0 ? 
                 `<p class="text-slate-500 italic">No pending user registrations.</p>` :
                 pendingUsers.map(u => `
                     <div class="flex items-center justify-between bg-[#12141c] p-2 rounded border border-red-600/20">
-                        <span><b>${u.username}</b> (${u.game})</span>
+                        <div>
+                            <b>${u.username}</b> (${u.game})
+                            <span class="block text-[10px] text-slate-400">${u.email || 'No email provided'}</span>
+                        </div>
                         <button onclick="approveUser('${u.username}')" class="bg-red-600 hover:bg-red-700 text-white px-2.5 py-1 rounded text-[10px] font-bold">Approve</button>
                     </div>
                 `).join('');
@@ -657,7 +665,7 @@
                             <div class="font-bold text-white text-xs">
                                 ${u.username} ${u.isAdmin ? '<span class="text-red-500">(Admin)</span>' : ''}
                             </div>
-                            <div class="text-[10px] text-slate-400">Game: ${u.game || 'N/A'}</div>
+                            <div class="text-[10px] text-slate-400">Game: ${u.game || 'N/A'} | Email: ${u.email || 'N/A'}</div>
                         </div>
                     </div>
                     <div class="flex items-center space-x-2">
@@ -666,7 +674,7 @@
                             <input type="text" id="team-input-${u.username}" value="${u.team || 'Unassigned'}" class="bg-[#0b0c10] border border-slate-700 rounded px-2 py-1 text-xs text-white w-28 focus:border-red-600">
                         </div>
                         <button onclick="updateUserTeam('${u.username}')" class="bg-red-600 hover:bg-red-700 text-white px-2.5 py-1.5 rounded text-[10px] font-bold mt-3">Save</button>
-                        ${u.username !== 'Takeku' ? `<button onclick="banUser('${u.username}')" class="bg-slate-800 hover:bg-red-950 text-red-400 px-2 py-1.5 rounded text-[10px] font-bold mt-3">Remove</button>` : ''}
+                        ${u.username.toLowerCase() !== 'takeku' ? `<button onclick="banUser('${u.username}')" class="bg-slate-800 hover:bg-red-950 text-red-400 px-2 py-1.5 rounded text-[10px] font-bold mt-3">Remove</button>` : ''}
                     </div>
                 </div>
             `).join('');
@@ -676,19 +684,39 @@
         }
 
         function approveUser(username) {
+            dbUsers = JSON.parse(localStorage.getItem('riftRaidersUsers')) || dbUsers;
             let targetUser = dbUsers.find(u => u.username.toLowerCase() === username.toLowerCase());
+            
             if (targetUser) {
                 targetUser.isApproved = true;
                 targetUser.role = 'Member';
-                targetUser.team = targetUser.team || 'Team Alpha';
+                targetUser.team = targetUser.team && targetUser.team !== 'Unassigned' ? targetUser.team : 'Team Alpha';
                 saveDB();
                 renderAdminPortalData();
                 renderMemberList();
-                alert(`Successfully approved ${targetUser.username}!`);
+
+                // EMAILJS INTEGRATION
+                if (targetUser.email) {
+                    let templateParams = {
+                        to_email: targetUser.email,
+                        to_name: targetUser.username,
+                        message: "Your account has been approved by the Admin! You can now log in to the Rift Raiders portal."
+                    };
+
+                    emailjs.send("service_riftraiders", "template_riftraiders", templateParams)
+                        .then(function(response) {
+                            alert(`Successfully approved ${targetUser.username} and sent email notification via EmailJS!`);
+                        }, function(error) {
+                            alert(`Approved ${targetUser.username}, but failed to send email: ` + JSON.stringify(error));
+                        });
+                } else {
+                    alert(`Successfully approved ${targetUser.username}! (No email address found)`);
+                }
             }
         }
 
         function updateUserTeam(username) {
+            dbUsers = JSON.parse(localStorage.getItem('riftRaidersUsers')) || dbUsers;
             let targetUser = dbUsers.find(u => u.username.toLowerCase() === username.toLowerCase());
             let inputField = document.getElementById(`team-input-${username}`);
             if (targetUser && inputField) {
@@ -800,10 +828,11 @@
                 currentUser.lastActive = Date.now();
                 saveDB();
             }
+            dbUsers = JSON.parse(localStorage.getItem('riftRaidersUsers')) || dbUsers;
             dbChannels = JSON.parse(localStorage.getItem('rift_db_channels')) || dbChannels;
             dbMessages = JSON.parse(localStorage.getItem('rift_db_messages')) || dbMessages;
             renderMemberList();
-        }, 5000);
+        }, 3000);
 
         if (currentUser) initAppState();
         
