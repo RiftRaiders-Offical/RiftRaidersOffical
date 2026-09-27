@@ -79,7 +79,7 @@
             <form onsubmit="handleSendMessage(event)" class="flex items-center space-x-2">
                 <label class="cursor-pointer bg-slate-800 hover:bg-slate-700 text-slate-300 p-2 rounded text-xs flex items-center justify-center">
                     📎
-                    <input type="file" id="media-input" onchange="previewMedia(this)" class="hidden">
+                    <input type="file" id="media-input" onchange="previewMedia(this)" class="hidden" accept="image/*,.pdf,.txt">
                 </label>
                 <input type="text" id="message-input" placeholder="Message #general (Type @ to mention)..." class="flex-1 bg-[#0b0c10] border border-slate-700 rounded px-3 py-2 text-xs text-white focus:outline-none focus:border-red-600">
                 <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-xs font-bold transition">Send</button>
@@ -87,7 +87,6 @@
         </div>
     </div>
 
-    <!-- Modals (Profile, Edit Profile, Admin Portal, etc.) can be placed here -->
     <!-- Profile Modal -->
     <div id="profile-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center hidden z-50">
         <div class="bg-[#12141c] border border-red-600/30 rounded-lg p-6 w-80 relative">
@@ -195,7 +194,7 @@
         let currentMediaData = null;
         let currentMediaName = null;
 
-        // Firebase Initialization Placeholder (Replace with your own config if needed)
+        // Firebase Initialization Placeholder
         const firebaseConfig = {
             databaseURL: "https://your-firebase-app-default-rtdb.firebaseio.com/"
         };
@@ -234,8 +233,6 @@
                 database.ref('users/' + user.username).set(user);
             }
         }
-
-        // --- IYONG MGA IBINIGAY NA FUNCTIONS NA PINAG-ISA ---
 
         function loadChannelMessages(channelName) {
             currentChannel = channelName;
@@ -562,7 +559,12 @@
             if((text !== '' || currentMediaData) && currentUser) {
                 let finalMsg = text;
                 if(currentMediaData) {
-                    finalMsg += `<br><a href="${currentMediaData}" download="${currentMediaName}" class="text-red-400 underline text-[10px]">📎 ${currentMediaName}</a>`;
+                    let isImage = currentMediaData.startsWith('data:image/');
+                    if (isImage) {
+                        finalMsg += `<br><div class="mt-2"><img src="${currentMediaData}" class="max-w-xs max-h-48 rounded border border-red-600/30 object-cover cursor-pointer" onclick="window.open('${currentMediaData}', '_blank')"></div>`;
+                    } else {
+                        finalMsg += `<br><a href="${currentMediaData}" download="${currentMediaName}" class="text-red-400 underline text-[10px]">📎 ${currentMediaName}</a>`;
+                    }
                 }
 
                 const newMsg = {
@@ -608,8 +610,15 @@
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     currentMediaData = e.target.result;
-                    document.getElementById('media-preview-container')?.classList.remove('hidden');
-                    document.getElementById('file-name-display').innerText = currentMediaName;
+                    const container = document.getElementById('media-preview-container');
+                    container?.classList.remove('hidden');
+                    
+                    let isImage = currentMediaData.startsWith('data:image/');
+                    if (isImage) {
+                        document.getElementById('file-name-display').innerHTML = `<span class="flex items-center space-x-2"><img src="${currentMediaData}" class="w-6 h-6 object-cover rounded"><span>${currentMediaName}</span></span>`;
+                    } else {
+                        document.getElementById('file-name-display').innerText = currentMediaName;
+                    }
                 };
                 reader.readAsDataURL(input.files[0]);
             }
