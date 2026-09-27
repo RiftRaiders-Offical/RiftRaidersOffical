@@ -1089,39 +1089,184 @@
                 text: finalMsg,
                 time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
             };
-
-            if(!dbMessages[currentChannel]) dbMessages[currentChannel] = [];
-            dbMessages[currentChannel].push(newMsg);
-            
+    <script>
+        // --- DATABASE / LOCAL STORAGE SETUP ---
+        // Kinukuha ang naka-save na users sa browser o gumagawa ng blangkong listahan
+        let dbUsers = JSON.parse(localStorage.getItem('riftRaidersUsers')) || [];
+        
+        // Awtomatikong nilalagay ang Admin Account mo kung wala pa sa database
+        if (!dbUsers.find(u => u.username === 'Takeku')) {
+            dbUsers.push({
+                username: 'Takeku',
+                password: 'Kushime07092004.',
+                isAdmin: true,
+                isApproved: true,
+                role: 'Admin / Owner'
+            });
             saveDB();
-            loadChannelMessages(currentChannel);
-            
-            input.value = '';
-            clearMedia();
-            document.getElementById('mention-suggestions').classList.add('hidden');
         }
 
-        // Timer para sa real-time check ng online status at members
-        setInterval(() => {
-            if(currentUser) {
-                currentUser.lastActive = Date.now();
-                saveDB();
-            }
-            dbChannels = JSON.parse(localStorage.getItem('rift_db_channels_v8')) || dbChannels;
-            dbMessages = JSON.parse(localStorage.getItem('rift_db_messages_v8')) || dbMessages;
-            renderMemberList();
-            updateAdminNotificationBadge();
-        }, 5000);
+        let currentUser = null;
 
-        window.addEventListener('beforeunload', function() {
-            if(currentUser) {
-                currentUser.lastActive = 0;
-                saveDB();
-            }
-        });
+        function saveDB() {
+            localStorage.setItem('riftRaidersUsers', JSON.stringify(dbUsers));
+        }
 
-        // Initialize App on load
-        initAppState();
+        // --- MODAL CONTROLS ---
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.remove('hidden');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        function switchModal(closeId, openId) {
+            closeModal(closeId);
+            openModal(openId);
+        }
+
+        // --- AUTHENTICATION (Mula sa iyong Screenshot) ---
+        function handleLogin(e) {
+            e.preventDefault();
+            const usernameInput = document.getElementById('login-username').value.trim();
+            const passwordInput = document.getElementById('login-password').value;
+
+            let found = dbUsers.find(u => u.username.toLowerCase() === usernameInput.toLowerCase());
+
+            if (!found) {
+                alert('Account not found! Please register first.');
+                return;
+            }
+
+            if (found.password && found.password !== passwordInput) {
+                alert('Incorrect password!');
+                return;
+            }
+
+            if (!found.isAdmin && !found.isApproved) {
+                alert('Your account is pending admin approval.');
+                return;
+            }
+
+            // Kapag tama ang login
+            currentUser = found;
+            currentUser.lastActive = Date.now();
+            saveDB();
+            
+            initAppState();
+            closeModal('login-modal');
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            const newUsername = document.getElementById('reg-username').value.trim();
+            const emailInput = document.getElementById('reg-email').value.trim();
+            const passwordInput = document.getElementById('reg-password').value;
+            const gameInput = document.getElementById('reg-game').value;
+
+            // Checking kung taken na ang username
+            if (dbUsers.some(u => u.username.toLowerCase() === newUsername.toLowerCase())) {
+                alert('Username already exists!');
+                return;
+            }
+
+            const isAdminAcc = newUsername.toLowerCase() === 'takeku' || newUsername.toLowerCase() === 'rift raiders';
+
+            const newUser = {
+                username: newUsername,
+                password: passwordInput,
+                email: emailInput,
+                game: gameInput,
+                isAdmin: isAdminAcc,
+                isApproved: isAdminAcc, 
+                role: isAdminAcc ? 'Admin / Owner' : 'Pending Approval'
+            };
+
+            dbUsers.push(newUser);
+            saveDB();
+            
+            alert('Registration successful! ' + (isAdminAcc ? 'Logged in as Admin.' : 'Please wait for Admin approval.'));
+            switchModal('register-modal', 'login-modal');
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            document.getElementById('auth-lock-overlay').classList.remove('hidden');
+            document.getElementById('logout-container').classList.add('hidden');
+            
+            document.getElementById('login-username').value = '';
+            document.getElementById('login-password').value = '';
+        }
+
+        // --- APP STATE & UI UPDATES ---
+        function initAppState() {
+            document.getElementById('auth-lock-overlay').classList.add('hidden');
+            
+            // Ina-update ang Profile Sidebar gamit ang impormasyon ng naka-login
+            document.getElementById('sb-user-name').innerText = currentUser.username;
+            document.getElementById('sb-user-role').innerText = currentUser.role || (currentUser.isAdmin ? "Admin" : "Member");
+            
+            // Ipinapakita ang admin controls kapag admin ang pumasok
+            if (currentUser.isAdmin) {
+                document.getElementById('nav-admin-portal-btn').classList.remove('hidden');
+                document.getElementById('add-channel-btn').classList.remove('hidden');
+            } else {
+                document.getElementById('nav-admin-portal-btn').classList.add('hidden');
+                document.getElementById('add-channel-btn').classList.add('hidden');
+            }
+            
+            document.getElementById('logout-container').classList.remove('hidden');
+        }
+
+        // --- CHAT & MEDIA FUNCTIONS ---
+        function handleSendMessage(event) {
+            event.preventDefault();
+            const message = document.getElementById('message-input').value;
+            if(message.trim() !== '') {
+                const chatContainer = document.getElementById('chat-messages');
+                const sender = currentUser ? currentUser.username : "Guest";
+                chatContainer.innerHTML += `
+                    <div class="mb-3 pl-2 border-l-2 border-red-500">
+                        <span class="text-red-400 font-bold text-xs">${sender}: </span>
+                        <span class="text-slate-200 text-sm ml-1">${message}</span>
+                    </div>`;
+                document.getElementById('message-input').value = '';
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+        }
+
+        function previewAvatar(input) {
+            if (input.files && input.files[0]) {
+                alert("Na-select ang larawan: " + input.files[0].name);
+            }
+        }
+
+        function previewMedia(input) {
+            if (input.files && input.files[0]) {
+                document.getElementById('media-preview-container').classList.remove('hidden');
+                document.getElementById('file-name-display').innerText = input.files[0].name;
+            }
+        }
+
+        function clearMedia() {
+            document.getElementById('media-input').value = '';
+            document.getElementById('media-preview-container').classList.add('hidden');
+        }
+        
+        function openAdminPortal() {
+            alert("Admin portal is currently under construction.");
+        }
+
+        function handleSaveSocials(event) {
+            event.preventDefault();
+            const platform = document.getElementById('social-platform').value;
+            const url = document.getElementById('social-url').value;
+            
+            document.getElementById('user-current-socials').innerHTML = 
+                `<a href="${url}" target="_blank" class="text-red-400 hover:underline">${platform}</a>`;
+            closeModal('socials-modal');
+        }
     </script>
 
          <!-- Naayos na Firebase App & Realtime Database CDN SDK -->
