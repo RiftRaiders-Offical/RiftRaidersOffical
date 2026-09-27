@@ -753,11 +753,13 @@
             if (newTitle) {
                 document.title = newTitle;
                 localStorage.setItem('rift_site_title', newTitle);
-                document.getElementById('main-site-title').innerText = newTitle;
+                let mainTitleEl = document.getElementById('main-site-title');
+                if(mainTitleEl) mainTitleEl.innerText = newTitle;
             }
             if (newBrand) {
                 localStorage.setItem('rift_brand_text', newBrand);
-                document.getElementById('sidebar-brand-title').innerText = newBrand;
+                let brandTitleEl = document.getElementById('sidebar-brand-title');
+                if(brandTitleEl) brandTitleEl.innerText = newBrand;
             }
             alert("Website branding updated successfully!");
         }
@@ -849,12 +851,14 @@
         let savedTitle = localStorage.getItem('rift_site_title');
         if (savedTitle) {
             document.title = savedTitle;
-            document.getElementById('main-site-title').innerText = savedTitle;
+            let mainTitleEl = document.getElementById('main-site-title');
+            if(mainTitleEl) mainTitleEl.innerText = savedTitle;
         }
 
         let savedBrand = localStorage.getItem('rift_brand_text');
         if (savedBrand) {
-            document.getElementById('sidebar-brand-text').innerText = savedBrand;
+            let brandTitleEl = document.getElementById('sidebar-brand-title');
+            if(brandTitleEl) brandTitleEl.innerText = savedBrand;
         }
     </script>
 </body>
