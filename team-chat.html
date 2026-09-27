@@ -110,7 +110,7 @@
                 <span id="current-channel-title" class="font-semibold text-sm text-white">general</span>
             </div>
             <div>
-                <button id="nav-admin-portal-btn" onclick="openAdminPortal()" class="hidden bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-1.5 rounded font-bold transition">Admin Portal</button>
+                <button id="nav-admin-portal-btn" onclick="promptAdminPassword()" class="hidden bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-1.5 rounded font-bold transition">Admin Portal</button>
             </div>
         </header>
 
@@ -150,17 +150,36 @@
         </div>
     </aside>
 
-    <!-- Profile View Modal -->
+    <!-- DISCORD-STYLE PROFILE MODAL -->
     <div id="profile-modal" class="hidden fixed inset-0 bg-slate-950/80 z-50 flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl max-w-xs w-full relative">
-            <div id="profile-modal-content">
-                <!-- Dynamic Profile Details -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl max-w-sm w-full overflow-hidden shadow-2xl relative">
+            <!-- Header Banner -->
+            <div class="h-20 bg-gradient-to-r from-red-900 to-slate-900"></div>
+            
+            <!-- Avatar & Details Container -->
+            <div class="px-6 pb-6 relative">
+                <div class="-mt-10 mb-3 flex justify-between items-end">
+                    <img id="profile-avatar" src="https://via.placeholder.com/150" class="w-20 h-20 rounded-full border-4 border-slate-900 object-cover bg-slate-800">
+                    <span id="profile-role-badge" class="bg-red-600 text-white text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wider">Member</span>
+                </div>
+
+                <h2 id="profile-username" class="text-lg font-bold text-white">Username</h2>
+                <p id="profile-game" class="text-xs text-red-400 font-medium mb-4">Game: League of Legends</p>
+
+                <!-- Social Links Box -->
+                <div class="bg-slate-950/60 border border-slate-800/80 rounded-lg p-3 space-y-2 text-xs">
+                    <p class="font-semibold text-slate-400 uppercase tracking-widest text-[9px] mb-1">Connected Socials</p>
+                    <div id="profile-socials-list" class="space-y-1 text-slate-300">
+                        <!-- Dynamic Social Links -->
+                    </div>
+                </div>
+
+                <button onclick="closeModal('profile-modal')" class="mt-5 w-full bg-slate-800 hover:bg-slate-700 text-xs py-2 rounded text-white font-medium transition">Close Profile</button>
             </div>
-            <button onclick="closeModal('profile-modal')" class="mt-4 w-full bg-slate-800 hover:bg-slate-700 text-xs py-1.5 rounded text-white font-medium">Close</button>
         </div>
     </div>
 
-    <!-- Edit Profile Modal -->
+    <!-- EDIT PROFILE MODAL -->
     <div id="edit-profile-modal" class="hidden fixed inset-0 bg-slate-950/80 z-50 flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl max-w-sm w-full relative">
             <h3 class="text-lg font-bold text-red-500 mb-4">Edit Profile & Socials</h3>
@@ -194,6 +213,43 @@
                     <button type="button" onclick="closeModal('edit-profile-modal')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded text-xs">Cancel</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- ADMIN PORTAL MODAL (Website-style Interface) -->
+    <div id="admin-portal-modal" class="hidden fixed inset-0 bg-slate-950/85 z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-red-600/50 p-6 rounded-xl max-w-lg w-full shadow-2xl relative">
+            <h2 class="text-xl font-bold text-red-500 mb-1">Admin Portal Dashboard</h2>
+            <p class="text-xs text-slate-400 mb-4">Manage users, approvals, and website configurations.</p>
+            
+            <div class="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
+                <!-- Section 1: Pending Approvals -->
+                <div class="bg-slate-950 p-3 rounded border border-slate-800">
+                    <h3 class="text-xs font-bold text-white mb-2 uppercase tracking-wide">Pending Registrations</h3>
+                    <div id="admin-pending-list" class="space-y-2 text-xs text-slate-300">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </div>
+
+                <!-- Section 2: Manage Users / Ban -->
+                <div class="bg-slate-950 p-3 rounded border border-slate-800">
+                    <h3 class="text-xs font-bold text-white mb-2 uppercase tracking-wide">Registered Members</h3>
+                    <div id="admin-members-list" class="space-y-2 text-xs text-slate-300 max-h-36 overflow-y-auto">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </div>
+
+                <!-- Section 3: Branding -->
+                <div class="bg-slate-950 p-3 rounded border border-slate-800">
+                    <h3 class="text-xs font-bold text-white mb-2 uppercase tracking-wide">Website Branding</h3>
+                    <div class="flex space-x-2">
+                        <input type="text" id="admin-site-title-input" placeholder="New Website Title..." class="flex-1 bg-slate-800 border border-slate-700 rounded px-3 py-1.5 text-xs text-white">
+                        <button onclick="updateSiteTitle()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs font-bold">Update Title</button>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="closeModal('admin-portal-modal')" class="mt-5 w-full bg-slate-800 hover:bg-slate-700 text-xs py-2 rounded text-white font-medium transition">Close Dashboard</button>
         </div>
     </div>
 
@@ -485,37 +541,27 @@
             input.focus();
         }
 
-        // --- PROFILE & SOCIALS MODAL ---
+        // --- DISCORD-STYLE PROFILE VIEW MODAL ---
         function viewUserProfile(username) {
             let user = dbUsers.find(u => u.username === username);
             if (!user) return;
 
+            document.getElementById('profile-avatar').src = user.pfp || 'https://via.placeholder.com/150';
+            document.getElementById('profile-username').innerText = user.username;
+            document.getElementById('profile-game').innerText = `Main Game: ${user.game || 'Not specified'}`;
+            document.getElementById('profile-role-badge').innerText = user.role || (user.isAdmin ? 'Admin' : 'Member');
+
             let socials = user.socials || {};
-            let socialsHtml = `
-                <p class="text-xs text-slate-400 mt-2"><b>Game:</b> ${user.game || 'Not specified'}</p>
-                <div class="mt-4 space-y-1 text-xs">
-                    <p>TikTok: ${socials.tiktok ? `<a href="${socials.tiktok}" target="_blank" class="text-red-400 underline">${socials.tiktok}</a>` : 'None'}</p>
-                    <p>Discord: ${socials.discord ? `<span class="text-blue-400">${socials.discord}</span>` : 'None'}</p>
-                    <p>FB Page: ${socials.fb ? `<a href="${socials.fb}" target="_blank" class="text-blue-400 underline">${socials.fb}</a>` : 'None'}</p>
-                    <p>X (Twitter): ${socials.x ? `<a href="${socials.x}" target="_blank" class="text-slate-300 underline">${socials.x}</a>` : 'None'}</p>
-                    <p>Spotify: ${socials.spotify ? `<a href="${socials.spotify}" target="_blank" class="text-green-400 underline">${socials.spotify}</a>` : 'None'}</p>
-                </div>
+            let socialsContainer = document.getElementById('profile-socials-list');
+            socialsContainer.innerHTML = `
+                <p>TikTok: ${socials.tiktok ? `<a href="${socials.tiktok}" target="_blank" class="text-red-400 hover:underline">${socials.tiktok}</a>` : '<span class="text-slate-600">None</span>'}</p>
+                <p>Discord: ${socials.discord ? `<span class="text-blue-400">${socials.discord}</span>` : '<span class="text-slate-600">None</span>'}</p>
+                <p>FB Page: ${socials.fb ? `<a href="${socials.fb}" target="_blank" class="text-blue-400 hover:underline">${socials.fb}</a>` : '<span class="text-slate-600">None</span>'}</p>
+                <p>X (Twitter): ${socials.x ? `<a href="${socials.x}" target="_blank" class="text-slate-200 hover:underline">${socials.x}</a>` : '<span class="text-slate-600">None</span>'}</p>
+                <p>Spotify: ${socials.spotify ? `<a href="${socials.spotify}" target="_blank" class="text-green-400 hover:underline">${socials.spotify}</a>` : '<span class="text-slate-600">None</span>'}</p>
             `;
 
-            let profileModalContent = document.getElementById('profile-modal-content');
-            if (profileModalContent) {
-                profileModalContent.innerHTML = `
-                    <div class="text-center">
-                        <img src="${user.pfp || 'https://via.placeholder.com/150'}" class="w-16 h-16 rounded-full mx-auto object-cover border border-red-500">
-                        <h3 class="text-white font-bold mt-2">${user.username} ${user.isAdmin ? '(Admin)' : ''}</h3>
-                        <p class="text-xs text-slate-400">${user.role || 'Member'}</p>
-                    </div>
-                    ${socialsHtml}
-                `;
-                openModal('profile-modal');
-            } else {
-                alert(`User: ${user.username}\nRole: ${user.role}\nGame: ${user.game}`);
-            }
+            openModal('profile-modal');
         }
 
         function openEditProfile() {
@@ -549,8 +595,8 @@
             initAppState();
         }
 
-        // --- ADMIN PORTAL (May password check: rr2024) ---
-        function openAdminPortal() {
+        // --- ADMIN PORTAL MODAL CONTROLS ---
+        function promptAdminPassword() {
             if (!currentUser || !currentUser.isAdmin) {
                 alert("Access denied. Admin only.");
                 return;
@@ -562,45 +608,63 @@
                 return;
             }
 
-            let pendingUsers = dbUsers.filter(u => !u.isApproved && !u.isAdmin);
-            let pendingListStr = pendingUsers.length > 0 
-                ? pendingUsers.map((u, i) => `${i + 1}. ${u.username} (${u.game})`).join('\n')
-                : "No pending users.";
+            renderAdminPortalData();
+            openModal('admin-portal-modal');
+        }
 
-            let action = prompt(`=== ADMIN PORTAL ===\n1. Approve Pending Users\n2. Manage / Ban Users\n3. Edit Website Branding\n\nEnter option number:`);
+        function renderAdminPortalData() {
+            // Render Pending Users
+            const pendingListEl = document.getElementById('admin-pending-list');
+            let pendingUsers = dbUsers.filter(u => !u.isApproved && !u.isAdmin);
             
-            if (action === "1") {
-                if (pendingUsers.length === 0) {
-                    alert("Walang pending users na naghihintay ng approval.");
-                    return;
-                }
-                let targetName = prompt(`Pending Users:\n${pendingListStr}\n\nI-type ang username ng gustong i-approve:`);
-                let targetUser = dbUsers.find(u => u.username.toLowerCase() === targetName?.toLowerCase());
-                if (targetUser) {
-                    targetUser.isApproved = true;
-                    targetUser.role = 'Member';
-                    saveDB();
-                    alert(`Na-approve na si ${targetUser.username}!`);
-                    renderMemberList();
-                }
-            } else if (action === "2") {
-                let allNames = dbUsers.map(u => u.username).join(', ');
-                let banName = prompt(`Lahat ng Users: ${allNames}\n\nI-type ang username na gustong i-ban/tanggalin:`);
-                if (banName && banName.toLowerCase() !== 'takeku') {
-                    dbUsers = dbUsers.filter(u => u.username.toLowerCase() !== banName.toLowerCase());
-                    saveDB();
-                    alert(`Tinanggal na sa sistema si ${banName}.`);
-                    renderMemberList();
-                } else {
-                    alert("Hindi maaaring tanggalin ang pangunahing Admin account.");
-                }
-            } else if (action === "3") {
-                let newTitle = prompt("Ilagay ang bagong pangalan ng Website (Title):");
-                if (newTitle) {
-                    document.title = newTitle;
-                    localStorage.setItem('rift_site_title', newTitle);
-                    alert("Na-update na ang website title!");
-                }
+            if (pendingUsers.length === 0) {
+                pendingListEl.innerHTML = `<p class="text-slate-500 italic">No pending user registrations.</p>`;
+            } else {
+                pendingListEl.innerHTML = pendingUsers.map(u => `
+                    <div class="flex items-center justify-between bg-slate-900 p-2 rounded border border-slate-800">
+                        <span><b>${u.username}</b> (${u.game})</span>
+                        <button onclick="approveUser('${u.username}')" class="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded text-[10px] font-bold">Approve</button>
+                    </div>
+                `).join('');
+            }
+
+            // Render Members List for Banning
+            const membersListEl = document.getElementById('admin-members-list');
+            membersListEl.innerHTML = dbUsers.map(u => `
+                <div class="flex items-center justify-between bg-slate-900 p-2 rounded border border-slate-800">
+                    <span>${u.username} ${u.isAdmin ? '<span class="text-red-400 font-bold">(Admin)</span>' : ''}</span>
+                    ${u.username !== 'Takeku' ? `<button onclick="banUser('${u.username}')" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-2 py-1 rounded text-[10px] font-bold">Remove</button>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function approveUser(username) {
+            let targetUser = dbUsers.find(u => u.username.toLowerCase() === username.toLowerCase());
+            if (targetUser) {
+                targetUser.isApproved = true;
+                targetUser.role = 'Member';
+                saveDB();
+                renderAdminPortalData();
+                renderMemberList();
+                alert(`Successfully approved ${targetUser.username}!`);
+            }
+        }
+
+        function banUser(username) {
+            if (confirm(`Are you sure you want to remove ${username} from the system?`)) {
+                dbUsers = dbUsers.filter(u => u.username.toLowerCase() !== username.toLowerCase());
+                saveDB();
+                renderAdminPortalData();
+                renderMemberList();
+            }
+        }
+
+        function updateSiteTitle() {
+            let newTitle = document.getElementById('admin-site-title-input').value.trim();
+            if (newTitle) {
+                document.title = newTitle;
+                localStorage.setItem('rift_site_title', newTitle);
+                alert("Website title updated successfully!");
             }
         }
 
