@@ -12,7 +12,7 @@
             emailjs.init("rWY7d-DtzHuaGrj28");
         })();
     </script>
-    <!-- Firebase SDKs -->
+    <!-- Firebase SDKs (Compat) -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <style>
@@ -34,7 +34,7 @@
                 <h2 class="text-2xl font-black tracking-wider text-red-600 mb-2 uppercase">Rift Raiders Login</h2>
                 <p class="text-xs text-slate-400 mb-6">Enter your credentials to access the portal.</p>
                 
-                <form onsubmit="handleLogin(event)" class="space-y-4">
+                <form id="login-form-element" onsubmit="handleLogin(event)" class="space-y-4">
                     <div>
                         <label class="block text-xs font-medium text-slate-300 mb-1">Username</label>
                         <input type="text" id="login-username" required class="w-full bg-[#0b0c10] border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-red-600">
@@ -56,7 +56,7 @@
                 <h2 class="text-2xl font-black tracking-wider text-red-600 mb-2 uppercase">Create Account</h2>
                 <p class="text-xs text-slate-400 mb-6">Join the Rift Raiders portal.</p>
                 
-                <form onsubmit="handleRegister(event)" class="space-y-3">
+                <form id="register-form-element" onsubmit="handleRegister(event)" class="space-y-3">
                     <div>
                         <label class="block text-xs font-medium text-slate-300 mb-1">Username</label>
                         <input type="text" id="reg-username" required class="w-full bg-[#0b0c10] border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-red-600">
@@ -317,7 +317,6 @@
 
                 let pendingUsers = dbUsers.filter(u => !u.isApproved && !u.isAdmin);
                 if (pendingUsers.length > lastPendingCount && currentUser && currentUser.isAdmin) {
-                    alert("May bagong nag-register na user na naghihintay ng approval!");
                     renderAdminPortalData();
                 }
                 lastPendingCount = pendingUsers.length;
@@ -427,9 +426,7 @@
                 switchModal('register-modal', 'login-modal');
             } else {
                 alert('Registration successful! Please wait for Admin approval before logging in.');
-                document.getElementById('reg-username').value = '';
-                document.getElementById('reg-email').value = '';
-                document.getElementById('reg-password').value = '';
+                document.getElementById('register-form-element').reset();
                 switchModal('register-modal', 'login-modal');
             }
         }
