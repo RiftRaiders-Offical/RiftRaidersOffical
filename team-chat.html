@@ -280,7 +280,8 @@
         </div>
     </div>
 
-    <!-- CONTROLLER SCRIPT -->
+  
+   <!-- CONTROLLER SCRIPT -->
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyB7GyUvjxpgvVOpSS_wjH25m6HssUd_jbM",
@@ -326,9 +327,17 @@
                     database.ref('users/Takeku').set(dbUsers[0]);
                 }
 
+                // Kung may naka-login na, i-update natin ang data niya galing sa pinakabagong database state para laging updated
+                if (currentUser) {
+                    let updatedSelf = dbUsers.find(u => u && u.username && u.username.toLowerCase() === currentUser.username.toLowerCase());
+                    if (updatedSelf) {
+                        currentUser = updatedSelf;
+                        localStorage.setItem('rift_current_user', JSON.stringify(currentUser));
+                    }
+                }
+
                 let pendingUsers = dbUsers.filter(u => u && !u.isApproved && !u.isAdmin);
                 
-                // Show a single popout notification only if there are pending users and it hasn't been shown yet for the current count
                 if (pendingUsers.length > 0 && currentUser && currentUser.isAdmin) {
                     if (pendingUsers.length !== lastPendingCount) {
                         hasShownNewUserNotification = false;
@@ -427,8 +436,9 @@
             database.ref('users/' + currentUser.username + '/lastActive').set(currentUser.lastActive);
             localStorage.setItem('rift_current_user', JSON.stringify(currentUser));
             
+            // Tanggalin muna ang login overlay at i-initialize ang app states
+            document.getElementById('auth-lock-overlay')?.classList.add('hidden');
             initAppState();
-            closeModal('auth-lock-overlay');
         }
 
         function handleRegister(e) {
@@ -895,7 +905,7 @@
         function deleteMessage(msgId) {
             if (confirm("Delete this message?")) {
                 dbMessages[currentChannel] = (dbMessages[currentChannel] || []).filter(m => m && m.id !== msgId);
-                database.ref('messages'].set(dbMessages);
+                database.ref('messages').set(dbMessages);
             }
         }
 
@@ -926,9 +936,12 @@
             }
         }, 10000);
 
+        // Magsimula muna ang Firebase listeners bago i-check ang localStorage
         initFirebaseListeners();
 
-        if (currentUser) initAppState();
+        if (currentUser) {
+            initAppState();
+        }
         
         let savedTitle = localStorage.getItem('rift_site_title');
         if (savedTitle) {
