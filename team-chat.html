@@ -549,10 +549,16 @@
             initAppState();
         }
 
-        // --- ADMIN PORTAL ---
+        // --- ADMIN PORTAL (May password check: rr2024) ---
         function openAdminPortal() {
             if (!currentUser || !currentUser.isAdmin) {
                 alert("Access denied. Admin only.");
+                return;
+            }
+
+            let adminPassPrompt = prompt("Enter Admin Portal Password:");
+            if (adminPassPrompt !== "rr2024") {
+                alert("Incorrect admin password!");
                 return;
             }
 
