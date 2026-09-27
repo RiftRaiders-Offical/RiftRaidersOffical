@@ -141,7 +141,7 @@
     <!-- Right Sidebar: Member List -->
     <aside class="w-60 bg-slate-900 border-l border-slate-800 p-4 flex flex-col">
         <h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Members</h3>
-        <div id="member-list" class="space-y-1 overflow-y-auto flex-1"></div>
+        <div id="member-list" class="space-y-1.5 overflow-y-auto flex-1"></div>
     </aside>
 
     <!-- DISCORD-STYLE PROFILE MODAL -->
@@ -155,7 +155,8 @@
                 </div>
 
                 <h2 id="profile-username" class="text-lg font-bold text-white">Username</h2>
-                <p id="profile-game" class="text-xs text-red-400 font-medium mb-4">Game: League of Legends</p>
+                <p id="profile-team" class="text-xs text-red-400 font-semibold mb-1">Team: Unassigned</p>
+                <p id="profile-game" class="text-xs text-slate-400 font-medium mb-4">Game: League of Legends</p>
 
                 <div class="bg-slate-950/60 border border-slate-800/80 rounded-lg p-3 space-y-2 text-xs">
                     <p class="font-semibold text-slate-400 uppercase tracking-widest text-[9px] mb-1">Connected Socials</p>
@@ -229,9 +230,9 @@
 
     <!-- ADMIN PORTAL DASHBOARD MODAL -->
     <div id="admin-portal-modal" class="hidden fixed inset-0 bg-slate-950/85 z-50 flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-red-600/50 p-6 rounded-xl max-w-lg w-full shadow-2xl relative">
+        <div class="bg-slate-900 border border-red-600/50 p-6 rounded-xl max-w-2xl w-full shadow-2xl relative">
             <h2 class="text-xl font-bold text-red-500 mb-1">Admin Portal Dashboard</h2>
-            <p class="text-xs text-slate-400 mb-4">Manage users, approvals, and website configurations.</p>
+            <p class="text-xs text-slate-400 mb-4">Manage users, approvals, team roles, and website branding.</p>
             
             <div class="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
                 <div class="bg-slate-950 p-3 rounded border border-slate-800">
@@ -240,8 +241,8 @@
                 </div>
 
                 <div class="bg-slate-950 p-3 rounded border border-slate-800">
-                    <h3 class="text-xs font-bold text-white mb-2 uppercase tracking-wide">Registered Members</h3>
-                    <div id="admin-members-list" class="space-y-2 text-xs text-slate-300 max-h-36 overflow-y-auto"></div>
+                    <h3 class="text-xs font-bold text-white mb-2 uppercase tracking-wide">Registered Members & Team Roles</h3>
+                    <div id="admin-members-list" class="space-y-2 text-xs text-slate-300 max-h-48 overflow-y-auto"></div>
                 </div>
 
                 <div class="bg-slate-950 p-3 rounded border border-slate-800">
@@ -281,6 +282,7 @@
                 isAdmin: true,
                 isApproved: true,
                 role: 'Admin / Owner',
+                team: 'Management / Team Alpha',
                 game: 'League of Legends',
                 pfp: 'https://via.placeholder.com/150',
                 socials: { tiktok: '', discord: '', fb: '', x: '', spotify: '' }
@@ -366,6 +368,7 @@
                 isAdmin: isAdminAcc,
                 isApproved: isAdminAcc, 
                 role: isAdminAcc ? 'Admin / Owner' : 'Pending Approval',
+                team: 'Unassigned',
                 pfp: 'https://via.placeholder.com/150',
                 socials: { tiktok: '', discord: '', fb: '', x: '', spotify: '' }
             };
@@ -399,7 +402,7 @@
             const userAvatarEl = document.getElementById('sb-user-avatar');
 
             if (userNameEl) userNameEl.innerText = currentUser.username;
-            if (userRoleEl) userRoleEl.innerText = currentUser.role || (currentUser.isAdmin ? "Admin" : "Member");
+            if (userRoleEl) userRoleEl.innerText = currentUser.team ? `${currentUser.team}` : (currentUser.role || "Member");
             if (userAvatarEl && currentUser.pfp) userAvatarEl.src = currentUser.pfp;
             
             const adminBtn = document.getElementById('nav-admin-portal-btn');
@@ -479,12 +482,12 @@
                         </span>`;
                 }
 
-                // Hanapin ang profile picture ng user mula sa database para laging updated
                 let senderUser = dbUsers.find(u => u.username === msg.username);
                 let senderPfp = senderUser?.pfp || 'https://via.placeholder.com/150';
+                let senderTeam = senderUser?.team ? `<span class="bg-blue-600/30 text-blue-300 text-[10px] px-1.5 py-0.5 rounded ml-1 border border-blue-500/30">${senderUser.team}</span>` : '';
 
-                let badgeHtml = msg.isAdmin ? `<span class="bg-red-600 text-white text-[10px] px-1 rounded ml-1">Admin</span>` : '';
-                let gameTag = msg.game ? `<span class="bg-slate-800 text-slate-300 text-[10px] px-1 rounded ml-1">${msg.game}</span>` : '';
+                let badgeHtml = msg.isAdmin ? `<span class="bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded ml-1 font-bold">Admin</span>` : '';
+                let gameTag = msg.game ? `<span class="bg-slate-800 text-slate-300 text-[10px] px-1.5 py-0.5 rounded ml-1">${msg.game}</span>` : '';
 
                 chatContainer.innerHTML += `
                     <div class="mb-4 flex items-start space-x-3">
@@ -492,7 +495,7 @@
                         <div class="flex-1">
                             <div>
                                 <span class="text-red-400 font-bold text-xs cursor-pointer hover:underline" onclick="viewUserProfile('${msg.username}')">${msg.username}</span>
-                                ${badgeHtml} ${gameTag}
+                                ${badgeHtml} ${senderTeam} ${gameTag}
                                 <span class="text-slate-500 text-[10px] ml-2">${msg.time || ''}</span>
                                 ${actionButtons}
                             </div>
@@ -511,12 +514,19 @@
             dbUsers.forEach(user => {
                 if (!user.isApproved && !user.isAdmin) return;
                 let isOnline = user.lastActive && (Date.now() - user.lastActive < 10000);
-                let gameIconTag = user.game === 'League of Legends' ? '[LoL]' : user.game === 'Wild Rift' ? '[WR]' : '';
+                let userTeamTag = user.team && user.team !== 'Unassigned' ? `<span class="text-[9px] text-blue-400 block">${user.team}</span>` : '';
+                
                 memberListEl.innerHTML += `
-                    <div class="flex items-center justify-between py-1 text-xs text-slate-300 cursor-pointer hover:bg-slate-800 px-1 rounded" onclick="viewUserProfile('${user.username}')">
+                    <div class="flex items-center justify-between py-1 px-1.5 text-xs text-slate-300 cursor-pointer hover:bg-slate-800 rounded" onclick="viewUserProfile('${user.username}')">
                         <div class="flex items-center space-x-2">
-                            <img src="${user.pfp || 'https://via.placeholder.com/150'}" class="w-5 h-5 rounded-full object-cover">
-                            <span>${gameIconTag} ${user.username} ${user.isAdmin ? '<span class="text-red-400">(Admin)</span>' : ''}</span>
+                            <img src="${user.pfp || 'https://via.placeholder.com/150'}" class="w-7 h-7 rounded-full object-cover border border-slate-700">
+                            <div>
+                                <div class="font-bold text-white flex items-center space-x-1">
+                                    <span>${user.username}</span>
+                                    ${user.isAdmin ? '<span class="text-[9px] bg-red-600 text-white px-1 rounded">Admin</span>' : ''}
+                                </div>
+                                ${userTeamTag}
+                            </div>
                         </div>
                         <span class="w-2 h-2 rounded-full ${isOnline ? 'bg-green-500' : 'bg-slate-600'}"></span>
                     </div>`;
@@ -564,6 +574,7 @@
 
             document.getElementById('profile-avatar').src = user.pfp || 'https://via.placeholder.com/150';
             document.getElementById('profile-username').innerText = user.username;
+            document.getElementById('profile-team').innerText = `Team / Role: ${user.team || 'Unassigned'}`;
             document.getElementById('profile-game').innerText = `Main Game: ${user.game || 'Not specified'}`;
             document.getElementById('profile-role-badge').innerText = user.role || (user.isAdmin ? 'Admin' : 'Member');
 
@@ -665,12 +676,24 @@
 
             const membersListEl = document.getElementById('admin-members-list');
             membersListEl.innerHTML = dbUsers.map(u => `
-                <div class="flex items-center justify-between bg-slate-900 p-2 rounded border border-slate-800">
-                    <div class="flex items-center space-x-2">
-                        <img src="${u.pfp || 'https://via.placeholder.com/150'}" class="w-6 h-6 rounded-full object-cover">
-                        <span>${u.username} ${u.isAdmin ? '<span class="text-red-400 font-bold">(Admin)</span>' : ''}</span>
+                <div class="flex items-center justify-between bg-slate-900 p-2.5 rounded border border-slate-800 mb-2">
+                    <div class="flex items-center space-x-3">
+                        <img src="${u.pfp || 'https://via.placeholder.com/150'}" class="w-8 h-8 rounded-full object-cover">
+                        <div>
+                            <div class="font-bold text-white text-xs">
+                                ${u.username} ${u.isAdmin ? '<span class="text-red-400">(Admin)</span>' : ''}
+                            </div>
+                            <div class="text-[10px] text-slate-400">Game: ${u.game || 'N/A'}</div>
+                        </div>
                     </div>
-                    ${u.username !== 'Takeku' ? `<button onclick="banUser('${u.username}')" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-2 py-1 rounded text-[10px] font-bold">Remove</button>` : ''}
+                    <div class="flex items-center space-x-2">
+                        <div>
+                            <label class="block text-[9px] text-slate-400 mb-0.5">Team / Role</label>
+                            <input type="text" id="team-input-${u.username}" value="${u.team || 'Unassigned'}" class="bg-slate-800 border border-slate-700 rounded px-2 py-1 text-xs text-white w-28">
+                        </div>
+                        <button onclick="updateUserTeam('${u.username}')" class="bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1.5 rounded text-[10px] font-bold mt-3">Save</button>
+                        ${u.username !== 'Takeku' ? `<button onclick="banUser('${u.username}')" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-2 py-1.5 rounded text-[10px] font-bold mt-3">Remove</button>` : ''}
+                    </div>
                 </div>
             `).join('');
 
@@ -683,10 +706,22 @@
             if (targetUser) {
                 targetUser.isApproved = true;
                 targetUser.role = 'Member';
+                targetUser.team = targetUser.team || 'Team Alpha';
                 saveDB();
                 renderAdminPortalData();
                 renderMemberList();
                 alert(`Successfully approved ${targetUser.username}!`);
+            }
+        }
+
+        function updateUserTeam(username) {
+            let targetUser = dbUsers.find(u => u.username.toLowerCase() === username.toLowerCase());
+            let inputField = document.getElementById(`team-input-${username}`);
+            if (targetUser && inputField) {
+                targetUser.team = inputField.value.trim() || 'Unassigned';
+                saveDB();
+                renderMemberList();
+                alert(`Updated team/role for ${username}!`);
             }
         }
 
