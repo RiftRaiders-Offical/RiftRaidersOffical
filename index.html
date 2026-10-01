@@ -42,13 +42,14 @@
             </div>
             
             <div class="flex items-center space-x-2">
-                <a href="https://docs.google.com/forms/d/1qTTcHVfRsVXhsfKHv5-7qkZnoe6kMtoN2uLVEYY5XVg/viewform" target="_blank" class="bg-[#ff2a2d] hover:bg-red-600 text-white px-4 py-0 h-9 rounded-lg font-bold text-xs flex items-center justify-center space-x-2 transition shadow-[0_0_15px_rgba(255,42,45,0.3)]">
+                <a href="https://docs.google.com/forms/d/1qTTcHVfRsVXhsfKHv5-7qkZnoe6kMtoN2uLVEYY5XVg/viewform" target="_blank" class="bg-[#ff2a2d] hover:bg-red-600 text-white px-3 py-1.5 rounded-lg font-bold text-xs flex items-center justify-center space-x-1.5 transition shadow-[0_0_15px_rgba(255,42,45,0.3)]">
                     <i class="fa-solid fa-paper-plane"></i>
                     <span>APPLY</span>
                 </a>
-                <a href="team-chat.html" class="bg-[#161822] hover:bg-slate-800 text-red-500 w-9 h-9 rounded-lg flex items-center justify-center relative transition border border-white/5">
-                    <i class="fa-solid fa-comments text-sm"></i>
-                    <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border border-[#161822]"></span>
+                <!-- ADMIN PORTAL QUICK BUTTON -->
+                <a href="admin.html" class="bg-[#161822] hover:bg-slate-800 text-slate-400 hover:text-white px-3 py-1.5 rounded-lg font-bold text-xs flex items-center justify-center space-x-1.5 transition border border-white/5" title="Admin Portal">
+                    <i class="fa-solid fa-lock text-red-500"></i>
+                    <span>ADMIN</span>
                 </a>
             </div>
         </div>
@@ -109,7 +110,7 @@
         <section class="space-y-4">
             <div class="flex items-center space-x-2">
                 <div class="w-1 h-4 bg-red-600"></div>
-                <h2 class="font-black text-sm text-white uppercase tracking-widest">Partnerships</h2>
+                <h2 class="font-black text-sm text-white uppercase tracking-widest">Partnerships & Sponsors</h2>
             </div>
             <div class="flex flex-wrap items-center justify-center gap-4 py-2" id="partners-grid">Loading partners...</div>
         </section>
@@ -180,11 +181,9 @@
 
         function calculateWinrate(teamName) {
             if (!teamName || !allMatches) return '0%';
-            
             const teamMatches = Object.values(allMatches).filter(m => 
                 m.team && m.team.trim().toLowerCase() === teamName.trim().toLowerCase()
             );
-
             if (teamMatches.length === 0) return '0%';
 
             let totalWon = 0;
@@ -240,7 +239,6 @@
         function renderRoster() {
             const grid = document.getElementById('roster-grid');
             grid.innerHTML = '';
-
             const filtered = allPlayers.filter(p => currentGameFilter === 'ALL' || p.game === currentGameFilter);
 
             if(filtered.length === 0) {
@@ -338,7 +336,6 @@
             document.getElementById('modal-pfp').src = pfp;
             
             document.getElementById('modal-champs-title').innerText = game === 'Valorant' ? 'TOP 3 AGENTS' : 'TOP 3 CHAMPIONS';
-
             document.getElementById('modal-champs').innerHTML = `
                 <img src="${c1}" class="w-[36px] h-[36px] rounded-lg border border-red-500/30 object-cover bg-[#0b0c10]">
                 <img src="${c2}" class="w-[36px] h-[36px] rounded-lg border border-red-500/30 object-cover bg-[#0b0c10]">
