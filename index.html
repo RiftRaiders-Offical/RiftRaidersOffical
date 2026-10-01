@@ -142,9 +142,9 @@
                 <button onclick="lockAdmin()" class="bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/40 px-3 py-1 rounded text-[10px] font-bold">Lock Admin</button>
             </div>
 
-            <!-- 1. ADD PLAYER -->
+            <!-- 1. ADD & MANAGE PLAYER -->
             <div class="bg-[#161822] p-5 rounded-xl border border-white/5 space-y-4">
-                <h3 class="font-black text-xs uppercase text-red-500">1. Add Competitive Player</h3>
+                <h3 class="font-black text-xs uppercase text-red-500">1. Add & Manage Competitive Player</h3>
                 <div>
                     <label class="text-[10px] font-bold text-slate-400 uppercase">Select Game Category:</label>
                     <select id="p-game" onchange="onGameChange()" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 text-white font-bold focus:outline-none focus:border-red-500">
@@ -184,11 +184,17 @@
                     </div>
                 </div>
                 <button onclick="addPlayer()" id="btn-player" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save Player</button>
+                
+                <!-- LIST & DELETE PLAYERS -->
+                <div class="mt-4 pt-3 border-t border-white/5">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Existing Players List:</p>
+                    <div id="admin-players-list" class="space-y-2 max-h-40 overflow-y-auto"></div>
+                </div>
             </div>
 
-            <!-- 2. ADD MATCH -->
+            <!-- 2. ADD & MANAGE MATCH -->
             <div class="bg-[#161822] p-5 rounded-xl border border-white/5 space-y-4">
-                <h3 class="font-black text-xs uppercase text-red-500">2. Add Match Result</h3>
+                <h3 class="font-black text-xs uppercase text-red-500">2. Add & Manage Match Result</h3>
                 <div class="grid grid-cols-2 gap-2">
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 uppercase">Our Team:</label>
@@ -226,11 +232,17 @@
                     <input type="date" id="m-date" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
                 </div>
                 <button onclick="addMatch()" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save Match</button>
+                
+                <!-- LIST & DELETE MATCHES -->
+                <div class="mt-4 pt-3 border-t border-white/5">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Existing Matches List:</p>
+                    <div id="admin-matches-list" class="space-y-2 max-h-40 overflow-y-auto"></div>
+                </div>
             </div>
 
-            <!-- 3. ADD CREATOR -->
+            <!-- 3. ADD & MANAGE CREATOR -->
             <div class="bg-[#161822] p-5 rounded-xl border border-white/5 space-y-4">
-                <h3 class="font-black text-xs uppercase text-red-500">3. Add Content Creator</h3>
+                <h3 class="font-black text-xs uppercase text-red-500">3. Add & Manage Content Creator</h3>
                 <div>
                     <label class="text-[10px] font-bold text-slate-400 uppercase">Creator Name:</label>
                     <input type="text" id="c-name" placeholder="e.g. Creator Name" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
@@ -251,11 +263,16 @@
                     <input type="text" id="c-twitch" placeholder="Twitch Channel URL" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs focus:outline-none focus:border-red-500">
                 </div>
                 <button onclick="addCreator()" id="btn-creator" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save Creator</button>
+                
+                <!-- LIST & DELETE CREATORS -->
+                <div class="mt-4 pt-3 border-t border-white/5">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Existing Creators List:</p>
+                    <div id="admin-creators-list" class="space-y-2 max-h-40 overflow-y-auto"></div>
+                </div>
             </div>
-
-            <!-- 4. ADD PARTNER / SPONSOR -->
+<!-- 4. ADD & MANAGE PARTNER / SPONSOR -->
             <div class="bg-[#161822] p-5 rounded-xl border border-white/5 space-y-4">
-                <h3 class="font-black text-xs uppercase text-red-500">4. Add Partnership / Sponsor</h3>
+                <h3 class="font-black text-xs uppercase text-red-500">4. Add & Manage Partnership / Sponsor</h3>
                 <div>
                     <label class="text-[10px] font-bold text-slate-400 uppercase">Partner / Sponsor Name:</label>
                     <input type="text" id="part-name" placeholder="e.g. Brand Name" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
@@ -269,11 +286,17 @@
                     <input type="text" id="part-link" placeholder="https://..." class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
                 </div>
                 <button onclick="addPartner()" id="btn-partner" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save Partner</button>
+                
+                <!-- LIST & DELETE PARTNERS -->
+                <div class="mt-4 pt-3 border-t border-white/5">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Existing Partners List:</p>
+                    <div id="admin-partners-list" class="space-y-2 max-h-40 overflow-y-auto"></div>
+                </div>
             </div>
         </section>
     </main>
 
-<!-- PLAYER STATS MODAL POPUP -->
+    <!-- PLAYER STATS MODAL POPUP -->
     <div id="player-modal-backdrop" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 hidden transition-opacity duration-300">
         <div id="player-modal-card" class="bg-[#121212] border border-red-600/30 rounded-2xl p-5 w-full max-w-sm shadow-[0_0_30px_rgba(255,42,45,0.15)] relative transform scale-95 opacity-0 transition-all duration-300">
             <button onclick="closePlayerStats()" class="absolute top-4 right-4 text-slate-500 hover:text-white w-6 h-6 flex items-center justify-center bg-white/5 rounded-full">✕</button>
@@ -327,6 +350,8 @@
 
         let allPlayers = [];
         let allMatches = {};
+        let allCreators = {};
+        let allPartners = {};
         let currentGameFilter = 'ALL';
 
         window.addEventListener('load', () => {
@@ -393,7 +418,7 @@
         db.ref('matches').on('value', snap => {
             allMatches = snap.val() || {};
             renderMatches();
-            renderRoster();
+            renderAdminMatches();
         });
 
         db.ref('roster').on('value', snap => {
@@ -404,6 +429,19 @@
                 });
             }
             renderRoster();
+            renderAdminPlayers();
+        });
+
+        db.ref('creators').on('value', snap => {
+            allCreators = snap.val() || {};
+            renderCreators();
+            renderAdminCreators();
+        });
+
+        db.ref('partners').on('value', snap => {
+            allPartners = snap.val() || {};
+            renderPartners();
+            renderAdminPartners();
         });
 
         function filterGame(game) {
@@ -448,7 +486,8 @@
                 `;
             });
         }
-function renderMatches() {
+
+        function renderMatches() {
             const list = document.getElementById('match-history-list');
             list.innerHTML = '';
             const matchKeys = Object.keys(allMatches);
@@ -477,15 +516,16 @@ function renderMatches() {
             });
         }
 
-        db.ref('creators').on('value', snap => {
+        function renderCreators() {
             const grid = document.getElementById('creators-grid');
             grid.innerHTML = '';
-            if(!snap.exists()) {
+            const keys = Object.keys(allCreators);
+            if(keys.length === 0) {
                 grid.innerHTML = '<div class="text-xs text-slate-500 italic col-span-2">No creators added yet.</div>';
                 return;
             }
-            snap.forEach(child => {
-                const c = child.val();
+            keys.forEach(key => {
+                const c = allCreators[key];
                 let socialsHtml = '';
                 if(c.fb) socialsHtml += `<a href="${c.fb}" target="_blank" class="text-blue-400 hover:text-white"><i class="fa-brands fa-facebook"></i></a>`;
                 if(c.tiktok) socialsHtml += `<a href="${c.tiktok}" target="_blank" class="text-pink-400 hover:text-white"><i class="fa-brands fa-tiktok"></i></a>`;
@@ -505,17 +545,18 @@ function renderMatches() {
                     </div>
                 `;
             });
-        });
+        }
 
-        db.ref('partners').on('value', snap => {
+        function renderPartners() {
             const grid = document.getElementById('partners-grid');
             grid.innerHTML = '';
-            if(!snap.exists()) {
+            const keys = Object.keys(allPartners);
+            if(keys.length === 0) {
                 grid.innerHTML = '<div class="text-xs text-slate-500 italic">No partners added yet.</div>';
                 return;
             }
-            snap.forEach(child => {
-                const p = child.val();
+            keys.forEach(key => {
+                const p = allPartners[key];
                 grid.innerHTML += `
                     <a href="${p.link || '#'}" target="_blank" class="bg-[#161822] px-4 py-2.5 rounded-xl border border-white/5 hover:border-red-500/30 flex items-center space-x-2 transition group">
                         <img src="${p.logo}" class="h-6 w-auto object-contain">
@@ -523,7 +564,90 @@ function renderMatches() {
                     </a>
                 `;
             });
-        });
+        }
+
+        // ADMIN LIST & DELETE RENDERERS
+        function renderAdminPlayers() {
+            const container = document.getElementById('admin-players-list');
+            container.innerHTML = '';
+            if(allPlayers.length === 0) {
+                container.innerHTML = '<p class="text-[10px] text-slate-500 italic">No players available.</p>';
+                return;
+            }
+            allPlayers.forEach(p => {
+                container.innerHTML += `
+                    <div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/5 text-xs">
+                        <span class="font-bold text-slate-300">${p.ign} <span class="text-[9px] text-slate-500">(${p.game})</span></span>
+                        <button onclick="deleteItem('roster', '${p.id}')" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-2 py-1 rounded text-[10px] transition">Delete</button>
+                    </div>
+                `;
+            });
+        }
+
+        function renderAdminMatches() {
+            const container = document.getElementById('admin-matches-list');
+            container.innerHTML = '';
+            const keys = Object.keys(allMatches);
+            if(keys.length === 0) {
+                container.innerHTML = '<p class="text-[10px] text-slate-500 italic">No matches available.</p>';
+                return;
+            }
+            keys.forEach(key => {
+                const m = allMatches[key];
+                container.innerHTML += `
+                    <div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/5 text-xs">
+                        <span class="font-bold text-slate-300">${m.team} vs ${m.opponent}</span>
+                        <button onclick="deleteItem('matches', '${key}')" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-2 py-1 rounded text-[10px] transition">Delete</button>
+                    </div>
+                `;
+            });
+        }
+
+        function renderAdminCreators() {
+            const container = document.getElementById('admin-creators-list');
+            container.innerHTML = '';
+            const keys = Object.keys(allCreators);
+            if(keys.length === 0) {
+                container.innerHTML = '<p class="text-[10px] text-slate-500 italic">No creators available.</p>';
+                return;
+            }
+            keys.forEach(key => {
+                const c = allCreators[key];
+                container.innerHTML += `
+                    <div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/5 text-xs">
+                        <span class="font-bold text-slate-300">${c.name}</span>
+                        <button onclick="deleteItem('creators', '${key}')" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-2 py-1 rounded text-[10px] transition">Delete</button>
+                    </div>
+                `;
+            });
+        }
+
+        function renderAdminPartners() {
+            const container = document.getElementById('admin-partners-list');
+            container.innerHTML = '';
+            const keys = Object.keys(allPartners);
+            if(keys.length === 0) {
+                container.innerHTML = '<p class="text-[10px] text-slate-500 italic">No partners available.</p>';
+                return;
+            }
+            keys.forEach(key => {
+                const p = allPartners[key];
+                container.innerHTML += `
+                    <div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/5 text-xs">
+                        <span class="font-bold text-slate-300">${p.name}</span>
+                        <button onclick="deleteItem('partners', '${key}')" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-2 py-1 rounded text-[10px] transition">Delete</button>
+                    </div>
+                `;
+            });
+        }
+
+        function deleteItem(path, id) {
+            if(confirm('Sigurado ka bang gusto mo itong tanggalin?')) {
+                db.ref(`${path}/${id}`).remove()
+                    .then(() => alert('Successfully deleted!'))
+                    .catch(() => alert('Error deleting item.'));
+            }
+        }
 
         async function uploadImage(file, folder) {
             if(!file) return 'https://via.placeholder.com/150';
