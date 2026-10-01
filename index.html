@@ -3,53 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rift Raiders - Admin Portal & Settings</title>
+    <title>Rift Raiders - Official Guild</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+    
+    <style>
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0b0c10; }
+        ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #ef4444; }
+    </style>
 </head>
-<body class="bg-[#0b0c10] text-white p-4 font-sans pb-20">
+<body class="bg-[#0b0c10] text-slate-100 font-sans antialiased pb-20">
 
-    <!-- LOGIN SCREEN -->
-    <div id="login-screen" class="fixed inset-0 bg-[#0b0c10] z-50 flex flex-col items-center justify-center p-4">
-        <div class="text-red-500 font-black italic text-3xl mb-2">RR ADMIN PORTAL</div>
-        <p class="text-xs text-slate-400 mb-6">Admin Settings & Management</p>
-        <input type="password" id="admin-pass" placeholder="Enter Password" class="bg-[#161822] border border-white/10 px-4 py-2 rounded mb-4 focus:outline-none focus:border-red-500 text-center text-sm w-full max-w-xs">
-        <button onclick="checkPass()" class="bg-red-600 hover:bg-red-700 px-6 py-2 rounded font-bold uppercase text-xs w-full max-w-xs transition">Login</button>
-        <p class="text-[10px] text-slate-500 mt-4">Default Password: rr2024</p>
+    <!-- LOADING SCREEN -->
+    <div id="loading-screen" class="fixed inset-0 bg-[#0b0c10] z-[100] flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="text-red-500 font-black italic text-5xl tracking-tighter animate-pulse mb-4 flex items-center">
+            <span class="border-t-4 border-red-500 w-8 mr-2"></span>RR
+        </div>
+        <p class="text-white text-xs tracking-widest uppercase font-bold animate-bounce">Loading Rift Raiders...</p>
     </div>
 
-    <!-- ADMIN DASHBOARD PANEL -->
-    <div id="admin-dashboard" class="hidden max-w-2xl mx-auto space-y-6">
-        
-        <!-- TOP HEADER WITH "YOU" PROFILE SECTION -->
-        <div class="flex justify-between items-center bg-[#161822] p-4 rounded-xl border border-white/5">
+    <!-- HEADER NAVIGATION -->
+    <header class="bg-[#0b0c10] sticky top-0 z-40 border-b border-white/5">
+        <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-full bg-red-600/20 border border-red-500/40 flex items-center justify-center font-black text-red-500 text-sm">
-                    YOU
+                <div class="text-red-500 font-black italic text-xl tracking-tighter">
+                    <span class="border-t-2 border-red-500 mr-1"></span>RR
                 </div>
-                <div>
-                    <h1 class="text-white font-black text-sm uppercase tracking-wider">Admin Portal</h1>
-                    <p class="text-[10px] text-slate-400">Logged in as: <span class="text-red-400 font-bold">You</span></p>
+                <div class="leading-none">
+                    <h1 class="font-black text-white text-base uppercase tracking-widest">Rift<br>Raiders</h1>
+                    <p class="text-red-600 text-[9px] font-bold uppercase tracking-widest mt-0.5">Official Guild</p>
                 </div>
             </div>
+            
             <div class="flex items-center space-x-2">
-                <button onclick="resetDefaultData()" class="bg-yellow-600/20 border border-yellow-500/40 text-yellow-400 px-3 py-1.5 rounded text-[10px] font-bold hover:bg-yellow-600/30 transition">Reset DB</button>
-                <a href="index.html" class="bg-white/5 hover:bg-white/10 text-slate-300 px-3 py-1.5 rounded text-[10px] font-bold transition">View Site</a>
+                <a href="https://docs.google.com/forms/d/1qTTcHVfRsVXhsfKHv5-7qkZnoe6kMtoN2uLVEYY5XVg/viewform" target="_blank" class="bg-[#ff2a2d] hover:bg-red-600 text-white px-3 py-1.5 rounded-lg font-bold text-xs flex items-center justify-center space-x-1.5 transition shadow-[0_0_15px_rgba(255,42,45,0.3)]">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    <span>APPLY</span>
+                </a>
+                <!-- ADMIN PORTAL TRIGGER BUTTON -->
+                <button onclick="openAdminModal()" class="bg-[#161822] hover:bg-slate-800 text-slate-400 hover:text-white px-3 py-1.5 rounded-lg font-bold text-xs flex items-center justify-center space-x-1.5 transition border border-white/5" title="Admin Portal">
+                    <i class="fa-solid fa-lock text-red-500"></i>
+                    <span>ADMIN</span>
+                </button>
             </div>
         </div>
+    </header>
 
-        <!-- ADMIN SETTINGS & MANAGEMENT SECTIONS -->
-        <div class="grid grid-cols-1 gap-6">
+    <!-- PASSWORD MODAL POPUP -->
+    <div id="admin-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-[#161822] border border-white/10 rounded-2xl p-6 w-full max-w-xs text-center relative shadow-2xl">
+            <button onclick="closeAdminModal()" class="absolute top-3 right-3 text-slate-400 hover:text-white text-sm">✕</button>
+            <div class="text-red-500 font-black italic text-xl mb-1">RR ADMIN PORTAL</div>
+            <p class="text-[10px] text-slate-400 mb-4">Enter password to access management settings</p>
+            <input type="password" id="admin-pass-input" placeholder="Enter Password" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs text-white text-center mb-3 focus:outline-none focus:border-red-500">
+            <button onclick="verifyAdminPass()" class="w-full bg-red-600 hover:bg-red-700 py-2 rounded text-xs font-bold uppercase tracking-wider transition">Login</button>
+            <p class="text-[9px] text-slate-500 mt-3">Default Password: rr2024</p>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT (PUBLIC SITE) -->
+    <main class="max-w-md mx-auto px-4 py-6 space-y-8">
+        
+        <!-- ABOUT US -->
+        <section class="space-y-4">
+            <div class="flex items-center space-x-2">
+                <div class="w-1 h-4 bg-red-600"></div>
+                <h2 class="font-black text-sm text-white uppercase tracking-widest">About Us</h2>
+            </div>
+            <p class="text-xs text-slate-400 leading-relaxed">
+                Rift Raiders began its journey in 2024 as a dedicated competitive team. After a year of climbing the ranks, we expanded in April 2025 by establishing our official guild. Today, we continue to field elite rosters ready to conquer the rift and arena.
+            </p>
+        </section>
+
+        <!-- MEET THE TEAMS & SECTIONS -->
+        <section class="space-y-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <div class="w-1 h-4 bg-red-600"></div>
+                    <h2 class="font-black text-sm text-white uppercase tracking-widest">Meet The Teams</h2>
+                </div>
+            </div>
             
+            <!-- GAME SELECTION TABS -->
+            <div class="flex gap-1.5 overflow-x-auto pb-1 text-[10px] font-bold">
+                <button onclick="filterGame('ALL')" class="game-tab bg-red-600 text-white px-3 py-1.5 rounded-lg border border-red-500/30 whitespace-nowrap transition">ALL</button>
+                <button onclick="filterGame('Wild Rift')" class="game-tab bg-[#161822] text-slate-400 px-3 py-1.5 rounded-lg border border-white/5 whitespace-nowrap transition">WILD RIFT</button>
+                <button onclick="filterGame('League of Legends')" class="game-tab bg-[#161822] text-slate-400 px-3 py-1.5 rounded-lg border border-white/5 whitespace-nowrap transition">LOL PC</button>
+                <button onclick="filterGame('Valorant')" class="game-tab bg-[#161822] text-slate-400 px-3 py-1.5 rounded-lg border border-white/5 whitespace-nowrap transition">VALORANT</button>
+            </div>
+
+            <div class="grid grid-cols-1 gap-4" id="roster-grid">Loading rosters...</div>
+        </section>
+
+        <!-- MATCH HISTORY -->
+        <section class="space-y-4">
+            <div class="flex items-center space-x-2">
+                <div class="w-1 h-4 bg-red-600"></div>
+                <h2 class="font-black text-sm text-white uppercase tracking-widest">Match History</h2>
+            </div>
+            <div id="match-history-list" class="space-y-3 text-xs text-slate-500">Loading matches...</div>
+        </section>
+
+        <!-- CREATORS & PARTNERS -->
+        <section class="space-y-4">
+            <div class="flex items-center space-x-2">
+                <div class="w-1 h-4 bg-red-600"></div>
+                <h2 class="font-black text-sm text-white uppercase tracking-widest">Meet The Creators</h2>
+            </div>
+            <div class="grid grid-cols-2 gap-3" id="creators-grid">Loading creators...</div>
+        </section>
+
+        <section class="space-y-4">
+            <div class="flex items-center space-x-2">
+                <div class="w-1 h-4 bg-red-600"></div>
+                <h2 class="font-black text-sm text-white uppercase tracking-widest">Partnerships & Sponsors</h2>
+            </div>
+            <div class="flex flex-wrap items-center justify-center gap-4 py-2" id="partners-grid">Loading partners...</div>
+        </section>
+
+        <!-- HIDDEN ADMIN DASHBOARD (Lilitaw lang pagka-login ng tamang password) -->
+        <section id="admin-dashboard-section" class="hidden space-y-6 pt-6 border-t border-red-500/30">
+            <div class="flex justify-between items-center bg-[#161822] p-4 rounded-xl border border-red-500/40">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 rounded-full bg-red-600/20 border border-red-500/40 flex items-center justify-center font-black text-red-500 text-xs">YOU</div>
+                    <div>
+                        <h3 class="text-white font-black text-xs uppercase tracking-wider">Admin Dashboard Unlocked</h3>
+                        <p class="text-[9px] text-slate-400">Management Panel Active</p>
+                    </div>
+                </div>
+                <button onclick="lockAdmin()" class="bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/40 px-3 py-1 rounded text-[10px] font-bold">Lock Admin</button>
+            </div>
+
             <!-- 1. ADD PLAYER -->
             <div class="bg-[#161822] p-5 rounded-xl border border-white/5 space-y-4">
-                <h2 class="font-black text-sm uppercase text-red-500 flex items-center justify-between">
-                    <span>1. Add Competitive Player</span>
-                    <span class="text-[9px] text-slate-500 font-normal">Roster Manager</span>
-                </h2>
-                
+                <h3 class="font-black text-xs uppercase text-red-500">1. Add Competitive Player</h3>
                 <div>
                     <label class="text-[10px] font-bold text-slate-400 uppercase">Select Game Category:</label>
                     <select id="p-game" onchange="onGameChange()" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 text-white font-bold focus:outline-none focus:border-red-500">
@@ -58,71 +152,62 @@
                         <option value="Valorant">Valorant</option>
                     </select>
                 </div>
-
                 <div class="grid grid-cols-2 gap-2">
                     <div>
-                        <label class="text-[10px] font-bold text-slate-400 uppercase">In-Game Name (IGN):</label>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">IGN:</label>
                         <input type="text" id="p-ign" placeholder="e.g. Takeku" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
                     </div>
                     <div>
-                        <label class="text-[10px] font-bold text-slate-400 uppercase">Riot ID Tag:</label>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">Tag:</label>
                         <input type="text" id="p-tag" placeholder="e.g. PH1" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
                     </div>
                 </div>
-
                 <div>
                     <label class="text-[10px] font-bold text-slate-400 uppercase">Team Name:</label>
-                    <input type="text" id="p-team" placeholder="e.g. Rift Raiders Main" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
+                    <input type="text" id="p-team" placeholder="Rift Raiders Main" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
                 </div>
-
                 <div>
                     <label id="lbl-role" class="text-[10px] font-bold text-slate-400 uppercase">Player Role:</label>
-                    <input type="text" id="p-role" placeholder="e.g. Midlaner" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
+                    <input type="text" id="p-role" placeholder="Midlaner" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
                 </div>
-
                 <div>
-                    <label class="text-[10px] font-bold text-slate-400 uppercase">Player Profile Photo:</label>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase">Profile Photo:</label>
                     <input type="file" id="p-pfp" accept="image/*" class="w-full text-xs text-slate-400 mt-1">
                 </div>
-                
                 <div>
-                    <label id="lbl-champs" class="text-[10px] font-bold text-slate-400 uppercase">Top 3 Champions / Agents (Pictures):</label>
+                    <label id="lbl-champs" class="text-[10px] font-bold text-slate-400 uppercase">Top 3 Champions / Agents:</label>
                     <div class="grid grid-cols-3 gap-2 mt-1">
                         <input type="file" id="p-c1" accept="image/*" class="w-full text-[10px] text-slate-400">
                         <input type="file" id="p-c2" accept="image/*" class="w-full text-[10px] text-slate-400">
                         <input type="file" id="p-c3" accept="image/*" class="w-full text-[10px] text-slate-400">
                     </div>
                 </div>
-                
-                <button onclick="addPlayer()" id="btn-player" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold mt-2 uppercase tracking-wider transition">Save Player</button>
+                <button onclick="addPlayer()" id="btn-player" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save Player</button>
             </div>
 
-            <!-- 2. ADD MATCH HISTORY -->
+            <!-- 2. ADD MATCH -->
             <div class="bg-[#161822] p-5 rounded-xl border border-white/5 space-y-4">
-                <h2 class="font-black text-sm uppercase text-red-500">2. Add Match Result</h2>
+                <h3 class="font-black text-xs uppercase text-red-500">2. Add Match Result</h3>
                 <div class="grid grid-cols-2 gap-2">
                     <div>
-                        <label class="text-[10px] font-bold text-slate-400 uppercase">Our Team Name:</label>
-                        <input type="text" id="m-team" placeholder="e.g. Rift Raiders Main" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">Our Team:</label>
+                        <input type="text" id="m-team" placeholder="Rift Raiders Main" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
                     </div>
                     <div>
-                        <label class="text-[10px] font-bold text-slate-400 uppercase">Opponent Team:</label>
-                        <input type="text" id="m-opp" placeholder="e.g. Execration" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">Opponent:</label>
+                        <input type="text" id="m-opp" placeholder="Execration" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
                     </div>
                 </div>
-
                 <div>
-                    <label class="text-[10px] font-bold text-slate-400 uppercase">Score (e.g. 2-0, 2-1):</label>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase">Score (e.g. 2-0):</label>
                     <input type="text" id="m-score" placeholder="2-0" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
                 </div>
-
                 <div class="grid grid-cols-2 gap-2">
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 uppercase">Match Type:</label>
                         <select id="m-type" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
-                            <option value="Scrim">Scrim</option>
                             <option value="Tournament">Tournament</option>
-                            <option value="Showmatch">Showmatch</option>
+                            <option value="Scrim">Scrim</option>
                         </select>
                     </div>
                     <div>
@@ -134,38 +219,50 @@
                         </select>
                     </div>
                 </div>
-
                 <div>
                     <label class="text-[10px] font-bold text-slate-400 uppercase">Date:</label>
                     <input type="date" id="m-date" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
                 </div>
-
-                <button onclick="addMatch()" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase tracking-wider transition">Save Match Result</button>
+                <button onclick="addMatch()" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save Match</button>
             </div>
+        </section>
+    </main>
 
-            <!-- 3. ADD CREATOR -->
-            <div class="bg-[#161822] p-5 rounded-xl border border-white/5 space-y-4">
-                <h2 class="font-black text-sm uppercase text-red-500">3. Add Creator</h2>
-                <input type="text" id="c-name" placeholder="Creator Name" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs focus:outline-none focus:border-red-500">
-                <div>
-                    <label class="text-[10px] font-bold text-slate-400 uppercase">Profile Photo:</label>
-                    <input type="file" id="c-pfp" accept="image/*" class="w-full text-xs text-slate-400 mt-1">
+    <!-- PLAYER STATS MODAL POPUP -->
+    <div id="player-modal-backdrop" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 hidden transition-opacity duration-300">
+        <div id="player-modal-card" class="bg-[#121212] border border-red-600/30 rounded-2xl p-5 w-full max-w-sm shadow-[0_0_30px_rgba(255,42,45,0.15)] relative transform scale-95 opacity-0 transition-all duration-300">
+            <button onclick="closePlayerStats()" class="absolute top-4 right-4 text-slate-500 hover:text-white w-6 h-6 flex items-center justify-center bg-white/5 rounded-full">✕</button>
+
+            <div class="flex items-center space-x-4 mb-5">
+                <div class="w-[60px] h-[60px] rounded-lg border-[3px] border-red-500 overflow-hidden bg-slate-800">
+                    <img id="modal-pfp" src="" class="w-full h-full object-cover">
                 </div>
-                <input type="text" id="c-link" placeholder="Social Media Link (URL)" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs focus:outline-none focus:border-red-500">
-                <button onclick="addCreator()" id="btn-creator" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase tracking-wider transition">Save Creator</button>
-            </div>
-
-            <!-- 4. ADD SPONSOR / PARTNER -->
-            <div class="bg-[#161822] p-5 rounded-xl border border-white/5 space-y-4">
-                <h2 class="font-black text-sm uppercase text-red-500">4. Add Sponsor / Partner Logo</h2>
                 <div>
-                    <label class="text-[10px] font-bold text-slate-400 uppercase">Sponsor Logo Photo:</label>
-                    <input type="file" id="part-logo" accept="image/*" class="w-full text-xs text-slate-400 mt-1">
+                    <h3 id="modal-name" class="text-white font-black text-xl uppercase tracking-wider leading-none">NAME</h3>
+                    <p id="modal-tag" class="text-slate-400 text-[10px] font-bold tracking-widest mt-0.5">#TAG</p>
+                    <span id="modal-game" class="inline-block bg-red-600/20 text-red-400 border border-red-500/30 text-[8px] font-black px-2 py-0.5 rounded mt-1 uppercase">GAME</span>
                 </div>
-                <input type="text" id="part-link" placeholder="Sponsor Website / Facebook Link" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs focus:outline-none focus:border-red-500">
-                <button onclick="addPartner()" id="btn-partner" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase tracking-wider transition">Save Partner</button>
             </div>
 
+            <div class="grid grid-cols-3 gap-2 mb-5 bg-[#161822] p-3 rounded-xl border border-white/5">
+                <div>
+                    <p class="text-slate-500 text-[8px] font-bold uppercase tracking-widest mb-0.5">TEAM</p>
+                    <p id="modal-team" class="text-white font-black uppercase text-[11px]">TEAM</p>
+                </div>
+                <div>
+                    <p class="text-slate-500 text-[8px] font-bold uppercase tracking-widest mb-0.5">ROLE</p>
+                    <p id="modal-role" class="text-slate-200 font-bold uppercase text-[11px]">ROLE</p>
+                </div>
+                <div>
+                    <p class="text-slate-500 text-[8px] font-bold uppercase tracking-widest mb-0.5">WINRATE</p>
+                    <p id="modal-winrate" class="text-[#22c55e] font-black uppercase text-[11px]">0%</p>
+                </div>
+            </div>
+
+            <div>
+                <p id="modal-champs-title" class="text-slate-500 text-[9px] font-bold uppercase tracking-widest mb-2">TOP 3 CHAMPS / AGENTS</p>
+                <div id="modal-champs" class="flex gap-2"></div>
+            </div>
         </div>
     </div>
 
@@ -183,28 +280,190 @@
         const db = firebase.database();
         const storage = firebase.storage();
 
-        function checkPass() {
-            if(document.getElementById('admin-pass').value === 'rr2024') {
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('admin-dashboard').classList.remove('hidden');
+        let allPlayers = [];
+        let allMatches = {};
+        let currentGameFilter = 'ALL';
+
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const loader = document.getElementById('loading-screen');
+                loader.classList.add('opacity-0');
+                setTimeout(() => loader.style.display = 'none', 500);
+            }, 800);
+        });
+
+        function openAdminModal() {
+            document.getElementById('admin-modal').classList.remove('hidden');
+        }
+
+        function closeAdminModal() {
+            document.getElementById('admin-modal').classList.add('hidden');
+        }
+
+        function verifyAdminPass() {
+            const pass = document.getElementById('admin-pass-input').value;
+            if (pass === 'rr2024') {
+                closeAdminModal();
+                document.getElementById('admin-dashboard-section').classList.remove('hidden');
+                alert('Admin Access Granted!');
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
             } else {
-                alert('Maling Password!');
+                alert('Maling password!');
             }
         }
 
-        function onGameChange() {
-            const game = document.getElementById('p-game').value;
-            const roleLbl = document.getElementById('lbl-role');
-            const champLbl = document.getElementById('lbl-champs');
-
-            if(game === 'Valorant') {
-                roleLbl.innerText = "Player Role / Main Agent (e.g. Duelist / Jett):";
-                champLbl.innerText = "Top 3 Agents (Pictures):";
-            } else {
-                roleLbl.innerText = "Player Role (e.g. Mid / Jungler):";
-                champLbl.innerText = "Top 3 Champions (Pictures):";
-            }
+        function lockAdmin() {
+            document.getElementById('admin-dashboard-section').classList.add('hidden');
+            document.getElementById('admin-pass-input').value = '';
+            alert('Admin locked successfully.');
         }
+
+        function calculateWinrate(teamName) {
+            if (!teamName || !allMatches) return '0%';
+            const teamMatches = Object.values(allMatches).filter(m => 
+                m.team && m.team.trim().toLowerCase() === teamName.trim().toLowerCase()
+            );
+            if (teamMatches.length === 0) return '0%';
+
+            let totalWon = 0;
+            let totalPlayed = 0;
+
+            teamMatches.forEach(m => {
+                if (m.score && m.score.includes('-')) {
+                    const parts = m.score.split('-').map(s => parseInt(s.trim()));
+                    if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+                        totalWon += parts[0];
+                        totalPlayed += (parts[0] + parts[1]);
+                    }
+                } else {
+                    totalPlayed += 1;
+                    if (m.result === 'Win') totalWon += 1;
+                }
+            });
+
+            if (totalPlayed === 0) return '0%';
+            return Math.round((totalWon / totalPlayed) * 100) + '%';
+        }
+
+        db.ref('matches').on('value', snap => {
+            allMatches = snap.val() || {};
+            renderMatches();
+            renderRoster();
+        });
+
+        db.ref('roster').on('value', snap => {
+            allPlayers = [];
+            if(snap.exists()) {
+                snap.forEach(child => {
+                    allPlayers.push({ id: child.key, ...child.val() });
+                });
+            }
+            renderRoster();
+        });
+
+        function filterGame(game) {
+            currentGameFilter = game;
+            document.querySelectorAll('.game-tab').forEach(btn => {
+                const text = btn.innerText.toLowerCase();
+                const matchVal = game.toLowerCase();
+                if(text.includes(matchVal) || (game === 'ALL' && text === 'all')) {
+                    btn.className = 'game-tab bg-red-600 text-white px-3 py-1.5 rounded-lg border border-red-500/30 whitespace-nowrap transition';
+                } else {
+                    btn.className = 'game-tab bg-[#161822] text-slate-400 px-3 py-1.5 rounded-lg border border-white/5 whitespace-nowrap transition';
+                }
+            });
+            renderRoster();
+        }
+
+        function renderRoster() {
+            const grid = document.getElementById('roster-grid');
+            grid.innerHTML = '';
+            const filtered = allPlayers.filter(p => currentGameFilter === 'ALL' || p.game === currentGameFilter);
+
+            if(filtered.length === 0) {
+                grid.innerHTML = '<p class="text-xs text-slate-500 italic py-4 text-center">No players found for this category.</p>';
+                return;
+            }
+
+            filtered.forEach(p => {
+                const calculatedWr = calculateWinrate(p.team);
+                grid.innerHTML += `
+                    <div onclick="openPlayerStats('${p.ign}', '${p.tag || ''}', '${p.game}', '${p.team}', '${p.role || ''}', '${calculatedWr}', '${p.pfp}', '${p.champ1}', '${p.champ2}', '${p.champ3}')" class="bg-[#161822] rounded-xl overflow-hidden relative h-64 cursor-pointer group border border-white/5 shadow-md">
+                        <img src="${p.pfp}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#0b0c10] via-[#0b0c10]/30 to-transparent"></div>
+                        <div class="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-green-400 text-[9px] font-black px-2 py-1 rounded border border-white/10">
+                            WR: ${calculatedWr}
+                        </div>
+                        <div class="absolute bottom-4 left-4">
+                            <span class="bg-[#ff2a2d] text-white text-[9px] font-black px-2 py-0.5 rounded tracking-wider uppercase">${p.game || 'Wild Rift'}</span>
+                            <h3 class="text-white font-black text-2xl mt-1 uppercase tracking-wide leading-none">${p.ign}</h3>
+                            <p class="text-slate-400 text-[10px] font-bold uppercase mt-1">${p.team} ${p.role ? '• ' + p.role : ''}</p>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function renderMatches() {
+            const list = document.getElementById('match-history-list');
+            list.innerHTML = '';
+            const matchKeys = Object.keys(allMatches);
+            
+            if(matchKeys.length === 0) { 
+                list.innerHTML = '<div class="text-xs text-slate-500 italic">No match history added yet.</div>'; 
+                return; 
+            }
+
+            matchKeys.forEach(key => {
+                const m = allMatches[key];
+                let color = m.result === 'Win' ? 'text-green-500 bg-green-500/10 border-green-500/20' : 
+                            m.result === 'Lose' ? 'text-red-500 bg-red-500/10 border-red-500/20' : 
+                            'text-yellow-500 bg-yellow-500/10 border-yellow-500/20';
+                
+                list.innerHTML += `
+                    <div class="bg-[#161822] border border-white/5 rounded-xl p-4 flex justify-between items-center">
+                        <div>
+                            <div class="text-[10px] font-bold text-slate-400 mb-1">${m.type} • ${m.date}</div>
+                            <div class="text-white font-black text-sm uppercase">${m.team} <span class="text-slate-500 mx-1">vs</span> ${m.opponent}</div>
+                            <div class="text-xs font-bold text-slate-300 mt-0.5">Score: ${m.score}</div>
+                        </div>
+                        <div class="px-3 py-1 rounded border font-black uppercase text-[10px] ${color}">${m.result}</div>
+                    </div>
+                `;
+            });
+        }
+
+        db.ref('creators').on('value', snap => {
+            const grid = document.getElementById('creators-grid');
+            grid.innerHTML = '';
+            if(!snap.exists()) return;
+            snap.forEach(child => {
+                const c = child.val();
+                grid.innerHTML += `
+                    <div class="bg-[#161822] border border-white/5 rounded-xl p-4 flex flex-col items-center text-center">
+                        <div class="w-12 h-12 rounded-full border-2 border-[#161822] outline outline-2 outline-blue-500 mb-2 overflow-hidden bg-slate-800">
+                             <img src="${c.pfp}" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-black text-white text-xs uppercase tracking-wide">${c.name}</h4>
+                        ${c.social1 ? `<a href="${c.social1}" target="_blank" class="text-slate-400 hover:text-white mt-2 text-xs"><i class="fa-solid fa-link"></i></a>` : ''}
+                    </div>
+                `;
+            });
+        });
+
+        db.ref('partners').on('value', snap => {
+            const grid = document.getElementById('partners-grid');
+            grid.innerHTML = '';
+            if(!snap.exists()) return;
+            snap.forEach(child => {
+                const p = child.val();
+                grid.innerHTML += `
+                    <a href="${p.link}" target="_blank" class="bg-[#161822] p-2 rounded-lg border border-white/5 hover:bg-slate-800 transition">
+                        <img src="${p.logo}" class="h-8 w-auto object-contain">
+                    </a>
+                `;
+            });
+        });
 
         async function uploadImage(file, folder) {
             if(!file) return 'https://via.placeholder.com/150';
@@ -215,9 +474,7 @@
 
         async function addPlayer() {
             const btn = document.getElementById('btn-player');
-            btn.innerText = "Saving & Uploading Pictures...";
-            btn.disabled = true;
-
+            btn.innerText = "Saving...";
             try {
                 const game = document.getElementById('p-game').value;
                 const ign = document.getElementById('p-ign').value;
@@ -234,14 +491,9 @@
                     game, ign, tag, team, role,
                     pfp: pfpUrl, champ1: c1Url, champ2: c2Url, champ3: c3Url
                 });
-
-                alert('Player successfully added!');
-            } catch(e) {
-                alert("Error saving player.");
-                console.error(e);
-            }
+                alert('Player added successfully!');
+            } catch(e) { alert('Error adding player.'); }
             btn.innerText = "Save Player";
-            btn.disabled = false;
         }
 
         function addMatch() {
@@ -255,41 +507,70 @@
             if(!team) { alert('Lagyan ng Our Team Name!'); return; }
 
             db.ref('matches').push({ team, opponent, score, type, result, date })
-                .then(() => alert('Match result saved successfully!'));
+                .then(() => alert('Match saved successfully!'));
         }
 
-        async function addCreator() {
-            const btn = document.getElementById('btn-creator');
-            btn.innerText = "Uploading...";
-            try {
-                const name = document.getElementById('c-name').value;
-                const social1 = document.getElementById('c-link').value;
-                const pfpUrl = await uploadImage(document.getElementById('c-pfp').files[0], 'creators');
+        function openPlayerStats(name, tag, game, team, role, winrate, pfp, c1, c2, c3) {
+            document.getElementById('modal-name').innerText = name;
+            document.getElementById('modal-tag').innerText = tag ? '#' + tag : '';
+            document.getElementById('modal-game').innerText = game;
+            document.getElementById('modal-team').innerText = team;
+            document.getElementById('modal-role').innerText = role || 'N/A';
+            document.getElementById('modal-winrate').innerText = winrate;
+            document.getElementById('modal-pfp').src = pfp;
+            
+            document.getElementById('modal-champs-title').innerText = game === 'Valorant' ? 'TOP 3 AGENTS' : 'TOP 3 CHAMPIONS';
+            document.getElementById('modal-champs').innerHTML = `
+                <img src="${c1}" class="w-[36px] h-[36px] rounded-lg border border-red-500/30 object-cover bg-[#0b0c10]">
+                <img src="${c2}" class="w-[36px] h-[36px] rounded-lg border border-red-500/30 object-cover bg-[#0b0c10]">
+                <img src="${c3}" class="w-[36px] h-[36px] rounded-lg border border-red-500/30 object-cover bg-[#0b0c10]">
+            `;
 
-                await db.ref('creators').push({ name, pfp: pfpUrl, social1 });
-                alert('Creator saved!');
-            } catch(e) { alert("Error uploading creator."); }
-            btn.innerText = "Save Creator";
+            const backdrop = document.getElementById('player-modal-backdrop');
+            const card = document.getElementById('player-modal-card');
+            backdrop.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                backdrop.classList.add('opacity-100');
+                card.classList.remove('scale-95', 'opacity-0');
+                card.classList.add('scale-100', 'opacity-100');
+            });
         }
 
-        async function addPartner() {
-            const btn = document.getElementById('btn-partner');
-            btn.innerText = "Uploading...";
-            try {
-                const link = document.getElementById('part-link').value;
-                const logoUrl = await uploadImage(document.getElementById('part-logo').files[0], 'partners');
-
-                await db.ref('partners').push({ link, logo: logoUrl });
-                alert('Partner/Sponsor saved!');
-            } catch(e) { alert("Error uploading partner."); }
-            btn.innerText = "Save Partner";
+        function closePlayerStats() {
+            const backdrop = document.getElementById('player-modal-backdrop');
+            const card = document.getElementById('player-modal-card');
+            card.classList.remove('scale-100', 'opacity-100');
+            card.classList.add('scale-95', 'opacity-0');
+            backdrop.classList.remove('opacity-100');
+            setTimeout(() => { backdrop.classList.add('hidden'); }, 300);
         }
 
-        function resetDefaultData() {
-            if(confirm("Gusto mo bang i-reset at ilagay ang sample data?")) {
-                alert("Database reset triggered.");
+        function onGameChange() {
+            const game = document.getElementById('p-game').value;
+            const roleLbl = document.getElementById('lbl-role');
+            const champLbl = document.getElementById('lbl-champs');
+            if(game === 'Valorant') {
+                roleLbl.innerText = "Player Role / Main Agent:";
+                champLbl.innerText = "Top 3 Agents:";
+            } else {
+                roleLbl.innerText = "Player Role:";
+                champLbl.innerText = "Top 3 Champions:";
             }
         }
     </script>
+
+    <!--Start of Tawk.to Script-->
+    <script type="text/javascript">
+    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+    (function(){
+    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+    s1.async=true;
+    s1.src='https://embed.tawk.to/6ab408968582123445b61b1d/default';
+    s1.charset='UTF-8';
+    s1.setAttribute('crossorigin','*');
+    s0.parentNode.insertBefore(s1,s0);
+    })();
+    </script>
+    <!--End of Tawk.to Script-->
 </body>
 </html>
