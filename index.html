@@ -3,208 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="main-site-title">Rift Raiders Portal</title>
+    <title>Rift Raiders - Official Guild</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <!-- EmailJS SDK -->
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 </head>
-<body class="bg-[#0b0c10] text-slate-100 font-sans antialiased min-h-screen flex flex-col">
+<body class="bg-[#0b0c10] text-slate-100 font-sans antialiased selection:bg-red-600 selection:text-white">
 
-    <!-- Top Navigation / Header -->
-    <div class="h-16 border-b border-red-600/20 bg-[#12141c] px-4 flex items-center justify-between sticky top-0 z-40">
-        <div class="flex items-center space-x-3">
-            <span class="w-3 h-3 bg-red-600 rounded-full animate-pulse"></span>
-            <h1 class="font-black tracking-wider text-red-500 uppercase text-sm">Rift Raiders</h1>
+    <!-- Top Navigation -->
+    <header class="border-b border-red-600/20 bg-[#12141c]/80 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <span class="w-3 h-3 bg-red-600 rounded-full animate-pulse"></span>
+                <span class="font-black tracking-wider text-white text-sm uppercase">Rift Raiders</span>
+            </div>
+            <div class="flex items-center space-x-3">
+                <button onclick="openAdminModal()" class="bg-slate-800/80 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded text-xs font-bold border border-slate-700 transition">Admin</button>
+                <button onclick="openApplyModal()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs font-bold transition shadow-lg shadow-red-600/30">Apply</button>
+                <!-- Chat Button papunta sa team-chat.html -->
+                <a href="team-chat.html" class="bg-slate-800 hover:bg-slate-700 text-red-400 p-2 rounded border border-slate-700 transition flex items-center justify-center text-xs" title="Team Chat">
+                    💬
+                </a>
+            </div>
         </div>
-        <div class="flex items-center space-x-2">
-            <!-- Button papunta sa Admin Portal Modal -->
-            <button onclick="openAdminPasswordModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 p-2 rounded border border-slate-700 transition flex items-center justify-center text-xs" title="Admin Portal">
-                🔒
-            </button>
-            <!-- Button papunta sa team-chat.html (Naka-link na dito!) -->
-            <a href="team-chat.html" class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-xs font-bold transition flex items-center space-x-1.5 shadow-lg shadow-red-600/20">
-                <span>💬</span>
-                <span class="hidden sm:inline">Team Chat</span>
-            </a>
-            <!-- Button papunta sa Talk.to / External Chat -->
-            <button onclick="openExternalChat()" class="bg-slate-800 hover:bg-slate-700 text-red-400 p-2 rounded border border-slate-700 transition flex items-center justify-center text-xs" title="External Chat">
-                🌐
-            </button>
-        </div>
-    </div>
+    </header>
 
-    <!-- Main Content Area -->
-    <div class="flex-1 p-4 md:p-8 overflow-y-auto">
-        <div class="max-w-6xl mx-auto space-y-8">
-            
-            <!-- Hero / Header Section -->
-            <div class="flex flex-col md:flex-row items-center justify-between border-b border-red-600/30 pb-6 gap-4">
-                <div>
-                    <h2 class="text-2xl md:text-3xl font-black text-white uppercase tracking-wider">Meet The Teams</h2>
-                    <p class="text-xs md:text-sm text-slate-400 mt-1">The official esports roster across multiple titles. Tap a player card for full stats!</p>
-                </div>
-                <button onclick="openEditProfile()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-4 py-2 rounded border border-slate-700 transition">
-                    Edit Profile & Stats
-                </button>
+    <main class="max-w-6xl mx-auto px-4 py-8 space-y-12">
+        
+        <!-- HERO / ABOUT US -->
+        <section class="space-y-4">
+            <div class="flex items-center space-x-2 border-l-4 border-red-600 pl-3">
+                <h2 class="font-black text-base text-white uppercase tracking-widest">About Us</h2>
             </div>
-
-            <!-- VALORANT SECTION -->
-            <div class="space-y-4">
-                <div class="flex items-center space-x-2 border-l-4 border-red-600 pl-3">
-                    <h3 class="font-black text-sm text-red-500 uppercase tracking-widest">VALORANT ROSTER</h3>
-                </div>
-                <div id="roster-valorant" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+            <div class="bg-[#12141c] border border-red-600/20 rounded-xl p-6 text-slate-300 text-xs md:text-sm leading-relaxed shadow-lg">
+                Rift Raiders began its journey in 2024 as a dedicated competitive team. After a year of climbing the ranks, we expanded in April 2025 by establishing our official guild. Today, we continue to field elite rosters ready to conquer the rift.
             </div>
+        </section>
 
-            <!-- WILD RIFT SECTION -->
-            <div class="space-y-4 pt-4">
-                <div class="flex items-center space-x-2 border-l-4 border-red-600 pl-3">
-                    <h3 class="font-black text-sm text-red-500 uppercase tracking-widest">WILD RIFT ROSTER</h3>
-                </div>
-                <div id="roster-wildrift" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+        <!-- AI ASSISTANT SECTION -->
+        <section class="space-y-4">
+            <div class="flex items-center space-x-2 border-l-4 border-red-600 pl-3">
+                <h2 class="font-black text-base text-white uppercase tracking-widest">AI Assistant</h2>
             </div>
-
-            <!-- LEAGUE OF LEGENDS SECTION -->
-            <div class="space-y-4 pt-4">
-                <div class="flex items-center space-x-2 border-l-4 border-red-600 pl-3">
-                    <h3 class="font-black text-sm text-red-500 uppercase tracking-widest">LEAGUE OF LEGENDS ROSTER</h3>
-                </div>
-                <div id="roster-lol" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
-            </div>
-
-            <!-- MATCH HISTORY SECTION -->
-            <div class="space-y-4 pt-6 border-t border-red-600/30">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-2 border-l-4 border-red-600 pl-3">
-                        <h3 class="font-black text-sm text-red-500 uppercase tracking-widest">MATCH HISTORY & SCRIMS</h3>
+            <div class="bg-[#12141c] border border-red-600/20 rounded-xl p-4 md:p-6 space-y-4 shadow-lg">
+                <p class="text-xs text-slate-400">Tactical helper & interactive chat</p>
+                <div class="bg-[#0b0c10] border border-slate-800 rounded-lg p-4 h-48 overflow-y-auto space-y-3 text-xs" id="ai-chat-box">
+                    <div class="bg-slate-800/60 p-3 rounded-lg text-slate-200 border border-slate-700/50">
+                        Mabuhay! Ako ang AI Assistant ng Rift Raiders. Mag-type ng kahit anong tanong tungkol sa guild, requirements, o apply!
                     </div>
-                    <button onclick="openAddMatchModal()" id="add-match-btn" class="hidden bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-3 py-1.5 rounded transition">+ Add Match</button>
                 </div>
-                <div id="match-history-list" class="space-y-3"></div>
+                <div class="flex gap-2">
+                    <input type="text" id="ai-input" placeholder="Mag-type ng tanong mo dito..." class="flex-1 bg-[#0b0c10] border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-red-600">
+                    <button onclick="sendAiMessage()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-xs font-bold transition">Send 🚀</button>
+                </div>
             </div>
+        </section>
 
-        </div>
-    </div>
+        <!-- MEET THE TEAMS -->
+        <section class="space-y-4">
+            <div class="flex items-center justify-between border-l-4 border-red-600 pl-3">
+                <h2 class="font-black text-base text-white uppercase tracking-widest">Meet The Teams</h2>
+            </div>
+            <p class="text-xs text-slate-400">The official esports roster (Tap a player for stats)</p>
+            <div id="roster-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Dynamic Player Cards -->
+            </div>
+        </section>
 
-    <!-- PLAYER STATS POPUP MODAL -->
-    <div id="player-stats-modal" class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50 p-4">
-        <div class="bg-[#12141c] border border-red-600/40 rounded-xl p-6 w-90 max-w-md relative shadow-2xl">
-            <button onclick="closeModal('player-stats-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-white font-bold">✕</button>
-            <div class="flex flex-col items-center text-center">
-                <img id="modal-player-avatar" class="w-20 h-20 rounded-full object-cover border-2 border-red-600 mb-3 bg-slate-800 shadow-lg shadow-red-600/20">
-                <h3 id="modal-player-ign" class="font-black text-white text-lg tracking-wide">PLAYER IGN</h3>
-                <span id="modal-player-team" class="bg-red-950 text-red-400 text-xs px-2.5 py-0.5 rounded font-bold mt-1 border border-red-600/30">Team Alpha</span>
-                <span id="modal-player-game" class="text-xs text-slate-400 mt-1 uppercase font-semibold">Game</span>
+        <!-- MATCH HISTORY -->
+        <section class="space-y-4">
+            <div class="flex items-center space-x-2 border-l-4 border-red-600 pl-3">
+                <h2 class="font-black text-base text-white uppercase tracking-widest">Match History</h2>
+            </div>
+            <p class="text-xs text-slate-400">Recent scrims & tournaments</p>
+            <div id="match-history-list" class="bg-[#12141c] border border-red-600/20 rounded-xl p-4 text-xs text-slate-500 italic">
+                No match history yet.
+            </div>
+        </section>
 
-                <div class="grid grid-cols-2 gap-3 w-full mt-5 bg-[#0b0c10] p-3 rounded-lg border border-slate-800 text-center">
+        <!-- MEET THE CREATORS -->
+        <section class="space-y-4">
+            <div class="flex items-center space-x-2 border-l-4 border-red-600 pl-3">
+                <h2 class="font-black text-base text-white uppercase tracking-widest">Meet The Creators</h2>
+            </div>
+            <p class="text-xs text-slate-400">Our content creators & streamers</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="bg-[#12141c] border border-red-600/20 rounded-xl p-4 flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center font-bold text-red-500">T</div>
                     <div>
-                        <p class="text-[10px] text-slate-400 uppercase font-bold">Win Rate</p>
-                        <p id="modal-player-winrate" class="text-lg font-black text-green-400 mt-0.5">0%</p>
-                    </div>
-                    <div>
-                        <p class="text-[10px] text-slate-400 uppercase font-bold">Role / Position</p>
-                        <p id="modal-player-role" class="text-sm font-bold text-white mt-1">Main Carry</p>
+                        <h4 class="font-bold text-white text-sm">TAKEKU</h4>
+                        <p class="text-xs text-red-400">WILD RIFT</p>
                     </div>
                 </div>
+                <div class="bg-[#12141c] border border-red-600/20 rounded-xl p-4 flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center font-bold text-red-500">W</div>
+                    <div>
+                        <h4 class="font-bold text-white text-sm">WINTER</h4>
+                        <p class="text-xs text-red-400">WILD RIFT</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-                <div class="w-full mt-4 text-left">
-                    <p class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Top Champions / Agents</p>
-                    <div id="modal-player-champs" class="flex flex-wrap gap-1.5"></div>
+        <!-- PARTNERSHIPS -->
+        <section class="space-y-4">
+            <div class="flex items-center space-x-2 border-l-4 border-red-600 pl-3">
+                <h2 class="font-black text-base text-white uppercase tracking-widest">Partnerships</h2>
+            </div>
+            <p class="text-xs text-slate-400">Supported by</p>
+            <div class="flex gap-4">
+                <div class="bg-[#12141c] border border-slate-800 px-6 py-3 rounded-lg text-xs font-bold text-slate-300">TAKEKU</div>
+                <div class="bg-[#12141c] border border-slate-800 px-6 py-3 rounded-lg text-xs font-bold text-slate-300">WRTH</div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-red-600/20 bg-[#12141c] py-6 text-center text-xs text-slate-500">
+        <p>© 2026 Rift Raiders. All Rights Reserved.</p>
+    </footer>
+
+    <!-- PLAYER STATS MODAL -->
+    <div id="player-modal" class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50 p-4">
+        <div class="bg-[#12141c] border border-red-600/40 rounded-xl p-6 w-96 relative">
+            <button onclick="closeModal('player-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-white font-bold">✕</button>
+            <div class="text-center space-y-3">
+                <h3 id="m-name" class="font-black text-white text-lg">PLAYER</h3>
+                <p id="m-role" class="text-xs text-red-500 font-bold uppercase">MID</p>
+                <div class="bg-[#0b0c10] p-3 rounded-lg border border-slate-800 grid grid-cols-2 gap-2 text-center text-xs">
+                    <div><span class="text-slate-400 block">TEAM</span><strong id="m-team" class="text-white">Rift Raiders</strong></div>
+                    <div><span class="text-slate-400 block">WINRATE</span><strong id="m-winrate" class="text-green-400">N/A</strong></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ADD MATCH MODAL (Admin) -->
-    <div id="add-match-modal" class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50 p-4">
-        <div class="bg-[#12141c] border border-red-600/30 rounded-lg p-6 w-96 relative">
-            <button onclick="closeModal('add-match-modal')" class="absolute top-3 right-3 text-slate-400 hover:text-white">✕</button>
-            <h3 class="font-bold text-white text-base mb-4 text-red-500">Add Match / Scrim Result</h3>
-            <form onsubmit="handleSaveMatch(event)" class="space-y-3 text-xs">
-                <div>
-                    <label class="block text-slate-400 mb-1">Match Type</label>
-                    <select id="match-type" class="w-full bg-[#0b0c10] border border-slate-700 rounded p-2 text-white">
-                        <option value="SCRIM">SCRIM</option>
-                        <option value="TOURNAMENT">TOURNAMENT</option>
-                        <option value="SHOWDOWN">SHOWDOWN</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-slate-400 mb-1">Opposing Team Name</label>
-                    <input type="text" id="match-opponent" placeholder="e.g. RIFT RAIDERS ASCEND" required class="w-full bg-[#0b0c10] border border-slate-700 rounded p-2 text-white">
-                </div>
-                <div>
-                    <label class="block text-slate-400 mb-1">Score (e.g. 2-0, 13-9)</label>
-                    <input type="text" id="match-score" placeholder="2-0" required class="w-full bg-[#0b0c10] border border-slate-700 rounded p-2 text-white">
-                </div>
-                <div>
-                    <label class="block text-slate-400 mb-1">Result Status</label>
-                    <select id="match-result" class="w-full bg-[#0b0c10] border border-slate-700 rounded p-2 text-white">
-                        <option value="WIN">WIN</option>
-                        <option value="LOSS">LOSS</option>
-                    </select>
-                </div>
-                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded transition mt-2">Publish Match Result</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Edit Profile Modal -->
-    <div id="edit-profile-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center hidden z-50 p-4">
-        <div class="bg-[#12141c] border border-red-600/30 rounded-lg p-6 w-96 relative max-h-[90vh] overflow-y-auto">
-            <button onclick="closeModal('edit-profile-modal')" class="absolute top-3 right-3 text-slate-400 hover:text-white">✕</button>
-            <h3 class="font-bold text-white text-base mb-4">Edit Profile & Competitive Stats</h3>
-            <form onsubmit="handleSaveProfile(event)" class="space-y-3 text-xs">
-                <div>
-                    <label class="block text-slate-400 mb-1">Username / IGN</label>
-                    <input type="text" id="edit-username" placeholder="Your IGN" required class="w-full bg-[#0b0c10] border border-slate-700 rounded p-2 text-white">
-                </div>
-                <div>
-                    <label class="block text-slate-400 mb-1">Select Game</label>
-                    <select id="edit-game" class="w-full bg-[#0b0c10] border border-slate-700 rounded p-2 text-white">
-                        <option value="League of Legends">League of Legends</option>
-                        <option value="Wild Rift">Wild Rift</option>
-                        <option value="Valorant">Valorant</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-slate-400 mb-1">Team Name</label>
-                    <input type="text" id="edit-team" placeholder="e.g. Rift Raiders Main" class="w-full bg-[#0b0c10] border border-slate-700 rounded p-2 text-white">
-                </div>
-                <div>
-                    <label class="block text-slate-400 mb-1">Win Rate (e.g. 78%)</label>
-                    <input type="text" id="edit-winrate" placeholder="78%" class="w-full bg-[#0b0c10] border border-slate-700 rounded p-2 text-white">
-                </div>
-                <div>
-                    <label class="block text-slate-400 mb-1">Top Champions / Agents (comma separated)</label>
-                    <input type="text" id="edit-champs" placeholder="Jinx, Yasuo, Ahri" class="w-full bg-[#0b0c10] border border-slate-700 rounded p-2 text-white">
-                </div>
-                <div>
-                    <label class="block text-slate-400 mb-1">Profile / Avatar Picture</label>
-                    <input type="file" id="edit-avatar-file" class="w-full text-slate-300 text-xs">
-                </div>
-                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded transition mt-2">Save Stats & Profile</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Admin Password Modal -->
-    <div id="admin-password-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center hidden z-50 p-4">
-        <div class="bg-[#12141c] border border-red-600/30 rounded-lg p-6 w-80 relative">
-            <button onclick="closeModal('admin-password-modal')" class="absolute top-3 right-3 text-slate-400 hover:text-white">✕</button>
-            <h3 class="font-bold text-white text-base mb-3">Admin Authentication</h3>
-            <form onsubmit="handleAdminAuth(event)" class="space-y-3 text-xs">
-                <input type="password" id="admin-portal-pass-input" placeholder="Enter admin password" required class="w-full bg-[#0b0c10] border border-slate-700 rounded p-2 text-white">
-                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded">Authenticate</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Talk.to Live Chat Widget JS Integration -->
+    <!-- Talk.to Live Chat Widget Integration -->
     <script type="text/javascript">
         var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
         (function(){
@@ -217,254 +154,57 @@
         })();
     </script>
 
-    <!-- App Scripts -->
+    <!-- Script para sa Firebase at UI Functionality -->
     <script>
-        let currentUser = JSON.parse(localStorage.getItem('rift_current_user')) || { username: 'GuestPlayer', isAdmin: false, game: 'League of Legends', team: 'Unassigned', winRate: '0%', topChamps: ['None'], isApproved: true };
-        let dbUsers = [];
-        let dbMatches = [];
+        const firebaseConfig = { databaseURL: "https://your-firebase-app-default-rtdb.firebaseio.com/" };
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const db = firebase.database();
 
-        const firebaseConfig = {
-            databaseURL: "https://your-firebase-app-default-rtdb.firebaseio.com/"
-        };
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        const database = firebase.database();
+        function sendAiMessage() {
+            const input = document.getElementById('ai-input');
+            const box = document.getElementById('ai-chat-box');
+            if(!input.value.trim()) return;
+            
+            box.innerHTML += `<div class="bg-red-950/40 border border-red-600/30 p-2 rounded-lg text-slate-200 text-right">${input.value}</div>`;
+            let val = input.value.toLowerCase();
+            input.value = '';
 
-        function initFirebaseListeners() {
-            database.ref('users').on('value', snapshot => {
-                let val = snapshot.val() || {};
-                dbUsers = Object.values(val);
-                renderTeamsRosters();
-            });
-            database.ref('matches').on('value', snapshot => {
-                dbMatches = snapshot.val() || [];
-                renderMatchHistory();
-            });
+            setTimeout(() => {
+                let reply = "Maaari kang mag-apply sa pamamagitan ng pagpindot sa Apply button sa itaas o pagbisita sa aming Team Chat.";
+                if(val.includes('discord')) reply = "Bisitahin ang aming opisyal na Discord server sa pamamagitan ng Team Chat!";
+                box.innerHTML += `<div class="bg-slate-800/60 p-2 rounded-lg text-slate-200 border border-slate-700/50">${reply}</div>`;
+                box.scrollTop = box.scrollHeight;
+            }, 500);
         }
 
-        function openExternalChat() {
-            window.open('https://tawk.to', '_blank');
-        }
-
-        function openModal(modalId) {
-            document.getElementById(modalId)?.classList.remove('hidden');
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId)?.classList.add('hidden');
-        }
-
-        function saveUserToFirebase(user) {
-            if (user && user.username) {
-                database.ref('users/' + user.username).set(user);
-            }
-        }
-
-        function renderTeamsRosters() {
-            const valContainer = document.getElementById('roster-valorant');
-            const wrContainer = document.getElementById('roster-wildrift');
-            const lolContainer = document.getElementById('roster-lol');
-
-            if (!valContainer || !wrContainer || !lolContainer) return;
-
-            valContainer.innerHTML = '';
-            wrContainer.innerHTML = '';
-            lolContainer.innerHTML = '';
-
-            dbUsers.forEach(user => {
-                if (!user || (!user.isApproved && !user.isAdmin)) return;
-
-                let game = user.game || 'League of Legends';
-                let pfp = user.pfp || `https://api.dicebear.com/7.x/identicon/svg?seed=${user.username}`;
-                let team = user.team || 'Unassigned';
-                let winRate = user.winRate || '0%';
-
-                let cardHtml = `
-                    <div onclick="openPlayerStats('${user.username}')" class="bg-[#12141c] border border-red-600/20 hover:border-red-600/60 rounded-xl overflow-hidden cursor-pointer transition transform hover:-translate-y-1 shadow-lg group">
-                        <div class="h-44 bg-slate-900 relative overflow-hidden">
-                            <img src="${pfp}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-                            <div class="absolute inset-0 bg-gradient-to-t from-[#12141c] via-transparent to-transparent"></div>
-                            <span class="absolute top-2 left-2 bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded shadow">${game}</span>
-                        </div>
-                        <div class="p-3">
-                            <h4 class="font-black text-white text-sm truncate">${user.username}</h4>
-                            <p class="text-[11px] text-red-400 font-medium truncate">${team}</p>
-                            <div class="mt-2 flex items-center justify-between text-[10px] text-slate-400 border-t border-slate-800 pt-2">
-                                <span>Win Rate: <strong class="text-green-400">${winRate}</strong></span>
-                                <span class="text-slate-500">View Stats →</span>
-                            </div>
-                        </div>
+        db.ref('users').on('value', snapshot => {
+            const val = snapshot.val() || {};
+            const grid = document.getElementById('roster-grid');
+            grid.innerHTML = '';
+            
+            Object.values(val).forEach(user => {
+                if(!user || (!user.isApproved && !user.isAdmin)) return;
+                grid.innerHTML += `
+                    <div onclick="openPlayer('${user.username}', '${user.team}', '${user.winRate}', '${user.role}')" class="bg-[#12141c] border border-red-600/20 hover:border-red-600/60 rounded-xl p-4 cursor-pointer transition">
+                        <h4 class="font-black text-white text-sm">${user.username}</h4>
+                        <p class="text-xs text-red-400 font-medium">${user.game || 'Wild Rift'}</p>
                     </div>
                 `;
-
-                if (game === 'Valorant') {
-                    valContainer.innerHTML += cardHtml;
-                } else if (game === 'Wild Rift') {
-                    wrContainer.innerHTML += cardHtml;
-                } else {
-                    lolContainer.innerHTML += cardHtml;
-                }
             });
+        });
 
-            if(valContainer.innerHTML === '') valContainer.innerHTML = `<p class="text-xs text-slate-500 italic col-span-4">No Valorant players registered yet.</p>`;
-            if(wrContainer.innerHTML === '') wrContainer.innerHTML = `<p class="text-xs text-slate-500 italic col-span-4">No Wild Rift players registered yet.</p>`;
-            if(lolContainer.innerHTML === '') lolContainer.innerHTML = `<p class="text-xs text-slate-500 italic col-span-4">No League of Legends players registered yet.</p>`;
+        function openPlayer(name, team, winrate, role) {
+            document.getElementById('m-name').innerText = name;
+            document.getElementById('m-team').innerText = team || 'Rift Raiders';
+            document.getElementById('m-winrate').innerText = winrate || 'N/A';
+            document.getElementById('m-role').innerText = role || 'Member';
+            document.getElementById('player-modal').classList.remove('hidden');
         }
 
-        function openPlayerStats(username) {
-            let user = dbUsers.find(u => u && u.username.toLowerCase() === username.toLowerCase());
-            if (!user) return;
-
-            document.getElementById('modal-player-avatar').src = user.pfp || `https://api.dicebear.com/7.x/identicon/svg?seed=${username}`;
-            document.getElementById('modal-player-ign').innerText = user.username;
-            document.getElementById('modal-player-team').innerText = user.team || 'Unassigned';
-            document.getElementById('modal-player-game').innerText = user.game || 'League of Legends';
-            document.getElementById('modal-player-winrate').innerText = user.winRate || '0%';
-            document.getElementById('modal-player-role').innerText = user.role || (user.isAdmin ? 'Guild Master' : 'Competitor');
-
-            let champsContainer = document.getElementById('modal-player-champs');
-            let champs = user.topChamps;
-            if (typeof champs === 'string') champs = champs.split(',').map(c => c.trim());
-            if (!Array.isArray(champs) || champs.length === 0) champs = ['None specified'];
-
-            champsContainer.innerHTML = champs.map(c => `<span class="bg-red-950 text-red-300 text-xs px-2.5 py-1 rounded border border-red-600/30 font-semibold">${c}</span>`).join('');
-
-            openModal('player-stats-modal');
-        }
-
-        function renderMatchHistory() {
-            const listEl = document.getElementById('match-history-list');
-            if (!listEl) return;
-
-            if (!Array.isArray(dbMatches) || dbMatches.length === 0) {
-                listEl.innerHTML = `<div class="bg-[#12141c] border border-red-600/20 p-4 rounded-xl text-center text-slate-500 text-xs italic">No match history recorded yet.</div>`;
-                return;
-            }
-
-            listEl.innerHTML = dbMatches.map((m, index) => {
-                let isWin = m.result === 'WIN';
-                let badgeColor = isWin ? 'text-green-400 bg-green-950/40 border-green-600/30' : 'text-red-400 bg-red-950/40 border-red-600/30';
-                let adminDelete = currentUser && currentUser.isAdmin ? `<button onclick="deleteMatch(${index})" class="text-red-500 hover:text-red-400 text-xs font-bold ml-3">Delete</button>` : '';
-
-                return `
-                    <div class="bg-[#12141c] border border-red-600/20 p-4 rounded-xl flex items-center justify-between shadow">
-                        <div>
-                            <div class="flex items-center space-x-2">
-                                <span class="bg-red-600 text-white text-[9px] font-bold px-2 py-0.5 rounded">${m.type || 'SCRIM'}</span>
-                                <span class="text-slate-400 text-[10px]">${m.date || '2026-10-01'}</span>
-                            </div>
-                            <h4 class="font-bold text-white text-sm mt-1">VS ${m.opponent}</h4>
-                            <p class="text-xs text-slate-400 mt-0.5">Score: <strong class="text-white">${m.score}</strong></p>
-                        </div>
-                        <div class="flex items-center">
-                            <span class="px-3 py-1 rounded border text-xs font-black ${badgeColor}">${m.result}</span>
-                            ${adminDelete}
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function openAddMatchModal() {
-            openModal('add-match-modal');
-        }
-
-        function handleSaveMatch(e) {
-            e.preventDefault();
-            let type = document.getElementById('match-type').value;
-            let opponent = document.getElementById('match-opponent').value.trim();
-            let score = document.getElementById('match-score').value.trim();
-            let result = document.getElementById('match-result').value;
-            let date = new Date().toISOString().split('T')[0];
-
-            if (!Array.isArray(dbMatches)) dbMatches = [];
-            dbMatches.unshift({ type, opponent, score, result, date });
-
-            database.ref('matches').set(dbMatches);
-            closeModal('add-match-modal');
-            document.getElementById('match-opponent').value = '';
-            document.getElementById('match-score').value = '';
-            alert('Match result added successfully!');
-        }
-
-        function deleteMatch(index) {
-            if (confirm("Delete this match record?")) {
-                dbMatches.splice(index, 1);
-                database.ref('matches').set(dbMatches);
-            }
-        }
-
-        function openEditProfile() {
-            if (!currentUser) return;
-            document.getElementById('edit-username').value = currentUser.username || '';
-            document.getElementById('edit-game').value = currentUser.game || 'League of Legends';
-            document.getElementById('edit-team').value = currentUser.team || '';
-            document.getElementById('edit-winrate').value = currentUser.winRate || '';
-            document.getElementById('edit-champs').value = Array.isArray(currentUser.topChamps) ? currentUser.topChamps.join(', ') : (currentUser.topChamps || '');
-            document.getElementById('edit-avatar-file').value = '';
-            openModal('edit-profile-modal');
-        }
-
-        function handleSaveProfile(e) {
-            e.preventDefault();
-            currentUser.username = document.getElementById('edit-username').value.trim() || currentUser.username;
-            currentUser.game = document.getElementById('edit-game').value;
-            currentUser.team = document.getElementById('edit-team').value.trim() || 'Unassigned';
-            currentUser.winRate = document.getElementById('edit-winrate').value.trim() || '0%';
-            
-            let champsVal = document.getElementById('edit-champs').value.trim();
-            currentUser.topChamps = champsVal ? champsVal.split(',').map(c => c.trim()) : ['None'];
-
-            const avatarFileEl = document.getElementById('edit-avatar-file');
-            if (avatarFileEl.files && avatarFileEl.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    currentUser.pfp = event.target.result;
-                    finalizeProfileSave();
-                };
-                reader.readAsDataURL(avatarFileEl.files[0]);
-            } else {
-                finalizeProfileSave();
-            }
-        }
-
-        function finalizeProfileSave() {
-            saveUserToFirebase(currentUser);
-            localStorage.setItem('rift_current_user', JSON.stringify(currentUser));
-            alert('Profile & competitive stats updated successfully!');
-            closeModal('edit-profile-modal');
-            renderTeamsRosters();
-        }
-
-        function openAdminPasswordModal() {
-            const passInput = document.getElementById('admin-portal-pass-input');
-            if (passInput) passInput.value = '';
-            openModal('admin-password-modal');
-        }
-
-        function handleAdminAuth(e) {
-            e.preventDefault();
-            const passInput = document.getElementById('admin-portal-pass-input');
-            const passVal = passInput ? passInput.value.trim() : '';
-            
-            if (passVal !== "rr2024") {
-                alert("Incorrect admin password!");
-                return;
-            }
-            
-            currentUser.isAdmin = true;
-            localStorage.setItem('rift_current_user', JSON.stringify(currentUser));
-            closeModal('admin-password-modal');
-            document.getElementById('add-match-btn').classList.remove('hidden');
-            alert("Admin authenticated successfully!");
-            renderMatchHistory();
-        }
-
-        initFirebaseListeners();
-        if (currentUser && currentUser.isAdmin) {
-            document.getElementById('add-match-btn')?.classList.remove('hidden');
-        }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+        function openAdminModal() { alert("I-type ang admin password sa Team Chat portal."); }
+        function openApplyModal() { window.location.href = 'team-chat.html'; }
     </script>
 </body>
-</html>
+    </html>
+    
