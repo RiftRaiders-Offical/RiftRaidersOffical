@@ -7,10 +7,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Firebase SDKs -->
+    <!-- Firebase SDKs (Database lang ang kailangan para sa Base64) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
     
     <style>
         ::-webkit-scrollbar { width: 6px; }
@@ -43,12 +42,10 @@
                     <i class="fa-solid fa-paper-plane"></i>
                     <span>APPLY</span>
                 </a>
-                <!-- TEAM CHAT BUTTON -->
                 <a href="team-chat.html" class="bg-[#161822] hover:bg-slate-800 text-slate-300 hover:text-white px-3 py-1.5 rounded-lg font-bold text-xs flex items-center justify-center space-x-1.5 transition border border-white/5" title="Team Chat">
                     <i class="fa-solid fa-comments text-blue-400"></i>
                     <span>CHAT</span>
                 </a>
-                <!-- ADMIN PORTAL TRIGGER BUTTON -->
                 <button onclick="openAdminModal()" class="bg-[#161822] hover:bg-slate-800 text-slate-400 hover:text-white px-3 py-1.5 rounded-lg font-bold text-xs flex items-center justify-center space-x-1.5 transition border border-white/5" title="Admin Portal">
                     <i class="fa-solid fa-lock text-red-500"></i>
                     <span>ADMIN</span>
@@ -68,7 +65,7 @@
         </div>
     </div>
 
-    <!-- MAIN CONTENT (RESPONSIVE FOR PC & MOBILE) -->
+    <!-- MAIN CONTENT -->
     <main class="max-w-4xl mx-auto px-4 py-6 space-y-10">
         
         <!-- ABOUT US -->
@@ -82,7 +79,7 @@
             </p>
         </section>
 
-        <!-- MEET THE TEAMS & SECTIONS -->
+        <!-- MEET THE TEAMS -->
         <section class="space-y-4">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-2">
@@ -91,7 +88,6 @@
                 </div>
             </div>
             
-            <!-- GAME SELECTION TABS -->
             <div class="flex gap-2 overflow-x-auto pb-1 text-xs font-bold">
                 <button onclick="filterGame('ALL')" class="game-tab bg-red-600 text-white px-4 py-2 rounded-lg border border-red-500/35 whitespace-nowrap transition">ALL</button>
                 <button onclick="filterGame('Wild Rift')" class="game-tab bg-[#161822] text-slate-400 px-4 py-2 rounded-lg border border-white/5 whitespace-nowrap transition">WILD RIFT</button>
@@ -195,7 +191,6 @@
                     </div>
                     <button onclick="addPlayer()" id="btn-player" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save Player</button>
                     
-                    <!-- LIST & DELETE PLAYERS -->
                     <div class="mt-4 pt-3 border-t border-white/5">
                         <p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Existing Players List:</p>
                         <div id="admin-players-list" class="space-y-2 max-h-40 overflow-y-auto"></div>
@@ -243,13 +238,12 @@
                     </div>
                     <button onclick="addMatch()" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save Match</button>
                     
-                    <!-- LIST & DELETE MATCHES -->
                     <div class="mt-4 pt-3 border-t border-white/5">
                         <p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Existing Matches List:</p>
                         <div id="admin-matches-list" class="space-y-2 max-h-40 overflow-y-auto"></div>
                     </div>
                 </div>
-                
+
                 <!-- 3. ADD & MANAGE CREATOR -->
                 <div class="bg-[#161822] p-5 rounded-xl border border-white/5 space-y-4">
                     <h3 class="font-black text-xs uppercase text-red-500">3. Add & Manage Content Creator</h3>
@@ -274,7 +268,6 @@
                     </div>
                     <button onclick="addCreator()" id="btn-creator" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save Creator</button>
                     
-                    <!-- LIST & DELETE CREATORS -->
                     <div class="mt-4 pt-3 border-t border-white/5">
                         <p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Existing Creators List:</p>
                         <div id="admin-creators-list" class="space-y-2 max-h-40 overflow-y-auto"></div>
@@ -298,7 +291,6 @@
                     </div>
                     <button onclick="addPartner()" id="btn-partner" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save Partner</button>
                     
-                    <!-- LIST & DELETE PARTNERS -->
                     <div class="mt-4 pt-3 border-t border-white/5">
                         <p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Existing Partners List:</p>
                         <div id="admin-partners-list" class="space-y-2 max-h-40 overflow-y-auto"></div>
@@ -344,9 +336,8 @@
                 <div id="modal-champs" class="flex gap-2"></div>
             </div>
         </div>
-    </div>
-
-    <script>
+                    </div>
+             <script>
         const firebaseConfig = {
             apiKey: "AIzaSyB7GyUvjxpgvVOpSS_wjH25m6HssUd_jbM",
             authDomain: "riftraiders-348f4.firebaseapp.com",
@@ -358,7 +349,6 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        const storage = firebase.storage();
 
         let allPlayers = [];
         let allMatches = {};
@@ -375,7 +365,6 @@
             }, 800);
         });
 
-        // Load custom logo setting
         db.ref('settings/logo').on('value', snap => {
             const logo = snap.val() || defaultLogoUrl;
             document.getElementById('loading-logo').src = logo;
@@ -473,8 +462,7 @@
             renderPartners();
             renderAdminPartners();
         });
-
-        function filterGame(game) {
+      function filterGame(game) {
             currentGameFilter = game;
             document.querySelectorAll('.game-tab').forEach(btn => {
                 const text = btn.innerText.toLowerCase();
@@ -516,7 +504,8 @@
                 `;
             });
         }
-function renderMatches() {
+
+        function renderMatches() {
             const list = document.getElementById('match-history-list');
             list.innerHTML = '';
             const matchKeys = Object.keys(allMatches);
@@ -595,7 +584,6 @@ function renderMatches() {
             });
         }
 
-        // ADMIN LIST & DELETE RENDERERS
         function renderAdminPlayers() {
             const container = document.getElementById('admin-players-list');
             container.innerHTML = '';
@@ -678,16 +666,15 @@ function renderMatches() {
             }
         }
 
-        async function uploadImage(file, folder) {
-            if(!file) return 'https://via.placeholder.com/150';
-            try {
-                const ref = storage.ref(`${folder}/${Date.now()}_${file.name}`);
-                await ref.put(file);
-                return await ref.getDownloadURL();
-            } catch(err) {
-                console.error(err);
-                return 'https://via.placeholder.com/150';
-            }
+        // Helper para ma-convert ang file papuntang Base64 string
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                if(!file) { resolve('https://via.placeholder.com/150'); return; }
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
         }
 
         async function addPlayer() {
@@ -702,10 +689,10 @@ function renderMatches() {
                 
                 if(!ign) { alert('Ilagay ang IGN ng player!'); btn.innerText = "Save Player"; return; }
 
-                const pfpUrl = await uploadImage(document.getElementById('p-pfp').files[0], 'players');
-                const c1Url = await uploadImage(document.getElementById('p-c1').files[0], 'champs');
-                const c2Url = await uploadImage(document.getElementById('p-c2').files[0], 'champs');
-                const c3Url = await uploadImage(document.getElementById('p-c3').files[0], 'champs');
+                const pfpUrl = await fileToBase64(document.getElementById('p-pfp').files[0]);
+                const c1Url = await fileToBase64(document.getElementById('p-c1').files[0]);
+                const c2Url = await fileToBase64(document.getElementById('p-c2').files[0]);
+                const c3Url = await fileToBase64(document.getElementById('p-c3').files[0]);
 
                 await db.ref('roster').push({
                     game, ign, tag, team, role,
@@ -752,7 +739,7 @@ function renderMatches() {
                 const yt = document.getElementById('c-yt').value;
                 const twitch = document.getElementById('c-twitch').value;
                 
-                const pfpUrl = await uploadImage(document.getElementById('c-pfp').files[0], 'creators');
+                const pfpUrl = await fileToBase64(document.getElementById('c-pfp').files[0]);
 
                 await db.ref('creators').push({ name, game, pfp: pfpUrl, fb, tiktok, yt, twitch });
                 alert('Creator saved successfully!');
@@ -766,7 +753,7 @@ function renderMatches() {
             try {
                 const name = document.getElementById('part-name').value;
                 const link = document.getElementById('part-link').value;
-                const logoUrl = await uploadImage(document.getElementById('part-logo').files[0], 'partners');
+                const logoUrl = await fileToBase64(document.getElementById('part-logo').files[0]);
 
                 await db.ref('partners').push({ name, link, logo: logoUrl });
                 alert('Partner/Sponsor saved successfully!');
@@ -837,4 +824,4 @@ function renderMatches() {
     </script>
     <!--End of Tawk.to Script-->
 </body>
-</html>
+</html>           
