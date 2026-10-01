@@ -4,157 +4,265 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rift Raiders - Official Guild</title>
-    <!-- Tailwind CSS CDN -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome para sa mga eksaktong icons sa screenshot -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    
+    <style>
+        /* Smooth animation para sa Player Stats Popup */
+        .modal-enter { opacity: 0; transform: scale(0.95); }
+        .modal-enter-active { opacity: 1; transform: scale(1); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .modal-exit { opacity: 1; transform: scale(1); }
+        .modal-exit-active { opacity: 0; transform: scale(0.95); transition: all 0.2s ease-out; }
+        
+        /* Custom Scrollbar para sa dark theme */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0b0c10; }
+        ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #ef4444; }
+    </style>
 </head>
-<body class="bg-[#0b0c10] text-slate-100 font-sans antialiased selection:bg-red-600 selection:text-white">
+<body class="bg-[#0b0c10] text-slate-100 font-sans antialiased pb-20">
 
-    <!-- Top Navigation -->
-    <header class="border-b border-red-600/20 bg-[#12141c]/80 backdrop-blur sticky top-0 z-50">
-        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-            <div class="flex items-center space-x-2">
-                <span class="w-3 h-3 bg-red-600 rounded-full animate-pulse"></span>
-                <span class="font-black tracking-wider text-white text-sm uppercase">Rift Raiders</span>
-            </div>
+    <!-- EKSKTONG TOP NAVIGATION BAR MULA SA SCREENSHOT -->
+    <header class="bg-[#0b0c10] sticky top-0 z-40 border-b border-white/5">
+        <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <button onclick="openAdminModal()" class="bg-slate-800/80 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded text-xs font-bold border border-slate-700 transition">Admin</button>
-                <button onclick="openApplyModal()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs font-bold transition shadow-lg shadow-red-600/30">Apply</button>
-                <!-- Chat Button papunta sa team-chat.html -->
-                <a href="team-chat.html" class="bg-red-600 hover:bg-red-700 text-white p-2 rounded text-xs font-bold transition flex items-center space-x-1 shadow-lg shadow-red-600/20" title="Team Chat">
-                    <span>💬</span>
-                    <span class="hidden sm:inline">Team Chat</span>
+                <!-- Logo Placeholder (Yung may pakpak na RR sa image) -->
+                <div class="text-red-500 font-black italic text-xl tracking-tighter">
+                    <span class="border-t-2 border-red-500 mr-1"></span>RR
+                </div>
+                <div class="leading-none">
+                    <h1 class="font-black text-white text-base uppercase tracking-widest">Rift<br>Raiders</h1>
+                    <p class="text-red-600 text-[9px] font-bold uppercase tracking-widest mt-0.5">Official Guild</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-2">
+                <!-- Lock Icon (Admin) -->
+                <button class="bg-[#161822] hover:bg-slate-800 text-red-500 w-9 h-9 rounded-lg flex items-center justify-center transition border border-white/5">
+                    <i class="fa-solid fa-lock text-xs"></i>
+                </button>
+                <!-- Red Apply Button -->
+                <a href="team-chat.html" class="bg-[#ff2a2d] hover:bg-red-600 text-white px-4 py-0 h-9 rounded-lg font-bold text-xs flex items-center justify-center space-x-2 transition shadow-[0_0_15px_rgba(255,42,45,0.3)]">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    <span>APPLY</span>
+                </a>
+                <!-- Chat Icon to Team Chat -->
+                <a href="team-chat.html" class="bg-[#161822] hover:bg-slate-800 text-red-500 w-9 h-9 rounded-lg flex items-center justify-center relative transition border border-white/5">
+                    <i class="fa-solid fa-comments text-sm"></i>
+                    <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border border-[#161822]"></span>
                 </a>
             </div>
         </div>
     </header>
 
-    <main class="max-w-6xl mx-auto px-4 py-8 space-y-12">
+    <!-- MAIN CONTENT CONTAINER (Naka-pattern sa mobile view ng screenshot) -->
+    <main class="max-w-md mx-auto px-4 py-6 space-y-8">
         
-        <!-- HERO / ABOUT US -->
+        <!-- ABOUT US -->
         <section class="space-y-4">
-            <div class="flex items-center space-x-2 border-l-4 border-red-600 pl-3">
-                <h2 class="font-black text-base text-white uppercase tracking-widest">About Us</h2>
+            <div class="flex items-center space-x-2">
+                <div class="w-1 h-4 bg-red-600"></div>
+                <h2 class="font-black text-sm text-white uppercase tracking-widest">About Us</h2>
             </div>
-            <div class="bg-[#12141c] border border-red-600/20 rounded-xl p-6 text-slate-300 text-xs md:text-sm leading-relaxed shadow-lg">
+            <p class="text-xs text-slate-400 leading-relaxed">
                 Rift Raiders began its journey in 2024 as a dedicated competitive team. After a year of climbing the ranks, we expanded in April 2025 by establishing our official guild. Today, we continue to field elite rosters ready to conquer the rift.
-            </div>
+            </p>
         </section>
 
-        <!-- AI ASSISTANT SECTION -->
+        <!-- AI ASSISTANT / INTERACTIVE CHAT -->
         <section class="space-y-4">
-            <div class="flex items-center space-x-2 border-l-4 border-red-600 pl-3">
-                <h2 class="font-black text-base text-white uppercase tracking-widest">AI Assistant</h2>
+            <div class="flex items-center space-x-2">
+                <div class="w-1 h-4 bg-red-600"></div>
+                <h2 class="font-black text-sm text-white uppercase tracking-widest">AI Assistant</h2>
             </div>
-            <div class="bg-[#12141c] border border-red-600/20 rounded-xl p-4 md:p-6 space-y-4 shadow-lg">
-                <p class="text-xs text-slate-400">Tactical helper & interactive chat</p>
-                <div class="bg-[#0b0c10] border border-slate-800 rounded-lg p-4 h-48 overflow-y-auto space-y-3 text-xs" id="ai-chat-box">
-                    <div class="bg-slate-800/60 p-3 rounded-lg text-slate-200 border border-slate-700/50">
-                        Mabuhay! Ako ang AI Assistant ng Rift Raiders. Mag-type ng kahit anong tanong tungkol sa guild, requirements, o apply!
+            <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Tactical helper & interactive chat</p>
+            
+            <div class="bg-[#161822] border border-white/5 rounded-xl p-4 space-y-4">
+                <!-- AI Chat Display -->
+                <div class="space-y-3 text-xs h-32 overflow-y-auto" id="ai-chat-box">
+                    <div class="flex items-start space-x-2">
+                        <div class="w-6 h-6 rounded bg-red-600/20 flex items-center justify-center text-red-500 font-bold shrink-0">AI</div>
+                        <div class="bg-[#2a2d3e] text-slate-200 p-3 rounded-xl rounded-tl-none border border-white/5">
+                            Mabuhay! Ako ang AI Assistant ng Rift Raiders. Mag-type ng kahit anong tanong tungkol sa guild, requirements, o apply!
+                        </div>
                     </div>
                 </div>
+
+                <!-- Game Selection Buttons -->
+                <div class="flex flex-wrap gap-2 pt-2 border-t border-white/5">
+                    <button class="bg-[#0b0c10] text-slate-300 text-[10px] font-bold px-3 py-1.5 rounded-lg border border-white/5 flex items-center gap-1.5"><i class="fa-solid fa-mobile-screen"></i> Wild Rift</button>
+                    <button class="bg-[#0b0c10] text-slate-300 text-[10px] font-bold px-3 py-1.5 rounded-lg border border-white/5 flex items-center gap-1.5"><i class="fa-solid fa-laptop"></i> LoL PC</button>
+                    <button class="bg-[#2a1215] text-red-400 text-[10px] font-bold px-3 py-1.5 rounded-lg border border-red-500/20 flex items-center gap-1.5"><i class="fa-solid fa-pen-to-square"></i> How to Apply</button>
+                </div>
+
+                <!-- Input Area -->
                 <div class="flex gap-2">
-                    <input type="text" id="ai-input" placeholder="Mag-type ng tanong mo dito..." class="flex-1 bg-[#0b0c10] border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-red-600">
-                    <button onclick="sendAiMessage()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-xs font-bold transition">Send 🚀</button>
+                    <input type="text" id="ai-input" placeholder="Mag-type ng tanong mo dito..." class="flex-1 bg-[#0b0c10] border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-red-600 transition">
+                    <button onclick="sendAiMessage()" class="bg-[#ff2a2d] text-white px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-1">
+                        Send <i class="fa-solid fa-paper-plane text-[10px] ml-1"></i>
+                    </button>
                 </div>
             </div>
         </section>
 
-        <!-- TEAM CHAT HISTORY PREVIEW SECTION -->
+        <!-- MEET THE TEAMS (Eksaktong layout sa picture) -->
         <section class="space-y-4">
-            <div class="flex items-center justify-between border-l-4 border-red-600 pl-3">
-                <h2 class="font-black text-base text-white uppercase tracking-widest">Team Chat History</h2>
-                <a href="team-chat.html" class="text-xs text-red-400 hover:text-red-300 font-bold underline">Open Full Chat →</a>
+            <div class="flex items-center space-x-2">
+                <div class="w-1 h-4 bg-red-600"></div>
+                <h2 class="font-black text-sm text-white uppercase tracking-widest">Meet The Teams</h2>
             </div>
-            <p class="text-xs text-slate-400">Recent conversations from the guild portal</p>
-            <div id="team-chat-history-preview" class="bg-[#12141c] border border-red-600/20 rounded-xl p-4 space-y-3 max-h-64 overflow-y-auto text-xs">
-                <div class="text-slate-500 italic">Loading recent team chats...</div>
-            </div>
-        </section>
+            <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold">The official esports roster (Tap a player for stats)</p>
+            
+            <div class="grid grid-cols-1 gap-4" id="roster-grid">
+                
+                <!-- PLAYER CARD 1: TAKEKU -->
+                <div onclick="openPlayerStats('TAKEKU', 'MID', 'N/A', ['ahri', 'yone', 'taliyah'])" class="bg-[#161822] rounded-xl overflow-hidden relative h-64 cursor-pointer group border border-white/5">
+                    <!-- Palitan ang src ng totoong image ni Takeku -->
+                    <img src="https://via.placeholder.com/400x400/161822/ffffff?text=Takeku+Image" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#0b0c10] via-[#0b0c10]/40 to-transparent"></div>
+                    <div class="absolute bottom-4 left-4">
+                        <span class="bg-[#ff2a2d] text-white text-[9px] font-black px-2 py-1 rounded tracking-wider uppercase">Wildrift</span>
+                        <h3 class="text-white font-black text-2xl mt-1 uppercase tracking-wide">Takeku</h3>
+                    </div>
+                </div>
 
-        <!-- MEET THE TEAMS -->
-        <section class="space-y-4">
-            <div class="flex items-center justify-between border-l-4 border-red-600 pl-3">
-                <h2 class="font-black text-base text-white uppercase tracking-widest">Meet The Teams</h2>
-            </div>
-            <p class="text-xs text-slate-400">The official esports roster (Tap a player for stats)</p>
-            <div id="roster-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <!-- Dynamic Player Cards -->
+                <!-- PLAYER CARD 2: LEAGUE OF LEGENDS PLAYER -->
+                <div onclick="openPlayerStats('PLAYER_NAME', 'SUPPORT', '65%', ['thresh', 'nami'])" class="bg-[#161822] rounded-xl overflow-hidden relative h-64 cursor-pointer group border border-white/5 mt-2">
+                    <!-- Palitan ang src ng totoong image -->
+                    <img src="https://via.placeholder.com/400x400/161822/ffffff?text=LoL+Player" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#0b0c10] via-[#0b0c10]/40 to-transparent"></div>
+                    <div class="absolute bottom-4 left-4">
+                        <span class="bg-[#ff2a2d] text-white text-[9px] font-black px-2 py-1 rounded tracking-wider uppercase">League of Legends</span>
+                        <h3 class="text-white font-black text-2xl mt-1 uppercase tracking-wide">Player Name</h3>
+                    </div>
+                </div>
+
             </div>
         </section>
 
         <!-- MATCH HISTORY -->
         <section class="space-y-4">
-            <div class="flex items-center space-x-2 border-l-4 border-red-600 pl-3">
-                <h2 class="font-black text-base text-white uppercase tracking-widest">Match History</h2>
+            <div class="flex items-center space-x-2">
+                <div class="w-1 h-4 bg-red-600"></div>
+                <h2 class="font-black text-sm text-white uppercase tracking-widest">Match History</h2>
             </div>
-            <p class="text-xs text-slate-400">Recent scrims & tournaments</p>
-            <div id="match-history-list" class="bg-[#12141c] border border-red-600/20 rounded-xl p-4 text-xs text-slate-500 italic">
+            <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Recent scrims & tournaments</p>
+            <div class="text-xs text-slate-500 italic">
                 No match history yet.
             </div>
         </section>
 
         <!-- MEET THE CREATORS -->
         <section class="space-y-4">
-            <div class="flex items-center space-x-2 border-l-4 border-red-600 pl-3">
-                <h2 class="font-black text-base text-white uppercase tracking-widest">Meet The Creators</h2>
+            <div class="flex items-center space-x-2">
+                <div class="w-1 h-4 bg-red-600"></div>
+                <h2 class="font-black text-sm text-white uppercase tracking-widest">Meet The Creators</h2>
             </div>
-            <p class="text-xs text-slate-400">Our content creators & streamers</p>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div class="bg-[#12141c] border border-red-600/20 rounded-xl p-4 flex items-center space-x-4">
-                    <div class="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center font-bold text-red-500">T</div>
-                    <div>
-                        <h4 class="font-bold text-white text-sm">TAKEKU</h4>
-                        <p class="text-xs text-red-400">WILD RIFT</p>
+            <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Our content creators & streamers</p>
+            
+            <div class="grid grid-cols-2 gap-3">
+                <!-- Creator 1 -->
+                <div class="bg-[#161822] border border-white/5 rounded-xl p-4 flex flex-col items-center justify-center text-center">
+                    <div class="w-12 h-12 rounded-full border-2 border-[#161822] outline outline-2 outline-blue-500 mb-2 overflow-hidden bg-slate-800">
+                         <img src="https://via.placeholder.com/50" class="w-full h-full object-cover">
                     </div>
+                    <h4 class="font-black text-white text-xs uppercase tracking-wide">Takeku</h4>
+                    <p class="text-[9px] font-bold text-blue-400 uppercase tracking-widest mt-0.5">Wildrift</p>
+                    <i class="fa-brands fa-tiktok text-slate-500 text-[10px] mt-2"></i>
                 </div>
-                <div class="bg-[#12141c] border border-red-600/20 rounded-xl p-4 flex items-center space-x-4">
-                    <div class="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center font-bold text-red-500">W</div>
-                    <div>
-                        <h4 class="font-bold text-white text-sm">WINTER</h4>
-                        <p class="text-xs text-red-400">WILD RIFT</p>
+                <!-- Creator 2 -->
+                <div class="bg-[#161822] border border-white/5 rounded-xl p-4 flex flex-col items-center justify-center text-center">
+                    <div class="w-12 h-12 rounded-full border-2 border-[#161822] outline outline-2 outline-blue-500 mb-2 overflow-hidden bg-slate-800">
+                         <img src="https://via.placeholder.com/50" class="w-full h-full object-cover">
                     </div>
+                    <h4 class="font-black text-white text-xs uppercase tracking-wide">Winter</h4>
+                    <p class="text-[9px] font-bold text-blue-400 uppercase tracking-widest mt-0.5">Wildrift</p>
+                    <i class="fa-brands fa-tiktok text-slate-500 text-[10px] mt-2"></i>
                 </div>
             </div>
         </section>
 
         <!-- PARTNERSHIPS -->
         <section class="space-y-4">
-            <div class="flex items-center space-x-2 border-l-4 border-red-600 pl-3">
-                <h2 class="font-black text-base text-white uppercase tracking-widest">Partnerships</h2>
+            <div class="flex items-center space-x-2">
+                <div class="w-1 h-4 bg-red-600"></div>
+                <h2 class="font-black text-sm text-white uppercase tracking-widest">Partnerships</h2>
             </div>
-            <p class="text-xs text-slate-400">Supported by</p>
-            <div class="flex gap-4">
-                <div class="bg-[#12141c] border border-slate-800 px-6 py-3 rounded-lg text-xs font-bold text-slate-300">TAKEKU</div>
-                <div class="bg-[#12141c] border border-slate-800 px-6 py-3 rounded-lg text-xs font-bold text-slate-300">WRTH</div>
+            <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Supported by</p>
+            <div class="flex items-center justify-center gap-4 py-2">
+                <!-- Text Logos from screenshot -->
+                <div class="text-white font-black italic tracking-widest text-sm bg-[#161822] px-4 py-2 rounded">TAKEKU</div>
+                <div class="text-white font-black italic tracking-widest text-sm bg-[#161822] px-4 py-2 rounded flex items-center">
+                    <span class="mr-1">🗡️</span> WRTH
+                </div>
             </div>
         </section>
 
+        <div class="flex justify-center pt-8 pb-4">
+            <div class="flex gap-4 text-slate-500">
+                <i class="fa-brands fa-discord text-lg hover:text-white transition cursor-pointer"></i>
+                <i class="fa-brands fa-facebook text-lg hover:text-white transition cursor-pointer"></i>
+                <i class="fa-solid fa-envelope text-lg hover:text-white transition cursor-pointer"></i>
+            </div>
+        </div>
+        <div class="text-center text-[9px] text-slate-600 pb-10">
+            © 2026 Rift Raiders. All Rights Reserved.
+        </div>
+
     </main>
 
-    <!-- Footer -->
-    <footer class="border-t border-red-600/20 bg-[#12141c] py-6 text-center text-xs text-slate-500">
-        <p>© 2026 Rift Raiders. All Rights Reserved.</p>
-    </footer>
+    <!-- EKSAKTONG PLAYER STATS POPUP ANIMATION (Based on 81064.jpg) -->
+    <div id="player-modal-backdrop" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 hidden transition-opacity duration-300">
+        <div id="player-modal-card" class="bg-[#121212] border border-red-600/30 rounded-2xl p-5 w-full max-w-sm shadow-[0_0_30px_rgba(255,42,45,0.15)] relative transform scale-95 opacity-0 transition-all duration-300">
+            
+            <!-- Close Button -->
+            <button onclick="closePlayerStats()" class="absolute top-4 right-4 text-slate-500 hover:text-white w-6 h-6 flex items-center justify-center bg-white/5 rounded-full">✕</button>
 
-    <!-- PLAYER STATS MODAL -->
-    <div id="player-modal" class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50 p-4">
-        <div class="bg-[#12141c] border border-red-600/40 rounded-xl p-6 w-96 relative">
-            <button onclick="closeModal('player-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-white font-bold">✕</button>
-            <div class="text-center space-y-3">
-                <h3 id="m-name" class="font-black text-white text-lg">PLAYER</h3>
-                <p id="m-role" class="text-xs text-red-500 font-bold uppercase">MID</p>
-                <div class="bg-[#0b0c10] p-3 rounded-lg border border-slate-800 grid grid-cols-2 gap-2 text-center text-xs">
-                    <div><span class="text-slate-400 block">TEAM</span><strong id="m-team" class="text-white">Rift Raiders</strong></div>
-                    <div><span class="text-slate-400 block">WINRATE</span><strong id="m-winrate" class="text-green-400">N/A</strong></div>
+            <!-- Header Info -->
+            <div class="flex items-center space-x-4 mb-6">
+                <!-- Player Avatar w/ Red Border -->
+                <div class="w-[60px] h-[60px] rounded-lg border-[3px] border-red-500 overflow-hidden bg-slate-800">
+                    <img id="modal-pfp" src="https://via.placeholder.com/60" class="w-full h-full object-cover">
+                </div>
+                <div>
+                    <h3 id="modal-name" class="text-white font-black text-xl uppercase tracking-wider leading-none">TAKEKU</h3>
+                    <p id="modal-role" class="text-red-500 text-[10px] font-black uppercase tracking-widest mt-1">MID</p>
                 </div>
             </div>
+
+            <!-- Team & Winrate Stats -->
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div>
+                    <p class="text-slate-500 text-[9px] font-bold uppercase tracking-widest mb-1">TEAM</p>
+                    <p class="text-white font-black uppercase text-xs tracking-wider">RIFT RAIDERS</p>
+                </div>
+                <div>
+                    <p class="text-slate-500 text-[9px] font-bold uppercase tracking-widest mb-1">WINRATE</p>
+                    <p id="modal-winrate" class="text-[#22c55e] font-black uppercase text-xs tracking-wider">N/A</p>
+                </div>
+            </div>
+
+            <!-- Top Champs -->
+            <div>
+                <p class="text-slate-500 text-[9px] font-bold uppercase tracking-widest mb-2">TOP CHAMPS</p>
+                <div id="modal-champs" class="flex gap-2">
+                    <!-- Circles for champs, populated via JS -->
+                    <div class="w-8 h-8 rounded-full border-2 border-red-900/50 bg-slate-800"></div>
+                    <div class="w-8 h-8 rounded-full border-2 border-red-900/50 bg-slate-800"></div>
+                    <div class="w-8 h-8 rounded-full border-2 border-red-900/50 bg-slate-800"></div>
+                </div>
+            </div>
+            
         </div>
     </div>
 
-    <!-- Talk.to Live Chat Widget Integration -->
+    <!-- TAWK.TO LIVE CHAT WIDGET EKSATONG NASA SCREENSHOT -->
     <script type="text/javascript">
         var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
         (function(){
@@ -167,81 +275,89 @@
         })();
     </script>
 
-    <!-- Script para sa Firebase at UI Functionality -->
+    <!-- FUNCTIONALITIES -->
     <script>
-        const firebaseConfig = { databaseURL: "https://your-firebase-app-default-rtdb.firebaseio.com/" };
-        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
-        const db = firebase.database();
-
+        // AI Chat Functionality
         function sendAiMessage() {
             const input = document.getElementById('ai-input');
             const box = document.getElementById('ai-chat-box');
             if(!input.value.trim()) return;
             
-            box.innerHTML += `<div class="bg-red-950/40 border border-red-600/30 p-2 rounded-lg text-slate-200 text-right">${input.value}</div>`;
+            // User Message
+            box.innerHTML += `
+                <div class="flex items-start justify-end space-x-2 mt-3">
+                    <div class="bg-red-600 text-white p-3 rounded-xl rounded-tr-none border border-red-500/50 max-w-[85%]">
+                        ${input.value}
+                    </div>
+                </div>
+            `;
             let val = input.value.toLowerCase();
             input.value = '';
+            box.scrollTop = box.scrollHeight;
 
+            // AI Reply delay
             setTimeout(() => {
-                let reply = "Maaari kang mag-apply sa pamamagitan ng pagpindot sa Apply button sa itaas o pagbisita sa aming Team Chat.";
-                if(val.includes('discord')) reply = "Bisitahin ang aming opisyal na Discord server sa pamamagitan ng Team Chat!";
-                box.innerHTML += `<div class="bg-slate-800/60 p-2 rounded-lg text-slate-200 border border-slate-700/50">${reply}</div>`;
+                let reply = "Para mag-apply, i-click ang APPLY button sa itaas o pumunta sa Team Chat portal para sa aming Discord link!";
+                if(val.includes('discord') || val.includes('server')) reply = "Ang aming official Discord server link ay matatagpuan sa loob ng Team Chat portal. Pumunta doon para makasali!";
+                
+                box.innerHTML += `
+                    <div class="flex items-start space-x-2 mt-3">
+                        <div class="w-6 h-6 rounded bg-red-600/20 flex items-center justify-center text-red-500 font-bold shrink-0 text-xs">AI</div>
+                        <div class="bg-[#2a2d3e] text-slate-200 p-3 rounded-xl rounded-tl-none border border-white/5 max-w-[85%]">
+                            ${reply}
+                        </div>
+                    </div>
+                `;
                 box.scrollTop = box.scrollHeight;
-            }, 500);
+            }, 600);
         }
 
-        // Listener para sa Roster/Users mula sa Firebase
-        db.ref('users').on('value', snapshot => {
-            const val = snapshot.val() || {};
-            const grid = document.getElementById('roster-grid');
-            grid.innerHTML = '';
+        // --- PLAYER STATS POPUP ANIMATION LOGIC ---
+        function openPlayerStats(name, role, winrate, champsList) {
+            // Set Data
+            document.getElementById('modal-name').innerText = name;
+            document.getElementById('modal-role').innerText = role;
+            document.getElementById('modal-winrate').innerText = winrate;
             
-            Object.values(val).forEach(user => {
-                if(!user || (!user.isApproved && !user.isAdmin)) return;
-                grid.innerHTML += `
-                    <div onclick="openPlayer('${user.username}', '${user.team}', '${user.winRate}', '${user.role}')" class="bg-[#12141c] border border-red-600/20 hover:border-red-600/60 rounded-xl p-4 cursor-pointer transition">
-                        <h4 class="font-black text-white text-sm">${user.username}</h4>
-                        <p class="text-xs text-red-400 font-medium">${user.game || 'Wild Rift'}</p>
+            // Set Champs Images (Using placeholder if real images aren't available)
+            const champsContainer = document.getElementById('modal-champs');
+            champsContainer.innerHTML = '';
+            champsList.forEach(champ => {
+                // Para sa demo, gumagamit ng placeholder. Pag may totoong link ng champ icons, palitan dito.
+                champsContainer.innerHTML += `
+                    <div class="w-[30px] h-[30px] rounded-full border border-red-500/30 overflow-hidden bg-[#0b0c10]">
+                        <img src="https://api.dicebear.com/7.x/initials/svg?seed=${champ}&backgroundColor=161822" class="w-full h-full object-cover">
                     </div>
                 `;
             });
-        });
 
-        // Listener para sa Team Chat History (Kinukuha sa parehong database node ng team-chat.html)
-        db.ref('messages').limitToLast(10).on('value', snapshot => {
-            const val = snapshot.val() || {};
-            const historyBox = document.getElementById('team-chat-history-preview');
-            const messages = Object.values(val);
-
-            if (messages.length === 0) {
-                historyBox.innerHTML = `<div class="text-slate-500 italic">No chat messages yet. Join the Team Chat to start talking!</div>`;
-                return;
-            }
-
-            historyBox.innerHTML = messages.map(msg => `
-                <div class="bg-[#0b0c10] border border-slate-800 p-2.5 rounded-lg">
-                    <div class="flex items-center justify-between mb-1">
-                        <span class="font-bold text-red-400">${msg.username || 'Anonymous'}</span>
-                        <span class="text-[10px] text-slate-500">${msg.time || ''}</span>
-                    </div>
-                    <p class="text-slate-300">${msg.text || ''}</p>
-                </div>
-            `).join('');
-            historyBox.scrollTop = historyBox.scrollHeight;
-        });
-
-        function openPlayer(name, team, winrate, role) {
-            document.getElementById('m-name').innerText = name;
-            document.getElementById('m-team').innerText = team || 'Rift Raiders';
-            document.getElementById('m-winrate').innerText = winrate || 'N/A';
-            document.getElementById('m-role').innerText = role || 'Member';
-            document.getElementById('player-modal').classList.remove('hidden');
+            // Show Backdrop
+            const backdrop = document.getElementById('player-modal-backdrop');
+            const card = document.getElementById('player-modal-card');
+            
+            backdrop.classList.remove('hidden');
+            
+            // Trigger Animation Next Frame
+            requestAnimationFrame(() => {
+                backdrop.classList.add('opacity-100');
+                card.classList.remove('scale-95', 'opacity-0');
+                card.classList.add('scale-100', 'opacity-100');
+            });
         }
 
-        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-        function openAdminModal() { alert("I-type ang admin password sa Team Chat portal."); }
-        function openApplyModal() { window.location.href = 'team-chat.html'; }
+        function closePlayerStats() {
+            const backdrop = document.getElementById('player-modal-backdrop');
+            const card = document.getElementById('player-modal-card');
+            
+            // Exit Animation
+            card.classList.remove('scale-100', 'opacity-100');
+            card.classList.add('scale-95', 'opacity-0');
+            backdrop.classList.remove('opacity-100');
+            
+            setTimeout(() => {
+                backdrop.classList.add('hidden');
+            }, 300); // Matches transition duration
+        }
     </script>
 </body>
-                        </html>
-                        
+</html>
