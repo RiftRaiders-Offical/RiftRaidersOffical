@@ -42,12 +42,10 @@
             </div>
             
             <div class="flex items-center space-x-2">
-                <!-- APPLY NOW BUTTON (LINK TO GOOGLE FORM) -->
                 <a href="https://docs.google.com/forms/d/1qTTcHVfRsVXhsfKHv5-7qkZnoe6kMtoN2uLVEYY5XVg/viewform" target="_blank" class="bg-[#ff2a2d] hover:bg-red-600 text-white px-4 py-0 h-9 rounded-lg font-bold text-xs flex items-center justify-center space-x-2 transition shadow-[0_0_15px_rgba(255,42,45,0.3)]">
                     <i class="fa-solid fa-paper-plane"></i>
                     <span>APPLY</span>
                 </a>
-                <!-- CHAT BUTTON -->
                 <a href="team-chat.html" class="bg-[#161822] hover:bg-slate-800 text-red-500 w-9 h-9 rounded-lg flex items-center justify-center relative transition border border-white/5">
                     <i class="fa-solid fa-comments text-sm"></i>
                     <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border border-[#161822]"></span>
@@ -81,10 +79,10 @@
             
             <!-- GAME SELECTION TABS -->
             <div class="flex gap-1.5 overflow-x-auto pb-1 text-[10px] font-bold">
-                <button onclick="filterGame('ALL')" class="game-tab bg-red-600 text-white px-3 py-1.5 rounded-lg border border-red-500/30 whitespace-nowrap">ALL</button>
-                <button onclick="filterGame('Wild Rift')" class="game-tab bg-[#161822] text-slate-400 px-3 py-1.5 rounded-lg border border-white/5 whitespace-nowrap">WILD RIFT</button>
-                <button onclick="filterGame('League of Legends')" class="game-tab bg-[#161822] text-slate-400 px-3 py-1.5 rounded-lg border border-white/5 whitespace-nowrap">LOL PC</button>
-                <button onclick="filterGame('Valorant')" class="game-tab bg-[#161822] text-slate-400 px-3 py-1.5 rounded-lg border border-white/5 whitespace-nowrap">VALORANT</button>
+                <button onclick="filterGame('ALL')" class="game-tab bg-red-600 text-white px-3 py-1.5 rounded-lg border border-red-500/30 whitespace-nowrap transition">ALL</button>
+                <button onclick="filterGame('Wild Rift')" class="game-tab bg-[#161822] text-slate-400 px-3 py-1.5 rounded-lg border border-white/5 whitespace-nowrap transition">WILD RIFT</button>
+                <button onclick="filterGame('League of Legends')" class="game-tab bg-[#161822] text-slate-400 px-3 py-1.5 rounded-lg border border-white/5 whitespace-nowrap transition">LOL PC</button>
+                <button onclick="filterGame('Valorant')" class="game-tab bg-[#161822] text-slate-400 px-3 py-1.5 rounded-lg border border-white/5 whitespace-nowrap transition">VALORANT</button>
             </div>
 
             <div class="grid grid-cols-1 gap-4" id="roster-grid">Loading rosters...</div>
@@ -228,10 +226,12 @@
         function filterGame(game) {
             currentGameFilter = game;
             document.querySelectorAll('.game-tab').forEach(btn => {
-                if(btn.innerText.includes(game) || (game==='ALL' && btn.innerText==='ALL')) {
-                    btn.className = 'game-tab bg-red-600 text-white px-3 py-1.5 rounded-lg border border-red-500/30 whitespace-nowrap';
+                const text = btn.innerText.toLowerCase();
+                const matchVal = game.toLowerCase();
+                if(text.includes(matchVal) || (game === 'ALL' && text === 'all')) {
+                    btn.className = 'game-tab bg-red-600 text-white px-3 py-1.5 rounded-lg border border-red-500/30 whitespace-nowrap transition';
                 } else {
-                    btn.className = 'game-tab bg-[#161822] text-slate-400 px-3 py-1.5 rounded-lg border border-white/5 whitespace-nowrap';
+                    btn.className = 'game-tab bg-[#161822] text-slate-400 px-3 py-1.5 rounded-lg border border-white/5 whitespace-nowrap transition';
                 }
             });
             renderRoster();
@@ -251,7 +251,7 @@
             filtered.forEach(p => {
                 const calculatedWr = calculateWinrate(p.team);
                 grid.innerHTML += `
-                    <div onclick="openPlayerStats('${p.ign}', '${p.tag || ''}', '${p.game}', '${p.team}', '${p.role || ''}', '${calculatedWr}', '${p.pfp}', '${p.champ1}', '${p.champ2}', '${p.champ3}')" class="bg-[#161822] rounded-xl overflow-hidden relative h-64 cursor-pointer group border border-white/5">
+                    <div onclick="openPlayerStats('${p.ign}', '${p.tag || ''}', '${p.game}', '${p.team}', '${p.role || ''}', '${calculatedWr}', '${p.pfp}', '${p.champ1}', '${p.champ2}', '${p.champ3}')" class="bg-[#161822] rounded-xl overflow-hidden relative h-64 cursor-pointer group border border-white/5 shadow-md">
                         <img src="${p.pfp}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition duration-500">
                         <div class="absolute inset-0 bg-gradient-to-t from-[#0b0c10] via-[#0b0c10]/30 to-transparent"></div>
                         <div class="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-green-400 text-[9px] font-black px-2 py-1 rounded border border-white/10">
@@ -365,5 +365,4 @@
         }
     </script>
 </body>
-                                                    </html>
-    
+</html>
