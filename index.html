@@ -23,8 +23,9 @@
                 <button onclick="openAdminModal()" class="bg-slate-800/80 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded text-xs font-bold border border-slate-700 transition">Admin</button>
                 <button onclick="openApplyModal()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs font-bold transition shadow-lg shadow-red-600/30">Apply</button>
                 <!-- Chat Button papunta sa team-chat.html -->
-                <a href="team-chat.html" class="bg-slate-800 hover:bg-slate-700 text-red-400 p-2 rounded border border-slate-700 transition flex items-center justify-center text-xs" title="Team Chat">
-                    💬
+                <a href="team-chat.html" class="bg-red-600 hover:bg-red-700 text-white p-2 rounded text-xs font-bold transition flex items-center space-x-1 shadow-lg shadow-red-600/20" title="Team Chat">
+                    <span>💬</span>
+                    <span class="hidden sm:inline">Team Chat</span>
                 </a>
             </div>
         </div>
@@ -58,6 +59,18 @@
                     <input type="text" id="ai-input" placeholder="Mag-type ng tanong mo dito..." class="flex-1 bg-[#0b0c10] border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-red-600">
                     <button onclick="sendAiMessage()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-xs font-bold transition">Send 🚀</button>
                 </div>
+            </div>
+        </section>
+
+        <!-- TEAM CHAT HISTORY PREVIEW SECTION -->
+        <section class="space-y-4">
+            <div class="flex items-center justify-between border-l-4 border-red-600 pl-3">
+                <h2 class="font-black text-base text-white uppercase tracking-widest">Team Chat History</h2>
+                <a href="team-chat.html" class="text-xs text-red-400 hover:text-red-300 font-bold underline">Open Full Chat →</a>
+            </div>
+            <p class="text-xs text-slate-400">Recent conversations from the guild portal</p>
+            <div id="team-chat-history-preview" class="bg-[#12141c] border border-red-600/20 rounded-xl p-4 space-y-3 max-h-64 overflow-y-auto text-xs">
+                <div class="text-slate-500 italic">Loading recent team chats...</div>
             </div>
         </section>
 
@@ -177,6 +190,7 @@
             }, 500);
         }
 
+        // Listener para sa Roster/Users mula sa Firebase
         db.ref('users').on('value', snapshot => {
             const val = snapshot.val() || {};
             const grid = document.getElementById('roster-grid');
@@ -193,6 +207,29 @@
             });
         });
 
+        // Listener para sa Team Chat History (Kinukuha sa parehong database node ng team-chat.html)
+        db.ref('messages').limitToLast(10).on('value', snapshot => {
+            const val = snapshot.val() || {};
+            const historyBox = document.getElementById('team-chat-history-preview');
+            const messages = Object.values(val);
+
+            if (messages.length === 0) {
+                historyBox.innerHTML = `<div class="text-slate-500 italic">No chat messages yet. Join the Team Chat to start talking!</div>`;
+                return;
+            }
+
+            historyBox.innerHTML = messages.map(msg => `
+                <div class="bg-[#0b0c10] border border-slate-800 p-2.5 rounded-lg">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="font-bold text-red-400">${msg.username || 'Anonymous'}</span>
+                        <span class="text-[10px] text-slate-500">${msg.time || ''}</span>
+                    </div>
+                    <p class="text-slate-300">${msg.text || ''}</p>
+                </div>
+            `).join('');
+            historyBox.scrollTop = historyBox.scrollHeight;
+        });
+
         function openPlayer(name, team, winrate, role) {
             document.getElementById('m-name').innerText = name;
             document.getElementById('m-team').innerText = team || 'Rift Raiders';
@@ -206,5 +243,5 @@
         function openApplyModal() { window.location.href = 'team-chat.html'; }
     </script>
 </body>
-    </html>
-    
+                        </html>
+                        
