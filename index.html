@@ -3,785 +3,468 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rift Raiders Guild</title>
-
-    <!-- Tailwind CSS -->
+    <title id="main-site-title">Rift Raiders Portal</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        rrRed: '#ff2e38',
-                        rrDark: '#0a0a0c',
-                        rrCard: '#141416',
-                        rrBorder: '#222226',
-                        rrBlue: '#3b82f6'
-                    }
-                }
-            }
-        }
-    </script>
-
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
-    <style>
-        /* RED ACCENT HEADER LINE */
-        .section-header-title {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .section-header-title::before {
-            content: '';
-            display: inline-block;
-            width: 4px;
-            height: 20px;
-            background-color: #ff2e38;
-            border-radius: 2px;
-        }
-
-        /* PLAYER CARD ANIMATION & OVERLAY */
-        .player-card {
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .player-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 25px -5px rgba(255, 46, 56, 0.25);
-        }
-        .player-card .default-info {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 1rem;
-            z-index: 10;
-            background: linear-gradient(to top, rgba(10,10,12,0.95), rgba(10,10,12,0.6), transparent);
-        }
-                .player-card .expanded-info {
-            position: absolute;
-            inset: 0;
-            background-color: rgba(20, 20, 22, 0.98);
-            padding: 1.25rem;
-            opacity: 0;
-            pointer-events: none;
-            transform: translateY(10px);
-            transition: opacity 0.3s ease, transform 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            z-index: 20;
-        }
-
-        .player-card.is-open .expanded-info {
-            opacity: 1;
-            pointer-events: auto;
-            transform: translateY(0);
-        }
-
-
-        /* CHAT BUBBLES */
-        .chat-scroll {
-            max-height: 260px;
-            overflow-y: auto;
-            scroll-behavior: smooth;
-        }
-        .chat-scroll::-webkit-scrollbar {
-            width: 4px;
-        }
-        .chat-scroll::-webkit-scrollbar-thumb {
-            background: #222226;
-            border-radius: 4px;
-        }
-
-        /* TYPING INDICATOR DOTS */
-        .typing-dots span {
-            animation: blinkDots 1.4s infinite both;
-        }
-        .typing-dots span:nth-child(2) { animation-delay: .2s; }
-        .typing-dots span:nth-child(3) { animation-delay: .4s; }
-        @keyframes blinkDots {
-            0%, 80%, 100% { opacity: 0; }
-            40% { opacity: 1; }
-        }
-    </style>
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 </head>
-<body class="bg-rrDark text-gray-100 font-sans min-h-screen flex flex-col antialiased">
+<body class="bg-[#0b0c10] text-slate-100 font-sans antialiased min-h-screen flex flex-col">
 
-    <!-- LOADING SCREEN -->
-    <div id="loadingScreen" class="fixed inset-0 bg-black z-[100] flex flex-col items-center justify-center transition-opacity duration-500">
-        <img id="loadingLogo" src="https://i.ibb.co/689L51P/58834.png" alt="Loading..." class="w-20 h-20 mb-4 animate-bounce">
-        <div class="w-10 h-10 border-4 border-rrRed border-t-transparent rounded-full animate-spin"></div>
+    <!-- Top Navigation / Header -->
+    <div class="h-16 border-b border-red-600/20 bg-[#12141c] px-4 flex items-center justify-between sticky top-0 z-40">
+        <div class="flex items-center space-x-3">
+            <span class="w-3 h-3 bg-red-600 rounded-full animate-pulse"></span>
+            <h1 class="font-black tracking-wider text-red-500 uppercase text-sm">Rift Raiders</h1>
+        </div>
+        <div class="flex items-center space-x-2">
+            <!-- Button papunta sa Admin Portal Modal -->
+            <button onclick="openAdminPasswordModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 p-2 rounded border border-slate-700 transition flex items-center justify-center text-xs" title="Admin Portal">
+                🔒
+            </button>
+            <!-- Button papunta sa team-chat.html (Naka-link na dito!) -->
+            <a href="team-chat.html" class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-xs font-bold transition flex items-center space-x-1.5 shadow-lg shadow-red-600/20">
+                <span>💬</span>
+                <span class="hidden sm:inline">Team Chat</span>
+            </a>
+            <!-- Button papunta sa Talk.to / External Chat -->
+            <button onclick="openExternalChat()" class="bg-slate-800 hover:bg-slate-700 text-red-400 p-2 rounded border border-slate-700 transition flex items-center justify-center text-xs" title="External Chat">
+                🌐
+            </button>
+        </div>
     </div>
 
-    <!-- NAVBAR / HEADER -->
-    <header class="bg-black/90 backdrop-blur-md border-b border-rrBorder sticky top-0 z-40 px-4 py-3">
-        <div class="max-w-4xl mx-auto flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <img id="siteLogo" src="https://i.ibb.co/689L51P/58834.png" alt="Logo" class="w-9 h-9 object-contain">
+    <!-- Main Content Area -->
+    <div class="flex-1 p-4 md:p-8 overflow-y-auto">
+        <div class="max-w-6xl mx-auto space-y-8">
+            
+            <!-- Hero / Header Section -->
+            <div class="flex flex-col md:flex-row items-center justify-between border-b border-red-600/30 pb-6 gap-4">
                 <div>
-                    <h1 class="text-sm font-black text-white tracking-wider uppercase leading-none">RIFT RAIDERS</h1>
-                    <p class="text-[9px] text-rrRed font-bold tracking-widest uppercase mt-0.5">OFFICIAL GUILD</p>
+                    <h2 class="text-2xl md:text-3xl font-black text-white uppercase tracking-wider">Meet The Teams</h2>
+                    <p class="text-xs md:text-sm text-slate-400 mt-1">The official esports roster across multiple titles. Tap a player card for full stats!</p>
                 </div>
-            </div>
-            <div class="flex items-center space-x-2">
-                <button onclick="openAdminModal()" class="bg-rrCard border border-rrBorder hover:border-rrRed text-gray-300 px-3 py-1.5 rounded-md text-xs font-bold transition flex items-center space-x-1.5">
-                    <i class="fas fa-lock text-rrRed"></i>
-                    <span class="hidden sm:inline">Admin</span>
+                <button onclick="openEditProfile()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-4 py-2 rounded border border-slate-700 transition">
+                    Edit Profile & Stats
                 </button>
-                <button onclick="openApplyModal()" class="bg-rrRed hover:bg-red-600 text-white px-3.5 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-lg shadow-red-600/20 flex items-center space-x-1.5">
-                    <i class="fas fa-paper-plane"></i>
-                    <span>Apply</span>
-                </button>
-                
-                <!-- Team Chat Button -->
-                <a href="team-chat.html" class="bg-gray-800 border border-gray-700 hover:border-red-500 text-gray-300 px-3 py-1.5 rounded-md text-xs font-bold transition flex items-center space-x-1.5" title="Private Team Chat">
-                    <i class="fas fa-comments text-red-500"></i>
-                    <span class="hidden sm:inline">Chat</span>
-                </a>
             </div>
+
+            <!-- VALORANT SECTION -->
+            <div class="space-y-4">
+                <div class="flex items-center space-x-2 border-l-4 border-red-600 pl-3">
+                    <h3 class="font-black text-sm text-red-500 uppercase tracking-widest">VALORANT ROSTER</h3>
+                </div>
+                <div id="roster-valorant" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+            </div>
+
+            <!-- WILD RIFT SECTION -->
+            <div class="space-y-4 pt-4">
+                <div class="flex items-center space-x-2 border-l-4 border-red-600 pl-3">
+                    <h3 class="font-black text-sm text-red-500 uppercase tracking-widest">WILD RIFT ROSTER</h3>
+                </div>
+                <div id="roster-wildrift" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+            </div>
+
+            <!-- LEAGUE OF LEGENDS SECTION -->
+            <div class="space-y-4 pt-4">
+                <div class="flex items-center space-x-2 border-l-4 border-red-600 pl-3">
+                    <h3 class="font-black text-sm text-red-500 uppercase tracking-widest">LEAGUE OF LEGENDS ROSTER</h3>
+                </div>
+                <div id="roster-lol" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+            </div>
+
+            <!-- MATCH HISTORY SECTION -->
+            <div class="space-y-4 pt-6 border-t border-red-600/30">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2 border-l-4 border-red-600 pl-3">
+                        <h3 class="font-black text-sm text-red-500 uppercase tracking-widest">MATCH HISTORY & SCRIMS</h3>
+                    </div>
+                    <button onclick="openAddMatchModal()" id="add-match-btn" class="hidden bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-3 py-1.5 rounded transition">+ Add Match</button>
+                </div>
+                <div id="match-history-list" class="space-y-3"></div>
+            </div>
+
         </div>
-    </header>
-    <!-- MAIN CONTAINER -->
-    <main class="max-w-4xl mx-auto w-full px-4 py-6 space-y-8">
+    </div>
 
-        <!-- RIFT RAIDERS HERO BANNER (TULAD NG NASA VIDEO) -->
-        <section class="text-left pt-2 pb-1">
-            <h1 class="text-3xl md:text-4xl font-black text-white tracking-tight uppercase">RIFT RAIDERS</h1>
-            <p class="text-xs md:text-sm text-rrRed font-bold uppercase tracking-wider mt-1">Competitive gaming. Built to dominate.</p>
-        </section>
+    <!-- PLAYER STATS POPUP MODAL -->
+    <div id="player-stats-modal" class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50 p-4">
+        <div class="bg-[#12141c] border border-red-600/40 rounded-xl p-6 w-90 max-w-md relative shadow-2xl">
+            <button onclick="closeModal('player-stats-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-white font-bold">✕</button>
+            <div class="flex flex-col items-center text-center">
+                <img id="modal-player-avatar" class="w-20 h-20 rounded-full object-cover border-2 border-red-600 mb-3 bg-slate-800 shadow-lg shadow-red-600/20">
+                <h3 id="modal-player-ign" class="font-black text-white text-lg tracking-wide">PLAYER IGN</h3>
+                <span id="modal-player-team" class="bg-red-950 text-red-400 text-xs px-2.5 py-0.5 rounded font-bold mt-1 border border-red-600/30">Team Alpha</span>
+                <span id="modal-player-game" class="text-xs text-slate-400 mt-1 uppercase font-semibold">Game</span>
 
-        <!-- ABOUT US -->
-        <section>
-            <h2 class="section-header-title text-base font-black text-white uppercase tracking-wider mb-2">ABOUT US</h2>
-            <div class="bg-rrCard border border-rrBorder rounded-lg p-4">
-                <p class="text-gray-300 text-xs md:text-sm leading-relaxed">
-                    Rift Raiders began its journey in 2024 as a dedicated competitive team. After a year of climbing the ranks, we expanded in April 2025 by establishing our official guild. Today, we continue to field elite rosters ready to conquer the rift.
-                </p>
-            </div>
-        </section>
-        
-        <!-- INTERACTIVE AI ASSISTANT WITH USER TYPING CHAT -->
-        <section>
-            <h2 class="section-header-title text-base font-black text-white uppercase tracking-wider mb-1">AI ASSISTANT</h2>
-            <p class="text-[11px] text-gray-500 uppercase ml-3.5 font-bold mb-3 tracking-wider">TACTICAL HELPER & INTERACTIVE CHAT</p>
-            
-            <div class="bg-rrCard border border-rrBorder border-l-4 border-l-rrRed rounded-lg p-4 shadow-xl">
-                <!-- Chat Message Area -->
-                <div id="aiChatLog" class="chat-scroll space-y-3 mb-3 pr-1">
-                    <div class="flex items-start space-x-2.5">
-                        <div class="bg-rrRed/20 text-rrRed border border-rrRed/30 p-2 rounded-lg text-xs">
-                            <i class="fas fa-robot"></i>
-                        </div>
-                        <div class="bg-black/60 border border-rrBorder p-2.5 rounded-lg text-xs text-gray-200 max-w-[85%] leading-relaxed">
-                            Mabuhay! Ako ang AI Assistant ng Rift Raiders. Mag-type ng kahit anong tanong tungkol sa guild, requirements, o apply!
-                        </div>
+                <div class="grid grid-cols-2 gap-3 w-full mt-5 bg-[#0b0c10] p-3 rounded-lg border border-slate-800 text-center">
+                    <div>
+                        <p class="text-[10px] text-slate-400 uppercase font-bold">Win Rate</p>
+                        <p id="modal-player-winrate" class="text-lg font-black text-green-400 mt-0.5">0%</p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] text-slate-400 uppercase font-bold">Role / Position</p>
+                        <p id="modal-player-role" class="text-sm font-bold text-white mt-1">Main Carry</p>
                     </div>
                 </div>
 
-                <!-- Typing Indicator (Lalabas habang nag-iisip/nagta-type ang AI) -->
-                <div id="aiTypingIndicator" class="hidden flex items-center space-x-2 mb-3 text-xs text-rrRed font-bold">
-                    <i class="fas fa-robot"></i>
-                    <span>AI Assistant is typing</span>
-                    <span class="typing-dots"><span>.</span><span>.</span><span>.</span></span>
+                <div class="w-full mt-4 text-left">
+                    <p class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Top Champions / Agents</p>
+                    <div id="modal-player-champs" class="flex flex-wrap gap-1.5"></div>
                 </div>
-
-                <!-- Quick Buttons -->
-                <div class="flex flex-wrap gap-1.5 mb-3 border-t border-rrBorder/50 pt-2.5">
-                    <button onclick="quickAsk('Wild Rift requirements')" class="bg-black border border-rrBorder hover:border-rrRed text-gray-300 text-[10px] px-2.5 py-1 rounded font-bold transition">📱 Wild Rift</button>
-                    <button onclick="quickAsk('LoL PC requirements')" class="bg-black border border-rrBorder hover:border-rrRed text-gray-300 text-[10px] px-2.5 py-1 rounded font-bold transition">💻 LoL PC</button>
-                    <button onclick="quickAsk('Paano mag apply?')" class="bg-rrRed/20 text-rrRed border border-rrRed/40 hover:bg-rrRed hover:text-white text-[10px] px-2.5 py-1 rounded font-bold transition">📝 How to Apply</button>
-                </div>
-
-                <!-- User Input Form -->
-                <form onsubmit="handleUserSubmit(event)" class="flex space-x-2">
-                    <input type="text" id="userChatInput" autocomplete="off" placeholder="Mag-type ng tanong mo dito..." class="flex-1 bg-black border border-rrBorder text-xs text-white px-3 py-2 rounded-md outline-none focus:border-rrRed transition">
-                    <button type="submit" class="bg-rrRed hover:bg-red-600 text-white text-xs font-bold px-4 py-2 rounded-md transition flex items-center space-x-1">
-                        <span>Send</span>
-                        <i class="fas fa-paper-plane text-[10px]"></i>
-                    </button>
-                </form>
             </div>
-        </section>
+        </div>
+    </div>
 
-        <!-- MEET THE TEAMS -->
-        <section>
-            <h2 class="section-header-title text-base font-black text-white uppercase tracking-wider mb-1">MEET THE TEAMS</h2>
-            <p class="text-[11px] text-gray-500 uppercase ml-3.5 font-bold mb-4 tracking-wider">THE OFFICIAL ESPORTS ROSTER (TAP A PLAYER FOR STATS)</p>
-            
-            <div id="competitiveGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                <!-- Dynamic Player Cards -->
-            </div>
-        </section>
-         <!-- MATCH HISTORY -->
-        <section>
-            <h2 class="section-header-title text-base font-black text-white uppercase tracking-wider mb-1">MATCH HISTORY</h2>
-            <p class="text-[11px] text-gray-500 uppercase ml-3.5 font-bold mb-4 tracking-wider">RECENT SCRIMS & TOURNAMENTS</p>
-            
-            <div id="matchesGrid" class="space-y-3">
-                <!-- Dynamic Matches -->
-            </div>
-        </section>
-
-        <!-- MEET THE CREATORS -->
-        <section>
-            <h2 class="section-header-title text-base font-black text-white uppercase tracking-wider mb-1">MEET THE CREATORS</h2>
-            <p class="text-[11px] text-gray-500 uppercase ml-3.5 font-bold mb-4 tracking-wider">OUR CONTENT CREATORS & STREAMERS</p>
-            
-            <div id="creatorsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                <!-- Dynamic Creators -->
-            </div>
-        </section>
-
-        <!-- PARTNERSHIPS -->
-        <section>
-            <h2 class="section-header-title text-base font-black text-white uppercase tracking-wider mb-1">PARTNERSHIPS</h2>
-            <p class="text-[11px] text-gray-500 uppercase ml-3.5 font-bold mb-4 tracking-wider">SUPPORTED BY</p>
-            
-            <div id="partnersGrid" class="bg-rrCard border border-rrBorder rounded-lg p-6 flex flex-wrap justify-center items-center gap-8 min-h-[80px]">
-                <!-- Dynamic Partners -->
-            </div>
-        </section>
-
-        <section class="discord-section" style="text-align: center; margin: 40px 0; padding: 20px;">
-  <h2 style="color: #ff4444; margin-bottom: 15px; font-family: sans-serif;">COMMUNITY DISCORD</h2>
-  <iframe src="https://discord.com/widget?id=1245701204722450515&theme=dark" width="350" height="500" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
-</section>
-
-        <!-- ADMIN DASHBOARD (HIDDEN BY DEFAULT) -->
-        <section id="adminSection" class="hidden bg-rrCard border-2 border-rrRed rounded-xl p-5 shadow-2xl">
-            <div class="flex justify-between items-center mb-6 pb-3 border-b border-rrBorder">
+    <!-- ADD MATCH MODAL (Admin) -->
+    <div id="add-match-modal" class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50 p-4">
+        <div class="bg-[#12141c] border border-red-600/30 rounded-lg p-6 w-96 relative">
+            <button onclick="closeModal('add-match-modal')" class="absolute top-3 right-3 text-slate-400 hover:text-white">✕</button>
+            <h3 class="font-bold text-white text-base mb-4 text-red-500">Add Match / Scrim Result</h3>
+            <form onsubmit="handleSaveMatch(event)" class="space-y-3 text-xs">
                 <div>
-                    <h3 class="text-lg font-black text-white uppercase flex items-center">
-                        <i class="fas fa-user-shield text-rrRed mr-2"></i>ADMIN DASHBOARD
-                    </h3>
-                    <p class="text-[11px] text-gray-400">Manage rosters, matches, creators, and partners.</p>
+                    <label class="block text-slate-400 mb-1">Match Type</label>
+                    <select id="match-type" class="w-full bg-[#0b0c10] border border-slate-700 rounded p-2 text-white">
+                        <option value="SCRIM">SCRIM</option>
+                        <option value="TOURNAMENT">TOURNAMENT</option>
+                        <option value="SHOWDOWN">SHOWDOWN</option>
+                    </select>
                 </div>
-                <button onclick="logoutAdmin()" class="bg-red-500/20 text-red-400 border border-red-500/40 hover:bg-rrRed hover:text-white px-3 py-1 rounded text-xs font-bold transition">
-                    Logout
-                </button>
-            </div>
-
-            <!-- ADMIN FORMS -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <!-- Add Player Form -->
-                <div class="bg-black/50 p-4 rounded-lg border border-rrBorder space-y-2.5 text-xs">
-                    <h4 class="font-bold text-rrRed uppercase flex items-center"><i class="fas fa-user-plus mr-1.5"></i>Add Player / Roster</h4>
-                    <input type="text" id="cIgn" placeholder="IGN (e.g. TAKEKU)" class="w-full bg-rrCard border border-rrBorder p-2 rounded text-white outline-none">
-                    <input type="text" id="cRole" placeholder="Role (e.g. MID, JUNGLE)" class="w-full bg-rrCard border border-rrBorder p-2 rounded text-white outline-none">
-                    <input type="text" id="cTeam" placeholder="Team (e.g. RIFT RAIDERS)" class="w-full bg-rrCard border border-rrBorder p-2 rounded text-white outline-none">
-                    <input type="text" id="cGame" placeholder="Game (e.g. Wild Rift / LoL PC)" class="w-full bg-rrCard border border-rrBorder p-2 rounded text-white outline-none">
-                    <input type="text" id="cWinrate" placeholder="Winrate (e.g. N/A or 65%)" class="w-full bg-rrCard border border-rrBorder p-2 rounded text-white outline-none">
-                    <input type="text" id="cProfileLink" placeholder="Profile / OP.GG Link" class="w-full bg-rrCard border border-rrBorder p-2 rounded text-white outline-none">
-                    <input type="text" id="cChamp1" placeholder="Top Champ 1 Icon URL" class="w-full bg-rrCard border border-rrBorder p-2 rounded text-white outline-none">
-                    <input type="text" id="cChamp2" placeholder="Top Champ 2 Icon URL" class="w-full bg-rrCard border border-rrBorder p-2 rounded text-white outline-none">
-                    <input type="text" id="cChamp3" placeholder="Top Champ 3 Icon URL" class="w-full bg-rrCard border border-rrBorder p-2 rounded text-white outline-none">
-                    <div>
-                        <label class="block text-[10px] text-gray-400 font-bold mb-1">PLAYER PHOTO</label>
-                        <input type="file" id="cPhoto" accept="image/*" class="w-full bg-rrCard border border-rrBorder p-1 rounded text-gray-400 text-[10px]">
-                    </div>
-                    <button id="btnCompetitive" onclick="addCompetitive()" class="w-full bg-rrRed hover:bg-red-600 text-white font-bold p-2 rounded uppercase transition mt-1">Add Player</button>
+                <div>
+                    <label class="block text-slate-400 mb-1">Opposing Team Name</label>
+                    <input type="text" id="match-opponent" placeholder="e.g. RIFT RAIDERS ASCEND" required class="w-full bg-[#0b0c10] border border-slate-700 rounded p-2 text-white">
                 </div>
-
-                <!-- Add Match Form -->
-                <div class="bg-black/50 p-4 rounded-lg border border-rrBorder space-y-2.5 text-xs flex flex-col justify-between">
-                    <div>
-                        <h4 class="font-bold text-yellow-500 uppercase flex items-center mb-2.5"><i class="fas fa-trophy mr-1.5"></i>Add Match Record</h4>
-                        <input type="text" id="mOpponent" placeholder="Opponent Team Name" class="w-full bg-rrCard border border-rrBorder p-2 rounded text-white outline-none mb-2">
-                        <input type="text" id="mScore" placeholder="Score (e.g. 2 - 0)" class="w-full bg-rrCard border border-rrBorder p-2 rounded text-white outline-none mb-2">
-                        <select id="mType" class="w-full bg-rrCard border border-rrBorder p-2 rounded text-white outline-none mb-2">
-                            <option value="Scrim">Scrim</option>
-                            <option value="Tournament">Tournament</option>
-                            <option value="Showmatch">Showmatch</option>
-                        </select>
-                        <select id="mResult" class="w-full bg-rrCard border border-rrBorder p-2 rounded text-white outline-none mb-2">
-                            <option value="Win">Win</option>
-                            <option value="Loss">Loss</option>
-                            <option value="Draw">Draw</option>
-                        </select>
-                        <input type="date" id="mDate" class="w-full bg-rrCard border border-rrBorder p-2 rounded text-white outline-none">
-                    </div>
-                    <button id="btnMatch" onclick="addMatch()" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-bold p-2 rounded uppercase transition">Add Match</button>
+                <div>
+                    <label class="block text-slate-400 mb-1">Score (e.g. 2-0, 13-9)</label>
+                    <input type="text" id="match-score" placeholder="2-0" required class="w-full bg-[#0b0c10] border border-slate-700 rounded p-2 text-white">
                 </div>
-
-                <!-- Add Creator Form -->
-                <div class="bg-black/50 p-4 rounded-lg border border-rrBorder space-y-2.5 text-xs">
-                    <h4 class="font-bold text-rrBlue uppercase flex items-center"><i class="fas fa-video mr-1.5"></i>Add Creator</h4>
-                    <input type="text" id="crName" placeholder="Creator Name" class="w-full bg-rrCard border border-rrBorder p-2 rounded text-white outline-none">
-                    <input type="text" id="crGame" placeholder="Game / Platform" class="w-full bg-rrCard border border-rrBorder p-2 rounded text-white outline-none">
-                    <input type="text" id="crFb" placeholder="Facebook Profile Link" class="w-full bg-rrCard border border-rrBorder p-2 rounded text-white outline-none">
-                    <input type="text" id="crYt" placeholder="YouTube Link" class="w-full bg-rrCard border border-rrBorder p-2 rounded text-white outline-none">
-                    <input type="text" id="crTt" placeholder="TikTok Link" class="w-full bg-rrCard border border-rrBorder p-2 rounded text-white outline-none">
-                    <div>
-                        <label class="block text-[10px] text-gray-400 font-bold mb-1">CREATOR PHOTO</label>
-                        <input type="file" id="crPhoto" accept="image/*" class="w-full bg-rrCard border border-rrBorder p-1 rounded text-gray-400 text-[10px]">
-                    </div>
-                    <button id="btnCreator" onclick="addCreator()" class="w-full bg-rrBlue hover:bg-blue-600 text-white font-bold p-2 rounded uppercase transition">Add Creator</button>
+                <div>
+                    <label class="block text-slate-400 mb-1">Result Status</label>
+                    <select id="match-result" class="w-full bg-[#0b0c10] border border-slate-700 rounded p-2 text-white">
+                        <option value="WIN">WIN</option>
+                        <option value="LOSS">LOSS</option>
+                    </select>
                 </div>
-
-                <!-- Add Partner Form -->
-                <div class="bg-black/50 p-4 rounded-lg border border-rrBorder space-y-2.5 text-xs flex flex-col justify-between">
-                    <div>
-                        <h4 class="font-bold text-green-500 uppercase flex items-center mb-2.5"><i class="fas fa-handshake mr-1.5"></i>Add Partner</h4>
-                        <input type="text" id="pName" placeholder="Partner / Sponsor Name" class="w-full bg-rrCard border border-rrBorder p-2 rounded text-white outline-none mb-2">
-                        <input type="text" id="pLink" placeholder="Website Link" class="w-full bg-rrCard border border-rrBorder p-2 rounded text-white outline-none mb-2">
-                        <div>
-                            <label class="block text-[10px] text-gray-400 font-bold mb-1">PARTNER LOGO</label>
-                            <input type="file" id="pPhoto" accept="image/*" class="w-full bg-rrCard border border-rrBorder p-1 rounded text-gray-400 text-[10px]">
-                        </div>
-                    </div>
-                    <button id="btnPartner" onclick="addPartner()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold p-2 rounded uppercase transition">Add Partner</button>
-                </div>
-            </div>
-
-            <!-- DELETE / MANAGE ITEMS -->
-            <div class="bg-black/50 p-4 rounded-lg border border-rrBorder">
-                <h4 class="text-xs font-bold text-white uppercase mb-3">Manage & Delete Items</h4>
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-                    <div><p class="text-[10px] text-rrRed font-bold uppercase mb-1">Teams</p><div id="manageCompetitive" class="space-y-1 max-h-32 overflow-y-auto border border-rrBorder p-2 rounded bg-rrCard"></div></div>
-                    <div><p class="text-[10px] text-yellow-500 font-bold uppercase mb-1">Matches</p><div id="manageMatches" class="space-y-1 max-h-32 overflow-y-auto border border-rrBorder p-2 rounded bg-rrCard"></div></div>
-                    <div><p class="text-[10px] text-rrBlue font-bold uppercase mb-1">Creators</p><div id="manageCreators" class="space-y-1 max-h-32 overflow-y-auto border border-rrBorder p-2 rounded bg-rrCard"></div></div>
-                    <div><p class="text-[10px] text-green-500 font-bold uppercase mb-1">Partners</p><div id="managePartners" class="space-y-1 max-h-32 overflow-y-auto border border-rrBorder p-2 rounded bg-rrCard"></div></div>
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-        <!-- FOOTER WITH SOCIALS -->
-    <footer class="mt-auto border-t border-rrBorder bg-black py-8 text-center">
-        <!-- Social Media Icons -->
-        <div class="flex justify-center items-center space-x-6 mb-4">
-            <a href="https://discord.gg/x3M8dZ7fmR" target="_blank" class="text-gray-400 hover:text-[#5865F2] text-3xl transition duration-300" title="Join our Discord">
-                <i class="fab fa-discord"></i>
-            </a>
-            <a href="https://www.facebook.com/share/1EgG3RsrZg/" target="_blank" class="text-gray-400 hover:text-blue-500 text-3xl transition duration-300" title="Follow us on Facebook">
-                <i class="fab fa-facebook"></i>
-            </a>
-            <a href="mailto:riftraiders.wr@gmail.com" class="text-gray-400 hover:text-rrRed text-3xl transition duration-300" title="Email Us">
-                <i class="fas fa-envelope"></i>
-            </a>
-        </div>
-        <p class="text-xs text-gray-500">&copy; 2026 Rift Raiders. All Rights Reserved.</p>
-    </footer>
-
-
-
-    <!-- ADMIN PASSWORD MODAL -->
-    <div id="adminModal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-rrCard border border-rrBorder rounded-xl p-6 w-full max-w-sm text-center shadow-2xl relative">
-            <i class="fas fa-user-shield text-3xl text-rrRed mb-2"></i>
-            <h3 class="text-lg font-black text-white uppercase mb-1">Admin Portal</h3>
-            <p class="text-xs text-gray-400 mb-4">Enter password to unlock Admin Dashboard.</p>
-            <input type="password" id="adminPasswordInput" placeholder="Password" class="w-full bg-black border border-rrBorder p-2.5 rounded text-white text-sm mb-4 text-center focus:border-rrRed outline-none">
-            <div class="flex space-x-2">
-                <button onclick="closeAdminModal()" class="w-1/2 bg-black border border-rrBorder text-gray-300 py-2 rounded font-bold text-xs hover:bg-rrBorder">Cancel</button>
-                <button onclick="verifyAdminPassword()" class="w-1/2 bg-rrRed text-white py-2 rounded font-bold text-xs hover:bg-red-600">Login</button>
-            </div>
+                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded transition mt-2">Publish Match Result</button>
+            </form>
         </div>
     </div>
 
-    <!-- APPLY MODAL -->
-    <div id="applyModal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-rrCard border border-rrBorder rounded-xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden relative shadow-2xl">
-            <div class="p-3.5 border-b border-rrBorder flex justify-between items-center bg-black">
-                <h3 class="font-black text-white text-sm uppercase tracking-wider flex items-center">
-                    <i class="fas fa-file-alt text-rrRed mr-2"></i>Rift Raiders Application Form
-                </h3>
-                <button onclick="closeApplyModal()" class="text-gray-400 hover:text-white text-lg p-1"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="p-2 flex-1 overflow-y-auto bg-black/50">
-                <iframe src="https://docs.google.com/forms/d/1qTTcHVfRsVXhsfKHv5-7qkZnoe6kMtoN2uLVEYY5XVg/viewform?embedded=true" class="w-full h-[520px]" frameborder="0">Loading...</iframe>
-            </div>
+    <!-- Edit Profile Modal -->
+    <div id="edit-profile-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center hidden z-50 p-4">
+        <div class="bg-[#12141c] border border-red-600/30 rounded-lg p-6 w-96 relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeModal('edit-profile-modal')" class="absolute top-3 right-3 text-slate-400 hover:text-white">✕</button>
+            <h3 class="font-bold text-white text-base mb-4">Edit Profile & Competitive Stats</h3>
+            <form onsubmit="handleSaveProfile(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block text-slate-400 mb-1">Username / IGN</label>
+                    <input type="text" id="edit-username" placeholder="Your IGN" required class="w-full bg-[#0b0c10] border border-slate-700 rounded p-2 text-white">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1">Select Game</label>
+                    <select id="edit-game" class="w-full bg-[#0b0c10] border border-slate-700 rounded p-2 text-white">
+                        <option value="League of Legends">League of Legends</option>
+                        <option value="Wild Rift">Wild Rift</option>
+                        <option value="Valorant">Valorant</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1">Team Name</label>
+                    <input type="text" id="edit-team" placeholder="e.g. Rift Raiders Main" class="w-full bg-[#0b0c10] border border-slate-700 rounded p-2 text-white">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1">Win Rate (e.g. 78%)</label>
+                    <input type="text" id="edit-winrate" placeholder="78%" class="w-full bg-[#0b0c10] border border-slate-700 rounded p-2 text-white">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1">Top Champions / Agents (comma separated)</label>
+                    <input type="text" id="edit-champs" placeholder="Jinx, Yasuo, Ahri" class="w-full bg-[#0b0c10] border border-slate-700 rounded p-2 text-white">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1">Profile / Avatar Picture</label>
+                    <input type="file" id="edit-avatar-file" class="w-full text-slate-300 text-xs">
+                </div>
+                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded transition mt-2">Save Stats & Profile</button>
+            </form>
         </div>
     </div>
-    <!-- JAVASCRIPT LOGIC -->
+
+    <!-- Admin Password Modal -->
+    <div id="admin-password-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center hidden z-50 p-4">
+        <div class="bg-[#12141c] border border-red-600/30 rounded-lg p-6 w-80 relative">
+            <button onclick="closeModal('admin-password-modal')" class="absolute top-3 right-3 text-slate-400 hover:text-white">✕</button>
+            <h3 class="font-bold text-white text-base mb-3">Admin Authentication</h3>
+            <form onsubmit="handleAdminAuth(event)" class="space-y-3 text-xs">
+                <input type="password" id="admin-portal-pass-input" placeholder="Enter admin password" required class="w-full bg-[#0b0c10] border border-slate-700 rounded p-2 text-white">
+                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded">Authenticate</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Talk.to Live Chat Widget JS Integration -->
+    <script type="text/javascript">
+        var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+        (function(){
+        var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+        s1.async=true;
+        s1.src='https://embed.tawk.to/65b6df080ff6374032c5e55e/default';
+        s1.charset='UTF-8';
+        s1.setAttribute('crossorigin','*');
+        s0.parentNode.insertBefore(s1,s0);
+        })();
+    </script>
+
+    <!-- App Scripts -->
     <script>
-        const ADMIN_PASSWORD = "rr2024";
+        let currentUser = JSON.parse(localStorage.getItem('rift_current_user')) || { username: 'GuestPlayer', isAdmin: false, game: 'League of Legends', team: 'Unassigned', winRate: '0%', topChamps: ['None'], isApproved: true };
+        let dbUsers = [];
+        let dbMatches = [];
 
-        // INTERACTIVE AI CHATBOT SYSTEM WITH USER TYPING & SMART ANSWERS
-        function quickAsk(text) {
-            document.getElementById('userChatInput').value = text;
-            handleUserSubmit(new Event('submit'));
+        const firebaseConfig = {
+            databaseURL: "https://your-firebase-app-default-rtdb.firebaseio.com/"
+        };
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const database = firebase.database();
+
+        function initFirebaseListeners() {
+            database.ref('users').on('value', snapshot => {
+                let val = snapshot.val() || {};
+                dbUsers = Object.values(val);
+                renderTeamsRosters();
+            });
+            database.ref('matches').on('value', snapshot => {
+                dbMatches = snapshot.val() || [];
+                renderMatchHistory();
+            });
         }
 
-        function handleUserSubmit(e) {
-            if(e) e.preventDefault();
-            const input = document.getElementById('userChatInput');
-            const message = input.value.trim();
-            if(!message) return;
+        function openExternalChat() {
+            window.open('https://tawk.to', '_blank');
+        }
 
-            // Render User Message
-            const chatLog = document.getElementById('aiChatLog');
-            chatLog.innerHTML += `
-                <div class="flex items-start justify-end space-x-2">
-                    <div class="bg-rrRed text-white p-2.5 rounded-lg text-xs max-w-[85%] leading-relaxed font-medium shadow-md">
-                        ${escapeHtml(message)}
-                    </div>
-                </div>
-            `;
-            input.value = '';
-            chatLog.scrollTop = chatLog.scrollHeight;
+        function openModal(modalId) {
+            document.getElementById(modalId)?.classList.remove('hidden');
+        }
 
-            // Show Typing Indicator
-            const typingInd = document.getElementById('aiTypingIndicator');
-            typingInd.classList.remove('hidden');
+        function closeModal(modalId) {
+            document.getElementById(modalId)?.classList.add('hidden');
+        }
 
-            // Generate AI Answer after brief delay
-            setTimeout(() => {
-                typingInd.classList.add('hidden');
-                const reply = generateAiReply(message);
-                
-                chatLog.innerHTML += `
-                    <div class="flex items-start space-x-2.5">
-                        <div class="bg-rrRed/20 text-rrRed border border-rrRed/30 p-2 rounded-lg text-xs">
-                            <i class="fas fa-robot"></i>
+        function saveUserToFirebase(user) {
+            if (user && user.username) {
+                database.ref('users/' + user.username).set(user);
+            }
+        }
+
+        function renderTeamsRosters() {
+            const valContainer = document.getElementById('roster-valorant');
+            const wrContainer = document.getElementById('roster-wildrift');
+            const lolContainer = document.getElementById('roster-lol');
+
+            if (!valContainer || !wrContainer || !lolContainer) return;
+
+            valContainer.innerHTML = '';
+            wrContainer.innerHTML = '';
+            lolContainer.innerHTML = '';
+
+            dbUsers.forEach(user => {
+                if (!user || (!user.isApproved && !user.isAdmin)) return;
+
+                let game = user.game || 'League of Legends';
+                let pfp = user.pfp || `https://api.dicebear.com/7.x/identicon/svg?seed=${user.username}`;
+                let team = user.team || 'Unassigned';
+                let winRate = user.winRate || '0%';
+
+                let cardHtml = `
+                    <div onclick="openPlayerStats('${user.username}')" class="bg-[#12141c] border border-red-600/20 hover:border-red-600/60 rounded-xl overflow-hidden cursor-pointer transition transform hover:-translate-y-1 shadow-lg group">
+                        <div class="h-44 bg-slate-900 relative overflow-hidden">
+                            <img src="${pfp}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                            <div class="absolute inset-0 bg-gradient-to-t from-[#12141c] via-transparent to-transparent"></div>
+                            <span class="absolute top-2 left-2 bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded shadow">${game}</span>
                         </div>
-                        <div class="bg-black/60 border border-rrBorder p-2.5 rounded-lg text-xs text-gray-200 max-w-[85%] leading-relaxed">
-                            ${reply}
+                        <div class="p-3">
+                            <h4 class="font-black text-white text-sm truncate">${user.username}</h4>
+                            <p class="text-[11px] text-red-400 font-medium truncate">${team}</p>
+                            <div class="mt-2 flex items-center justify-between text-[10px] text-slate-400 border-t border-slate-800 pt-2">
+                                <span>Win Rate: <strong class="text-green-400">${winRate}</strong></span>
+                                <span class="text-slate-500">View Stats →</span>
+                            </div>
                         </div>
                     </div>
                 `;
-                chatLog.scrollTop = chatLog.scrollHeight;
-            }, 700);
-        }
 
-                                        function generateAiReply(query) {
-            const q = query.toLowerCase();
-
-            // DISCORD WEBHOOK URL
-            const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1552359374901747712/JFcyeBrdz8jTZpKZEkFxfWKXBI2yXE_D_QB3-3cw3pahtvhoSE5lfV336mnljC0Xth_2";
-            
-            // Notification para sa FORUM CHANNEL (May thread_name)
-            if (DISCORD_WEBHOOK_URL) {
-                fetch(DISCORD_WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        username: "Rift Raiders bot",
-                        thread_name: `📩 Web Feedback: "${query.substring(0, 25)}..."`, // Gagawin itong title sa Forum Post
-                        content: `📩 **New AI Chat / Feedback:**\n"${query}"`
-                    })
-                }).catch(err => console.error("Webhook error:", err));
-            }
-
-            // SMART BILINGUAL AUTO-REPLY SA WEBSITE
-            const isTagalog = /(paano|sali|ano|saan|meron|wala|po|kamusta|naman|mag|pano|bakit|maganda|salamat|lods)/i.test(q);
-
-            if(q.includes('discord') || q.includes('dc') || q.includes('server')) {
-                return "<b>🎮 Discord Server:</b><br>Sumali sa aming official Discord server dito:<br><a href='https://discord.gg/x3M8dZ7fmR' target='_blank' class='text-rrRed underline font-bold'>https://discord.gg/x3M8dZ7fmR</a>";
-            } else if(q.includes('facebook') || q.includes('fb') || q.includes('page')) {
-                return "<b>📱 Facebook Page:</b><br>I-follow ang aming official FB page dito:<br><a href='https://www.facebook.com/share/1EgG3RsrZg/' target='_blank' class='text-rrRed underline font-bold'>Rift Raiders Facebook Page</a>";
-            } else if(q.includes('email') || q.includes('contact') || q.includes('gmail')) {
-                return "<b>📧 Contact Us:</b><br>Maaari mo kaming i-email sa: <b>riftraiders.wr@gmail.com</b>";
-            } else if(q.includes('wild rift') || q.includes('wr')) {
-                return "<b>📱 Wild Rift Requirements:</b><br>• Casual: Emerald Rank & above.<br>• Competitive: Grandmaster Peak.<br>• All-Female / LGBTQ+: Master Rank & above.";
-            } else if(q.includes('pc') || q.includes('league of legends') || q.includes('lol')) {
-                return "<b>💻 LoL PC Requirements:</b><br>• Minimum Rank: Emerald/Diamond+.<br>• Must have active mic for voice communication.";
-            } else if(q.includes('apply') || q.includes('join') || q.includes('sali')) {
-                return "<b>📝 Paano mag-apply:</b><br>I-click ang <b>'Apply'</b> button sa top menu bar o sumali sa aming <a href='https://discord.gg/x3M8dZ7fmR' target='_blank' class='text-rrRed underline font-bold'>Discord Server</a>!";
-            } else if(q.includes('ganda') || q.includes('galing') || q.includes('nice') || q.includes('feedback') || q.includes('suggest')) {
-                return "<b>💖 Maraming Salamat!</b><br>Naitala na namin ang iyong feedback at naisend na ito sa aming Admins sa Discord!";
-            } else if(q.includes('hi') || q.includes('hello') || q.includes('kamusta')) {
-                return "Hello! Ako ang AI Assistant ng Rift Raiders. Magtanong o mag-iwan ka lang ng feedback dito!";
-            } else {
-                return isTagalog
-                    ? "Maraming salamat sa mensahe! Naipadala na rin po ito sa aming team sa Discord. Para sa mabilis na usapan, sumali sa aming <a href='https://discord.gg/x3M8dZ7fmR' target='_blank' class='text-rrRed underline font-bold'>Discord Server</a>!"
-                    : "Thank you for your message! Our team has received it on Discord. Join our <a href='https://discord.gg/x3M8dZ7fmR' target='_blank' class='text-rrRed underline font-bold'>Discord Server</a> to chat directly with us!";
-            }
-        }
-        
-        function escapeHtml(text) {
-            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        }
-
-        // HIDE LOADING SCREEN
-        window.addEventListener('load', function() {
-            const loader = document.getElementById('loadingScreen');
-            if (loader) {
-                loader.style.opacity = '0';
-                setTimeout(() => { loader.style.display = 'none'; }, 500);
-            }
-        });
-
-        // MODAL TOGGLES
-        function openApplyModal() { document.getElementById('applyModal').classList.remove('hidden'); }
-        function closeApplyModal() { document.getElementById('applyModal').classList.add('hidden'); }
-
-        function openAdminModal() {
-            document.getElementById('adminModal').classList.remove('hidden');
-            document.getElementById('adminPasswordInput').value = '';
-        }
-
-        function closeAdminModal() {
-            document.getElementById('adminModal').classList.add('hidden');
-        }
-
-        function verifyAdminPassword() {
-            const input = document.getElementById('adminPasswordInput').value;
-            if (input === ADMIN_PASSWORD) {
-                alert("Access Granted! Welcome Admin.");
-                closeAdminModal();
-                const adminSec = document.getElementById('adminSection');
-                adminSec.classList.remove('hidden');
-                adminSec.scrollIntoView({ behavior: 'smooth' });
-            } else {
-                alert("Incorrect Password! Please try again.");
-            }
-        }
-
-        function logoutAdmin() {
-            document.getElementById('adminSection').classList.add('hidden');
-            alert("Logged out from Admin Dashboard.");
-        }
-        // FIREBASE DATA HANDLERS
-        let competitiveList = {}; let creatorsList = {}; let matchesList = {}; let partnersList = {};
-        let siteSettings = { logo: "https://i.ibb.co/689L51P/58834.png" };
-        let db = null;
-
-        function processImage(file, defaultImage, callback) {
-            if (!file) { callback(defaultImage); return; }
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = new Image();
-                img.onload = function() {
-                    try {
-                        const canvas = document.createElement('canvas');
-                        const scaleSize = 300 / img.width;
-                        canvas.width = 300; canvas.height = img.height * scaleSize;
-                        const ctx = canvas.getContext('2d');
-                        ctx.fillStyle = '#0a0a0c'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        callback(canvas.toDataURL('image/jpeg', 0.8));
-                    } catch(err) { callback(defaultImage); }
-                };
-                img.onerror = function() { callback(defaultImage); };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        window.addCompetitive = function() {
-            if(!db) return alert("Database disconnected.");
-            const ign = document.getElementById('cIgn').value; const role = document.getElementById('cRole').value;
-            const team = document.getElementById('cTeam').value; const game = document.getElementById('cGame').value;
-            const winrate = document.getElementById('cWinrate').value;
-            const champ1 = document.getElementById('cChamp1').value; const champ2 = document.getElementById('cChamp2').value; const champ3 = document.getElementById('cChamp3').value;
-            const profileLink = document.getElementById('cProfileLink').value;
-            const file = document.getElementById('cPhoto').files[0];
-            
-            if(!ign || !role || !team) return alert("IGN, Role, and Team are required!");
-            const btn = document.getElementById('btnCompetitive'); btn.innerText = "Saving..."; btn.disabled = true;
-
-            processImage(file, "https://i.ibb.co/3k15y8B/58833.png", (base64Img) => {
-                db.ref('competitive').push({
-                    ign: ign, role: role, team: team, game: game,
-                    winrate: winrate || 'N/A',
-                    champs: [champ1, champ2, champ3],
-                    profileLink: profileLink || '',
-                    photo: base64Img
-                }).then(() => {
-                    alert("Player added successfully!");
-                    document.getElementById('cIgn').value = ''; document.getElementById('cRole').value = ''; document.getElementById('cTeam').value = '';
-                    document.getElementById('cWinrate').value = ''; document.getElementById('cChamp1').value = ''; document.getElementById('cChamp2').value = '';
-                    document.getElementById('cChamp3').value = ''; document.getElementById('cProfileLink').value = ''; document.getElementById('cPhoto').value = '';
-                    btn.innerText = "Add Player"; btn.disabled = false;
-                });
-            });
-        }
-
-        window.addMatch = function() {
-            if(!db) return;
-            const opponent = document.getElementById('mOpponent').value; const score = document.getElementById('mScore').value;
-            const type = document.getElementById('mType').value; const result = document.getElementById('mResult').value;
-            const date = document.getElementById('mDate').value;
-            if(!opponent || !score || !date) return alert("Please fill Opponent, Score, and Date!");
-            document.getElementById('btnMatch').innerText = "Saving...";
-            db.ref('matches').push({ opponent: opponent, score: score, type: type, result: result, date: date }).then(() => {
-                alert("Match record added!"); document.getElementById('mOpponent').value = ''; document.getElementById('mScore').value = ''; document.getElementById('mDate').value = ''; document.getElementById('btnMatch').innerText = "Add Match";
-            });
-        }
-
-        window.addCreator = function() {
-            if(!db) return; const name = document.getElementById('crName').value; const game = document.getElementById('crGame').value;
-            const fb = document.getElementById('crFb').value; const yt = document.getElementById('crYt').value; const tt = document.getElementById('crTt').value; const file = document.getElementById('crPhoto').files[0];
-            if(!name || !game) return alert("Creator Name and Game required!");
-            document.getElementById('btnCreator').innerText = "Saving...";
-            processImage(file, "https://i.ibb.co/689L51P/58834.png", (b) => { db.ref('creators').push({ name: name, game: game, socials: { fb: fb, yt: yt, tt: tt }, photo: b }).then(() => {
-                alert("Creator Added!"); document.getElementById('crName').value = ''; document.getElementById('crGame').value = ''; document.getElementById('crFb').value = ''; document.getElementById('crYt').value = ''; document.getElementById('crTt').value = ''; document.getElementById('btnCreator').innerText = "Add Creator";
-            }); });
-        }
-
-        window.addPartner = function() {
-            if(!db) return; const name = document.getElementById('pName').value; const link = document.getElementById('pLink').value; const file = document.getElementById('pPhoto').files[0];
-            if(!name || !file) return alert("Partner Name and Logo required!");
-            document.getElementById('btnPartner').innerText = "Saving...";
-            processImage(file, "https://i.ibb.co/689L51P/58834.png", (b) => { db.ref('partners').push({ name: name, link: link, logo: b }).then(() => {
-                alert("Partner Added!"); document.getElementById('pName').value = ''; document.getElementById('pLink').value = ''; document.getElementById('btnPartner').innerText = "Add Partner";
-            }); });
-        }
-
-        window.deleteCompetitive = function(key) { if(confirm('Delete player?')) db.ref('competitive/' + key).remove(); }
-        window.deleteCreator = function(key) { if(confirm('Delete creator?')) db.ref('creators/' + key).remove(); }
-        window.deleteMatch = function(key) { if(confirm('Delete match?')) db.ref('matches/' + key).remove(); }
-        window.deletePartner = function(key) { if(confirm('Delete partner?')) db.ref('partners/' + key).remove(); }
-
-        // RENDER SITE CONTENT
-        function renderSite() {
-            try {
-                if(siteSettings.logo) {
-                    document.getElementById('siteLogo').src = siteSettings.logo;
-                    document.getElementById('loadingLogo').src = siteSettings.logo;
-                }
-
-                // RENDER PLAYERS (EXACT VIDEO LOOK)
-                const compKeys = Object.keys(competitiveList);
-                const cGrid = document.getElementById('competitiveGrid');
-                if(compKeys.length === 0) {
-                    cGrid.innerHTML = '<p class="text-gray-500 italic text-xs col-span-full">No roster players added yet.</p>';
+                if (game === 'Valorant') {
+                    valContainer.innerHTML += cardHtml;
+                } else if (game === 'Wild Rift') {
+                    wrContainer.innerHTML += cardHtml;
                 } else {
-                    cGrid.innerHTML = compKeys.map(key => {
-                        const p = competitiveList[key];
-                        let champsHTML = '';
-                        if(p.champs && (p.champs[0] || p.champs[1] || p.champs[2])) {
-                            champsHTML = p.champs.map(c => c ? `<img src="${c}" class="w-6 h-6 rounded-full border border-gray-600 object-cover bg-black">` : '').join('');
-                        } else { champsHTML = `<span class="text-[10px] text-gray-500">No data</span>`; }
-                        
-                        let topLink = p.profileLink ? `<a href="${p.profileLink}" target="_blank" onclick="event.stopPropagation();" class="absolute top-2 right-2 text-gray-400 hover:text-white z-30 p-1"><i class="fas fa-external-link-alt text-xs"></i></a>` : '';
-
-                          return `
-                        <div onclick="this.classList.toggle('is-open')" class="player-card relative bg-rrCard border border-rrBorder rounded-lg overflow-hidden cursor-pointer h-56 w-full group">
-                            ${topLink}
-                            <div class="bg-black h-full w-full relative">
-                                <img src="${p.photo}" class="w-full h-full object-cover opacity-85 group-hover:opacity-100 transition-opacity">
-                                <div class="default-info">
-                                    <!-- DITO BINAGO: Pinalitan ang 'OUR ROSTER' ng game name mula sa data -->
-                                    <span class="bg-rrRed text-[9px] font-black uppercase text-white px-1.5 py-0.5 rounded tracking-wider mb-1 inline-block">${p.game || 'WILD RIFT'}</span>
-                                    <h3 class="text-base font-black text-white uppercase truncate leading-none">${p.ign}</h3>
-                                </div>
-                            </div>
-                            
-                            <!-- EXPANDED STATS WITH SIDE PICTURE -->
-                            <div class="expanded-info">
-                                <!-- Profile Picture + IGN Row -->
-                                <div class="flex items-center space-x-3 mb-3 border-b border-rrBorder pb-3">
-                                    <img src="${p.photo}" class="w-14 h-14 rounded-md border-2 border-rrRed object-cover shadow-lg">
-                                    <div class="overflow-hidden">
-                                        <h3 class="text-base font-black text-white uppercase truncate leading-none">${p.ign}</h3>
-                                        <p class="text-rrRed text-[10px] font-bold uppercase tracking-wider mt-1">${p.role || 'MEMBER'}</p>
-                                    </div>
-                                </div>
-                                
-                                <div class="grid grid-cols-2 gap-2 mb-3">
-                                    <div>
-                                        <p class="text-[9px] text-gray-400 uppercase font-bold">TEAM</p>
-                                        <p class="text-xs font-bold text-gray-200 truncate">${p.team || 'RIFT RAIDERS'}</p>
-                                    </div>
-                                    <div>
-                                        <p class="text-[9px] text-gray-400 uppercase font-bold">WINRATE</p>
-                                        <p class="text-xs font-black text-green-400">${p.winrate || 'N/A'}</p>
-                                    </div>
-                                </div>
-                                <div>
-                                    <p class="text-[9px] text-gray-400 uppercase font-bold mb-1.5">TOP CHAMPS</p>
-                                    <div class="flex space-x-1.5">${champsHTML}</div>
-                                </div>
-                            </div>
-                        </div>`;
-
-
-                    }).join('');
+                    lolContainer.innerHTML += cardHtml;
                 }
+            });
 
-                // RENDER MATCH HISTORY
-                const matchKeys = Object.keys(matchesList).sort((a, b) => new Date(matchesList[b].date) - new Date(matchesList[a].date));
-                const mGrid = document.getElementById('matchesGrid');
-                if(matchKeys.length === 0) mGrid.innerHTML = '<p class="text-gray-500 italic text-xs">No match history yet.</p>';
-                else {
-                    mGrid.innerHTML = matchKeys.map(key => {
-                        const m = matchesList[key];
-                        let rCol = m.result === 'Win' ? 'text-green-400' : (m.result === 'Loss' ? 'text-rrRed' : 'text-yellow-400');
-                        return `<div class="bg-rrCard border border-rrBorder rounded-lg p-3.5 flex justify-between items-center"><div><span class="text-[10px] text-gray-500 uppercase font-bold">${m.type} • ${m.date}</span><h3 class="text-sm font-black text-white uppercase mt-0.5">VS ${m.opponent}</h3><p class="text-xs font-bold text-gray-400">Score: ${m.score}</p></div><div><h2 class="text-lg font-black uppercase ${rCol}">${m.result}</h2></div></div>`;
-                    }).join('');
-            }
-        // RENDER CREATORS
-                const crKeys = Object.keys(creatorsList);
-                if(crKeys.length === 0) document.getElementById('creatorsGrid').innerHTML = '<p class="text-gray-500 italic text-xs col-span-full">No creators added yet.</p>';
-                else {
-                    document.getElementById('creatorsGrid').innerHTML = crKeys.map(key => {
-                        const c = creatorsList[key];
-                        return `<div class="bg-rrCard border border-rrBorder rounded-lg p-4 flex flex-col items-center text-center"><img src="${c.photo}" class="w-16 h-16 rounded-full object-cover border-2 border-rrBlue mb-2"><h3 class="text-sm font-black text-white uppercase">${c.name}</h3><p class="text-rrBlue text-[11px] font-bold uppercase mb-2">${c.game}</p><div class="flex space-x-2.5 mt-auto pt-2 border-t border-rrBorder w-full justify-center">${c.socials.fb ? `<a href="${c.socials.fb}" target="_blank" class="text-gray-400 hover:text-rrBlue text-sm"><i class="fab fa-facebook"></i></a>` : ''}${c.socials.yt ? `<a href="${c.socials.yt}" target="_blank" class="text-gray-400 hover:text-red-500 text-sm"><i class="fab fa-youtube"></i></a>` : ''}${c.socials.tt ? `<a href="${c.socials.tt}" target="_blank" class="text-gray-400 hover:text-white text-sm"><i class="fab fa-tiktok"></i></a>` : ''}</div></div>`;
-                    }).join('');
-                }
-
-                // RENDER PARTNERS
-                const pKeys = Object.keys(partnersList);
-                if(pKeys.length === 0) document.getElementById('partnersGrid').innerHTML = '<p class="text-gray-500 italic text-xs text-center">No partners added yet.</p>';
-                else {
-                    document.getElementById('partnersGrid').innerHTML = pKeys.map(key => {
-                        const p = partnersList[key]; const imgTag = `<img src="${p.logo}" alt="${p.name}" class="h-10 object-contain grayscale hover:grayscale-0 transition duration-300">`;
-                        return p.link ? `<a href="${p.link}" target="_blank" title="${p.name}">${imgTag}</a>` : `<div title="${p.name}">${imgTag}</div>`;
-                    }).join('');
-                }
-
-                // MANAGE ADMIN LISTS
-                document.getElementById('manageCompetitive').innerHTML = compKeys.length ? compKeys.map(key => `<div class="flex justify-between items-center p-1 bg-black rounded mb-1"><span class="text-gray-300 truncate pr-2 text-[10px]">${competitiveList[key].ign}</span><button onclick="deleteCompetitive('${key}')" class="text-rrRed hover:text-white"><i class="fas fa-times"></i></button></div>`).join('') : '<p class="text-gray-600">Empty</p>';
-                document.getElementById('manageMatches').innerHTML = matchKeys.length ? matchKeys.map(key => `<div class="flex justify-between items-center p-1 bg-black rounded mb-1"><span class="text-gray-300 truncate pr-2 text-[10px]">VS ${matchesList[key].opponent}</span><button onclick="deleteMatch('${key}')" class="text-rrRed hover:text-white"><i class="fas fa-times"></i></button></div>`).join('') : '<p class="text-gray-600">Empty</p>';
-                document.getElementById('manageCreators').innerHTML = crKeys.length ? crKeys.map(key => `<div class="flex justify-between items-center p-1 bg-black rounded mb-1"><span class="text-gray-300 truncate pr-2 text-[10px]">${creatorsList[key].name}</span><button onclick="deleteCreator('${key}')" class="text-rrRed hover:text-white"><i class="fas fa-times"></i></button></div>`).join('') : '<p class="text-gray-600">Empty</p>';
-                document.getElementById('managePartners').innerHTML = pKeys.length ? pKeys.map(key => `<div class="flex justify-between items-center p-1 bg-black rounded mb-1"><span class="text-gray-300 truncate pr-2 text-[10px]">${partnersList[key].name}</span><button onclick="deletePartner('${key}')" class="text-rrRed hover:text-white"><i class="fas fa-times"></i></button></div>`).join('') : '<p class="text-gray-600">Empty</p>';
-                    
-            } catch (error) { console.error("Render error:", error); }
+            if(valContainer.innerHTML === '') valContainer.innerHTML = `<p class="text-xs text-slate-500 italic col-span-4">No Valorant players registered yet.</p>`;
+            if(wrContainer.innerHTML === '') wrContainer.innerHTML = `<p class="text-xs text-slate-500 italic col-span-4">No Wild Rift players registered yet.</p>`;
+            if(lolContainer.innerHTML === '') lolContainer.innerHTML = `<p class="text-xs text-slate-500 italic col-span-4">No League of Legends players registered yet.</p>`;
         }
 
-        // INITIALIZE FIREBASE
-        try {
-            const firebaseConfig = { 
-                apiKey: "AIzaSy87GyUvjxpgvVQpSS_wjh2Sm6HssUd_jbm", 
-                authDomain: "riftraiders-348f4.firebaseapp.com", 
-                databaseURL: "https://riftraiders-348f4-default-rtdb.asia-southeast1.firebasedatabase.app", 
-                projectId: "riftraiders-348f4", 
-                storageBucket: "riftraiders-348f4.firebasestorage.app", 
-                messagingSenderId: "103200979693", 
-                appId: "1:103200979693:web:48d4b7f6e65734f2756ee4" 
-            };
-            if (!firebase.apps.length) firebase.initializeApp(firebaseConfig); 
-            db = firebase.database();
-            db.ref('/').on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) { 
-                    competitiveList = data.competitive || {}; 
-                    creatorsList = data.creators || {}; 
-                    matchesList = data.matches || {}; 
-                    partnersList = data.partners || {}; 
-                    if (data.settings && data.settings.logo) siteSettings = data.settings; 
-                } else { 
-                    competitiveList = {}; creatorsList = {}; matchesList = {}; partnersList = {}; 
-                }
-                renderSite();
-            });
-        } catch(e) { console.error("Firebase Init Error:", e); }
+        function openPlayerStats(username) {
+            let user = dbUsers.find(u => u && u.username.toLowerCase() === username.toLowerCase());
+            if (!user) return;
+
+            document.getElementById('modal-player-avatar').src = user.pfp || `https://api.dicebear.com/7.x/identicon/svg?seed=${username}`;
+            document.getElementById('modal-player-ign').innerText = user.username;
+            document.getElementById('modal-player-team').innerText = user.team || 'Unassigned';
+            document.getElementById('modal-player-game').innerText = user.game || 'League of Legends';
+            document.getElementById('modal-player-winrate').innerText = user.winRate || '0%';
+            document.getElementById('modal-player-role').innerText = user.role || (user.isAdmin ? 'Guild Master' : 'Competitor');
+
+            let champsContainer = document.getElementById('modal-player-champs');
+            let champs = user.topChamps;
+            if (typeof champs === 'string') champs = champs.split(',').map(c => c.trim());
+            if (!Array.isArray(champs) || champs.length === 0) champs = ['None specified'];
+
+            champsContainer.innerHTML = champs.map(c => `<span class="bg-red-950 text-red-300 text-xs px-2.5 py-1 rounded border border-red-600/30 font-semibold">${c}</span>`).join('');
+
+            openModal('player-stats-modal');
+        }
+
+        function renderMatchHistory() {
+            const listEl = document.getElementById('match-history-list');
+            if (!listEl) return;
+
+            if (!Array.isArray(dbMatches) || dbMatches.length === 0) {
+                listEl.innerHTML = `<div class="bg-[#12141c] border border-red-600/20 p-4 rounded-xl text-center text-slate-500 text-xs italic">No match history recorded yet.</div>`;
+                return;
+            }
+
+            listEl.innerHTML = dbMatches.map((m, index) => {
+                let isWin = m.result === 'WIN';
+                let badgeColor = isWin ? 'text-green-400 bg-green-950/40 border-green-600/30' : 'text-red-400 bg-red-950/40 border-red-600/30';
+                let adminDelete = currentUser && currentUser.isAdmin ? `<button onclick="deleteMatch(${index})" class="text-red-500 hover:text-red-400 text-xs font-bold ml-3">Delete</button>` : '';
+
+                return `
+                    <div class="bg-[#12141c] border border-red-600/20 p-4 rounded-xl flex items-center justify-between shadow">
+                        <div>
+                            <div class="flex items-center space-x-2">
+                                <span class="bg-red-600 text-white text-[9px] font-bold px-2 py-0.5 rounded">${m.type || 'SCRIM'}</span>
+                                <span class="text-slate-400 text-[10px]">${m.date || '2026-10-01'}</span>
+                            </div>
+                            <h4 class="font-bold text-white text-sm mt-1">VS ${m.opponent}</h4>
+                            <p class="text-xs text-slate-400 mt-0.5">Score: <strong class="text-white">${m.score}</strong></p>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="px-3 py-1 rounded border text-xs font-black ${badgeColor}">${m.result}</span>
+                            ${adminDelete}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openAddMatchModal() {
+            openModal('add-match-modal');
+        }
+
+        function handleSaveMatch(e) {
+            e.preventDefault();
+            let type = document.getElementById('match-type').value;
+            let opponent = document.getElementById('match-opponent').value.trim();
+            let score = document.getElementById('match-score').value.trim();
+            let result = document.getElementById('match-result').value;
+            let date = new Date().toISOString().split('T')[0];
+
+            if (!Array.isArray(dbMatches)) dbMatches = [];
+            dbMatches.unshift({ type, opponent, score, result, date });
+
+            database.ref('matches').set(dbMatches);
+            closeModal('add-match-modal');
+            document.getElementById('match-opponent').value = '';
+            document.getElementById('match-score').value = '';
+            alert('Match result added successfully!');
+        }
+
+        function deleteMatch(index) {
+            if (confirm("Delete this match record?")) {
+                dbMatches.splice(index, 1);
+                database.ref('matches').set(dbMatches);
+            }
+        }
+
+        function openEditProfile() {
+            if (!currentUser) return;
+            document.getElementById('edit-username').value = currentUser.username || '';
+            document.getElementById('edit-game').value = currentUser.game || 'League of Legends';
+            document.getElementById('edit-team').value = currentUser.team || '';
+            document.getElementById('edit-winrate').value = currentUser.winRate || '';
+            document.getElementById('edit-champs').value = Array.isArray(currentUser.topChamps) ? currentUser.topChamps.join(', ') : (currentUser.topChamps || '');
+            document.getElementById('edit-avatar-file').value = '';
+            openModal('edit-profile-modal');
+        }
+
+        function handleSaveProfile(e) {
+            e.preventDefault();
+            currentUser.username = document.getElementById('edit-username').value.trim() || currentUser.username;
+            currentUser.game = document.getElementById('edit-game').value;
+            currentUser.team = document.getElementById('edit-team').value.trim() || 'Unassigned';
+            currentUser.winRate = document.getElementById('edit-winrate').value.trim() || '0%';
+            
+            let champsVal = document.getElementById('edit-champs').value.trim();
+            currentUser.topChamps = champsVal ? champsVal.split(',').map(c => c.trim()) : ['None'];
+
+            const avatarFileEl = document.getElementById('edit-avatar-file');
+            if (avatarFileEl.files && avatarFileEl.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    currentUser.pfp = event.target.result;
+                    finalizeProfileSave();
+                };
+                reader.readAsDataURL(avatarFileEl.files[0]);
+            } else {
+                finalizeProfileSave();
+            }
+        }
+
+        function finalizeProfileSave() {
+            saveUserToFirebase(currentUser);
+            localStorage.setItem('rift_current_user', JSON.stringify(currentUser));
+            alert('Profile & competitive stats updated successfully!');
+            closeModal('edit-profile-modal');
+            renderTeamsRosters();
+        }
+
+        function openAdminPasswordModal() {
+            const passInput = document.getElementById('admin-portal-pass-input');
+            if (passInput) passInput.value = '';
+            openModal('admin-password-modal');
+        }
+
+        function handleAdminAuth(e) {
+            e.preventDefault();
+            const passInput = document.getElementById('admin-portal-pass-input');
+            const passVal = passInput ? passInput.value.trim() : '';
+            
+            if (passVal !== "rr2024") {
+                alert("Incorrect admin password!");
+                return;
+            }
+            
+            currentUser.isAdmin = true;
+            localStorage.setItem('rift_current_user', JSON.stringify(currentUser));
+            closeModal('admin-password-modal');
+            document.getElementById('add-match-btn').classList.remove('hidden');
+            alert("Admin authenticated successfully!");
+            renderMatchHistory();
+        }
+
+        initFirebaseListeners();
+        if (currentUser && currentUser.isAdmin) {
+            document.getElementById('add-match-btn')?.classList.remove('hidden');
+        }
     </script>
-
-    <!-- Start of Tawk.to Script -->
-      <script type="text/javascript">
-        var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-         (function(){
-        var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-         s1.async=true;
-         s1.src='https://embed.tawk.to/6ab408968582123445b61b1d/default';
-         s1.charset='UTF-8';
-         s1.setAttribute('crossorigin','*');
-        s0.parentNode.insertBefore(s1,s0);
-         })();
-      </script>
-<!-- End of Tawk.to Script -->
-
-       </body>
-  </html>
+</body>
+</html>
