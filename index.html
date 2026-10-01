@@ -6,20 +6,19 @@
     <title>Rift Raiders - Official Guild</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome para sa mga eksaktong icons sa screenshot -->
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Firebase SDKs -->
+    
+    <!-- Firebase SDKs (Using v8 Compat para mas madali sa static HTML) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     
     <style>
-        /* Smooth animation para sa Player Stats Popup */
         .modal-enter { opacity: 0; transform: scale(0.95); }
         .modal-enter-active { opacity: 1; transform: scale(1); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .modal-exit { opacity: 1; transform: scale(1); }
         .modal-exit-active { opacity: 0; transform: scale(0.95); transition: all 0.2s ease-out; }
         
-        /* Custom Scrollbar para sa dark theme */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0b0c10; }
         ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 10px; }
@@ -28,11 +27,10 @@
 </head>
 <body class="bg-[#0b0c10] text-slate-100 font-sans antialiased pb-20">
 
-    <!-- EKSKTONG TOP NAVIGATION BAR MULA SA SCREENSHOT -->
+    <!-- TOP NAVIGATION BAR -->
     <header class="bg-[#0b0c10] sticky top-0 z-40 border-b border-white/5">
         <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <!-- Logo Placeholder (Yung may pakpak na RR sa image) -->
                 <div class="text-red-500 font-black italic text-xl tracking-tighter">
                     <span class="border-t-2 border-red-500 mr-1"></span>RR
                 </div>
@@ -43,16 +41,13 @@
             </div>
             
             <div class="flex items-center space-x-2">
-                <!-- Lock Icon (Admin) -->
                 <button class="bg-[#161822] hover:bg-slate-800 text-red-500 w-9 h-9 rounded-lg flex items-center justify-center transition border border-white/5">
                     <i class="fa-solid fa-lock text-xs"></i>
                 </button>
-                <!-- Red Apply Button -->
                 <a href="team-chat.html" class="bg-[#ff2a2d] hover:bg-red-600 text-white px-4 py-0 h-9 rounded-lg font-bold text-xs flex items-center justify-center space-x-2 transition shadow-[0_0_15px_rgba(255,42,45,0.3)]">
                     <i class="fa-solid fa-paper-plane"></i>
                     <span>APPLY</span>
                 </a>
-                <!-- Chat Icon to Team Chat -->
                 <a href="team-chat.html" class="bg-[#161822] hover:bg-slate-800 text-red-500 w-9 h-9 rounded-lg flex items-center justify-center relative transition border border-white/5">
                     <i class="fa-solid fa-comments text-sm"></i>
                     <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border border-[#161822]"></span>
@@ -61,7 +56,7 @@
         </div>
     </header>
 
-    <!-- MAIN CONTENT CONTAINER (Naka-pattern sa mobile view ng screenshot) -->
+    <!-- MAIN CONTENT -->
     <main class="max-w-md mx-auto px-4 py-6 space-y-8">
         
         <!-- ABOUT US -->
@@ -75,7 +70,7 @@
             </p>
         </section>
 
-        <!-- AI ASSISTANT / INTERACTIVE CHAT -->
+        <!-- AI ASSISTANT -->
         <section class="space-y-4">
             <div class="flex items-center space-x-2">
                 <div class="w-1 h-4 bg-red-600"></div>
@@ -84,7 +79,6 @@
             <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Tactical helper & interactive chat</p>
             
             <div class="bg-[#161822] border border-white/5 rounded-xl p-4 space-y-4">
-                <!-- AI Chat Display -->
                 <div class="space-y-3 text-xs h-32 overflow-y-auto" id="ai-chat-box">
                     <div class="flex items-start space-x-2">
                         <div class="w-6 h-6 rounded bg-red-600/20 flex items-center justify-center text-red-500 font-bold shrink-0">AI</div>
@@ -93,15 +87,11 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Game Selection Buttons -->
                 <div class="flex flex-wrap gap-2 pt-2 border-t border-white/5">
                     <button class="bg-[#0b0c10] text-slate-300 text-[10px] font-bold px-3 py-1.5 rounded-lg border border-white/5 flex items-center gap-1.5"><i class="fa-solid fa-mobile-screen"></i> Wild Rift</button>
                     <button class="bg-[#0b0c10] text-slate-300 text-[10px] font-bold px-3 py-1.5 rounded-lg border border-white/5 flex items-center gap-1.5"><i class="fa-solid fa-laptop"></i> LoL PC</button>
                     <button class="bg-[#2a1215] text-red-400 text-[10px] font-bold px-3 py-1.5 rounded-lg border border-red-500/20 flex items-center gap-1.5"><i class="fa-solid fa-pen-to-square"></i> How to Apply</button>
                 </div>
-
-                <!-- Input Area -->
                 <div class="flex gap-2">
                     <input type="text" id="ai-input" placeholder="Mag-type ng tanong mo dito..." class="flex-1 bg-[#0b0c10] border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-red-600 transition">
                     <button onclick="sendAiMessage()" class="bg-[#ff2a2d] text-white px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-1">
@@ -111,7 +101,7 @@
             </div>
         </section>
 
-        <!-- MEET THE TEAMS (Eksaktong layout sa picture) -->
+        <!-- MEET THE TEAMS (Kukunin na sa Firebase) -->
         <section class="space-y-4">
             <div class="flex items-center space-x-2">
                 <div class="w-1 h-4 bg-red-600"></div>
@@ -120,29 +110,11 @@
             <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold">The official esports roster (Tap a player for stats)</p>
             
             <div class="grid grid-cols-1 gap-4" id="roster-grid">
-                
-                <!-- PLAYER CARD 1: TAKEKU -->
-                <div onclick="openPlayerStats('TAKEKU', 'MID', 'N/A', ['ahri', 'yone', 'taliyah'])" class="bg-[#161822] rounded-xl overflow-hidden relative h-64 cursor-pointer group border border-white/5">
-                    <!-- Palitan ang src ng totoong image ni Takeku -->
-                    <img src="https://via.placeholder.com/400x400/161822/ffffff?text=Takeku+Image" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition duration-500">
-                    <div class="absolute inset-0 bg-gradient-to-t from-[#0b0c10] via-[#0b0c10]/40 to-transparent"></div>
-                    <div class="absolute bottom-4 left-4">
-                        <span class="bg-[#ff2a2d] text-white text-[9px] font-black px-2 py-1 rounded tracking-wider uppercase">Wildrift</span>
-                        <h3 class="text-white font-black text-2xl mt-1 uppercase tracking-wide">Takeku</h3>
-                    </div>
+                <!-- Loading State -->
+                <div class="text-center py-10 text-slate-500 text-xs italic">
+                    <i class="fa-solid fa-circle-notch fa-spin text-red-500 mb-2 text-xl"></i><br>
+                    Loading roster from Firebase...
                 </div>
-
-                <!-- PLAYER CARD 2: LEAGUE OF LEGENDS PLAYER -->
-                <div onclick="openPlayerStats('PLAYER_NAME', 'SUPPORT', '65%', ['thresh', 'nami'])" class="bg-[#161822] rounded-xl overflow-hidden relative h-64 cursor-pointer group border border-white/5 mt-2">
-                    <!-- Palitan ang src ng totoong image -->
-                    <img src="https://via.placeholder.com/400x400/161822/ffffff?text=LoL+Player" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition duration-500">
-                    <div class="absolute inset-0 bg-gradient-to-t from-[#0b0c10] via-[#0b0c10]/40 to-transparent"></div>
-                    <div class="absolute bottom-4 left-4">
-                        <span class="bg-[#ff2a2d] text-white text-[9px] font-black px-2 py-1 rounded tracking-wider uppercase">League of Legends</span>
-                        <h3 class="text-white font-black text-2xl mt-1 uppercase tracking-wide">Player Name</h3>
-                    </div>
-                </div>
-
             </div>
         </section>
 
@@ -167,7 +139,6 @@
             <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Our content creators & streamers</p>
             
             <div class="grid grid-cols-2 gap-3">
-                <!-- Creator 1 -->
                 <div class="bg-[#161822] border border-white/5 rounded-xl p-4 flex flex-col items-center justify-center text-center">
                     <div class="w-12 h-12 rounded-full border-2 border-[#161822] outline outline-2 outline-blue-500 mb-2 overflow-hidden bg-slate-800">
                          <img src="https://via.placeholder.com/50" class="w-full h-full object-cover">
@@ -176,7 +147,6 @@
                     <p class="text-[9px] font-bold text-blue-400 uppercase tracking-widest mt-0.5">Wildrift</p>
                     <i class="fa-brands fa-tiktok text-slate-500 text-[10px] mt-2"></i>
                 </div>
-                <!-- Creator 2 -->
                 <div class="bg-[#161822] border border-white/5 rounded-xl p-4 flex flex-col items-center justify-center text-center">
                     <div class="w-12 h-12 rounded-full border-2 border-[#161822] outline outline-2 outline-blue-500 mb-2 overflow-hidden bg-slate-800">
                          <img src="https://via.placeholder.com/50" class="w-full h-full object-cover">
@@ -196,7 +166,6 @@
             </div>
             <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Supported by</p>
             <div class="flex items-center justify-center gap-4 py-2">
-                <!-- Text Logos from screenshot -->
                 <div class="text-white font-black italic tracking-widest text-sm bg-[#161822] px-4 py-2 rounded">TAKEKU</div>
                 <div class="text-white font-black italic tracking-widest text-sm bg-[#161822] px-4 py-2 rounded flex items-center">
                     <span class="mr-1">🗡️</span> WRTH
@@ -214,33 +183,27 @@
         <div class="text-center text-[9px] text-slate-600 pb-10">
             © 2026 Rift Raiders. All Rights Reserved.
         </div>
-
     </main>
 
-    <!-- EKSAKTONG PLAYER STATS POPUP ANIMATION (Based on 81064.jpg) -->
+    <!-- PLAYER STATS POPUP ANIMATION -->
     <div id="player-modal-backdrop" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 hidden transition-opacity duration-300">
         <div id="player-modal-card" class="bg-[#121212] border border-red-600/30 rounded-2xl p-5 w-full max-w-sm shadow-[0_0_30px_rgba(255,42,45,0.15)] relative transform scale-95 opacity-0 transition-all duration-300">
-            
-            <!-- Close Button -->
             <button onclick="closePlayerStats()" class="absolute top-4 right-4 text-slate-500 hover:text-white w-6 h-6 flex items-center justify-center bg-white/5 rounded-full">✕</button>
 
-            <!-- Header Info -->
             <div class="flex items-center space-x-4 mb-6">
-                <!-- Player Avatar w/ Red Border -->
                 <div class="w-[60px] h-[60px] rounded-lg border-[3px] border-red-500 overflow-hidden bg-slate-800">
                     <img id="modal-pfp" src="https://via.placeholder.com/60" class="w-full h-full object-cover">
                 </div>
                 <div>
-                    <h3 id="modal-name" class="text-white font-black text-xl uppercase tracking-wider leading-none">TAKEKU</h3>
-                    <p id="modal-role" class="text-red-500 text-[10px] font-black uppercase tracking-widest mt-1">MID</p>
+                    <h3 id="modal-name" class="text-white font-black text-xl uppercase tracking-wider leading-none">NAME</h3>
+                    <p id="modal-role" class="text-red-500 text-[10px] font-black uppercase tracking-widest mt-1">ROLE</p>
                 </div>
             </div>
 
-            <!-- Team & Winrate Stats -->
             <div class="grid grid-cols-2 gap-4 mb-6">
                 <div>
                     <p class="text-slate-500 text-[9px] font-bold uppercase tracking-widest mb-1">TEAM</p>
-                    <p class="text-white font-black uppercase text-xs tracking-wider">RIFT RAIDERS</p>
+                    <p id="modal-team" class="text-white font-black uppercase text-xs tracking-wider">RIFT RAIDERS</p>
                 </div>
                 <div>
                     <p class="text-slate-500 text-[9px] font-bold uppercase tracking-widest mb-1">WINRATE</p>
@@ -248,21 +211,14 @@
                 </div>
             </div>
 
-            <!-- Top Champs -->
             <div>
                 <p class="text-slate-500 text-[9px] font-bold uppercase tracking-widest mb-2">TOP CHAMPS</p>
-                <div id="modal-champs" class="flex gap-2">
-                    <!-- Circles for champs, populated via JS -->
-                    <div class="w-8 h-8 rounded-full border-2 border-red-900/50 bg-slate-800"></div>
-                    <div class="w-8 h-8 rounded-full border-2 border-red-900/50 bg-slate-800"></div>
-                    <div class="w-8 h-8 rounded-full border-2 border-red-900/50 bg-slate-800"></div>
-                </div>
+                <div id="modal-champs" class="flex gap-2"></div>
             </div>
-            
         </div>
     </div>
 
-    <!-- TAWK.TO LIVE CHAT WIDGET EKSATONG NASA SCREENSHOT -->
+    <!-- TAWK.TO LIVE CHAT WIDGET -->
     <script type="text/javascript">
         var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
         (function(){
@@ -275,69 +231,81 @@
         })();
     </script>
 
-    <!-- FUNCTIONALITIES -->
+    <!-- FIREBASE AT LOGIC SCRIPT -->
     <script>
-        // AI Chat Functionality
-        function sendAiMessage() {
-            const input = document.getElementById('ai-input');
-            const box = document.getElementById('ai-chat-box');
-            if(!input.value.trim()) return;
-            
-            // User Message
-            box.innerHTML += `
-                <div class="flex items-start justify-end space-x-2 mt-3">
-                    <div class="bg-red-600 text-white p-3 rounded-xl rounded-tr-none border border-red-500/50 max-w-[85%]">
-                        ${input.value}
-                    </div>
-                </div>
-            `;
-            let val = input.value.toLowerCase();
-            input.value = '';
-            box.scrollTop = box.scrollHeight;
+        // Mismong Firebase Config mo ito
+        const firebaseConfig = {
+            apiKey: "AIzaSyB7GyUvjxpgvVOpSS_wjH25m6HssUd_jbM",
+            authDomain: "riftraiders-348f4.firebaseapp.com",
+            databaseURL: "https://riftraiders-348f4-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "riftraiders-348f4",
+            storageBucket: "riftraiders-348f4.firebasestorage.app",
+            messagingSenderId: "103200979693",
+            appId: "1:103200979693:web:48d4b7f6e65734f2756ae4"
+        };
 
-            // AI Reply delay
-            setTimeout(() => {
-                let reply = "Para mag-apply, i-click ang APPLY button sa itaas o pumunta sa Team Chat portal para sa aming Discord link!";
-                if(val.includes('discord') || val.includes('server')) reply = "Ang aming official Discord server link ay matatagpuan sa loob ng Team Chat portal. Pumunta doon para makasali!";
+        // Initialize Firebase
+        if (!firebase.apps.length) { 
+            firebase.initializeApp(firebaseConfig); 
+        }
+        const db = firebase.database();
+
+        // Kumuha ng Users mula sa Firebase
+        db.ref('users').on('value', snapshot => {
+            const val = snapshot.val() || {};
+            const grid = document.getElementById('roster-grid');
+            grid.innerHTML = ''; // Alisin ang "Loading..." text
+            
+            const users = Object.values(val).filter(u => u && (u.isApproved || u.isAdmin));
+
+            if(users.length === 0) {
+                grid.innerHTML = '<div class="text-center py-10 text-slate-500 text-xs italic">Wala pang na-aapprove na players.</div>';
+                return;
+            }
+
+            users.forEach(user => {
+                // Default placeholders para sa wala pang data
+                const gameName = user.game || 'Wild Rift';
+                const roleName = user.role || 'Member';
+                const winRateVal = user.winRate || 'N/A';
+                const usernameEscaped = user.username ? user.username.replace(/'/g, "\\'") : 'Unknown';
+                const teamEscaped = user.team ? user.team.replace(/'/g, "\\'") : 'Rift Raiders';
                 
-                box.innerHTML += `
-                    <div class="flex items-start space-x-2 mt-3">
-                        <div class="w-6 h-6 rounded bg-red-600/20 flex items-center justify-center text-red-500 font-bold shrink-0 text-xs">AI</div>
-                        <div class="bg-[#2a2d3e] text-slate-200 p-3 rounded-xl rounded-tl-none border border-white/5 max-w-[85%]">
-                            ${reply}
+                grid.innerHTML += `
+                    <div onclick="openPlayerStats('${usernameEscaped}', '${roleName}', '${winRateVal}', '${teamEscaped}')" class="bg-[#161822] rounded-xl overflow-hidden relative h-64 cursor-pointer group border border-white/5 mt-2">
+                        <img src="https://via.placeholder.com/400x400/161822/ffffff?text=${usernameEscaped}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#0b0c10] via-[#0b0c10]/40 to-transparent"></div>
+                        <div class="absolute bottom-4 left-4">
+                            <span class="bg-[#ff2a2d] text-white text-[9px] font-black px-2 py-1 rounded tracking-wider uppercase">${gameName}</span>
+                            <h3 class="text-white font-black text-2xl mt-1 uppercase tracking-wide">${user.username}</h3>
                         </div>
                     </div>
                 `;
-                box.scrollTop = box.scrollHeight;
-            }, 600);
-        }
+            });
+        });
 
-        // --- PLAYER STATS POPUP ANIMATION LOGIC ---
-        function openPlayerStats(name, role, winrate, champsList) {
-            // Set Data
+        // Player Stats Popup Logic
+        function openPlayerStats(name, role, winrate, team) {
             document.getElementById('modal-name').innerText = name;
             document.getElementById('modal-role').innerText = role;
             document.getElementById('modal-winrate').innerText = winrate;
+            document.getElementById('modal-team').innerText = team;
             
-            // Set Champs Images (Using placeholder if real images aren't available)
+            // Generate dummy champs kung walang nilagay sa database
             const champsContainer = document.getElementById('modal-champs');
             champsContainer.innerHTML = '';
-            champsList.forEach(champ => {
-                // Para sa demo, gumagamit ng placeholder. Pag may totoong link ng champ icons, palitan dito.
+            ['1', '2', '3'].forEach(champ => {
                 champsContainer.innerHTML += `
                     <div class="w-[30px] h-[30px] rounded-full border border-red-500/30 overflow-hidden bg-[#0b0c10]">
-                        <img src="https://api.dicebear.com/7.x/initials/svg?seed=${champ}&backgroundColor=161822" class="w-full h-full object-cover">
+                        <img src="https://api.dicebear.com/7.x/initials/svg?seed=${name+champ}&backgroundColor=161822" class="w-full h-full object-cover">
                     </div>
                 `;
             });
 
-            // Show Backdrop
             const backdrop = document.getElementById('player-modal-backdrop');
             const card = document.getElementById('player-modal-card');
-            
             backdrop.classList.remove('hidden');
             
-            // Trigger Animation Next Frame
             requestAnimationFrame(() => {
                 backdrop.classList.add('opacity-100');
                 card.classList.remove('scale-95', 'opacity-0');
@@ -348,15 +316,39 @@
         function closePlayerStats() {
             const backdrop = document.getElementById('player-modal-backdrop');
             const card = document.getElementById('player-modal-card');
-            
-            // Exit Animation
             card.classList.remove('scale-100', 'opacity-100');
             card.classList.add('scale-95', 'opacity-0');
             backdrop.classList.remove('opacity-100');
             
+            setTimeout(() => { backdrop.classList.add('hidden'); }, 300);
+        }
+// AI Chat Functionality
+        function sendAiMessage() {
+            const input = document.getElementById('ai-input');
+            const box = document.getElementById('ai-chat-box');
+            if(!input.value.trim()) return;
+            
+            box.innerHTML += `
+                <div class="flex items-start justify-end space-x-2 mt-3">
+                    <div class="bg-red-600 text-white p-3 rounded-xl rounded-tr-none border border-red-500/50 max-w-[85%]">${input.value}</div>
+                </div>
+            `;
+            let val = input.value.toLowerCase();
+            input.value = '';
+            box.scrollTop = box.scrollHeight;
+
             setTimeout(() => {
-                backdrop.classList.add('hidden');
-            }, 300); // Matches transition duration
+                let reply = "Para mag-apply, i-click ang APPLY button sa itaas o pumunta sa Team Chat portal para sa aming Discord link!";
+                if(val.includes('discord') || val.includes('server')) reply = "Ang aming official Discord server link ay matatagpuan sa loob ng Team Chat portal. Pumunta doon para makasali!";
+                
+                box.innerHTML += `
+                    <div class="flex items-start space-x-2 mt-3">
+                        <div class="w-6 h-6 rounded bg-red-600/20 flex items-center justify-center text-red-500 font-bold shrink-0 text-xs">AI</div>
+                        <div class="bg-[#2a2d3e] text-slate-200 p-3 rounded-xl rounded-tl-none border border-white/5 max-w-[85%]">${reply}</div>
+                    </div>
+                `;
+                box.scrollTop = box.scrollHeight;
+            }, 600);
         }
     </script>
 </body>
