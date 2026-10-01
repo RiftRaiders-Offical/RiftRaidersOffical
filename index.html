@@ -23,9 +23,7 @@
 
     <!-- LOADING SCREEN -->
     <div id="loading-screen" class="fixed inset-0 bg-[#0b0c10] z-[100] flex flex-col items-center justify-center transition-opacity duration-500">
-        <div class="text-red-500 font-black italic text-5xl tracking-tighter animate-pulse mb-4 flex items-center">
-            <span class="border-t-4 border-red-500 w-8 mr-2"></span>RR
-        </div>
+        <img src="https://i.ibb.co/6R7QW3L/79923.jpg" alt="Rift Raiders Logo" class="h-16 w-auto object-contain animate-pulse mb-4">
         <p class="text-white text-xs tracking-widest uppercase font-bold animate-bounce">Loading Rift Raiders...</p>
     </div>
 
@@ -33,22 +31,25 @@
     <header class="bg-[#0b0c10] sticky top-0 z-40 border-b border-white/5">
         <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <div class="text-red-500 font-black italic text-xl tracking-tighter">
-                    <span class="border-t-2 border-red-500 mr-1"></span>RR
-                </div>
+                <img src="https://i.ibb.co/6R7QW3L/79923.jpg" alt="Rift Raiders Logo" class="h-8 w-auto object-contain">
                 <div class="leading-none">
                     <h1 class="font-black text-white text-base uppercase tracking-widest">Rift<br>Raiders</h1>
                     <p class="text-red-600 text-[9px] font-bold uppercase tracking-widest mt-0.5">Official Guild</p>
                 </div>
             </div>
             
-            <div class="flex items-center space-x-2">
-                <a href="https://docs.google.com/forms/d/1qTTcHVfRsVXhsfKHv5-7qkZnoe6kMtoN2uLVEYY5XVg/viewform" target="_blank" class="bg-[#ff2a2d] hover:bg-red-600 text-white px-3 py-1.5 rounded-lg font-bold text-xs flex items-center justify-center space-x-1.5 transition shadow-[0_0_15px_rgba(255,42,45,0.3)]">
+            <div class="flex items-center space-x-1.5">
+                <a href="https://docs.google.com/forms/d/1qTTcHVfRsVXhsfKHv5-7qkZnoe6kMtoN2uLVEYY5XVg/viewform" target="_blank" class="bg-[#ff2a2d] hover:bg-red-600 text-white px-2.5 py-1.5 rounded-lg font-bold text-[11px] flex items-center justify-center space-x-1 transition shadow-[0_0_15px_rgba(255,42,45,0.3)]">
                     <i class="fa-solid fa-paper-plane"></i>
                     <span>APPLY</span>
                 </a>
+                <!-- TEAM CHAT BUTTON -->
+                <a href="team-chat.html" class="bg-[#161822] hover:bg-slate-800 text-slate-300 hover:text-white px-2.5 py-1.5 rounded-lg font-bold text-[11px] flex items-center justify-center space-x-1 transition border border-white/5" title="Team Chat">
+                    <i class="fa-solid fa-comments text-blue-400"></i>
+                    <span>CHAT</span>
+                </a>
                 <!-- ADMIN PORTAL TRIGGER BUTTON -->
-                <button onclick="openAdminModal()" class="bg-[#161822] hover:bg-slate-800 text-slate-400 hover:text-white px-3 py-1.5 rounded-lg font-bold text-xs flex items-center justify-center space-x-1.5 transition border border-white/5" title="Admin Portal">
+                <button onclick="openAdminModal()" class="bg-[#161822] hover:bg-slate-800 text-slate-400 hover:text-white px-2.5 py-1.5 rounded-lg font-bold text-[11px] flex items-center justify-center space-x-1 transition border border-white/5" title="Admin Portal">
                     <i class="fa-solid fa-lock text-red-500"></i>
                     <span>ADMIN</span>
                 </button>
@@ -128,7 +129,7 @@
             <div class="flex flex-wrap items-center justify-center gap-4 py-2" id="partners-grid">Loading partners...</div>
         </section>
 
-        <!-- HIDDEN ADMIN DASHBOARD (Lilitaw lang pagka-login ng tamang password) -->
+        <!-- HIDDEN ADMIN DASHBOARD -->
         <section id="admin-dashboard-section" class="hidden space-y-6 pt-6 border-t border-red-500/30">
             <div class="flex justify-between items-center bg-[#161822] p-4 rounded-xl border border-red-500/40">
                 <div class="flex items-center space-x-3">
@@ -208,6 +209,7 @@
                         <select id="m-type" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
                             <option value="Tournament">Tournament</option>
                             <option value="Scrim">Scrim</option>
+                            <option value="Showmatch">Showmatch</option>
                         </select>
                     </div>
                     <div>
@@ -225,10 +227,53 @@
                 </div>
                 <button onclick="addMatch()" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save Match</button>
             </div>
+
+            <!-- 3. ADD CREATOR -->
+            <div class="bg-[#161822] p-5 rounded-xl border border-white/5 space-y-4">
+                <h3 class="font-black text-xs uppercase text-red-500">3. Add Content Creator</h3>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase">Creator Name:</label>
+                    <input type="text" id="c-name" placeholder="e.g. Creator Name" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase">Game Streamed / Focused:</label>
+                    <input type="text" id="c-game" placeholder="e.g. Wild Rift / Valorant" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase">Profile Photo:</label>
+                    <input type="file" id="c-pfp" accept="image/*" class="w-full text-xs text-slate-400 mt-1">
+                </div>
+                <div class="space-y-2 border-t border-white/5 pt-2">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase">Social Media Links:</label>
+                    <input type="text" id="c-fb" placeholder="Facebook Profile/Page URL" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs focus:outline-none focus:border-red-500">
+                    <input type="text" id="c-tiktok" placeholder="TikTok Profile URL" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs focus:outline-none focus:border-red-500">
+                    <input type="text" id="c-yt" placeholder="YouTube Channel URL" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs focus:outline-none focus:border-red-500">
+                    <input type="text" id="c-twitch" placeholder="Twitch Channel URL" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs focus:outline-none focus:border-red-500">
+                </div>
+                <button onclick="addCreator()" id="btn-creator" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save Creator</button>
+            </div>
+
+            <!-- 4. ADD PARTNER / SPONSOR -->
+            <div class="bg-[#161822] p-5 rounded-xl border border-white/5 space-y-4">
+                <h3 class="font-black text-xs uppercase text-red-500">4. Add Partnership / Sponsor</h3>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase">Partner / Sponsor Name:</label>
+                    <input type="text" id="part-name" placeholder="e.g. Brand Name" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase">Logo Image (PNG/JPG):</label>
+                    <input type="file" id="part-logo" accept="image/*" class="w-full text-xs text-slate-400 mt-1">
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase">Website / Page Link:</label>
+                    <input type="text" id="part-link" placeholder="https://..." class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
+                </div>
+                <button onclick="addPartner()" id="btn-partner" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save Partner</button>
+            </div>
         </section>
     </main>
 
-    <!-- PLAYER STATS MODAL POPUP -->
+<!-- PLAYER STATS MODAL POPUP -->
     <div id="player-modal-backdrop" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 hidden transition-opacity duration-300">
         <div id="player-modal-card" class="bg-[#121212] border border-red-600/30 rounded-2xl p-5 w-full max-w-sm shadow-[0_0_30px_rgba(255,42,45,0.15)] relative transform scale-95 opacity-0 transition-all duration-300">
             <button onclick="closePlayerStats()" class="absolute top-4 right-4 text-slate-500 hover:text-white w-6 h-6 flex items-center justify-center bg-white/5 rounded-full">✕</button>
@@ -403,8 +448,7 @@
                 `;
             });
         }
-
-        function renderMatches() {
+function renderMatches() {
             const list = document.getElementById('match-history-list');
             list.innerHTML = '';
             const matchKeys = Object.keys(allMatches);
@@ -436,16 +480,28 @@
         db.ref('creators').on('value', snap => {
             const grid = document.getElementById('creators-grid');
             grid.innerHTML = '';
-            if(!snap.exists()) return;
+            if(!snap.exists()) {
+                grid.innerHTML = '<div class="text-xs text-slate-500 italic col-span-2">No creators added yet.</div>';
+                return;
+            }
             snap.forEach(child => {
                 const c = child.val();
+                let socialsHtml = '';
+                if(c.fb) socialsHtml += `<a href="${c.fb}" target="_blank" class="text-blue-400 hover:text-white"><i class="fa-brands fa-facebook"></i></a>`;
+                if(c.tiktok) socialsHtml += `<a href="${c.tiktok}" target="_blank" class="text-pink-400 hover:text-white"><i class="fa-brands fa-tiktok"></i></a>`;
+                if(c.yt) socialsHtml += `<a href="${c.yt}" target="_blank" class="text-red-500 hover:text-white"><i class="fa-brands fa-youtube"></i></a>`;
+                if(c.twitch) socialsHtml += `<a href="${c.twitch}" target="_blank" class="text-purple-400 hover:text-white"><i class="fa-brands fa-twitch"></i></a>`;
+
                 grid.innerHTML += `
                     <div class="bg-[#161822] border border-white/5 rounded-xl p-4 flex flex-col items-center text-center">
-                        <div class="w-12 h-12 rounded-full border-2 border-[#161822] outline outline-2 outline-blue-500 mb-2 overflow-hidden bg-slate-800">
+                        <div class="w-14 h-14 rounded-full border-2 border-red-500/40 mb-2 overflow-hidden bg-slate-800">
                              <img src="${c.pfp}" class="w-full h-full object-cover">
                         </div>
                         <h4 class="font-black text-white text-xs uppercase tracking-wide">${c.name}</h4>
-                        ${c.social1 ? `<a href="${c.social1}" target="_blank" class="text-slate-400 hover:text-white mt-2 text-xs"><i class="fa-solid fa-link"></i></a>` : ''}
+                        <p class="text-[9px] text-slate-400 uppercase mt-0.5 mb-3">${c.game || ''}</p>
+                        <div class="flex items-center space-x-3 text-sm mt-auto">
+                            ${socialsHtml}
+                        </div>
                     </div>
                 `;
             });
@@ -454,12 +510,16 @@
         db.ref('partners').on('value', snap => {
             const grid = document.getElementById('partners-grid');
             grid.innerHTML = '';
-            if(!snap.exists()) return;
+            if(!snap.exists()) {
+                grid.innerHTML = '<div class="text-xs text-slate-500 italic">No partners added yet.</div>';
+                return;
+            }
             snap.forEach(child => {
                 const p = child.val();
                 grid.innerHTML += `
-                    <a href="${p.link}" target="_blank" class="bg-[#161822] p-2 rounded-lg border border-white/5 hover:bg-slate-800 transition">
-                        <img src="${p.logo}" class="h-8 w-auto object-contain">
+                    <a href="${p.link || '#'}" target="_blank" class="bg-[#161822] px-4 py-2.5 rounded-xl border border-white/5 hover:border-red-500/30 flex items-center space-x-2 transition group">
+                        <img src="${p.logo}" class="h-6 w-auto object-contain">
+                        <span class="text-xs font-bold text-slate-300 group-hover:text-white">${p.name || ''}</span>
                     </a>
                 `;
             });
@@ -508,6 +568,39 @@
 
             db.ref('matches').push({ team, opponent, score, type, result, date })
                 .then(() => alert('Match saved successfully!'));
+        }
+
+        async function addCreator() {
+            const btn = document.getElementById('btn-creator');
+            btn.innerText = "Saving Creator...";
+            try {
+                const name = document.getElementById('c-name').value;
+                const game = document.getElementById('c-game').value;
+                const fb = document.getElementById('c-fb').value;
+                const tiktok = document.getElementById('c-tiktok').value;
+                const yt = document.getElementById('c-yt').value;
+                const twitch = document.getElementById('c-twitch').value;
+                
+                const pfpUrl = await uploadImage(document.getElementById('c-pfp').files[0], 'creators');
+
+                await db.ref('creators').push({ name, game, pfp: pfpUrl, fb, tiktok, yt, twitch });
+                alert('Creator saved successfully!');
+            } catch(e) { alert('Error saving creator.'); }
+            btn.innerText = "Save Creator";
+        }
+
+        async function addPartner() {
+            const btn = document.getElementById('btn-partner');
+            btn.innerText = "Saving Partner...";
+            try {
+                const name = document.getElementById('part-name').value;
+                const link = document.getElementById('part-link').value;
+                const logoUrl = await uploadImage(document.getElementById('part-logo').files[0], 'partners');
+
+                await db.ref('partners').push({ name, link, logo: logoUrl });
+                alert('Partner/Sponsor saved successfully!');
+            } catch(e) { alert('Error saving partner.'); }
+            btn.innerText = "Save Partner";
         }
 
         function openPlayerStats(name, tag, game, team, role, winrate, pfp, c1, c2, c3) {
