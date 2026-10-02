@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Firebase SDKs (Database lang ang kailangan para sa Base64) -->
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     
@@ -122,6 +122,48 @@
                 <h2 class="font-black text-sm text-white uppercase tracking-widest">Partnerships & Sponsors</h2>
             </div>
             <div class="flex flex-wrap items-center justify-start gap-4 py-2" id="partners-grid">Loading partners...</div>
+        </section>
+
+        <!-- CONTACT US SECTION -->
+        <section class="space-y-4 pt-4 border-t border-white/5">
+            <div class="flex items-center space-x-2">
+                <div class="w-1 h-4 bg-red-600"></div>
+                <h2 class="font-black text-sm text-white uppercase tracking-widest">Contact Us</h2>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <!-- Facebook -->
+                <a href="https://www.facebook.com/share/19VTbrcjga/" target="_blank" class="bg-[#161822] border border-white/5 hover:border-red-500/30 p-4 rounded-xl flex items-center space-x-3 transition group">
+                    <div class="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 text-lg group-hover:scale-110 transition">
+                        <i class="fa-brands fa-facebook-f"></i>
+                    </div>
+                    <div>
+                        <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Facebook Page</p>
+                        <p class="text-xs font-bold text-slate-200 group-hover:text-white truncate">Rift Raiders FB</p>
+                    </div>
+                </a>
+
+                <!-- Discord -->
+                <a href="https://discord.gg/x3M8dZ7fmR" target="_blank" class="bg-[#161822] border border-white/5 hover:border-red-500/30 p-4 rounded-xl flex items-center space-x-3 transition group">
+                    <div class="w-10 h-10 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 text-lg group-hover:scale-110 transition">
+                        <i class="fa-brands fa-discord"></i>
+                    </div>
+                    <div>
+                        <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Discord Server</p>
+                        <p class="text-xs font-bold text-slate-200 group-hover:text-white truncate">Join Community</p>
+                    </div>
+                </a>
+
+                <!-- Email -->
+                <a href="mailto:riftraiders.wr@gmail.com" class="bg-[#161822] border border-white/5 hover:border-red-500/30 p-4 rounded-xl flex items-center space-x-3 transition group">
+                    <div class="w-10 h-10 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 text-lg group-hover:scale-110 transition">
+                        <i class="fa-solid fa-envelope"></i>
+                    </div>
+                    <div>
+                        <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Email Support</p>
+                        <p class="text-xs font-bold text-slate-200 group-hover:text-white truncate">riftraiders.wr@gmail.com</p>
+                    </div>
+                </a>
+            </div>
         </section>
 
         <!-- HIDDEN ADMIN DASHBOARD -->
@@ -336,8 +378,9 @@
                 <div id="modal-champs" class="flex gap-2"></div>
             </div>
         </div>
-                    </div>
-             <script>
+    </div>
+
+    <script>
         const firebaseConfig = {
             apiKey: "AIzaSyB7GyUvjxpgvVOpSS_wjH25m6HssUd_jbM",
             authDomain: "riftraiders-348f4.firebaseapp.com",
@@ -462,7 +505,8 @@
             renderPartners();
             renderAdminPartners();
         });
-      function filterGame(game) {
+
+        function filterGame(game) {
             currentGameFilter = game;
             document.querySelectorAll('.game-tab').forEach(btn => {
                 const text = btn.innerText.toLowerCase();
@@ -666,7 +710,6 @@
             }
         }
 
-        // Helper para ma-convert ang file papuntang Base64 string
         function fileToBase64(file) {
             return new Promise((resolve, reject) => {
                 if(!file) { resolve('https://via.placeholder.com/150'); return; }
@@ -745,8 +788,7 @@
                 alert('Creator saved successfully!');
             } catch(e) { alert('Error saving creator.'); }
             btn.innerText = "Save Creator";
-        }
-
+            }
         async function addPartner() {
             const btn = document.getElementById('btn-partner');
             btn.innerText = "Saving Partner...";
@@ -824,4 +866,4 @@
     </script>
     <!--End of Tawk.to Script-->
 </body>
-</html>           
+</html>
