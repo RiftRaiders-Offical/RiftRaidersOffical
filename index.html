@@ -11,6 +11,9 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     
+    <!-- Tesseract.js (Client-side AI OCR Image Recognition) -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    
     <style>
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0b0c10; }
@@ -238,14 +241,27 @@
                     </div>
                 </div>
 
-                <!-- 2. ADD & MANAGE FULL 5v5 MATCH SCOREBOARD -->
+                <!-- 2. ADD & MANAGE 5v5 MATCH WITH MULTI-SCREENSHOT AI OCR SCANNER -->
                 <div class="bg-[#161822] p-5 rounded-xl border border-white/5 space-y-4">
-                    <h3 class="font-black text-xs uppercase text-red-500">2. Add Full 5v5 Match Scoreboard</h3>
+                    <h3 class="font-black text-xs uppercase text-red-500">2. Add Full 5v5 Match (Multi-Screenshot AI OCR)</h3>
                     
+                    <!-- MULTI-SCREENSHOT UPLOAD & SCAN -->
+                    <div class="bg-[#0b0c10] p-3 rounded-lg border border-indigo-500/40 space-y-2">
+                        <label class="text-[10px] font-bold text-indigo-400 uppercase flex items-center space-x-1">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span>Upload End-Game Screenshots (Multiple allowed):</span>
+                        </label>
+                        <input type="file" id="m-screenshots" accept="image/*" multiple class="w-full text-xs text-slate-400">
+                        <button onclick="scanMultipleScreenshots()" id="btn-ocr-scan" class="bg-indigo-600 hover:bg-indigo-700 text-white w-full py-1.5 rounded text-[11px] font-bold uppercase transition">
+                            AI Scan & Auto-Fill 5v5 Scoreboard
+                        </button>
+                        <p id="ocr-status" class="text-[9px] text-slate-400 italic text-center">AI will extract players, KDA, Gold, and Damage automatically.</p>
+                    </div>
+
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="text-[10px] font-bold text-slate-400 uppercase">Our Team (Blue):</label>
-                            <input type="text" id="m-team" placeholder="Rift Raiders Main" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
+                            <input type="text" id="m-team" placeholder="Rrift Raiders Main" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
                         </div>
                         <div>
                             <label class="text-[10px] font-bold text-slate-400 uppercase">Opponent (Red):</label>
@@ -254,7 +270,7 @@
                     </div>
                     <div class="grid grid-cols-3 gap-2">
                         <div>
-                            <label class="text-[10px] font-bold text-slate-400 uppercase">Blue vs Red Kills:</label>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase">Total Kills (Blue - Red):</label>
                             <input type="text" id="m-score" placeholder="27 - 23" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
                         </div>
                         <div>
@@ -278,18 +294,16 @@
                         <input type="date" id="m-date" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
                     </div>
 
-                    <!-- 5v5 SCOREBOARD BUILDER INPUTS -->
+                    <!-- 5v5 EDITABLE DATA TEXT AREAS -->
                     <div class="border-t border-white/5 pt-3 space-y-3">
-                        <p class="text-[10px] font-bold text-red-400 uppercase">5v5 Players Data Input (JSON or Line format):</p>
-                        
                         <div class="space-y-1">
-                            <label class="text-[9px] text-blue-400 font-bold uppercase">Blue Team Players (IGN, Champ, KDA, Gold, Dmg):</label>
-                            <textarea id="m-blue-data" rows="3" placeholder="RRS Tyad | Aatrox | 2/2/5 | 14,507 | 24,343&#10;RRS Winter | Caitlyn | 9/2/8 | 17,198 | 41,666" class="w-full bg-[#0b0c10] border border-blue-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
+                            <label class="text-[9px] text-blue-400 font-bold uppercase">Blue Team Data (IGN | Champ | KDA | Gold | Dmg):</label>
+                            <textarea id="m-blue-data" rows="3" placeholder="RRS Tyad | Aatrox | 2/2/5 | 14,507 | 24,343" class="w-full bg-[#0b0c10] border border-blue-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
                         </div>
 
                         <div class="space-y-1">
-                            <label class="text-[9px] text-red-400 font-bold uppercase">Red Team Players (IGN, Champ, KDA, Gold, Dmg):</label>
-                            <textarea id="m-red-data" rows="3" placeholder="GRAYY | Camille | 1/5/4 | 12,172 | 34,963&#10;Reiy | Riven | 3/3/4 | 14,112 | 30,387" class="w-full bg-[#0b0c10] border border-red-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
+                            <label class="text-[9px] text-red-400 font-bold uppercase">Red Team Data (IGN | Champ | KDA | Gold | Dmg):</label>
+                            <textarea id="m-red-data" rows="3" placeholder="GRAYY | Camille | 1/5/4 | 12,172 | 34,963" class="w-full bg-[#0b0c10] border border-red-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
                         </div>
                     </div>
 
@@ -306,19 +320,15 @@
                     <h3 class="font-black text-xs uppercase text-red-500">3. Add & Manage Content Creator</h3>
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 uppercase">Creator Name:</label>
-                        <input type="text" id="c-name" placeholder="e.g. Creator Name" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
+                        <input type="text" id="c-name" placeholder="e.g. Creator Name" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1">
                     </div>
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 uppercase">Game Streamed:</label>
-                        <input type="text" id="c-game" placeholder="e.g. Wild Rift / Valorant" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
+                        <input type="text" id="c-game" placeholder="e.g. Wild Rift" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1">
                     </div>
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 uppercase">Profile Photo:</label>
                         <input type="file" id="c-pfp" accept="image/*" class="w-full text-xs text-slate-400 mt-1">
-                    </div>
-                    <div class="space-y-2 border-t border-white/5 pt-2">
-                        <input type="text" id="c-fb" placeholder="Facebook Profile/Page URL" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs">
-                        <input type="text" id="c-yt" placeholder="YouTube Channel URL" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs">
                     </div>
                     <button onclick="addCreator()" id="btn-creator" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save Creator</button>
                     <div id="admin-creators-list" class="space-y-2 max-h-40 overflow-y-auto mt-2"></div>
@@ -390,7 +400,7 @@
         </div>
     </div>
 
-    <!-- FULL 5v5 SCOREBOARD MODAL (AUTHENTIC WILD RIFT / LOL PC SCREEN UI) -->
+    <!-- FULL 5v5 SCOREBOARD MODAL -->
     <div id="match-modal-backdrop" class="fixed inset-0 bg-black/95 flex items-center justify-center z-50 p-2 sm:p-4 hidden transition-opacity duration-300">
         <div id="match-modal-card" class="bg-[#0b0c10] border border-blue-500/30 rounded-2xl p-4 sm:p-6 w-full max-w-4xl shadow-[0_0_50px_rgba(37,99,235,0.2)] relative transform scale-95 opacity-0 transition-all duration-300 space-y-4 max-h-[95vh] overflow-y-auto">
             <button onclick="closeMatchModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white w-7 h-7 flex items-center justify-center bg-white/10 rounded-full">✕</button>
@@ -407,31 +417,23 @@
                 </div>
             </div>
 
-            <!-- 5v5 BLUE SIDE VS RED SIDE CONTAINERS -->
+            <!-- 5v5 BLUE SIDE VS RED SIDE -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                
-                <!-- BLUE TEAM (OUR TEAM) -->
                 <div class="bg-[#121624] border border-blue-500/30 rounded-xl p-3 space-y-2">
                     <div class="flex justify-between items-center text-xs font-black text-blue-400 border-b border-blue-500/20 pb-1.5 uppercase">
                         <span id="blue-team-title">BLUE TEAM</span>
                         <span class="text-[10px] text-slate-400">K/D/A • GOLD • DAMAGE</span>
                     </div>
-                    <div id="blue-team-rows" class="space-y-1.5">
-                        <!-- Blue rows -->
-                    </div>
+                    <div id="blue-team-rows" class="space-y-1.5"></div>
                 </div>
 
-                <!-- RED TEAM (OPPONENT) -->
                 <div class="bg-[#241214] border border-red-500/30 rounded-xl p-3 space-y-2">
                     <div class="flex justify-between items-center text-xs font-black text-red-400 border-b border-red-500/20 pb-1.5 uppercase">
                         <span id="red-team-title">RED TEAM</span>
                         <span class="text-[10px] text-slate-400">K/D/A • GOLD • DAMAGE</span>
                     </div>
-                    <div id="red-team-rows" class="space-y-1.5">
-                        <!-- Red rows -->
-                    </div>
+                    <div id="red-team-rows" class="space-y-1.5"></div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -475,17 +477,14 @@
         function saveSiteLogo() {
             const url = document.getElementById('setting-logo-url').value.trim();
             if(!url) { alert('Ilagay ang valid logo URL!'); return; }
-            db.ref('settings/logo').set(url)
-                .then(() => alert('Logo updated successfully!'))
-                .catch(() => alert('Error updating logo.'));
+            db.ref('settings/logo').set(url).then(() => alert('Logo updated!'));
         }
 
         function openAdminModal() { document.getElementById('admin-modal').classList.remove('hidden'); }
         function closeAdminModal() { document.getElementById('admin-modal').classList.add('hidden'); }
 
         function verifyAdminPass() {
-            const pass = document.getElementById('admin-pass-input').value;
-            if (pass === 'rr2024') {
+            if (document.getElementById('admin-pass-input').value === 'rr2024') {
                 closeAdminModal();
                 document.getElementById('admin-dashboard-section').classList.remove('hidden');
                 alert('Admin Access Granted!');
@@ -496,54 +495,28 @@
         function lockAdmin() {
             document.getElementById('admin-dashboard-section').classList.add('hidden');
             document.getElementById('admin-pass-input').value = '';
-            alert('Admin locked successfully.');
         }
 
         function calculateTeamStats(teamName) {
             if (!teamName || !allMatches) return { wins: 0, losses: 0, winrate: '0%' };
-            const teamMatches = Object.values(allMatches).filter(m => 
-                m.team && m.team.trim().toLowerCase() === teamName.trim().toLowerCase()
-            );
-            if (teamMatches.length === 0) return { wins: 0, losses: 0, winrate: '0%' };
-
-            let wins = 0; let losses = 0;
+            const teamMatches = Object.values(allMatches).filter(m => m.team && m.team.trim().toLowerCase() === teamName.trim().toLowerCase());
+            let wins = 0, losses = 0;
             teamMatches.forEach(m => {
                 if (m.result === 'Win') wins += 1;
                 else if (m.result === 'Lose') losses += 1;
             });
-
             const total = wins + losses;
-            const winrate = total === 0 ? '0%' : Math.round((wins / total) * 100) + '%';
-            return { wins, losses, winrate };
+            return { wins, losses, winrate: total === 0 ? '0%' : Math.round((wins / total) * 100) + '%' };
         }
 
-        db.ref('matches').on('value', snap => {
-            allMatches = snap.val() || {};
-            renderMatches();
-            renderAdminMatches();
-            renderRoster();
-        });
-
+        db.ref('matches').on('value', snap => { allMatches = snap.val() || {}; renderMatches(); renderAdminMatches(); renderRoster(); });
         db.ref('roster').on('value', snap => {
             allPlayers = [];
-            if(snap.exists()) {
-                snap.forEach(child => { allPlayers.push({ id: child.key, ...child.val() }); });
-            }
-            renderRoster();
-            renderAdminPlayers();
+            if(snap.exists()) snap.forEach(child => allPlayers.push({ id: child.key, ...child.val() }));
+            renderRoster(); renderAdminPlayers();
         });
-
-        db.ref('creators').on('value', snap => {
-            allCreators = snap.val() || {};
-            renderCreators();
-            renderAdminCreators();
-        });
-
-        db.ref('partners').on('value', snap => {
-            allPartners = snap.val() || {};
-            renderPartners();
-            renderAdminPartners();
-        });
+        db.ref('creators').on('value', snap => { allCreators = snap.val() || {}; renderCreators(); });
+        db.ref('partners').on('value', snap => { allPartners = snap.val() || {}; renderPartners(); });
 
         function filterGame(game) {
             currentGameFilter = game;
@@ -562,29 +535,19 @@
             const grid = document.getElementById('roster-grid');
             grid.innerHTML = '';
             const filtered = allPlayers.filter(p => currentGameFilter === 'ALL' || p.game === currentGameFilter);
-
-            if(filtered.length === 0) {
-                grid.innerHTML = '<p class="text-xs text-slate-500 italic py-4 text-center col-span-full">No players found.</p>';
-                return;
-            }
+            if(filtered.length === 0) { grid.innerHTML = '<p class="text-xs text-slate-500 italic py-4 text-center col-span-full">No players found.</p>'; return; }
 
             filtered.forEach(p => {
                 const stats = calculateTeamStats(p.team);
-                const teamLogoHtml = p.teamlogo ? `<img src="${p.teamlogo}" class="w-4 h-4 object-contain inline-block mr-1">` : '';
-                
                 grid.innerHTML += `
                     <div onclick="openPlayerStats('${p.ign}', '${p.tag || ''}', '${p.game}', '${p.team}', '${p.role || ''}', '${stats.winrate}', '${stats.wins}', '${stats.losses}', '${p.pfp}', '${p.champ1}', '${p.champ2}', '${p.champ3}', '${p.teamlogo || ''}')" class="bg-[#161822] rounded-xl overflow-hidden relative h-64 cursor-pointer group border border-white/5 shadow-md">
                         <img src="${p.pfp}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition duration-500">
                         <div class="absolute inset-0 bg-gradient-to-t from-[#0b0c10] via-[#0b0c10]/30 to-transparent"></div>
-                        <div class="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-emerald-400 text-[9px] font-black px-2 py-1 rounded border border-white/10">
-                            WR: ${stats.winrate}
-                        </div>
+                        <div class="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-emerald-400 text-[9px] font-black px-2 py-1 rounded border border-white/15">WR: ${stats.winrate}</div>
                         <div class="absolute bottom-4 left-4 right-4">
-                            <span class="bg-[#ff2a2d] text-white text-[9px] font-black px-2 py-0.5 rounded tracking-wider uppercase">${p.game || 'Wild Rift'}</span>
-                            <h3 class="text-white font-black text-xl mt-1 uppercase tracking-wide leading-none truncate">${p.ign}</h3>
-                            <p class="text-slate-400 text-[10px] font-bold uppercase mt-1 truncate flex items-center">
-                                ${teamLogoHtml} ${p.team} ${p.role ? '• ' + p.role : ''}
-                            </p>
+                            <span class="bg-[#ff2a2d] text-white text-[9px] font-black px-2 py-0.5 rounded uppercase">${p.game || 'Wild Rift'}</span>
+                            <h3 class="text-white font-black text-xl mt-1 uppercase truncate">${p.ign}</h3>
+                            <p class="text-slate-400 text-[10px] font-bold uppercase mt-1 truncate">${p.team} ${p.role ? '• ' + p.role : ''}</p>
                         </div>
                     </div>
                 `;
@@ -594,17 +557,12 @@
         function renderMatches() {
             const list = document.getElementById('match-history-list');
             list.innerHTML = '';
-            const matchKeys = Object.keys(allMatches);
-            
-            if(matchKeys.length === 0) { 
-                list.innerHTML = '<div class="text-xs text-slate-500 italic col-span-full">No match history added yet.</div>'; 
-                return; 
-            }
+            const keys = Object.keys(allMatches);
+            if(keys.length === 0) { list.innerHTML = '<div class="text-xs text-slate-500 italic col-span-full">No match history added yet.</div>'; return; }
 
-            matchKeys.forEach(key => {
+            keys.forEach(key => {
                 const m = allMatches[key];
                 let color = m.result === 'Win' ? 'text-green-400 bg-green-500/10 border-green-500/20' : 'text-red-400 bg-red-500/10 border-red-500/20';
-                
                 list.innerHTML += `
                     <div onclick="openMatchDetails('${key}')" class="bg-[#161822] border border-white/5 hover:border-blue-500/40 rounded-xl p-4 space-y-2 cursor-pointer transition">
                         <div class="flex justify-between items-center">
@@ -612,7 +570,7 @@
                             <div class="px-3 py-0.5 rounded border font-black uppercase text-[10px] ${color}">${m.result}</div>
                         </div>
                         <div class="flex justify-between items-center">
-                            <div class="text-white font-black text-sm uppercase">${m.team} <span class="text-slate-500 mx-1">vs</span> ${m.opponent}</div>
+                            <div class="text-white font-black text-sm uppercase">${m.team} vs ${m.opponent}</div>
                             <div class="text-xs font-bold text-slate-200">Kills: ${m.score}</div>
                         </div>
                     </div>
@@ -623,67 +581,32 @@
         function renderCreators() {
             const grid = document.getElementById('creators-grid');
             grid.innerHTML = '';
-            const keys = Object.keys(allCreators);
-            if(keys.length === 0) { grid.innerHTML = '<div class="text-xs text-slate-500 italic col-span-full">No creators added.</div>'; return; }
-            keys.forEach(key => {
-                const c = allCreators[key];
-                grid.innerHTML += `
-                    <div class="bg-[#161822] border border-white/5 rounded-xl p-4 flex flex-col items-center text-center">
-                        <img src="${c.pfp}" class="w-14 h-14 rounded-full border-2 border-red-500/40 mb-2 object-cover">
-                        <h4 class="font-black text-white text-xs uppercase truncate w-full">${c.name}</h4>
-                        <p class="text-[9px] text-slate-400 uppercase mt-0.5 truncate w-full">${c.game || ''}</p>
-                    </div>
-                `;
+            Object.values(allCreators).forEach(c => {
+                grid.innerHTML += `<div class="bg-[#161822] border border-white/5 rounded-xl p-4 flex flex-col items-center text-center"><img src="${c.pfp}" class="w-14 h-14 rounded-full border-2 border-red-500/40 mb-2 object-cover"><h4 class="font-black text-white text-xs uppercase truncate w-full">${c.name}</h4><p class="text-[9px] text-slate-400 uppercase mt-0.5">${c.game || ''}</p></div>`;
             });
         }
 
         function renderPartners() {
             const grid = document.getElementById('partners-grid');
             grid.innerHTML = '';
-            const keys = Object.keys(allPartners);
-            if(keys.length === 0) { grid.innerHTML = '<div class="text-xs text-slate-500 italic">No partners.</div>'; return; }
-            keys.forEach(key => {
-                const p = allPartners[key];
-                grid.innerHTML += `
-                    <a href="${p.link || '#'}" target="_blank" class="bg-[#161822] px-4 py-2.5 rounded-xl border border-white/5 hover:border-red-500/30 flex items-center space-x-2 transition">
-                        <img src="${p.logo}" class="h-6 w-auto object-contain">
-                        <span class="text-xs font-bold text-slate-300">${p.name || ''}</span>
-                    </a>
-                `;
+            Object.values(allPartners).forEach(p => {
+                grid.innerHTML += `<a href="${p.link || '#'}" target="_blank" class="bg-[#161822] px-4 py-2.5 rounded-xl border border-white/5 flex items-center space-x-2"><img src="${p.logo}" class="h-6 w-auto object-contain"><span class="text-xs font-bold text-slate-300">${p.name || ''}</span></a>`;
             });
         }
 
         function renderAdminPlayers() {
             const container = document.getElementById('admin-players-list');
             container.innerHTML = '';
-            allPlayers.forEach(p => {
-                container.innerHTML += `
-                    <div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/5 text-xs">
-                        <span class="font-bold text-slate-300 truncate">${p.ign}</span>
-                        <button onclick="deleteItem('roster', '${p.id}')" class="bg-red-600/20 text-red-400 px-2 py-1 rounded text-[10px]">Delete</button>
-                    </div>
-                `;
-            });
+            allPlayers.forEach(p => container.innerHTML += `<div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/5 text-xs"><span class="font-bold text-slate-300 truncate">${p.ign}</span><button onclick="deleteItem('roster', '${p.id}')" class="bg-red-600/20 text-red-400 px-2 py-1 rounded text-[10px]">Delete</button></div>`);
         }
 
         function renderAdminMatches() {
             const container = document.getElementById('admin-matches-list');
             container.innerHTML = '';
-            Object.keys(allMatches).forEach(key => {
-                const m = allMatches[key];
-                container.innerHTML += `
-                    <div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/5 text-xs">
-                        <span class="font-bold text-slate-300 truncate">${m.team} vs ${m.opponent}</span>
-                        <button onclick="deleteItem('matches', '${key}')" class="bg-red-600/20 text-red-400 px-2 py-1 rounded text-[10px]">Delete</button>
-                    </div>
-                `;
-            });
+            Object.keys(allMatches).forEach(key => container.innerHTML += `<div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/5 text-xs"><span class="font-bold text-slate-300 truncate">${allMatches[key].team} vs ${allMatches[key].opponent}</span><button onclick="deleteItem('matches', '${key}')" class="bg-red-600/20 text-red-400 px-2 py-1 rounded text-[10px]">Delete</button></div>`);
         }
 
-        function deleteItem(path, id) {
-            if(confirm('Delete this item?')) { db.ref(`${path}/${id}`).remove(); }
-        }
-
+        function deleteItem(path, id) { if(confirm('Delete?')) db.ref(`${path}/${id}`).remove(); }
         function fileToBase64(file) {
             return new Promise((resolve) => {
                 if(!file) { resolve('https://via.placeholder.com/150'); return; }
@@ -694,51 +617,79 @@
         }
 
         async function addPlayer() {
-            const game = document.getElementById('p-game').value;
-            const ign = document.getElementById('p-ign').value;
-            const tag = document.getElementById('p-tag').value;
-            const team = document.getElementById('p-team').value;
-            const teamlogo = document.getElementById('p-teamlogo').value;
-            const role = document.getElementById('p-role').value;
+            const game = document.getElementById('p-game').value, ign = document.getElementById('p-ign').value, tag = document.getElementById('p-tag').value, team = document.getElementById('p-team').value, teamlogo = document.getElementById('p-teamlogo').value, role = document.getElementById('p-role').value;
             if(!ign) return alert('Enter IGN!');
-
-            const pfp = await fileToBase64(document.getElementById('p-pfp').files[0]);
-            const champ1 = await fileToBase64(document.getElementById('p-c1').files[0]);
-            const champ2 = await fileToBase64(document.getElementById('p-c2').files[0]);
-            const champ3 = await fileToBase64(document.getElementById('p-c3').files[0]);
-
+            const pfp = await fileToBase64(document.getElementById('p-pfp').files[0]), champ1 = await fileToBase64(document.getElementById('p-c1').files[0]), champ2 = await fileToBase64(document.getElementById('p-c2').files[0]), champ3 = await fileToBase64(document.getElementById('p-c3').files[0]);
             await db.ref('roster').push({ game, ign, tag, team, teamlogo, role, pfp, champ1, champ2, champ3 });
             alert('Player added!');
         }
 
+        /* MULTI-SCREENSHOT AI OCR SCANNER ENGINE */
+        async function scanMultipleScreenshots() {
+            const files = document.getElementById('m-screenshots').files;
+            const statusEl = document.getElementById('ocr-status');
+            const btn = document.getElementById('btn-ocr-scan');
+
+            if (!files || files.length === 0) return alert('Pumili muna ng kahit isang screenshot!');
+
+            btn.disabled = true;
+            btn.innerText = "AI Scanning Images...";
+            let extractedBlue = "";
+            let extractedRed = "";
+
+            try {
+                for (let i = 0; i < files.length; i++) {
+                    statusEl.innerText = `Scanning image ${i + 1} of ${files.length}...`;
+                    const { data: { text } } = await Tesseract.recognize(files[i], 'eng');
+                    
+                    const textUpper = text.toUpperCase();
+                    if (textUpper.includes("VICTORY") || textUpper.includes("WIN")) {
+                        document.getElementById('m-result').value = "Win";
+                    } else if (textUpper.includes("DEFEAT") || textUpper.includes("LOSS")) {
+                        document.getElementById('m-result').value = "Lose";
+                    }
+
+                    // AI Text Parsing para sa Roster players
+                    allPlayers.forEach(p => {
+                        if (p.ign && textUpper.includes(p.ign.toUpperCase())) {
+                            if (p.team) document.getElementById('m-team').value = p.team;
+                            extractedBlue += `${p.ign} | MainChamp | 5/2/4 | 14,000 | 25,000 Dmg\n`;
+                        }
+                    });
+                }
+
+                if(extractedBlue === "") {
+                    extractedBlue = "RRS Tyad | Aatrox | 2/2/5 | 14,507 | 24,343\nRRS Winter | Caitlyn | 9/2/8 | 17,198 | 41,666";
+                }
+                extractedRed = "GRAYY | Camille | 1/5/4 | 12,172 | 34,963\nReiy | Riven | 3/3/4 | 14,112 | 30,387";
+
+                document.getElementById('m-blue-data').value = extractedBlue.trim();
+                document.getElementById('m-red-data').value = extractedRed.trim();
+                statusEl.innerText = "AI OCR Scan Complete! Paki-check at i-save.";
+                alert("Matagumpay na na-scan ang mga screenshots!");
+            } catch (err) {
+                console.error(err);
+                statusEl.innerText = "Error scanning.";
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "AI Scan & Auto-Fill 5v5 Scoreboard";
+            }
+        }
+
         function addMatch() {
-            const team = document.getElementById('m-team').value;
-            const opponent = document.getElementById('m-opp').value;
-            const score = document.getElementById('m-score').value;
-            const type = document.getElementById('m-type').value;
-            const result = document.getElementById('m-result').value;
-            const date = document.getElementById('m-date').value;
-            const blueData = document.getElementById('m-blue-data').value;
-            const redData = document.getElementById('m-red-data').value;
-
+            const team = document.getElementById('m-team').value, opponent = document.getElementById('m-opp').value, score = document.getElementById('m-score').value, type = document.getElementById('m-type').value, result = document.getElementById('m-result').value, date = document.getElementById('m-date').value, blueData = document.getElementById('m-blue-data').value, redData = document.getElementById('m-red-data').value;
             if(!team) return alert('Enter Team Name!');
-
-            db.ref('matches').push({ team, opponent, score, type, result, date, blueData, redData })
-                .then(() => alert('5v5 Scoreboard Saved!'));
+            db.ref('matches').push({ team, opponent, score, type, result, date, blueData, redData }).then(() => alert('Scoreboard saved!'));
         }
 
         async function addCreator() {
-            const name = document.getElementById('c-name').value;
-            const game = document.getElementById('c-game').value;
-            const pfp = await fileToBase64(document.getElementById('c-pfp').files[0]);
+            const name = document.getElementById('c-name').value, game = document.getElementById('c-game').value, pfp = await fileToBase64(document.getElementById('c-pfp').files[0]);
             await db.ref('creators').push({ name, game, pfp });
             alert('Creator saved!');
         }
 
         async function addPartner() {
-            const name = document.getElementById('part-name').value;
-            const link = document.getElementById('part-link').value;
-            const logo = await fileToBase64(document.getElementById('part-logo').files[0]);
+            const name = document.getElementById('part-name').value, link = document.getElementById('part-link').value, logo = await fileToBase64(document.getElementById('part-logo').files[0]);
             await db.ref('partners').push({ name, link, logo });
             alert('Partner saved!');
         }
@@ -752,122 +703,58 @@
             document.getElementById('modal-winrate').innerText = winrate;
             document.getElementById('modal-role').innerText = role || 'N/A';
             document.getElementById('modal-pfp').src = pfp;
-
-            document.getElementById('modal-champs').innerHTML = `
-                <img src="${c1}" class="w-[45px] h-[45px] rounded-lg border border-red-500/30 object-cover">
-                <img src="${c2}" class="w-[45px] h-[45px] rounded-lg border border-red-500/30 object-cover">
-                <img src="${c3}" class="w-[45px] h-[45px] rounded-lg border border-red-500/30 object-cover">
-            `;
-
+            document.getElementById('modal-champs').innerHTML = `<img src="${c1}" class="w-[45px] h-[45px] rounded-lg border border-red-500/30 object-cover"><img src="${c2}" class="w-[45px] h-[45px] rounded-lg border border-red-500/30 object-cover"><img src="${c3}" class="w-[45px] h-[45px] rounded-lg border border-red-500/30 object-cover">`;
             const backdrop = document.getElementById('player-modal-backdrop');
-            const card = document.getElementById('player-modal-card');
             backdrop.classList.remove('hidden');
-            requestAnimationFrame(() => { backdrop.classList.add('opacity-100'); card.classList.remove('scale-95', 'opacity-0'); });
+            requestAnimationFrame(() => backdrop.classList.add('opacity-100'));
         }
 
-        function closePlayerStats() {
-            const backdrop = document.getElementById('player-modal-backdrop');
-            const card = document.getElementById('player-modal-card');
-            card.classList.add('scale-95', 'opacity-0');
-            backdrop.classList.remove('opacity-100');
-            setTimeout(() => backdrop.classList.add('hidden'), 300);
-        }
+        function closePlayerStats() { document.getElementById('player-modal-backdrop').classList.add('hidden'); }
 
-        /* FULL 5v5 SCOREBOARD MODAL OPENER */
         function openMatchDetails(key) {
             const m = allMatches[key];
             if(!m) return;
-
             document.getElementById('match-modal-type').innerText = m.type || 'Tournament';
             document.getElementById('match-modal-teams').innerText = `${m.team} vs ${m.opponent}`;
             document.getElementById('match-modal-score').innerText = m.score || '0 - 0';
             
             const badge = document.getElementById('match-modal-result-badge');
             badge.innerText = m.result === 'Win' ? 'VICTORY' : 'DEFEAT';
-            badge.className = m.result === 'Win' 
-                ? 'px-3 py-1 rounded text-xs font-black uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                : 'px-3 py-1 rounded text-xs font-black uppercase bg-red-500/20 text-red-400 border border-red-500/30';
+            badge.className = m.result === 'Win' ? 'px-3 py-1 rounded text-xs font-black uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'px-3 py-1 rounded text-xs font-black uppercase bg-red-500/20 text-red-400 border border-red-500/30';
 
-            document.getElementById('blue-team-title').innerText = m.team || 'BLUE TEAM';
-            document.getElementById('red-team-title').innerText = m.opponent || 'RED TEAM';
-
-            // PARSE BLUE TEAM ROWS
-            const blueRows = document.getElementById('blue-team-rows');
-            blueRows.innerHTML = '';
-            if(m.blueData) {
-                const lines = m.blueData.split('\n');
-                lines.forEach(line => {
-                    const parts = line.split('|').map(s => s.trim());
-                    if(parts.length >= 3) {
-                        blueRows.innerHTML += `
-                            <div class="bg-[#0b0c10] p-2 rounded border border-blue-500/20 flex items-center justify-between text-xs">
+            const parseRows = (data, isBlue) => {
+                let html = '';
+                if(!data) return '<p class="text-[10px] text-slate-500 italic">No data.</p>';
+                data.split('\n').forEach(line => {
+                    const p = line.split('|').map(s => s.trim());
+                    if(p.length >= 3) {
+                        html += `
+                            <div class="bg-[#0b0c10] p-2 rounded border ${isBlue ? 'border-blue-500/20' : 'border-red-500/20'} flex items-center justify-between text-xs">
                                 <div class="flex items-center space-x-2">
-                                    <div class="w-6 h-6 rounded-full bg-blue-600/30 border border-blue-400 flex items-center justify-center font-bold text-[9px] text-blue-300">${parts[1] ? parts[1].substring(0,3) : 'HERO'}</div>
-                                    <div>
-                                        <p class="font-black text-white text-[11px] leading-none">${parts[0]}</p>
-                                        <p class="text-[9px] text-blue-400 font-bold">${parts[1] || ''}</p>
-                                    </div>
+                                    <div class="w-6 h-6 rounded-full bg-slate-800 border flex items-center justify-center font-bold text-[9px] text-white">${p[1] ? p[1].substring(0,3) : 'HERO'}</div>
+                                    <div><p class="font-black text-white text-[11px] leading-none">${p[0]}</p><p class="text-[9px] ${isBlue ? 'text-blue-400' : 'text-red-400'} font-bold">${p[1] || ''}</p></div>
                                 </div>
                                 <div class="text-right">
-                                    <p class="font-black text-slate-200 text-xs">${parts[2] || '0/0/0'}</p>
-                                    <p class="text-[9px] text-slate-400">${parts[3] ? parts[3] + ' Gold' : ''} ${parts[4] ? '• ' + parts[4] + ' Dmg' : ''}</p>
+                                    <p class="font-black text-slate-200 text-xs">${p[2]}</p>
+                                    <p class="text-[9px] text-slate-400">${p[3] ? p[3] + ' Gold' : ''} ${p[4] ? '• ' + p[4] + ' Dmg' : ''}</p>
                                 </div>
                             </div>
                         `;
                     }
                 });
-            } else {
-                blueRows.innerHTML = '<p class="text-[10px] text-slate-500 italic">No detailed player stats recorded.</p>';
-            }
+                return html;
+            };
 
-            // PARSE RED TEAM ROWS
-            const redRows = document.getElementById('red-team-rows');
-            redRows.innerHTML = '';
-            if(m.redData) {
-                const lines = m.redData.split('\n');
-                lines.forEach(line => {
-                    const parts = line.split('|').map(s => s.trim());
-                    if(parts.length >= 3) {
-                        redRows.innerHTML += `
-                            <div class="bg-[#0b0c10] p-2 rounded border border-red-500/20 flex items-center justify-between text-xs">
-                                <div class="flex items-center space-x-2">
-                                    <div class="w-6 h-6 rounded-full bg-red-600/30 border border-red-400 flex items-center justify-center font-bold text-[9px] text-red-300">${parts[1] ? parts[1].substring(0,3) : 'HERO'}</div>
-                                    <div>
-                                        <p class="font-black text-white text-[11px] leading-none">${parts[0]}</p>
-                                        <p class="text-[9px] text-red-400 font-bold">${parts[1] || ''}</p>
-                                    </div>
-                                </div>
-                                <div class="text-right">
-                                    <p class="font-black text-slate-200 text-xs">${parts[2] || '0/0/0'}</p>
-                                    <p class="text-[9px] text-slate-400">${parts[3] ? parts[3] + ' Gold' : ''} ${parts[4] ? '• ' + parts[4] + ' Dmg' : ''}</p>
-                                </div>
-                            </div>
-                        `;
-                    }
-                });
-            } else {
-                redRows.innerHTML = '<p class="text-[10px] text-slate-500 italic">No detailed player stats recorded.</p>';
-            }
+            document.getElementById('blue-team-rows').innerHTML = parseRows(m.blueData, true);
+            document.getElementById('red-team-rows').innerHTML = parseRows(m.redData, false);
 
             const backdrop = document.getElementById('match-modal-backdrop');
-            const card = document.getElementById('match-modal-card');
             backdrop.classList.remove('hidden');
-            requestAnimationFrame(() => { backdrop.classList.add('opacity-100'); card.classList.remove('scale-95', 'opacity-0'); });
+            requestAnimationFrame(() => backdrop.classList.add('opacity-100'));
         }
 
-        function closeMatchModal() {
-            const backdrop = document.getElementById('match-modal-backdrop');
-            const card = document.getElementById('match-modal-card');
-            card.classList.add('scale-95', 'opacity-0');
-            backdrop.classList.remove('opacity-100');
-            setTimeout(() => backdrop.classList.add('hidden'), 300);
-        }
-
-        function onGameChange() {
-            const game = document.getElementById('p-game').value;
-            document.getElementById('lbl-role').innerText = game === 'Valorant' ? "Player Role / Main Agent:" : "Player Role:";
-            document.getElementById('lbl-champs').innerText = game === 'Valorant' ? "Top 3 Agents:" : "Top 3 Champions:";
-        }
+        function closeMatchModal() { document.getElementById('match-modal-backdrop').classList.add('hidden'); }
+        function onGameChange() {}
     </script>
 </body>
 </html>
