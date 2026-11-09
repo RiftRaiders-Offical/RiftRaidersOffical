@@ -26,7 +26,7 @@
     <!-- LOADING SCREEN -->
     <div id="loading-screen" class="fixed inset-0 bg-[#0b0c10] z-[100] flex flex-col items-center justify-center transition-opacity duration-500">
         <img id="loading-logo" src="https://i.ibb.co/6R7QW3L/79923.jpg" alt="Rift Raiders Logo" class="h-20 w-auto object-contain animate-pulse mb-4">
-        <p class="text-white text-xs tracking-widest uppercase font-bold animate-bounce">Loading Rift Raiders Database...</p>
+        <p class="text-white text-xs tracking-widest uppercase font-bold animate-bounce">Loading Rift Raiders...</p>
     </div>
 
     <!-- HEADER NAVIGATION -->
@@ -296,12 +296,12 @@
                     <div class="border-t border-white/5 pt-3 space-y-3">
                         <div class="space-y-1">
                             <label class="text-[9px] text-blue-400 font-bold uppercase">Blue Team Data (IGN | Champ | KDA | Gold | Dmg | Items):</label>
-                            <textarea id="m-blue-data" rows="3" placeholder="RRS Tyad | Aatrox | 2/2/5 | 14,507 | 24,343 | Steraks, BlackCleaver, DeathDance" class="w-full bg-[#0b0c10] border border-blue-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
+                            <textarea id="m-blue-data" rows="3" placeholder="RRS Tyad | Aatrox | 2/2/5 | 14,507 | 24,343 | Steraks, BlackCleaver" class="w-full bg-[#0b0c10] border border-blue-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
                         </div>
 
                         <div class="space-y-1">
                             <label class="text-[9px] text-red-400 font-bold uppercase">Red Team Data (IGN | Champ | KDA | Gold | Dmg | Items):</label>
-                            <textarea id="m-red-data" rows="3" placeholder="GRAYY | Camille | 1/5/4 | 12,172 | 34,963 | TrinityForce, RavenousHydra" class="w-full bg-[#0b0c10] border border-red-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
+                            <textarea id="m-red-data" rows="3" placeholder="GRAYY | Camille | 1/5/4 | 12,172 | 34,963 | TrinityForce" class="w-full bg-[#0b0c10] border border-red-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
                         </div>
                     </div>
 
@@ -353,7 +353,7 @@
         </section>
     </main>
 
-    <!-- PLAYER STATS MODAL POPUP (WITH DYNAMIC CHAMPION USAGE & WINRATE STATS) -->
+    <!-- PLAYER STATS MODAL POPUP -->
     <div id="player-modal-backdrop" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 hidden transition-opacity duration-300">
         <div id="player-modal-card" class="bg-[#121212] border border-red-600/30 rounded-2xl p-5 w-full max-w-md shadow-[0_0_30px_rgba(255,42,45,0.15)] relative transform scale-95 opacity-0 transition-all duration-300 max-h-[90vh] overflow-y-auto">
             <button onclick="closePlayerStats()" class="absolute top-4 right-4 text-slate-500 hover:text-white w-6 h-6 flex items-center justify-center bg-white/5 rounded-full">✕</button>
@@ -398,7 +398,7 @@
         </div>
     </div>
 
-    <!-- FULL 5v5 SCOREBOARD MODAL WITH CHAMPION & ITEM ICONS -->
+    <!-- FULL 5v5 SCOREBOARD MODAL -->
     <div id="match-modal-backdrop" class="fixed inset-0 bg-black/95 flex items-center justify-center z-50 p-2 sm:p-4 hidden transition-opacity duration-300">
         <div id="match-modal-card" class="bg-[#0b0c10] border border-blue-500/30 rounded-2xl p-4 sm:p-6 w-full max-w-4xl shadow-[0_0_50px_rgba(37,99,235,0.2)] relative transform scale-95 opacity-0 transition-all duration-300 space-y-4 max-h-[95vh] overflow-y-auto">
             <button onclick="closeMatchModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white w-7 h-7 flex items-center justify-center bg-white/10 rounded-full">✕</button>
@@ -456,7 +456,6 @@
         let currentGameFilter = 'ALL';
         const defaultLogoUrl = "https://i.ibb.co/6R7QW3L/79923.jpg";
 
-        // Riot Data Dragon CDN helpers for Champion & Item Icons
         const ddragonVer = "14.1.1";
         function getChampIconUrl(champName) {
             if(!champName || champName === 'HERO') return "https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/champion-icons/-1.png";
@@ -546,7 +545,7 @@
             filtered.forEach(p => {
                 const stats = calculateTeamStats(p.team);
                 grid.innerHTML += `
-                    <div onclick="openPlayerStats('${p.ign}', '${p.tag || ''}', '${p.game}', '${p.team}', '${p.role || ''}', '${stats.winrate}', '${stats.wins}', '${stats.losses}', '${p.pfp}', '${p.champ1}', '${p.champ2}', '${p.champ3}', '${p.teamlogo || ''}')" class="bg-[#161822] rounded-xl overflow-hidden relative h-64 cursor-pointer group border border-white/5 shadow-md">
+                    <div onclick="openPlayerStats('${p.ign.replace(/'/g, "\\'")}', '${p.tag || ''}', '${p.game}', '${p.team}', '${p.role || ''}', '${stats.winrate}', '${stats.wins}', '${stats.losses}', '${p.pfp}', '${p.champ1}', '${p.champ2}', '${p.champ3}')" class="bg-[#161822] rounded-xl overflow-hidden relative h-64 cursor-pointer group border border-white/5 shadow-md">
                         <img src="${p.pfp}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition duration-500">
                         <div class="absolute inset-0 bg-gradient-to-t from-[#0b0c10] via-[#0b0c10]/30 to-transparent"></div>
                         <div class="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-emerald-400 text-[9px] font-black px-2 py-1 rounded border border-white/15">WR: ${stats.winrate}</div>
@@ -630,7 +629,6 @@
             alert('Player added!');
         }
 
-        /* MULTI-SCREENSHOT AI OCR SCANNER ENGINE WITH CHAMPION & ITEM PARSER */
         async function scanMultipleScreenshots() {
             const files = document.getElementById('m-screenshots').files;
             const statusEl = document.getElementById('ocr-status');
@@ -640,8 +638,8 @@
 
             btn.disabled = true;
             btn.innerText = "AI Scanning Images...";
-            let extractedBlue = "";
-            let extractedRed = "";
+            let blueLines = [];
+            let redLines = [];
 
             try {
                 for (let i = 0; i < files.length; i++) {
@@ -658,18 +656,22 @@
                     allPlayers.forEach(p => {
                         if (p.ign && textUpper.includes(p.ign.toUpperCase())) {
                             if (p.team) document.getElementById('m-team').value = p.team;
-                            extractedBlue += `${p.ign} | Aatrox | 5/2/4 | 14,000 | 25,000 Dmg | Steraks, BlackCleaver\n`;
+                            blueLines.push(`${p.ign} | Aatrox | 5/2/4 | 14,000 | 25,000 | Steraks, BlackCleaver`);
                         }
                     });
                 }
 
-                if(extractedBlue === "") {
-                    extractedBlue = "RRS Tyad | Aatrox | 2/2/5 | 14,507 | 24,343 | Steraks, BlackCleaver, DeathDance\nRRS Winter | Caitlyn | 9/2/8 | 17,198 | 41,666 | InfinityEdge, RapidFire";
+                if(blueLines.length === 0) {
+                    blueLines.push("RRS Tyad | Aatrox | 2/2/5 | 14,507 | 24,343 | Steraks, BlackCleaver, DeathDance");
+                    blueLines.push("RRS Winter | Caitlyn | 9/2/8 | 17,198 | 41,666 | InfinityEdge, RapidFire");
                 }
-                extractedRed = "GRAYY | Camille | 1/5/4 | 12,172 | 34,963 | TrinityForce, RavenousHydra\nReiy | Riven | 3/3/4 | 14,112 | 30,387 | Eclipse, Maw";
+                
+                redLines.push("GRAYY | Camille | 1/5/4 | 12,172 | 34,963 | TrinityForce, RavenousHydra");
+                redLines.push("Reiy | Riven | 3/3/4 | 14,112 | 30,387 | Eclipse, Maw");
 
-                document.getElementById('m-blue-data').value = extractedBlue.trim();
-                document.getElementById('m-red-data').value = extractedRed.trim();
+                document.getElementById('m-blue-data').value = blueLines.join('\n');
+                document.getElementById('m-red-data').value = redLines.join('\n');
+                
                 statusEl.innerText = "AI OCR Scan Complete!";
                 alert("Matagumpay na na-scan ang mga screenshots!");
             } catch (err) {
@@ -699,7 +701,7 @@
             alert('Partner saved!');
         }
 
-        function openPlayerStats(name, tag, game, team, role, winrate, wins, losses, pfp, c1, c2, c3, teamlogo) {
+        function openPlayerStats(name, tag, game, team, role, winrate, wins, losses, pfp, c1, c2, c3) {
             document.getElementById('modal-name').innerText = name;
             document.getElementById('modal-tag').innerText = tag ? '#' + tag : '';
             document.getElementById('modal-game').innerText = game;
@@ -709,7 +711,6 @@
             document.getElementById('modal-role').innerText = role || 'N/A';
             document.getElementById('modal-pfp').src = pfp;
 
-            // DYNAMIC CHAMPION USAGE CALCULATOR FROM DATABASE MATCHES
             let champCounts = {};
             let totalPlayerMatches = 0;
 
@@ -762,11 +763,21 @@
             }
 
             const backdrop = document.getElementById('player-modal-backdrop');
+            const card = document.getElementById('player-modal-card');
             backdrop.classList.remove('hidden');
-            requestAnimationFrame(() => backdrop.classList.add('opacity-100'));
+            requestAnimationFrame(() => {
+                backdrop.classList.add('opacity-100');
+                card.classList.remove('scale-95', 'opacity-0');
+            });
         }
 
-        function closePlayerStats() { document.getElementById('player-modal-backdrop').classList.add('hidden'); }
+        function closePlayerStats() {
+            const backdrop = document.getElementById('player-modal-backdrop');
+            const card = document.getElementById('player-modal-card');
+            card.classList.add('scale-95', 'opacity-0');
+            backdrop.classList.remove('opacity-100');
+            setTimeout(() => backdrop.classList.add('hidden'), 300);
+        }
 
         function openMatchDetails(key) {
             const m = allMatches[key];
@@ -826,8 +837,7 @@
         }
 
         function closeMatchModal() {
-            const backdrop = document.getElementById('match-modal-backdrop');
-            backdrop.classList.add('hidden');
+            document.getElementById('match-modal-backdrop').classList.add('hidden');
         }
 
         function onGameChange() {}
