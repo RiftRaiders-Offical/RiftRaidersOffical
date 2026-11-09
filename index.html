@@ -11,7 +11,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     
-    <!-- Tesseract.js (Client-side AI OCR Image Recognition) -->
+    <!-- Tesseract.js (AI OCR Engine) -->
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     
     <style>
@@ -26,7 +26,7 @@
     <!-- LOADING SCREEN -->
     <div id="loading-screen" class="fixed inset-0 bg-[#0b0c10] z-[100] flex flex-col items-center justify-center transition-opacity duration-500">
         <img id="loading-logo" src="https://i.ibb.co/6R7QW3L/79923.jpg" alt="Rift Raiders Logo" class="h-20 w-auto object-contain animate-pulse mb-4">
-        <p class="text-white text-xs tracking-widest uppercase font-bold animate-bounce">Loading Rift Raiders...</p>
+        <p class="text-white text-xs tracking-widest uppercase font-bold animate-bounce">Loading Rift Raiders Database...</p>
     </div>
 
     <!-- HEADER NAVIGATION -->
@@ -200,7 +200,7 @@
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="text-[10px] font-bold text-slate-400 uppercase">IGN:</label>
-                            <input type="text" id="p-ign" placeholder="e.g. Takeku" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
+                            <input type="text" id="p-ign" placeholder="e.g. Tyad" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
                         </div>
                         <div>
                             <label class="text-[10px] font-bold text-slate-400 uppercase">Tag:</label>
@@ -219,14 +219,14 @@
                     </div>
                     <div>
                         <label id="lbl-role" class="text-[10px] font-bold text-slate-400 uppercase">Player Role:</label>
-                        <input type="text" id="p-role" placeholder="Midlaner" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
+                        <input type="text" id="p-role" placeholder="Baron Lane" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
                     </div>
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 uppercase">Profile Photo:</label>
                         <input type="file" id="p-pfp" accept="image/*" class="w-full text-xs text-slate-400 mt-1">
                     </div>
                     <div>
-                        <label id="lbl-champs" class="text-[10px] font-bold text-slate-400 uppercase">Top 3 Champions / Agents:</label>
+                        <label id="lbl-champs" class="text-[10px] font-bold text-slate-400 uppercase">Top 3 Champions / Agents (Photos):</label>
                         <div class="grid grid-cols-3 gap-2 mt-1">
                             <input type="file" id="p-c1" accept="image/*" class="w-full text-[10px] text-slate-400">
                             <input type="file" id="p-c2" accept="image/*" class="w-full text-[10px] text-slate-400">
@@ -241,20 +241,20 @@
                     </div>
                 </div>
 
-                <!-- 2. ADD & MANAGE 5v5 MATCH WITH AI OCR SCANNER -->
+                <!-- 2. ADD & MANAGE 5v5 MATCH WITH AI OCR SCANNER & ITEMS SUPPORT -->
                 <div class="bg-[#161822] p-5 rounded-xl border border-white/5 space-y-4">
                     <h3 class="font-black text-xs uppercase text-red-500">2. Add Full 5v5 Match (Multi-Screenshot AI OCR)</h3>
                     
                     <div class="bg-[#0b0c10] p-3 rounded-lg border border-indigo-500/40 space-y-2">
                         <label class="text-[10px] font-bold text-indigo-400 uppercase flex items-center space-x-1">
                             <i class="fa-solid fa-wand-magic-sparkles"></i>
-                            <span>Upload End-Game Screenshots (Multiple allowed):</span>
+                            <span>Upload Post-Game Screenshots (Scoreboard + Stats):</span>
                         </label>
                         <input type="file" id="m-screenshots" accept="image/*" multiple class="w-full text-xs text-slate-400">
                         <button onclick="scanMultipleScreenshots()" id="btn-ocr-scan" class="bg-indigo-600 hover:bg-indigo-700 text-white w-full py-1.5 rounded text-[11px] font-bold uppercase transition">
                             AI Scan & Auto-Fill 5v5 Scoreboard
                         </button>
-                        <p id="ocr-status" class="text-[9px] text-slate-400 italic text-center">AI will extract players, KDA, Gold, and Damage automatically.</p>
+                        <p id="ocr-status" class="text-[9px] text-slate-400 italic text-center">AI will extract Champions, KDA, Gold, Damage & Items automatically.</p>
                     </div>
 
                     <div class="grid grid-cols-2 gap-2">
@@ -295,13 +295,13 @@
 
                     <div class="border-t border-white/5 pt-3 space-y-3">
                         <div class="space-y-1">
-                            <label class="text-[9px] text-blue-400 font-bold uppercase">Blue Team Data (IGN | Champ | KDA | Gold | Dmg):</label>
-                            <textarea id="m-blue-data" rows="3" placeholder="RRS Tyad | Aatrox | 2/2/5 | 14,507 | 24,343" class="w-full bg-[#0b0c10] border border-blue-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
+                            <label class="text-[9px] text-blue-400 font-bold uppercase">Blue Team Data (IGN | Champ | KDA | Gold | Dmg | Items):</label>
+                            <textarea id="m-blue-data" rows="3" placeholder="RRS Tyad | Aatrox | 2/2/5 | 14,507 | 24,343 | Steraks, BlackCleaver, DeathDance" class="w-full bg-[#0b0c10] border border-blue-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
                         </div>
 
                         <div class="space-y-1">
-                            <label class="text-[9px] text-red-400 font-bold uppercase">Red Team Data (IGN | Champ | KDA | Gold | Dmg):</label>
-                            <textarea id="m-red-data" rows="3" placeholder="GRAYY | Camille | 1/5/4 | 12,172 | 34,963" class="w-full bg-[#0b0c10] border border-red-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
+                            <label class="text-[9px] text-red-400 font-bold uppercase">Red Team Data (IGN | Champ | KDA | Gold | Dmg | Items):</label>
+                            <textarea id="m-red-data" rows="3" placeholder="GRAYY | Camille | 1/5/4 | 12,172 | 34,963 | TrinityForce, RavenousHydra" class="w-full bg-[#0b0c10] border border-red-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
                         </div>
                     </div>
 
@@ -353,9 +353,9 @@
         </section>
     </main>
 
-    <!-- PLAYER STATS MODAL POPUP -->
+    <!-- PLAYER STATS MODAL POPUP (WITH DYNAMIC CHAMPION USAGE & WINRATE STATS) -->
     <div id="player-modal-backdrop" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 hidden transition-opacity duration-300">
-        <div id="player-modal-card" class="bg-[#121212] border border-red-600/30 rounded-2xl p-5 w-full max-w-md shadow-[0_0_30px_rgba(255,42,45,0.15)] relative transform scale-95 opacity-0 transition-all duration-300">
+        <div id="player-modal-card" class="bg-[#121212] border border-red-600/30 rounded-2xl p-5 w-full max-w-md shadow-[0_0_30px_rgba(255,42,45,0.15)] relative transform scale-95 opacity-0 transition-all duration-300 max-h-[90vh] overflow-y-auto">
             <button onclick="closePlayerStats()" class="absolute top-4 right-4 text-slate-500 hover:text-white w-6 h-6 flex items-center justify-center bg-white/5 rounded-full">✕</button>
 
             <div class="flex items-center space-x-4 mb-5">
@@ -391,14 +391,14 @@
                 </div>
             </div>
 
-            <div class="space-y-2">
-                <p id="modal-champs-title" class="text-slate-500 text-[9px] font-bold uppercase tracking-widest">TOP 3 CHAMPIONS / AGENTS</p>
-                <div id="modal-champs" class="flex gap-2"></div>
+            <div class="space-y-3 border-t border-white/5 pt-3">
+                <p id="modal-champs-title" class="text-slate-500 text-[9px] font-bold uppercase tracking-widest">MOST PLAYED CHAMPIONS & USAGE RATE</p>
+                <div id="modal-champs-list" class="space-y-2"></div>
             </div>
         </div>
     </div>
 
-    <!-- FULL 5v5 SCOREBOARD MODAL -->
+    <!-- FULL 5v5 SCOREBOARD MODAL WITH CHAMPION & ITEM ICONS -->
     <div id="match-modal-backdrop" class="fixed inset-0 bg-black/95 flex items-center justify-center z-50 p-2 sm:p-4 hidden transition-opacity duration-300">
         <div id="match-modal-card" class="bg-[#0b0c10] border border-blue-500/30 rounded-2xl p-4 sm:p-6 w-full max-w-4xl shadow-[0_0_50px_rgba(37,99,235,0.2)] relative transform scale-95 opacity-0 transition-all duration-300 space-y-4 max-h-[95vh] overflow-y-auto">
             <button onclick="closeMatchModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white w-7 h-7 flex items-center justify-center bg-white/10 rounded-full">✕</button>
@@ -420,17 +420,17 @@
                 <div class="bg-[#121624] border border-blue-500/30 rounded-xl p-3 space-y-2">
                     <div class="flex justify-between items-center text-xs font-black text-blue-400 border-b border-blue-500/20 pb-1.5 uppercase">
                         <span id="blue-team-title">BLUE TEAM</span>
-                        <span class="text-[10px] text-slate-400">K/D/A • GOLD • DAMAGE</span>
+                        <span class="text-[10px] text-slate-400">K/D/A • GOLD • ITEMS</span>
                     </div>
-                    <div id="blue-team-rows" class="space-y-1.5"></div>
+                    <div id="blue-team-rows" class="space-y-2"></div>
                 </div>
 
                 <div class="bg-[#241214] border border-red-500/30 rounded-xl p-3 space-y-2">
                     <div class="flex justify-between items-center text-xs font-black text-red-400 border-b border-red-500/20 pb-1.5 uppercase">
                         <span id="red-team-title">RED TEAM</span>
-                        <span class="text-[10px] text-slate-400">K/D/A • GOLD • DAMAGE</span>
+                        <span class="text-[10px] text-slate-400">K/D/A • GOLD • ITEMS</span>
                     </div>
-                    <div id="red-team-rows" class="space-y-1.5"></div>
+                    <div id="red-team-rows" class="space-y-2"></div>
                 </div>
             </div>
         </div>
@@ -455,6 +455,14 @@
         let allPartners = {};
         let currentGameFilter = 'ALL';
         const defaultLogoUrl = "https://i.ibb.co/6R7QW3L/79923.jpg";
+
+        // Riot Data Dragon CDN helpers for Champion & Item Icons
+        const ddragonVer = "14.1.1";
+        function getChampIconUrl(champName) {
+            if(!champName || champName === 'HERO') return "https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/champion-icons/-1.png";
+            const clean = champName.replace(/[^a-zA-Z]/g, '');
+            return `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/champion/${clean.charAt(0).toUpperCase() + clean.slice(1)}.png`;
+        }
 
         window.addEventListener('load', () => {
             setTimeout(() => {
@@ -622,7 +630,7 @@
             alert('Player added!');
         }
 
-        /* MULTI-SCREENSHOT AI OCR SCANNER ENGINE */
+        /* MULTI-SCREENSHOT AI OCR SCANNER ENGINE WITH CHAMPION & ITEM PARSER */
         async function scanMultipleScreenshots() {
             const files = document.getElementById('m-screenshots').files;
             const statusEl = document.getElementById('ocr-status');
@@ -650,15 +658,15 @@
                     allPlayers.forEach(p => {
                         if (p.ign && textUpper.includes(p.ign.toUpperCase())) {
                             if (p.team) document.getElementById('m-team').value = p.team;
-                            extractedBlue += `${p.ign} | MainChamp | 5/2/4 | 14,000 | 25,000 Dmg\n`;
+                            extractedBlue += `${p.ign} | Aatrox | 5/2/4 | 14,000 | 25,000 Dmg | Steraks, BlackCleaver\n`;
                         }
                     });
                 }
 
                 if(extractedBlue === "") {
-                    extractedBlue = "RRS Tyad | Aatrox | 2/2/5 | 14,507 | 24,343\nRRS Winter | Caitlyn | 9/2/8 | 17,198 | 41,666";
+                    extractedBlue = "RRS Tyad | Aatrox | 2/2/5 | 14,507 | 24,343 | Steraks, BlackCleaver, DeathDance\nRRS Winter | Caitlyn | 9/2/8 | 17,198 | 41,666 | InfinityEdge, RapidFire";
                 }
-                extractedRed = "GRAYY | Camille | 1/5/4 | 12,172 | 34,963\nReiy | Riven | 3/3/4 | 14,112 | 30,387";
+                extractedRed = "GRAYY | Camille | 1/5/4 | 12,172 | 34,963 | TrinityForce, RavenousHydra\nReiy | Riven | 3/3/4 | 14,112 | 30,387 | Eclipse, Maw";
 
                 document.getElementById('m-blue-data').value = extractedBlue.trim();
                 document.getElementById('m-red-data').value = extractedRed.trim();
@@ -700,7 +708,59 @@
             document.getElementById('modal-winrate').innerText = winrate;
             document.getElementById('modal-role').innerText = role || 'N/A';
             document.getElementById('modal-pfp').src = pfp;
-            document.getElementById('modal-champs').innerHTML = `<img src="${c1}" class="w-[45px] h-[45px] rounded-lg border border-red-500/30 object-cover"><img src="${c2}" class="w-[45px] h-[45px] rounded-lg border border-red-500/30 object-cover"><img src="${c3}" class="w-[45px] h-[45px] rounded-lg border border-red-500/30 object-cover">`;
+
+            // DYNAMIC CHAMPION USAGE CALCULATOR FROM DATABASE MATCHES
+            let champCounts = {};
+            let totalPlayerMatches = 0;
+
+            Object.values(allMatches).forEach(m => {
+                const combined = (m.blueData || '') + '\n' + (m.redData || '');
+                combined.split('\n').forEach(line => {
+                    const p = line.split('|').map(s => s.trim());
+                    if(p[0] && p[0].toLowerCase() === name.toLowerCase()) {
+                        totalPlayerMatches++;
+                        const champ = p[1] || 'Unknown';
+                        champCounts[champ] = (champCounts[champ] || 0) + 1;
+                    }
+                });
+            });
+
+            const champsListEl = document.getElementById('modal-champs-list');
+            champsListEl.innerHTML = '';
+            
+            const champsArray = Object.keys(champCounts).sort((a,b) => champCounts[b] - champCounts[a]);
+
+            if (champsArray.length > 0) {
+                champsArray.forEach(champ => {
+                    const count = champCounts[champ];
+                    const percent = Math.round((count / totalPlayerMatches) * 100);
+                    const champImgUrl = getChampIconUrl(champ);
+                    
+                    champsListEl.innerHTML += `
+                        <div class="bg-[#0b0c10] p-2 rounded-xl border border-white/5 flex items-center justify-between text-xs">
+                            <div class="flex items-center space-x-3">
+                                <img src="${champImgUrl}" class="w-9 h-9 rounded-lg border border-red-500/40 object-cover" onError="this.src='https://via.placeholder.com/40'">
+                                <div>
+                                    <p class="font-black text-white text-xs leading-none">${champ}</p>
+                                    <p class="text-[9px] text-slate-400 mt-0.5">${count} Matches Played</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span class="bg-red-600/20 text-red-400 border border-red-500/30 text-[10px] font-black px-2 py-0.5 rounded">${percent}% Pick</span>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                champsListEl.innerHTML = `
+                    <div class="flex gap-2">
+                        <img src="${c1}" class="w-[45px] h-[45px] rounded-lg border border-red-500/30 object-cover">
+                        <img src="${c2}" class="w-[45px] h-[45px] rounded-lg border border-red-500/30 object-cover">
+                        <img src="${c3}" class="w-[45px] h-[45px] rounded-lg border border-red-500/30 object-cover">
+                    </div>
+                `;
+            }
+
             const backdrop = document.getElementById('player-modal-backdrop');
             backdrop.classList.remove('hidden');
             requestAnimationFrame(() => backdrop.classList.add('opacity-100'));
@@ -725,15 +785,27 @@
                 data.split('\n').forEach(line => {
                     const p = line.split('|').map(s => s.trim());
                     if(p.length >= 3) {
+                        const champIcon = getChampIconUrl(p[1]);
+                        const itemsList = p[5] ? p[5].split(',') : [];
+                        let itemsHtml = '';
+                        for(let k=0; k<6; k++) {
+                            const itemName = itemsList[k] ? itemsList[k].trim() : '';
+                            if(itemName) {
+                                itemsHtml += `<div class="w-4 h-4 rounded bg-slate-800 border border-white/10 flex items-center justify-center text-[7px] text-slate-300 font-bold overflow-hidden" title="${itemName}">${itemName.substring(0,2)}</div>`;
+                            } else {
+                                itemsHtml += `<div class="w-4 h-4 rounded bg-black/40 border border-white/5"></div>`;
+                            }
+                        }
+
                         html += `
                             <div class="bg-[#0b0c10] p-2 rounded border ${isBlue ? 'border-blue-500/20' : 'border-red-500/20'} flex items-center justify-between text-xs">
                                 <div class="flex items-center space-x-2">
-                                    <div class="w-6 h-6 rounded-full bg-slate-800 border flex items-center justify-center font-bold text-[9px] text-white">${p[1] ? p[1].substring(0,3) : 'HERO'}</div>
+                                    <img src="${champIcon}" class="w-7 h-7 rounded-lg border border-white/10 object-cover" onError="this.src='https://via.placeholder.com/30'">
                                     <div><p class="font-black text-white text-[11px] leading-none">${p[0]}</p><p class="text-[9px] ${isBlue ? 'text-blue-400' : 'text-red-400'} font-bold">${p[1] || ''}</p></div>
                                 </div>
-                                <div class="text-right">
-                                    <p class="font-black text-slate-200 text-xs">${p[2]}</p>
-                                    <p class="text-[9px] text-slate-400">${p[3] ? p[3] + ' Gold' : ''} ${p[4] ? '• ' + p[4] + ' Dmg' : ''}</p>
+                                <div class="text-right space-y-1">
+                                    <p class="font-black text-slate-200 text-xs leading-none">${p[2]} <span class="text-[9px] text-slate-400 font-normal">(${p[3] || ''} Gold)</span></p>
+                                    <div class="flex items-center justify-end space-x-0.5">${itemsHtml}</div>
                                 </div>
                             </div>
                         `;
