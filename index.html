@@ -11,6 +11,9 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     
+    <!-- Tesseract.js (Client-side Image Text Recognition / OCR) -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    
     <style>
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0b0c10; }
@@ -41,10 +44,6 @@
                 <a href="https://docs.google.com/forms/d/1qTTcHVfRsVXhsfKHv5-7qkZnoe6kMtoN2uLVEYY5XVg/viewform" target="_blank" class="bg-[#ff2a2d] hover:bg-red-600 text-white px-3 py-1.5 rounded-lg font-bold text-xs flex items-center justify-center space-x-1.5 transition shadow-[0_0_15px_rgba(255,42,45,0.3)]">
                     <i class="fa-solid fa-paper-plane"></i>
                     <span>APPLY</span>
-                </a>
-                <a href="team-chat.html" class="bg-[#161822] hover:bg-slate-800 text-slate-300 hover:text-white px-3 py-1.5 rounded-lg font-bold text-xs flex items-center justify-center space-x-1.5 transition border border-white/5" title="Team Chat">
-                    <i class="fa-solid fa-comments text-blue-400"></i>
-                    <span>CHAT</span>
                 </a>
                 <button onclick="openAdminModal()" class="bg-[#161822] hover:bg-slate-800 text-slate-400 hover:text-white px-3 py-1.5 rounded-lg font-bold text-xs flex items-center justify-center space-x-1.5 transition border border-white/5" title="Admin Portal">
                     <i class="fa-solid fa-lock text-red-500"></i>
@@ -102,9 +101,9 @@
         <section class="space-y-4">
             <div class="flex items-center space-x-2">
                 <div class="w-1 h-4 bg-red-600"></div>
-                <h2 class="font-black text-sm text-white uppercase tracking-widest">Match History</h2>
+                <h2 class="font-black text-sm text-white uppercase tracking-widest">Match History & Stats (Click to View Details)</h2>
             </div>
-            <div id="match-history-list" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-slate-500">Loading matches...</div>
+            <div id="match-history-list" class="grid grid-cols-1 gap-3 text-xs text-slate-500">Loading matches...</div>
         </section>
 
         <!-- CREATORS & PARTNERS -->
@@ -131,7 +130,6 @@
                 <h2 class="font-black text-sm text-white uppercase tracking-widest">Contact Us</h2>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <!-- Facebook -->
                 <a href="https://www.facebook.com/share/19VTbrcjga/" target="_blank" class="bg-[#161822] border border-white/5 hover:border-red-500/30 p-4 rounded-xl flex items-center space-x-3 transition group">
                     <div class="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 text-lg group-hover:scale-110 transition">
                         <i class="fa-brands fa-facebook-f"></i>
@@ -142,7 +140,6 @@
                     </div>
                 </a>
 
-                <!-- Discord -->
                 <a href="https://discord.gg/x3M8dZ7fmR" target="_blank" class="bg-[#161822] border border-white/5 hover:border-red-500/30 p-4 rounded-xl flex items-center space-x-3 transition group">
                     <div class="w-10 h-10 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 text-lg group-hover:scale-110 transition">
                         <i class="fa-brands fa-discord"></i>
@@ -153,7 +150,6 @@
                     </div>
                 </a>
 
-                <!-- Email -->
                 <a href="mailto:riftraiders.wr@gmail.com" class="bg-[#161822] border border-white/5 hover:border-red-500/30 p-4 rounded-xl flex items-center space-x-3 transition group">
                     <div class="w-10 h-10 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 text-lg group-hover:scale-110 transition">
                         <i class="fa-solid fa-envelope"></i>
@@ -211,9 +207,15 @@
                             <input type="text" id="p-tag" placeholder="e.g. PH1" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
                         </div>
                     </div>
-                    <div>
-                        <label class="text-[10px] font-bold text-slate-400 uppercase">Team Name:</label>
-                        <input type="text" id="p-team" placeholder="Rift Raiders Main" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase">Team Name:</label>
+                            <input type="text" id="p-team" placeholder="Rift Raiders Main" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase">Team Logo (Optional URL):</label>
+                            <input type="text" id="p-teamlogo" placeholder="https://... logo.png" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
+                        </div>
                     </div>
                     <div>
                         <label id="lbl-role" class="text-[10px] font-bold text-slate-400 uppercase">Player Role:</label>
@@ -242,6 +244,19 @@
                 <!-- 2. ADD & MANAGE MATCH -->
                 <div class="bg-[#161822] p-5 rounded-xl border border-white/5 space-y-4">
                     <h3 class="font-black text-xs uppercase text-red-500">2. Add & Manage Match Result</h3>
+                    
+                    <div class="bg-[#0b0c10] p-3 rounded-lg border border-red-500/30 space-y-2">
+                        <label class="text-[10px] font-bold text-red-400 uppercase flex items-center space-x-1">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span>Auto Scanner (Upload End-Game Screenshot):</span>
+                        </label>
+                        <input type="file" id="m-screenshot" accept="image/*" class="w-full text-xs text-slate-400">
+                        <button onclick="scanMatchScreenshot()" id="btn-ocr-scan" class="bg-indigo-600 hover:bg-indigo-700 text-white w-full py-1.5 rounded text-[11px] font-bold uppercase transition">
+                            Scan & Auto-Fill Stats
+                        </button>
+                        <p id="ocr-status" class="text-[9px] text-slate-400 italic text-center"></p>
+                    </div>
+
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="text-[10px] font-bold text-slate-400 uppercase">Our Team:</label>
@@ -252,9 +267,19 @@
                             <input type="text" id="m-opp" placeholder="Execration" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
                         </div>
                     </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase">Score (e.g. 2-0):</label>
+                            <input type="text" id="m-score" placeholder="2-0" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase">Total Kills (Our / Opp):</label>
+                            <input type="text" id="m-kills" placeholder="e.g. 35 - 20" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
+                        </div>
+                    </div>
                     <div>
-                        <label class="text-[10px] font-bold text-slate-400 uppercase">Score (e.g. 2-0):</label>
-                        <input type="text" id="m-score" placeholder="2-0" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">Player Damage Summary / MVP Info:</label>
+                        <input type="text" id="m-damage" placeholder="e.g. Takeku (MVP) - 32k Damage" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
                     </div>
                     <div class="grid grid-cols-2 gap-2">
                         <div>
@@ -352,30 +377,65 @@
                     <img id="modal-pfp" src="" class="w-full h-full object-cover">
                 </div>
                 <div>
-                    <h3 id="modal-name" class="text-white font-black text-xl uppercase tracking-wider leading-none">NAME</h3>
+                    <div class="flex items-center space-x-2">
+                        <img id="modal-teamlogo" src="" class="w-5 h-5 object-contain hidden">
+                        <h3 id="modal-name" class="text-white font-black text-xl uppercase tracking-wider leading-none">NAME</h3>
+                    </div>
                     <p id="modal-tag" class="text-slate-400 text-[10px] font-bold tracking-widest mt-0.5">#TAG</p>
                     <span id="modal-game" class="inline-block bg-red-600/20 text-red-400 border border-red-500/30 text-[8px] font-black px-2 py-0.5 rounded mt-1 uppercase">GAME</span>
                 </div>
             </div>
 
-            <div class="grid grid-cols-3 gap-2 mb-5 bg-[#161822] p-3 rounded-xl border border-white/5 text-center">
+            <div class="grid grid-cols-4 gap-1.5 mb-5 bg-[#161822] p-3 rounded-xl border border-white/5 text-center">
                 <div>
-                    <p class="text-slate-500 text-[8px] font-bold uppercase tracking-widest mb-0.5">TEAM</p>
-                    <p id="modal-team" class="text-white font-black uppercase text-[11px] truncate">TEAM</p>
+                    <p class="text-slate-500 text-[8px] font-bold uppercase tracking-widest mb-0.5">WINS</p>
+                    <p id="modal-wins" class="text-green-400 font-black text-xs">0</p>
                 </div>
                 <div>
-                    <p class="text-slate-500 text-[8px] font-bold uppercase tracking-widest mb-0.5">ROLE</p>
-                    <p id="modal-role" class="text-slate-200 font-bold uppercase text-[11px] truncate">ROLE</p>
+                    <p class="text-slate-500 text-[8px] font-bold uppercase tracking-widest mb-0.5">LOSSES</p>
+                    <p id="modal-losses" class="text-red-400 font-black text-xs">0</p>
                 </div>
                 <div>
                     <p class="text-slate-500 text-[8px] font-bold uppercase tracking-widest mb-0.5">WINRATE</p>
-                    <p id="modal-winrate" class="text-[#22c55e] font-black uppercase text-[11px]">0%</p>
+                    <p id="modal-winrate" class="text-emerald-400 font-black text-xs">0%</p>
+                </div>
+                <div>
+                    <p class="text-slate-500 text-[8px] font-bold uppercase tracking-widest mb-0.5">ROLE</p>
+                    <p id="modal-role" class="text-white font-bold text-[10px] truncate">N/A</p>
                 </div>
             </div>
 
             <div>
                 <p id="modal-champs-title" class="text-slate-500 text-[9px] font-bold uppercase tracking-widest mb-2">TOP 3 CHAMPS / AGENTS</p>
-                <div id="modal-champs" class="flex gap-2"></div>
+                <div id="modal-champs" class="flex gap-2 justify-center"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DETAILED MATCH HISTORY POPUP MODAL -->
+    <div id="match-modal-backdrop" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 hidden transition-opacity duration-300">
+        <div id="match-modal-card" class="bg-[#121212] border border-red-600/30 rounded-2xl p-6 w-full max-w-md shadow-[0_0_30px_rgba(255,42,45,0.15)] relative transform scale-95 opacity-0 transition-all duration-300 space-y-4">
+            <button onclick="closeMatchModal()" class="absolute top-4 right-4 text-slate-500 hover:text-white w-6 h-6 flex items-center justify-center bg-white/5 rounded-full">✕</button>
+
+            <div class="text-center space-y-1">
+                <span id="match-modal-type" class="bg-red-600/20 text-red-400 border border-red-500/30 text-[9px] font-black px-2.5 py-0.5 rounded uppercase">Tournament</span>
+                <h3 id="match-modal-teams" class="text-white font-black text-lg uppercase tracking-wider mt-2">TEAM A VS TEAM B</h3>
+                <p id="match-modal-date" class="text-slate-400 text-[10px] font-bold">Date</p>
+            </div>
+
+            <div class="bg-[#161822] p-4 rounded-xl border border-white/5 text-center space-y-2">
+                <p class="text-slate-500 text-[9px] font-bold uppercase tracking-widest">MATCH RESULT & SCORE</p>
+                <p id="match-modal-score" class="text-2xl font-black text-white">2 - 0</p>
+                <span id="match-modal-result-badge" class="inline-block px-3 py-1 rounded text-xs font-black uppercase">WIN</span>
+            </div>
+
+            <div class="space-y-2 bg-[#161822] p-4 rounded-xl border border-white/5">
+                <p class="text-slate-500 text-[9px] font-bold uppercase tracking-widest mb-1">DETAILED STATS & DAMAGE</p>
+                <div class="text-xs text-slate-300 space-y-1">
+                    <p><strong>Total Kills:</strong> <span id="match-modal-kills">N/A</span></p>
+                    <p><strong>Damage & MVP Summary:</strong></p>
+                    <div id="match-modal-damage" class="bg-[#0b0c10] p-2.5 rounded text-slate-400 border border-white/5 font-mono text-[11px]">N/A</div>
+                </div>
             </div>
         </div>
     </div>
@@ -450,37 +510,39 @@
             alert('Admin locked successfully.');
         }
 
-        function calculateWinrate(teamName) {
-            if (!teamName || !allMatches) return '0%';
+        function calculateTeamStats(teamName) {
+            if (!teamName || !allMatches) return { wins: 0, losses: 0, winrate: '0%' };
             const teamMatches = Object.values(allMatches).filter(m => 
                 m.team && m.team.trim().toLowerCase() === teamName.trim().toLowerCase()
             );
-            if (teamMatches.length === 0) return '0%';
+            if (teamMatches.length === 0) return { wins: 0, losses: 0, winrate: '0%' };
 
-            let totalWon = 0;
-            let totalPlayed = 0;
+            let wins = 0;
+            let losses = 0;
 
             teamMatches.forEach(m => {
                 if (m.score && m.score.includes('-')) {
                     const parts = m.score.split('-').map(s => parseInt(s.trim()));
                     if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
-                        totalWon += parts[0];
-                        totalPlayed += (parts[0] + parts[1]);
+                        wins += parts[0];
+                        losses += parts[1];
                     }
                 } else {
-                    totalPlayed += 1;
-                    if (m.result === 'Win') totalWon += 1;
+                    if (m.result === 'Win') wins += 1;
+                    else if (m.result === 'Lose') losses += 1;
                 }
             });
 
-            if (totalPlayed === 0) return '0%';
-            return Math.round((totalWon / totalPlayed) * 100) + '%';
+            const total = wins + losses;
+            const winrate = total === 0 ? '0%' : Math.round((wins / total) * 100) + '%';
+            return { wins, losses, winrate };
         }
 
         db.ref('matches').on('value', snap => {
             allMatches = snap.val() || {};
             renderMatches();
             renderAdminMatches();
+            renderRoster();
         });
 
         db.ref('roster').on('value', snap => {
@@ -531,18 +593,22 @@
             }
 
             filtered.forEach(p => {
-                const calculatedWr = calculateWinrate(p.team);
+                const stats = calculateTeamStats(p.team);
+                const teamLogoHtml = p.teamlogo ? `<img src="${p.teamlogo}" class="w-4 h-4 object-contain inline-block mr-1">` : '';
+                
                 grid.innerHTML += `
-                    <div onclick="openPlayerStats('${p.ign}', '${p.tag || ''}', '${p.game}', '${p.team}', '${p.role || ''}', '${calculatedWr}', '${p.pfp}', '${p.champ1}', '${p.champ2}', '${p.champ3}')" class="bg-[#161822] rounded-xl overflow-hidden relative h-64 cursor-pointer group border border-white/5 shadow-md">
+                    <div onclick="openPlayerStats('${p.ign}', '${p.tag || ''}', '${p.game}', '${p.team}', '${p.role || ''}', '${stats.winrate}', '${stats.wins}', '${stats.losses}', '${p.pfp}', '${p.champ1}', '${p.champ2}', '${p.champ3}', '${p.teamlogo || ''}')" class="bg-[#161822] rounded-xl overflow-hidden relative h-64 cursor-pointer group border border-white/5 shadow-md">
                         <img src="${p.pfp}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition duration-500">
                         <div class="absolute inset-0 bg-gradient-to-t from-[#0b0c10] via-[#0b0c10]/30 to-transparent"></div>
-                        <div class="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-green-400 text-[9px] font-black px-2 py-1 rounded border border-white/10">
-                            WR: ${calculatedWr}
+                        <div class="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-emerald-400 text-[9px] font-black px-2 py-1 rounded border border-white/10">
+                            WR: ${stats.winrate}
                         </div>
                         <div class="absolute bottom-4 left-4 right-4">
                             <span class="bg-[#ff2a2d] text-white text-[9px] font-black px-2 py-0.5 rounded tracking-wider uppercase">${p.game || 'Wild Rift'}</span>
                             <h3 class="text-white font-black text-xl mt-1 uppercase tracking-wide leading-none truncate">${p.ign}</h3>
-                            <p class="text-slate-400 text-[10px] font-bold uppercase mt-1 truncate">${p.team} ${p.role ? '• ' + p.role : ''}</p>
+                            <p class="text-slate-400 text-[10px] font-bold uppercase mt-1 truncate flex items-center">
+                                ${teamLogoHtml} ${p.team} ${p.role ? '• ' + p.role : ''}
+                            </p>
                         </div>
                     </div>
                 `;
@@ -565,14 +631,32 @@
                             m.result === 'Lose' ? 'text-red-500 bg-red-500/10 border-red-500/20' : 
                             'text-yellow-500 bg-yellow-500/10 border-yellow-500/20';
                 
+                // Escape strings para safe sa HTML onclick function
+                const team = (m.team || '').replace(/'/g, "\\'");
+                const opponent = (m.opponent || '').replace(/'/g, "\\'");
+                const score = (m.score || '').replace(/'/g, "\\'");
+                const type = (m.type || '').replace(/'/g, "\\'");
+                const result = (m.result || '').replace(/'/g, "\\'");
+                const date = (m.date || 'Recent').replace(/'/g, "\\'");
+                const kills = (m.kills || 'N/A').replace(/'/g, "\\'");
+                const damage = (m.damage || 'No detailed damage recorded').replace(/'/g, "\\'");
+
                 list.innerHTML += `
-                    <div class="bg-[#161822] border border-white/5 rounded-xl p-4 flex justify-between items-center">
-                        <div>
-                            <div class="text-[10px] font-bold text-slate-400 mb-1">${m.type} • ${m.date}</div>
-                            <div class="text-white font-black text-sm uppercase">${m.team} <span class="text-slate-500 mx-1">vs</span> ${m.opponent}</div>
-                            <div class="text-xs font-bold text-slate-300 mt-0.5">Score: ${m.score}</div>
+                    <div onclick="openMatchDetails('${team}', '${opponent}', '${score}', '${type}', '${result}', '${date}', '${kills}', '${damage}')" class="bg-[#161822] border border-white/5 hover:border-red-500/40 rounded-xl p-4 space-y-2 cursor-pointer transition">
+                        <div class="flex justify-between items-center">
+                            <div class="text-[10px] font-bold text-slate-400">${m.type} • ${m.date || 'Recent'}</div>
+                            <div class="px-3 py-0.5 rounded border font-black uppercase text-[10px] ${color}">${m.result}</div>
                         </div>
-                        <div class="px-3 py-1 rounded border font-black uppercase text-[10px] ${color}">${m.result}</div>
+                        <div class="flex justify-between items-center">
+                            <div class="text-white font-black text-sm uppercase">${m.team} <span class="text-slate-500 mx-1">vs</span> ${m.opponent}</div>
+                            <div class="text-xs font-bold text-slate-200">Score: ${m.score}</div>
+                        </div>
+                        ${m.kills || m.damage ? `
+                            <div class="bg-[#0b0c10] p-2 rounded text-[10px] text-slate-400 flex flex-col sm:flex-row sm:justify-between gap-1 border border-white/5">
+                                ${m.kills ? `<span><strong class="text-slate-300">Kills:</strong> ${m.kills}</span>` : ''}
+                                ${m.damage ? `<span><strong class="text-slate-300">MVP / Dmg:</strong> ${m.damage}</span>` : ''}
+                            </div>
+                        ` : ''}
                     </div>
                 `;
             });
@@ -728,6 +812,7 @@
                 const ign = document.getElementById('p-ign').value;
                 const tag = document.getElementById('p-tag').value;
                 const team = document.getElementById('p-team').value;
+                const teamlogo = document.getElementById('p-teamlogo').value;
                 const role = document.getElementById('p-role').value;
                 
                 if(!ign) { alert('Ilagay ang IGN ng player!'); btn.innerText = "Save Player"; return; }
@@ -738,13 +823,14 @@
                 const c3Url = await fileToBase64(document.getElementById('p-c3').files[0]);
 
                 await db.ref('roster').push({
-                    game, ign, tag, team, role,
+                    game, ign, tag, team, teamlogo, role,
                     pfp: pfpUrl, champ1: c1Url, champ2: c2Url, champ3: c3Url
                 });
                 alert('Player added successfully!');
                 document.getElementById('p-ign').value = '';
                 document.getElementById('p-tag').value = '';
                 document.getElementById('p-team').value = '';
+                document.getElementById('p-teamlogo').value = '';
                 document.getElementById('p-role').value = '';
                 document.getElementById('p-pfp').value = '';
                 document.getElementById('p-c1').value = '';
@@ -757,17 +843,71 @@
             btn.innerText = "Save Player";
         }
 
+        async function scanMatchScreenshot() {
+            const fileInput = document.getElementById('m-screenshot');
+            const statusEl = document.getElementById('ocr-status');
+            const btn = document.getElementById('btn-ocr-scan');
+
+            if (!fileInput.files || !fileInput.files[0]) {
+                alert('Pumili muna ng end-game screenshot image!');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            btn.disabled = true;
+            btn.innerText = "Scanning Image...";
+            statusEl.innerText = "Reading text from screenshot, please wait...";
+
+            try {
+                const { data: { text } } = await Tesseract.recognize(file, 'eng');
+                statusEl.innerText = "OCR Complete! Parsing stats...";
+                
+                const textUpper = text.toUpperCase();
+                
+                if (textUpper.includes("VICTORY") || textUpper.includes("WIN")) {
+                    document.getElementById('m-result').value = "Win";
+                } else if (textUpper.includes("DEFEAT") || textUpper.includes("LOSS")) {
+                    document.getElementById('m-result').value = "Lose";
+                }
+
+                const killMatch = text.match(/(\d{1,2})\s*[-:]\s*(\d{1,2})/);
+                if (killMatch) {
+                    document.getElementById('m-kills').value = `${killMatch[1]} - ${killMatch[2]}`;
+                    document.getElementById('m-score').value = `${killMatch[1]}-${killMatch[2]}`;
+                }
+
+                allPlayers.forEach(p => {
+                    if (p.ign && textUpper.includes(p.ign.toUpperCase())) {
+                        document.getElementById('m-damage').value = `${p.ign} (Scanned Auto Stats)`;
+                        if (p.team) document.getElementById('m-team').value = p.team;
+                    }
+                });
+
+                statusEl.innerText = "Successfully auto-filled available stats!";
+                alert("Nai-scan na ang screenshot! Paki-check at i-save.");
+            } catch (err) {
+                console.error(err);
+                statusEl.innerText = "Error scanning image.";
+                alert("Nagka-error sa pag-scan. Pwedeng i-type nang mano-mano.");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Scan & Auto-Fill Stats";
+            }
+        }
+
         function addMatch() {
             const team = document.getElementById('m-team').value;
             const opponent = document.getElementById('m-opp').value;
             const score = document.getElementById('m-score').value;
+            const kills = document.getElementById('m-kills').value;
+            const damage = document.getElementById('m-damage').value;
             const type = document.getElementById('m-type').value;
             const result = document.getElementById('m-result').value;
             const date = document.getElementById('m-date').value;
 
             if(!team) { alert('Lagyan ng Our Team Name!'); return; }
 
-            db.ref('matches').push({ team, opponent, score, type, result, date })
+            db.ref('matches').push({ team, opponent, score, kills, damage, type, result, date })
                 .then(() => alert('Match saved successfully!'));
         }
 
@@ -788,7 +928,8 @@
                 alert('Creator saved successfully!');
             } catch(e) { alert('Error saving creator.'); }
             btn.innerText = "Save Creator";
-            }
+        }
+
         async function addPartner() {
             const btn = document.getElementById('btn-partner');
             btn.innerText = "Saving Partner...";
@@ -803,20 +944,29 @@
             btn.innerText = "Save Partner";
         }
 
-        function openPlayerStats(name, tag, game, team, role, winrate, pfp, c1, c2, c3) {
+        function openPlayerStats(name, tag, game, team, role, winrate, wins, losses, pfp, c1, c2, c3, teamlogo) {
             document.getElementById('modal-name').innerText = name;
             document.getElementById('modal-tag').innerText = tag ? '#' + tag : '';
             document.getElementById('modal-game').innerText = game;
-            document.getElementById('modal-team').innerText = team;
-            document.getElementById('modal-role').innerText = role || 'N/A';
+            document.getElementById('modal-wins').innerText = wins;
+            document.getElementById('modal-losses').innerText = losses;
             document.getElementById('modal-winrate').innerText = winrate;
+            document.getElementById('modal-role').innerText = role || 'N/A';
             document.getElementById('modal-pfp').src = pfp;
             
+            const teamLogoEl = document.getElementById('modal-teamlogo');
+            if(teamlogo) {
+                teamLogoEl.src = teamlogo;
+                teamLogoEl.classList.remove('hidden');
+            } else {
+                teamLogoEl.classList.add('hidden');
+            }
+
             document.getElementById('modal-champs-title').innerText = game === 'Valorant' ? 'TOP 3 AGENTS' : 'TOP 3 CHAMPIONS';
             document.getElementById('modal-champs').innerHTML = `
-                <img src="${c1}" class="w-[36px] h-[36px] rounded-lg border border-red-500/30 object-cover bg-[#0b0c10]">
-                <img src="${c2}" class="w-[36px] h-[36px] rounded-lg border border-red-500/30 object-cover bg-[#0b0c10]">
-                <img src="${c3}" class="w-[36px] h-[36px] rounded-lg border border-red-500/30 object-cover bg-[#0b0c10]">
+                <img src="${c1}" class="w-[45px] h-[45px] rounded-lg border border-red-500/30 object-cover bg-[#0b0c10]">
+                <img src="${c2}" class="w-[45px] h-[45px] rounded-lg border border-red-500/30 object-cover bg-[#0b0c10]">
+                <img src="${c3}" class="w-[45px] h-[45px] rounded-lg border border-red-500/30 object-cover bg-[#0b0c10]">
             `;
 
             const backdrop = document.getElementById('player-modal-backdrop');
@@ -838,6 +988,44 @@
             setTimeout(() => { backdrop.classList.add('hidden'); }, 300);
         }
 
+        // MATCH DETAILS POPUP FUNCTIONS
+        function openMatchDetails(team, opponent, score, type, result, date, kills, damage) {
+            document.getElementById('match-modal-type').innerText = type;
+            document.getElementById('match-modal-teams').innerText = `${team} vs ${opponent}`;
+            document.getElementById('match-modal-date').innerText = date;
+            document.getElementById('match-modal-score').innerText = score;
+            document.getElementById('match-modal-kills').innerText = kills;
+            document.getElementById('match-modal-damage').innerText = damage;
+
+            const badge = document.getElementById('match-modal-result-badge');
+            badge.innerText = result;
+            if(result === 'Win') {
+                badge.className = "inline-block px-3 py-1 rounded text-xs font-black uppercase bg-green-500/20 text-green-400 border border-green-500/30";
+            } else if(result === 'Lose') {
+                badge.className = "inline-block px-3 py-1 rounded text-xs font-black uppercase bg-red-500/20 text-red-400 border border-red-500/30";
+            } else {
+                badge.className = "inline-block px-3 py-1 rounded text-xs font-black uppercase bg-yellow-500/20 text-yellow-400 border border-yellow-500/30";
+            }
+
+            const backdrop = document.getElementById('match-modal-backdrop');
+            const card = document.getElementById('match-modal-card');
+            backdrop.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                backdrop.classList.add('opacity-100');
+                card.classList.remove('scale-95', 'opacity-0');
+                card.classList.add('scale-100', 'opacity-100');
+            });
+        }
+
+        function closeMatchModal() {
+            const backdrop = document.getElementById('match-modal-backdrop');
+            const card = document.getElementById('match-modal-card');
+            card.classList.remove('scale-100', 'opacity-100');
+            card.classList.add('scale-95', 'opacity-0');
+            backdrop.classList.remove('opacity-100');
+            setTimeout(() => { backdrop.classList.add('hidden'); }, 300);
+        }
+
         function onGameChange() {
             const game = document.getElementById('p-game').value;
             const roleLbl = document.getElementById('lbl-role');
@@ -851,19 +1039,5 @@
             }
         }
     </script>
-
-    <!--Start of Tawk.to Script-->
-    <script type="text/javascript">
-    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-    (function(){
-    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-    s1.async=true;
-    s1.src='https://embed.tawk.to/6ab408968582123445b61b1d/default';
-    s1.charset='UTF-8';
-    s1.setAttribute('crossorigin','*');
-    s0.parentNode.insertBefore(s1,s0);
-    })();
-    </script>
-    <!--End of Tawk.to Script-->
 </body>
 </html>
