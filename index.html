@@ -241,11 +241,10 @@
                     </div>
                 </div>
 
-                <!-- 2. ADD & MANAGE 5v5 MATCH WITH MULTI-SCREENSHOT AI OCR SCANNER -->
+                <!-- 2. ADD & MANAGE 5v5 MATCH WITH AI OCR SCANNER -->
                 <div class="bg-[#161822] p-5 rounded-xl border border-white/5 space-y-4">
                     <h3 class="font-black text-xs uppercase text-red-500">2. Add Full 5v5 Match (Multi-Screenshot AI OCR)</h3>
                     
-                    <!-- MULTI-SCREENSHOT UPLOAD & SCAN -->
                     <div class="bg-[#0b0c10] p-3 rounded-lg border border-indigo-500/40 space-y-2">
                         <label class="text-[10px] font-bold text-indigo-400 uppercase flex items-center space-x-1">
                             <i class="fa-solid fa-wand-magic-sparkles"></i>
@@ -261,7 +260,7 @@
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="text-[10px] font-bold text-slate-400 uppercase">Our Team (Blue):</label>
-                            <input type="text" id="m-team" placeholder="Rrift Raiders Main" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
+                            <input type="text" id="m-team" placeholder="Rift Raiders Main" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
                         </div>
                         <div>
                             <label class="text-[10px] font-bold text-slate-400 uppercase">Opponent (Red):</label>
@@ -270,7 +269,7 @@
                     </div>
                     <div class="grid grid-cols-3 gap-2">
                         <div>
-                            <label class="text-[10px] font-bold text-slate-400 uppercase">Total Kills (Blue - Red):</label>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase">Match Score (ex. 27-23):</label>
                             <input type="text" id="m-score" placeholder="27 - 23" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
                         </div>
                         <div>
@@ -294,7 +293,6 @@
                         <input type="date" id="m-date" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
                     </div>
 
-                    <!-- 5v5 EDITABLE DATA TEXT AREAS -->
                     <div class="border-t border-white/5 pt-3 space-y-3">
                         <div class="space-y-1">
                             <label class="text-[9px] text-blue-400 font-bold uppercase">Blue Team Data (IGN | Champ | KDA | Gold | Dmg):</label>
@@ -571,7 +569,7 @@
                         </div>
                         <div class="flex justify-between items-center">
                             <div class="text-white font-black text-sm uppercase">${m.team} vs ${m.opponent}</div>
-                            <div class="text-xs font-bold text-slate-200">Kills: ${m.score}</div>
+                            <div class="text-xs font-bold text-slate-200">Score: ${m.score}</div>
                         </div>
                     </div>
                 `;
@@ -649,7 +647,6 @@
                         document.getElementById('m-result').value = "Lose";
                     }
 
-                    // AI Text Parsing para sa Roster players
                     allPlayers.forEach(p => {
                         if (p.ign && textUpper.includes(p.ign.toUpperCase())) {
                             if (p.team) document.getElementById('m-team').value = p.team;
@@ -665,7 +662,7 @@
 
                 document.getElementById('m-blue-data').value = extractedBlue.trim();
                 document.getElementById('m-red-data').value = extractedRed.trim();
-                statusEl.innerText = "AI OCR Scan Complete! Paki-check at i-save.";
+                statusEl.innerText = "AI OCR Scan Complete!";
                 alert("Matagumpay na na-scan ang mga screenshots!");
             } catch (err) {
                 console.error(err);
@@ -724,7 +721,7 @@
 
             const parseRows = (data, isBlue) => {
                 let html = '';
-                if(!data) return '<p class="text-[10px] text-slate-500 italic">No data.</p>';
+                if(!data) return '<p class="text-[10px] text-slate-500 italic">No player stats recorded.</p>';
                 data.split('\n').forEach(line => {
                     const p = line.split('|').map(s => s.trim());
                     if(p.length >= 3) {
@@ -750,10 +747,17 @@
 
             const backdrop = document.getElementById('match-modal-backdrop');
             backdrop.classList.remove('hidden');
-            requestAnimationFrame(() => backdrop.classList.add('opacity-100'));
+            requestAnimationFrame(() => {
+                backdrop.classList.add('opacity-100');
+                document.getElementById('match-modal-card').classList.remove('scale-95', 'opacity-0');
+            });
         }
 
-        function closeMatchModal() { document.getElementById('match-modal-backdrop').classList.add('hidden'); }
+        function closeMatchModal() {
+            const backdrop = document.getElementById('match-modal-backdrop');
+            backdrop.classList.add('hidden');
+        }
+
         function onGameChange() {}
     </script>
 </body>
