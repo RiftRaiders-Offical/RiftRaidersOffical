@@ -323,9 +323,20 @@
                         <label class="text-[10px] font-bold text-slate-400 uppercase">Game Streamed:</label>
                         <input type="text" id="c-game" placeholder="e.g. Wild Rift" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1">
                     </div>
-                    <div>
-                        <label class="text-[10px] font-bold text-slate-400 uppercase">Social Media Link (FB/YT/Twitch/TikTok):</label>
-                        <input type="text" id="c-link" placeholder="https://facebook.com/..." class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase">Platform:</label>
+                            <select id="c-platform" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 text-white font-bold focus:outline-none focus:border-red-500">
+                                <option value="facebook">Facebook</option>
+                                <option value="youtube">YouTube</option>
+                                <option value="twitch">Twitch</option>
+                                <option value="tiktok">TikTok</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase">Social Link URL:</label>
+                            <input type="text" id="c-link" placeholder="https://..." class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1">
+                        </div>
                     </div>
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 uppercase">Profile Photo:</label>
@@ -628,11 +639,12 @@
             allCreators.forEach(c => {
                 let socialIcon = 'fa-solid fa-video';
                 let link = c.link || '#';
-                const lowerLink = link.toLowerCase();
-                if(lowerLink.includes('facebook') || lowerLink.includes('fb.')) socialIcon = 'fa-brands fa-facebook';
-                else if(lowerLink.includes('youtube') || lowerLink.includes('youtu.be')) socialIcon = 'fa-brands fa-youtube';
-                else if(lowerLink.includes('twitch')) socialIcon = 'fa-brands fa-twitch';
-                else if(lowerLink.includes('tiktok')) socialIcon = 'fa-brands fa-tiktok';
+                const platform = c.platform || 'facebook';
+                
+                if(platform === 'facebook') socialIcon = 'fa-brands fa-facebook';
+                else if(platform === 'youtube') socialIcon = 'fa-brands fa-youtube';
+                else if(platform === 'twitch') socialIcon = 'fa-brands fa-twitch';
+                else if(platform === 'tiktok') socialIcon = 'fa-brands fa-tiktok';
 
                 grid.innerHTML += `
                     <a href="${link}" target="_blank" class="bg-[#161822] border border-white/5 hover:border-red-500/40 rounded-xl p-4 flex flex-col items-center text-center transition group">
@@ -756,12 +768,13 @@ Enemy5 | Nautilus | 0/3/4 | 9,000 | 8,000 | Locket`;
         async function addCreator() {
             const name = document.getElementById('c-name').value.trim();
             const game = document.getElementById('c-game').value.trim();
+            const platform = document.getElementById('c-platform').value;
             const link = document.getElementById('c-link').value.trim();
             const pfp = await fileToBase64(document.getElementById('c-pfp').files[0]);
             
             if(!name) { alert('Ilagay ang pangalan ng Creator!'); return; }
             
-            db.ref('creators').push({ name, game, link, pfp }).then(() => {
+            db.ref('creators').push({ name, game, platform, link, pfp }).then(() => {
                 alert('Creator saved successfully!');
                 document.getElementById('c-name').value = '';
                 document.getElementById('c-game').value = '';
