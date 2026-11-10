@@ -1150,29 +1150,15 @@
                         const kda = p[2] || '0/0/0';
                         const gold = p[3] || '0';
                         
-                        let rawItemsStr = '';
+                        // Laging kunin ang pinakadulong column bilang items list para sigurado
+                        let rawItemsStr = p[p.length - 1];
                         let dmgDealt = '';
-                        
-                        if (p.length >= 6) {
-                            if (!p[4].includes(',') && isNaN(p[4].charAt(0))) {
-                                rawItemsStr = p.slice(4).join(', ');
-                            } else {
-                                dmgDealt = p[4];
-                                rawItemsStr = p.slice(5).join(', ');
-                            }
-                        } else if (p.length === 5) {
-                            if (p[4].includes(',') || p[4].length > 10) {
-                                rawItemsStr = p[4];
-                            } else {
-                                dmgDealt = p[4];
-                            }
-                        }
 
-                        // Kung sakaling nakalagay ang items sa index 4 at walang ibang nakitang items list
-                        if (!rawItemsStr && p.length >= 5 && p[4].includes(',')) {
-                            rawItemsStr = p[4];
-                        } else if (!rawItemsStr && p.length === 4) {
-                            rawItemsStr = p[3]; // Kung KDA at Gold lang tapos may items na kasunod
+                        // Kung ang huling column ay puro numero o kaya ay KDA/Gold, ibig sabihin walang items
+                        if (rawItemsStr.includes('/') || !isNaN(rawItemsStr.replace(/,/g, ''))) {
+                            rawItemsStr = '';
+                        } else if (p.length >= 6) {
+                            dmgDealt = p[4];
                         }
 
                         const itemsList = rawItemsStr ? rawItemsStr.split(',').map(i => i.trim()) : [];
@@ -1181,8 +1167,8 @@
                         for(let k=0; k<6; k++) {
                             const itemName = itemsList[k] || '';
                             const itemImg = getItemIconUrl(itemName, m.game);
-                            if(itemImg) {
-                                itemsHtml += `<img src="${itemImg}" class="w-5 h-5 rounded bg-slate-800 border border-white/10 object-cover" title="${itemName || 'Item'}" onError="this.src='https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/item/1028.png'">`;
+                            if(itemImg && itemName) {
+                                itemsHtml += `<img src="${itemImg}" class="w-5 h-5 rounded bg-slate-800 border border-white/10 object-cover" title="${itemName}" onError="this.src='https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/item/1028.png'">`;
                             } else {
                                 itemsHtml += `<div class="w-4 h-4 rounded bg-black/40 border border-white/5"></div>`;
                             }
@@ -1207,7 +1193,6 @@
                 });
                 return html;
             };
-
             document.getElementById('blue-team-rows').innerHTML = parseRows(m.blueData, true);
             document.getElementById('red-team-rows').innerHTML = parseRows(m.redData, false);
 
