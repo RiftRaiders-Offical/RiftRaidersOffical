@@ -20,12 +20,6 @@
 </head>
 <body class="bg-[#0b0c10] text-slate-100 font-sans antialiased pb-20">
 
-    <!-- LOADING SCREEN -->
-    <div id="loading-screen" class="fixed inset-0 bg-[#0b0c10] z-[100] flex flex-col items-center justify-center transition-opacity duration-500">
-        <img id="loading-logo" src="https://i.ibb.co/6R7QW3L/79923.jpg" alt="Rift Raiders Logo" class="h-20 w-auto object-contain animate-pulse mb-4">
-        <p class="text-white text-xs tracking-widest uppercase font-bold animate-bounce">Loading Rift Raiders...</p>
-    </div>
-
     <!-- HEADER NAVIGATION -->
     <header class="bg-[#0b0c10]/90 backdrop-blur-md sticky top-0 z-40 border-b border-white/5">
         <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -503,7 +497,6 @@
 
         const ddragonVer = "14.1.1";
         
-        // Advanced Champion Icon Mapper with exact CommunityDragon / Riot CDN paths
         function getChampIconUrl(champName) {
             if(!champName || champName === 'HERO' || champName === 'Champion') return "https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/champion-icons/-1.png";
             
@@ -524,7 +517,6 @@
             return `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/champion/${formattedName}.png`;
         }
 
-        // Advanced Wild Rift & LoL Item Icon Mapper
         function getItemIconUrl(itemName) {
             if (!itemName) return '';
             let clean = itemName.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -574,17 +566,8 @@
             return '';
         }
 
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                const loader = document.getElementById('loading-screen');
-                loader.classList.add('opacity-0');
-                setTimeout(() => loader.style.display = 'none', 500);
-            }, 800);
-        });
-
         db.ref('settings/logo').on('value', snap => {
             const logo = snap.val() || defaultLogoUrl;
-            document.getElementById('loading-logo').src = logo;
             document.getElementById('header-logo').src = logo;
             const logoInput = document.getElementById('setting-logo-url');
             if(logoInput) logoInput.value = logo;
@@ -838,7 +821,6 @@
               .catch(err => alert('Error adding player: ' + err.message));
         }
 
-        // QUICK MATCH COMMAND AUTO-FILL FUNCTION
         function loadMatchCommand(gameNum) {
             if(gameNum === 1) {
                 document.getElementById('m-game').value = 'Wild Rift';
