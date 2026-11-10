@@ -11,9 +11,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     
-    <!-- Tesseract.js (AI OCR Engine) -->
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-    
     <style>
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0b0c10; }
@@ -191,7 +188,7 @@
                     <h3 class="font-black text-xs uppercase text-red-500">1. Add & Manage Competitive Player</h3>
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 uppercase">Select Game Category:</label>
-                        <select id="p-game" onchange="onGameChange()" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 text-white font-bold focus:outline-none focus:border-red-500">
+                        <select id="p-game" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 text-white font-bold focus:outline-none focus:border-red-500">
                             <option value="Wild Rift">Wild Rift</option>
                             <option value="League of Legends">League of Legends (PC)</option>
                             <option value="Valorant">Valorant</option>
@@ -218,11 +215,11 @@
                         </div>
                     </div>
                     <div>
-                        <label id="lbl-role" class="text-[10px] font-bold text-slate-400 uppercase">Player Role:</label>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">Player Role:</label>
                         <input type="text" id="p-role" placeholder="Baron Lane" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
                     </div>
                     <div>
-                        <label class="text-[10px] font-bold text-slate-400 uppercase">Profile Photo (URL or Upload):</label>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">Profile Photo:</label>
                         <input type="file" id="p-pfp" accept="image/*" class="w-full text-xs text-slate-400 mt-1">
                     </div>
                     <div>
@@ -230,7 +227,7 @@
                         <input type="file" id="p-teamlogo-file" accept="image/*" class="w-full text-xs text-slate-400 mt-1">
                     </div>
                     <div>
-                        <label id="lbl-champs" class="text-[10px] font-bold text-slate-400 uppercase">Top 3 Champions / Agents (Photos):</label>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">Top 3 Champions / Agents (Photos):</label>
                         <div class="grid grid-cols-3 gap-2 mt-1">
                             <input type="file" id="p-c1" accept="image/*" class="w-full text-[10px] text-slate-400">
                             <input type="file" id="p-c2" accept="image/*" class="w-full text-[10px] text-slate-400">
@@ -245,7 +242,7 @@
                     </div>
                 </div>
 
-                <!-- 2. ADD & MANAGE 5v5 MATCH WITH MANUAL TEXT BOX FILL -->
+                <!-- 2. ADD & MANAGE 5v5 MATCH -->
                 <div class="bg-[#161822] p-5 rounded-xl border border-white/5 space-y-4">
                     <h3 class="font-black text-xs uppercase text-red-500">2. Add Full 5v5 Match (Custom Text Editor)</h3>
                     
@@ -257,7 +254,6 @@
                         <button onclick="loadTemplateData()" type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white w-full py-2 rounded text-[11px] font-bold uppercase transition">
                             Load Clean Template to Text Boxes
                         </button>
-                        <p class="text-[9px] text-slate-400 italic">Pindutin ito para lumabas ang malinis na example format sa ibaba at i-edit mo ayon sa gusto mo.</p>
                     </div>
 
                     <div class="grid grid-cols-2 gap-2">
@@ -331,7 +327,7 @@
                         <label class="text-[10px] font-bold text-slate-400 uppercase">Profile Photo:</label>
                         <input type="file" id="c-pfp" accept="image/*" class="w-full text-xs text-slate-400 mt-1">
                     </div>
-                    <button onclick="addCreator()" id="btn-creator" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save Creator</button>
+                    <button onclick="addCreator()" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save Creator</button>
                     <div id="admin-creators-list" class="space-y-2 max-h-40 overflow-y-auto mt-2"></div>
                 </div>
 
@@ -349,7 +345,7 @@
                         <label class="text-[10px] font-bold text-slate-400 uppercase">Link:</label>
                         <input type="text" id="part-link" placeholder="https://..." class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1">
                     </div>
-                    <button onclick="addPartner()" id="btn-partner" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save Partner</button>
+                    <button onclick="addPartner()" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save Partner</button>
                     <div id="admin-partners-list" class="space-y-2 max-h-40 overflow-y-auto mt-2"></div>
                 </div>
             </div>
@@ -466,18 +462,19 @@
             return `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/champion/${clean.charAt(0).toUpperCase() + clean.slice(1)}.png`;
         }
 
-        // Opisyal na Wild Rift / LoL Item Icon mapping (CommunityDragon / DDragon links)
+        // Pinahusay na Item Icon mapping para sa Wild Rift / LoL
         function getItemIconUrl(itemName) {
             if (!itemName) return '';
-            const cleanItem = itemName.trim().toLowerCase();
-            // Halimbawa ng direct mapping para sa sikat na items
+            const clean = itemName.trim().toLowerCase();
             const itemMap = {
-                'steraks': '3053', 'blackcleaver': '3071', 'deathdance': '3812', 'infinityedge': '3031',
-                'trinityforce': '3078', 'ravenoushydra': '3074', 'luden': '6655', 'rabadon': '3089',
-                'warmog': '3083', 'locket': '3190', 'eclipse': '6692', 'kraken': '6672'
+                'sterak': '3053', 'blackcleaver': '3071', 'cleaver': '3071', 'deathdance': '3812', 
+                'dance': '3812', 'infinity': '3031', 'edge': '3031', 'trinity': '3078', 
+                'force': '3078', 'ravenous': '3074', 'hydra': '3074', 'luden': '6655', 
+                'rabadon': '3089', 'warmog': '3083', 'locket': '3190', 'eclipse': '6692', 
+                'kraken': '6672', 'divine': '6632', 'sunderer': '6632'
             };
             for (let key in itemMap) {
-                if (cleanItem.includes(key)) {
+                if (clean.includes(key)) {
                     return `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/item/${itemMap[key]}.png`;
                 }
             }
@@ -538,8 +535,13 @@
         db.ref('matches').on('value', snap => { allMatches = snap.val() || {}; renderMatches(); renderAdminMatches(); renderRoster(); });
         db.ref('roster').on('value', snap => {
             allPlayers = [];
-            if(snap.exists()) snap.forEach(child => allPlayers.push({ id: child.key, ...child.val() }));
-            renderRoster(); renderAdminPlayers();
+            if(snap.exists()) {
+                snap.forEach(child => {
+                    allPlayers.push({ id: child.key, ...child.val() });
+                });
+            }
+            renderRoster(); 
+            renderAdminPlayers();
         });
         db.ref('creators').on('value', snap => { allCreators = snap.val() || {}; renderCreators(); });
         db.ref('partners').on('value', snap => { allPartners = snap.val() || {}; renderPartners(); });
@@ -623,7 +625,13 @@
         function renderAdminPlayers() {
             const container = document.getElementById('admin-players-list');
             container.innerHTML = '';
-            allPlayers.forEach(p => container.innerHTML += `<div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/5 text-xs"><span class="font-bold text-slate-300 truncate">${p.ign}</span><button onclick="deleteItem('roster', '${p.id}')" class="bg-red-600/20 text-red-400 px-2 py-1 rounded text-[10px]">Delete</button></div>`);
+            if(allPlayers.length === 0) {
+                container.innerHTML = '<p class="text-[10px] text-slate-500 italic">No players in database.</p>';
+                return;
+            }
+            allPlayers.forEach(p => {
+                container.innerHTML += `<div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/5 text-xs"><span class="font-bold text-slate-300 truncate">${p.ign} (${p.team})</span><button onclick="deleteItem('roster', '${p.id}')" class="bg-red-600/20 text-red-400 px-2 py-1 rounded text-[10px]">Delete</button></div>`;
+            });
         }
 
         function renderAdminMatches() {
@@ -644,6 +652,7 @@
             });
         }
 
+        // Inayos na Add Player Function para siguradong pumasok sa database at listahan
         async function addPlayer() {
             const game = document.getElementById('p-game').value;
             const ign = document.getElementById('p-ign').value.trim();
@@ -652,7 +661,10 @@
             let teamlogo = document.getElementById('p-teamlogo').value.trim();
             const role = document.getElementById('p-role').value.trim();
 
-            if(!ign) return alert('Enter IGN!');
+            if(!ign) {
+                alert('Mangyaring ilagay ang IGN ng player!');
+                return;
+            }
             
             const pfpFile = document.getElementById('p-pfp').files[0];
             const teamlogoFile = document.getElementById('p-teamlogo-file').files[0];
@@ -673,12 +685,13 @@
                   alert('Player added successfully!');
                   document.getElementById('p-ign').value = '';
                   document.getElementById('p-tag').value = '';
+                  document.getElementById('p-team').value = '';
                   document.getElementById('p-role').value = '';
+                  document.getElementById('p-pfp').value = '';
               })
               .catch(err => alert('Error adding player: ' + err.message));
         }
 
-        // Manual Template Loader para sa Blue at Red data text boxes
         function loadTemplateData() {
             const blueSample = 
 `Takeku | Aatrox | 5/2/4 | 14,500 | 25,000 | Steraks, BlackCleaver, DeathDance
@@ -696,7 +709,7 @@ Enemy5 | Nautilus | 0/3/4 | 9,000 | 8,000 | Locket`;
 
             document.getElementById('m-blue-data').value = blueSample;
             document.getElementById('m-red-data').value = redSample;
-            alert('Clean template loaded! Pwede mo na i-edit ang mga pangalan at stats ayon sa gusto mo.');
+            alert('Clean template loaded! Pwede mo na i-edit ang mga pangalan at stats.');
         }
 
         function addMatch() {
@@ -866,8 +879,6 @@ Enemy5 | Nautilus | 0/3/4 | 9,000 | 8,000 | Locket`;
         function closeMatchModal() {
             document.getElementById('match-modal-backdrop').classList.add('hidden');
         }
-
-        function onGameChange() {}
     </script>
 </body>
 </html>
