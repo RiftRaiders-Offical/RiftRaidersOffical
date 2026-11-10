@@ -497,67 +497,131 @@
 
         const ddragonVer = "14.1.1";
         
-        function getChampIconUrl(champName) {
-            if(!champName || champName === 'HERO' || champName === 'Champion') return "https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/champion-icons/-1.png";
-            
-            let clean = champName.trim().toLowerCase().replace(/[^a-z]/g, '');
-            
-            const specialChamps = {
-                'kaisa': '145', 'leesin': '64', 'masteryi': '11', 'missfortune': '21',
-                'jarvaniv': '59', 'xinzhao': '5', 'tahmkench': '223', 'twistedfate': '4',
-                'aurelionsol': '136', 'drmundo': '36', 'skarner': '72', 'reksai': '421'
-            };
+       function getChampionIconUrl(champName) {
+    if (!champName) return '';
+    
+    // Malinis na pangalan: alisin ang spaces at apostrophe para sa pangkalahatang paghahanap
+    let name = champName.trim();
+    
+    // Mga espesyal na pangalan na iba ang tawag sa DDragon CDN
+    const champFixes = {
+        "kaisa": "KaiSa",
+        "kai'sa": "KaiSa",
+        "khazix": "KhaZix",
+        "kha'zix": "KhaZix",
+        "chogath": "ChoGath",
+        "cho'gath": "ChoGath",
+        "velkoz": "Velkoz",
+        "vel'koz": "Velkoz",
+        "wukong": "MonkeyKing",
+        "jarvan": "JarvanIV",
+        "jarvan iv": "JarvanIV",
+        "jarvaniv": "JarvanIV",
+        "miss fortune": "MissFortune",
+        "missfortune": "MissFortune",
+        "mf": "MissFortune",
+        "tf": "TwistedFate",
+        "twisted fate": "TwistedFate",
+        "twistedfate": "TwistedFate",
+        "dr mundo": "DrMundo",
+        "dr. mundo": "DrMundo",
+        "drmundo": "DrMundo",
+        "master yi": "MasterYi",
+        "masteryi": "MasterYi",
+        "lee sin": "LeeSin",
+        "leesin": "LeeSin",
+        "xin zhao": "XinZhao",
+        "xinzhao": "XinZhao",
+        "tahm kench": "TahmKench",
+        "tahmkench": "TahmKench",
+        "aurelion sol": "AurelionSol",
+        "aurelionsol": "AurelionSol",
+        "asol": "AurelionSol",
+        "renata glasc": "Renata",
+        "renata": "Renata",
+        "nunu & willump": "Nunu",
+        "nunu": "Nunu"
+    };
 
-            let champId = specialChamps[clean];
-            if (champId) {
-                return `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/champion-icons/${champId}.png`;
-            }
+    let key = name.toLowerCase();
+    
+    if (champFixes[key]) {
+        name = champFixes[key];
+    } else {
+        // Standard formatting: Unang letra ay Capital (hal. Aatrox, Lucian, Nautilus)
+        name = name.charAt(0).toUpperCase() + name.slice(1);
+    }
 
-            let formattedName = champName.trim().charAt(0).toUpperCase() + champName.trim().slice(1).replace(/[^a-zA-Z]/g, '');
-            return `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/champion/${formattedName}.png`;
+    return `https://ddragon.leagueoflegends.com/cdn/13.24.1/img/champion/${name}.png`;
+}
+
+     function getItemIconUrl(itemName) {
+    if (!itemName) return '';
+    
+    // Tinatanggal ang spaces, special characters, at ginagawang lowercase
+    let clean = itemName.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+    
+    const itemMap = {
+        // Boots
+        'platedsteelcaps': '3047', 'steelcaps': '3047', 'tabi': '3047',
+        'ionianboots': '3158', 'ionianbootsoflucidity': '3158', 'lucidity': '3158',
+        'berserkersgreaves': '3006', 'berserkers': '3006',
+        'mercurystreads': '3111', 'mercurys': '3111', 'merc': '3111',
+        'sorcerersshoes': '3020', 'sorcerers': '3020',
+        'mobilityboots': '3117', 'mobs': '3117',
+
+        // Mythic / Major Items
+        'heartsteel': '3084',
+        'divinesunderer': '6632', 'sunderer': '6632',
+        'trinityforce': '3078', 'trinity': '3078',
+        'deathsdance': '3812', 'deathdance': '3812',
+        'steraksgage': '3053', 'steraks': '3053', 'sterak': '3053',
+        'guardianangel': '3026', 'ga': '3026',
+        'bladeoftheruinedking': '3153', 'botrk': '3153', 'ruinedking': '3153',
+        'riftmaker': '4646',
+        'liandrystorment': '6653', 'liandry': '6653', 'liandrys': '6653',
+        'rabadonsdeathcap': '3089', 'rabadon': '3089', 'deathcap': '3089',
+        'ludensecho': '6655', 'ludens': '6655', 'luden': '6655',
+        'infinityorb': '3165',
+        'infinityedge': '3031', 'ie': '3031',
+        'essencereaver': '3508',
+        'krakenslayer': '6672', 'kraken': '6672',
+        'phantomdancer': '3046', 'pd': '3046',
+        'rapidfirecannon': '3094', 'rfc': '3094',
+        'statikkshiv': '3087', 'statikk': '3087',
+        'bloodthirster': '3072', 'bt': '3072',
+        'collector': '6676', 'thecollector': '6676',
+        'navoriquickblades': '6675', 'navori': '6675',
+        'blackcleaver': '3071', 'cleaver': '3071',
+        'ravenoushydra': '3074', 'hydra': '3074',
+
+        // Tank & Support Items
+        'sunfireaegis': '3068', 'sunfire': '3068',
+        'warmogsarmor': '3083', 'warmogs': '3083', 'warmog': '3083',
+        'thornmail': '3075',
+        'locketofthesolari': '3190', 'locket': '3190',
+        'deadmansplate': '3742', 'deadman': '3742',
+        'ardentcenser': '3504', 'ardent': '3504',
+        'harmonicecho': '3001', 'harmonious': '3001', 'harmonic': '3001',
+        'athenesunholygrail': '3174', 'athenes': '3174', 'athene': '3174',
+        'protectorsvow': '3109', 'protector': '3109',
+        'umbralglave': '3134', 'umbralglaive': '3134', 'umbral': '3134',
+        'duskbladeofdraktharr': '3147', 'duskblade': '3147',
+        'hextechgunblade': '3146', 'gunblade': '3146',
+        'rodofages': '3027', 'roa': '3027',
+        'morellonomicon': '3165', 'morello': '3165'
+    };
+
+    // Hanapin sa dictionary
+    for (let key in itemMap) {
+        if (clean.includes(key) || key.includes(clean)) {
+            return `https://ddragon.leagueoflegends.com/cdn/13.24.1/img/item/${itemMap[key]}.png`;
         }
+    }
 
-        function getItemIconUrl(itemName) {
-            if (!itemName) return '';
-            let clean = itemName.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
-            
-            const itemMap = {
-                'divinesunderer': '6632', 'sunderer': '6632',
-                'deathdance': '3812', 'dance': '3812',
-                'sterak': '3053', 'steraks': '3053', 'steraksgauge': '3053',
-                'trinityforce': '3078', 'trinity': '3078', 'force': '3078',
-                'bladeoftheruinedking': '3153', 'botrk': '3153', 'ruinedking': '3153',
-                'guardianangel': '3026', 'ga': '3026',
-                'nashorstooth': '3115', 'nashor': '3115',
-                'riftmaker': '4646',
-                'rabadon': '3089', 'rabadonsdeathcap': '3089', 'deathcap': '3089',
-                'kraken': '6672', 'krakenslayer': '6672',
-                'infinityedge': '3031', 'edge': '3031', 'ie': '3031',
-                'phantomdancer': '3046', 'pd': '3046',
-                'warmog': '3083', 'warmogsarmor': '3083',
-                'locket': '3190', 'locketsolari': '3190',
-                'thornmail': '3075',
-                'sunfire': '3068', 'sunfireaegis': '3068',
-                'rodofages': '3027', 'roa': '3027',
-                'morellonomicon': '3165', 'morello': '3165',
-                'essencereaver': '3508',
-                'bloodthirster': '3072', 'bt': '3072',
-                'harmonic': '3001', 'harmonious': '3001',
-                'protector': '3109', 'protectorsvow': '3109',
-                'navori': '6675', 'navoriquickblades': '6675',
-                'luden': '6655', 'ludentecho': '6655',
-                'deadman': '3742', 'deadmansplate': '3742',
-                'umbral': '3134', 'umbralglaive': '3134',
-                'statikk': '3087', 'statikkshiv': '3087',
-                'hextech': '3146', 'hextechgunblade': '3146',
-                'infinityorb': '3165',
-                'ardent': '3504', 'ardentcenser': '3504',
-                'athene': '3174', 'athenesunholygrail': '3174',
-                'duskblade': '3147', 'duskbladeofdraktharr': '3147',
-                'blackcleaver': '3071', 'cleaver': '3071',
-                'ravenous': '3074', 'ravenoushydra': '3074', 'hydra': '3074'
-            };
-
+    // Default icon (Ruby Crystal) sakaling hindi makilala ang item name para hindi maging transparent/blank
+    return `https://ddragon.leagueoflegends.com/cdn/13.24.1/img/item/1028.png`;
+}
             for (let key in itemMap) {
                 if (clean.includes(key)) {
                     return `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/item/${itemMap[key]}.png`;
