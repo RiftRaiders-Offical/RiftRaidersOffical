@@ -94,12 +94,23 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4" id="roster-grid">Loading rosters...</div>
         </section>
 
-        <!-- MATCH HISTORY -->
+        <!-- MATCH HISTORY WITH GAME TABS -->
         <section class="space-y-4">
-            <div class="flex items-center space-x-2">
-                <div class="w-1 h-4 bg-red-600"></div>
-                <h2 class="font-black text-sm text-white uppercase tracking-widest">Match History & 5v5 Scoreboards</h2>
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <div class="w-1 h-4 bg-red-600"></div>
+                    <h2 class="font-black text-sm text-white uppercase tracking-widest">Match History & 5v5 Scoreboards</h2>
+                </div>
             </div>
+
+            <!-- MATCH HISTORY GAME SELECTION TABS -->
+            <div class="flex gap-2 overflow-x-auto pb-1 text-xs font-bold">
+                <button onclick="filterMatchGame('ALL')" class="match-tab bg-blue-600 text-white px-4 py-2 rounded-lg border border-blue-500/35 whitespace-nowrap transition">ALL GAMES</button>
+                <button onclick="filterMatchGame('Wild Rift')" class="match-tab bg-[#161822] text-slate-400 px-4 py-2 rounded-lg border border-white/5 whitespace-nowrap transition">WILD RIFT</button>
+                <button onclick="filterMatchGame('League of Legends')" class="match-tab bg-[#161822] text-slate-400 px-4 py-2 rounded-lg border border-white/5 whitespace-nowrap transition">LOL PC</button>
+                <button onclick="filterMatchGame('Valorant')" class="match-tab bg-[#161822] text-slate-400 px-4 py-2 rounded-lg border border-white/5 whitespace-nowrap transition">VALORANT</button>
+            </div>
+
             <div id="match-history-list" class="grid grid-cols-1 gap-3 text-xs text-slate-500">Loading matches...</div>
         </section>
 
@@ -207,7 +218,7 @@
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="text-[10px] font-bold text-slate-400 uppercase">Team Name:</label>
-                            <input type="text" id="p-team" placeholder="Rift Raiders Main" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
+                            <input type="text" id="p-team" placeholder="Rift Raiders (STI MEYC)" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
                         </div>
                         <div>
                             <label class="text-[10px] font-bold text-slate-400 uppercase">Team Logo URL:</label>
@@ -256,10 +267,19 @@
                         </button>
                     </div>
 
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">Select Match Game Category:</label>
+                        <select id="m-game" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 text-white font-bold focus:outline-none focus:border-red-500">
+                            <option value="Wild Rift">Wild Rift</option>
+                            <option value="League of Legends">League of Legends (PC)</option>
+                            <option value="Valorant">Valorant</option>
+                        </select>
+                    </div>
+
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="text-[10px] font-bold text-slate-400 uppercase">Our Team (Blue):</label>
-                            <input type="text" id="m-team" placeholder="Rift Raiders Main" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
+                            <input type="text" id="m-team" value="Rift Raiders (STI MEYC)" placeholder="Rift Raiders (STI MEYC)" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
                         </div>
                         <div>
                             <label class="text-[10px] font-bold text-slate-400 uppercase">Opponent (Red):</label>
@@ -288,8 +308,8 @@
                         </div>
                     </div>
                     <div>
-                        <label class="text-[10px] font-bold text-slate-400 uppercase">Date:</label>
-                        <input type="date" id="m-date" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">Date / Time:</label>
+                        <input type="text" id="m-date" placeholder="e.g. May 2025 / 8:00 PM" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
                     </div>
 
                     <div class="border-t border-white/5 pt-3 space-y-3">
@@ -475,6 +495,7 @@
         let allCreators = [];
         let allPartners = {};
         let currentGameFilter = 'ALL';
+        let currentMatchFilter = 'ALL';
         const defaultLogoUrl = "https://i.ibb.co/6R7QW3L/79923.jpg";
 
         const ddragonVer = "14.1.1";
@@ -577,6 +598,19 @@
             renderRoster();
         }
 
+        function filterMatchGame(game) {
+            currentMatchFilter = game;
+            document.querySelectorAll('.match-tab').forEach(btn => {
+                const text = btn.innerText.toLowerCase();
+                if(text.includes(game.toLowerCase()) || (game === 'ALL' && text.includes('all'))) {
+                    btn.className = 'match-tab bg-blue-600 text-white px-4 py-2 rounded-lg border border-blue-500/35 whitespace-nowrap transition';
+                } else {
+                    btn.className = 'match-tab bg-[#161822] text-slate-400 px-4 py-2 rounded-lg border border-white/5 whitespace-nowrap transition';
+                }
+            });
+            renderMatches();
+        }
+
         function renderRoster() {
             const grid = document.getElementById('roster-grid');
             grid.innerHTML = '';
@@ -600,7 +634,6 @@
             });
         }
 
-        // Tanging TOURNAMENT matches lamang ang binibilang para sa Win/Loss at Winrate ng Team
         function calculateTeamTournamentStats(teamName) {
             if (!teamName || !allMatches) return { wins: 0, losses: 0, winrate: '0%' };
             const teamMatches = Object.values(allMatches).filter(m => 
@@ -619,8 +652,14 @@
         function renderMatches() {
             const list = document.getElementById('match-history-list');
             list.innerHTML = '';
-            const keys = Object.keys(allMatches);
-            if(keys.length === 0) { list.innerHTML = '<div class="text-xs text-slate-500 italic col-span-full">No match history added yet.</div>'; return; }
+            
+            const keys = Object.keys(allMatches).filter(key => {
+                const m = allMatches[key];
+                if (currentMatchFilter === 'ALL') return true;
+                return m.game && m.game.toLowerCase() === currentMatchFilter.toLowerCase();
+            });
+
+            if(keys.length === 0) { list.innerHTML = '<div class="text-xs text-slate-500 italic col-span-full py-4 text-center">No match history found for this category.</div>'; return; }
 
             keys.forEach(key => {
                 const m = allMatches[key];
@@ -628,7 +667,7 @@
                 list.innerHTML += `
                     <div onclick="openMatchDetails('${key}')" class="bg-[#161822] border border-white/5 hover:border-blue-500/40 rounded-xl p-4 space-y-2 cursor-pointer transition">
                         <div class="flex justify-between items-center">
-                            <div class="text-[10px] font-bold text-slate-400">${m.type} • ${m.date || 'Recent'}</div>
+                            <div class="text-[10px] font-bold text-slate-400"><span class="text-blue-400 font-bold uppercase">${m.game || 'Wild Rift'}</span> • ${m.type} • ${m.date || 'Recent'}</div>
                             <div class="px-3 py-0.5 rounded border font-black uppercase text-[10px] ${color}">${m.result}</div>
                         </div>
                         <div class="flex justify-between items-center">
@@ -687,7 +726,7 @@
         function renderAdminMatches() {
             const container = document.getElementById('admin-matches-list');
             container.innerHTML = '';
-            Object.keys(allMatches).forEach(key => container.innerHTML += `<div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/5 text-xs"><span class="font-bold text-slate-300 truncate">${allMatches[key].team} vs ${allMatches[key].opponent}</span><button onclick="deleteItem('matches', '${key}')" class="bg-red-600/20 text-red-400 px-2 py-1 rounded text-[10px]">Delete</button></div>`);
+            Object.keys(allMatches).forEach(key => container.innerHTML += `<div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/5 text-xs"><span class="font-bold text-slate-300 truncate">[${allMatches[key].game || 'Wild Rift'}] ${allMatches[key].team} vs ${allMatches[key].opponent}</span><button onclick="deleteItem('matches', '${key}')" class="bg-red-600/20 text-red-400 px-2 py-1 rounded text-[10px]">Delete</button></div>`);
         }
 
         function renderAdminCreators() {
@@ -766,9 +805,18 @@ Enemy5 | Nautilus | 0/3/4 | 9,000 | 8,000 | Locket`;
         }
 
         function addMatch() {
-            const team = document.getElementById('m-team').value, opponent = document.getElementById('m-opp').value, score = document.getElementById('m-score').value, type = document.getElementById('m-type').value, result = document.getElementById('m-result').value, date = document.getElementById('m-date').value, blueData = document.getElementById('m-blue-data').value, redData = document.getElementById('m-red-data').value;
+            const game = document.getElementById('m-game').value;
+            const team = document.getElementById('m-team').value;
+            const opponent = document.getElementById('m-opp').value;
+            const score = document.getElementById('m-score').value;
+            const type = document.getElementById('m-type').value;
+            const result = document.getElementById('m-result').value;
+            const date = document.getElementById('m-date').value;
+            const blueData = document.getElementById('m-blue-data').value;
+            const redData = document.getElementById('m-red-data').value;
+
             if(!team) return alert('Enter Team Name!');
-            db.ref('matches').push({ team, opponent, score, type, result, date, blueData, redData }).then(() => alert('Scoreboard saved!'));
+            db.ref('matches').push({ game, team, opponent, score, type, result, date, blueData, redData }).then(() => alert('Scoreboard saved!'));
         }
 
         async function addCreator() {
@@ -799,7 +847,6 @@ Enemy5 | Nautilus | 0/3/4 | 9,000 | 8,000 | Locket`;
             alert('Partner saved!');
         }
 
-        // Tanging Tournament matches lamang ang bibilangin sa Champion Usage sa Player Modal
         function openPlayerStats(name, tag, game, team, role, winrate, wins, losses, pfp, c1, c2, c3, teamlogo) {
             document.getElementById('modal-name').innerText = name;
             document.getElementById('modal-tag').innerText = tag ? '#' + tag : '';
@@ -876,7 +923,7 @@ Enemy5 | Nautilus | 0/3/4 | 9,000 | 8,000 | Locket`;
         function openMatchDetails(key) {
             const m = allMatches[key];
             if(!m) return;
-            document.getElementById('match-modal-type').innerText = m.type || 'Tournament';
+            document.getElementById('match-modal-type').innerText = `${m.game || 'Wild Rift'} • ${m.type || 'Tournament'}`;
             document.getElementById('match-modal-teams').innerText = `${m.team} vs ${m.opponent}`;
             document.getElementById('match-modal-score').innerText = m.score || '0 - 0';
             
