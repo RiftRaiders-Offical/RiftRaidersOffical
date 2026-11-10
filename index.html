@@ -511,10 +511,8 @@
         const defaultLogoUrl = "https://i.ibb.co/6R7QW3L/79923.jpg";
         const ddragonVer = "13.24.1";
 
-        // Global item database mula sa Riot Data Dragon API
         let riotItemMap = {};
 
-        // I-fetch ang buong listahan ng items mula sa Riot Games Data Dragon
         fetch(`https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/data/en_US/item.json`)
             .then(res => res.json())
             .then(data => {
@@ -554,12 +552,11 @@
             if (!itemName) return '';
             let cleanKey = itemName.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
 
-            // 1. Hanapin sa awtomatikong nabasang Riot global item map
             if (riotItemMap[cleanKey]) {
                 return `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/item/${riotItemMap[cleanKey]}.png`;
             }
 
-            // 2. Fallback map para sa Wild Rift-exclusive shortcut names o alternate spellings
+            // Pinalawak na Wild Rift items at PC item fallbacks
             const fallbackMap = {
                 'trinityforce': '3078', 'sunderedsky': '6610', 'divinesunderer': '6632',
                 'deathsdance': '3812', 'steraksgage': '3053', 'steraks': '3053',
@@ -575,7 +572,8 @@
                 'morellonomicon': '3165', 'riftmaker': '4646', 'ardentcenser': '3504',
                 'harmonicecho': '3165', 'staffofflowingwater': '6616', 'redemption': '3107',
                 'rodofages': '3027', 'liandry': '6653', 'liandrystorment': '6653',
-                'amaranthstwinguard': '6665', 'twinguard': '6665', 'hollowradiance': '3068'
+                'amaranthstwinguard': '6665', 'twinguard': '6665', 'hollowradiance': '3068',
+                'gluttonousgreaves': '3006', 'harmonic': '3165', 'ardent': '3504'
             };
 
             for (let key in fallbackMap) {
@@ -587,7 +585,6 @@
             return '';
         }
 
-        // Nakakabit ang logo sa permanent image link
         document.getElementById('header-logo').src = defaultLogoUrl;
 
         function openAdminModal() { document.getElementById('admin-modal').classList.remove('hidden'); }
