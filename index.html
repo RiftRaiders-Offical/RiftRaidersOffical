@@ -531,81 +531,82 @@
             return `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/champion/${formattedName}.png`;
         }
 
-        function getItemIconUrl(itemName, gameCategory) {
+       function getItemIconUrl(itemName, gameCategory) {
             if (!itemName) return '';
-            let raw = itemName.trim();
-            let clean = raw.toLowerCase().replace(/[^a-z0-9]/g, '');
+            let raw = itemName.trim().toLowerCase();
 
-            const itemMap = {
-                'sunderedsky': '6610',
-                'trinityforce': '3078',
-                'divinesunderer': '6632',
-                'deathsdance': '3812',
-                'steraksgage': '3053', 'steraks': '3053',
-                'serpentsfang': '6695',
-                'essencereaver': '3508',
-                'stormrazor': '3095',
-                'lorddominiksregard': '3036',
-                'infinityedge': '3031',
-                'mawofmalmortius': '3156',
-                'thecollector': '6676', 'collector': '6676',
-                'mortalreminder': '3033',
-                'malignance': '4646',
-                'infinityorb': '3165',
-                'rabadonsdeathcap': '3089', 'deathcap': '3089',
-                'voidstaff': '3135',
-                'stormsurge': '4645',
-                'morellonomicon': '3165',
-                'riftmaker': '4646',
-                'liandrystorment': '6653', 'liandry': '6653',
-                'heartsteel': '3084',
-                'hollowradiance': '3068',
-                'unendingdespair': '3075',
-                'amaranthstwinguard': '6665', 'twinguard': '6665',
-                'thornmail': '3075',
-                'iceborngauntlet': '3025',
-                'gargoylestoneplate': '3193',
-                'rumblevest': '3068',
-                'platedsteelcaps': '3047', 'steelcaps': '3047',
-                'mercurystreads': '3111',
-                'bootsofmana': '3020',
-                'ionianbootsoflucidity': '3158', 'lucidity': '3158',
-                'berserkersgreaves': '3006',
-                'gluttonousgreaves': '3006',
-                'oblivionorb': '3135',
-                'sunfireaegis': '3068',
-                'rodofages': '3027',
-                'ludensecho': '3285', 'ludens': '3285',
-                'seraphsembrace': '3040', 'seraphs': '3040',
-                'tearofthegoddess': '3070', 'tear': '3070',
-                'rubycrystal': '1028',
-                'faeriecharm': '1004',
-                'amptome': '1001', 'amplifyingtome': '1052',
-                'bamiscinder': '3068', 'bamis': '3068',
-                'blastingwand': '1026',
-                'needlesslylargerod': '1038',
-                'bfsword': '1038',
-                'pickaxe': '1037',
-                'longsword': '1036',
-                'daggers': '1042', 'dagger': '1042'
+            // Direktang item ID mapping para sa mga karaniwang items sa laro
+            const directMap = {
+                'trinity force': '3078', 'sundered sky': '6610', 'divine sunderer': '6632',
+                'deaths dance': '3812', 'steraks gage': '3053', 'steraks': '3053',
+                'statikk shiv': '3087', 'infinity edge': '3031', 'collector': '6676',
+                'the collector': '6676', 'essence reaver': '3508', 'navori quickblades': '6675',
+                'phantom dancer': '3046', 'rapid firecannon': '3094', 'stormrazor': '3095',
+                'heartsteel': '3084', 'thornmail': '3075', 'sunfire aegis': '3068',
+                'warmogs armor': '3083', 'spirit visage': '3065', 'iceborn gauntlet': '3025',
+                'plated steelcaps': '3047', 'steelcaps': '3047', 'mercurys treads': '3111',
+                'lucidity boots': '3158', 'ionian boots of lucidity': '3158', 'berserkers greaves': '3006',
+                'ludens echo': '3285', 'ludens': '3285', 'rabadons deathcap': '3089',
+                'deathcap': '3089', 'infinity orb': '3165', 'void staff': '3135',
+                'morellonomicon': '3165', 'riftmaker': '4646', 'ardent censer': '3504',
+                'harmonic echo': '3165', 'staff of flowing water': '6616', 'redemption': '3107'
             };
 
-            for (let key in itemMap) {
-                if (clean === key || clean.includes(key) || key.startsWith(key)) {
-                    return `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/item/${itemMap[key]}.png`;
+            let cleanKey = raw.replace(/[^a-z0-9]/g, '');
+            for (let key in directMap) {
+                if (cleanKey === key.replace(/[^a-z0-9]/g, '') || cleanKey.includes(key.replace(/[^a-z0-9]/g, ''))) {
+                    return `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/item/${directMap[key]}.png`;
                 }
             }
 
-            // Fallback icon para hindi maging blangko
-            return `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/item/1028.png`;
+            return ''; // Walang Ruby Crystal; magiging blangko na lang kung sadyang hindi makilala
         }
 
-        db.ref('settings/logo').on('value', snap => {
-            const logo = snap.val() || defaultLogoUrl;
-            document.getElementById('header-logo').src = logo;
-            const logoInput = document.getElementById('setting-logo-url');
-            if(logoInput) logoInput.value = logo;
-        });
+        const parseRows = (data, isBlue) => {
+            let html = '';
+            if(!data) return '<p class="text-[10px] text-slate-500 italic">No player stats recorded.</p>';
+            data.split('\n').forEach(line => {
+                if(!line.trim()) return;
+                
+                // Hatiin gamit ang comma o pipe para makuha ang mga items kahit anong format
+                let parts = line.split('|').map(s => s.trim());
+                let ign = parts[0] || 'Player';
+                let champ = parts[1] || 'Aatrox';
+                let kda = parts[2] || '0/0/0';
+                let gold = parts[3] || '0';
+                
+                // Kunin ang huling bahagi bilang items
+                let rawItemsStr = parts.length >= 5 ? parts[parts.length - 1] : '';
+                let itemsList = rawItemsStr ? rawItemsStr.split(',').map(i => i.trim()) : [];
+
+                let itemsHtml = '';
+                for(let k=0; k<6; k++) {
+                    const itemName = itemsList[k] || '';
+                    const itemImg = getItemIconUrl(itemName, m.game);
+                    if(itemName && itemImg) {
+                        itemsHtml += `<img src="${itemImg}" class="w-5 h-5 rounded bg-slate-800 border border-white/10 object-cover" title="${itemName}" onError="this.style.display='none'">`;
+                    } else {
+                        itemsHtml += `<div class="w-5 h-5 rounded bg-black/40 border border-white/5"></div>`;
+                    }
+                }
+
+                html += `
+                    <div class="bg-[#0b0c10] p-2.5 rounded border ${isBlue ? 'border-blue-500/20' : 'border-red-500/20'} space-y-1.5 text-xs">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <img src="${getChampionIconUrl(champ)}" class="w-7 h-7 rounded-lg border border-white/10 object-cover" onError="this.src='https://via.placeholder.com/30'">
+                                <div><p class="font-black text-white text-[11px] leading-none">${ign}</p><p class="text-[9px] ${isBlue ? 'text-blue-400' : 'text-red-400'} font-bold">${champ}</p></div>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-black text-slate-200 text-xs leading-none">${kda} <span class="text-[9px] text-slate-400 font-normal">(${gold} Gold)</span></p>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-start space-x-1 pt-1 border-t border-white/5">${itemsHtml}</div>
+                    </div>
+                `;
+            });
+            return html;
+        };
 
         function saveSiteLogo() {
             const url = document.getElementById('setting-logo-url').value.trim();
