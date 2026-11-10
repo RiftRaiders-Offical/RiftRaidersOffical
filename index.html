@@ -222,7 +222,7 @@
                         <input type="text" id="p-role" placeholder="Baron Lane" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
                     </div>
                     <div>
-                        <label class="text-[10px] font-bold text-slate-400 uppercase">Profile Photo:</label>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">Profile Photo (URL or Upload):</label>
                         <input type="file" id="p-pfp" accept="image/*" class="w-full text-xs text-slate-400 mt-1">
                     </div>
                     <div>
@@ -245,20 +245,19 @@
                     </div>
                 </div>
 
-                <!-- 2. ADD & MANAGE 5v5 MATCH WITH CLEAN OCR -->
+                <!-- 2. ADD & MANAGE 5v5 MATCH WITH MANUAL TEXT BOX FILL -->
                 <div class="bg-[#161822] p-5 rounded-xl border border-white/5 space-y-4">
-                    <h3 class="font-black text-xs uppercase text-red-500">2. Add Full 5v5 Match (Clean AI OCR)</h3>
+                    <h3 class="font-black text-xs uppercase text-red-500">2. Add Full 5v5 Match (Custom Text Editor)</h3>
                     
                     <div class="bg-[#0b0c10] p-3 rounded-lg border border-indigo-500/40 space-y-2">
                         <label class="text-[10px] font-bold text-indigo-400 uppercase flex items-center space-x-1">
                             <i class="fa-solid fa-wand-magic-sparkles"></i>
-                            <span>Upload Post-Game Screenshots (Scoreboard + Stats):</span>
+                            <span>Smart Template Generator:</span>
                         </label>
-                        <input type="file" id="m-screenshots" accept="image/*" multiple class="w-full text-xs text-slate-400">
-                        <button onclick="scanMultipleScreenshots()" id="btn-ocr-scan" class="bg-indigo-600 hover:bg-indigo-700 text-white w-full py-1.5 rounded text-[11px] font-bold uppercase transition">
-                            AI Scan & Clean Fill Scoreboard
+                        <button onclick="loadTemplateData()" type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white w-full py-2 rounded text-[11px] font-bold uppercase transition">
+                            Load Clean Template to Text Boxes
                         </button>
-                        <p id="ocr-status" class="text-[9px] text-slate-400 italic text-center">AI will extract clean IGN, Champion, KDA, Gold, and Items format.</p>
+                        <p class="text-[9px] text-slate-400 italic">Pindutin ito para lumabas ang malinis na example format sa ibaba at i-edit mo ayon sa gusto mo.</p>
                     </div>
 
                     <div class="grid grid-cols-2 gap-2">
@@ -273,8 +272,8 @@
                     </div>
                     <div class="grid grid-cols-3 gap-2">
                         <div>
-                            <label class="text-[10px] font-bold text-slate-400 uppercase">Match Score (ex. 27-23):</label>
-                            <input type="text" id="m-score" placeholder="27 - 23" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase">Match Score (ex. 1-0):</label>
+                            <input type="text" id="m-score" placeholder="1 - 0" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
                         </div>
                         <div>
                             <label class="text-[10px] font-bold text-slate-400 uppercase">Match Type:</label>
@@ -299,13 +298,13 @@
 
                     <div class="border-t border-white/5 pt-3 space-y-3">
                         <div class="space-y-1">
-                            <label class="text-[9px] text-blue-400 font-bold uppercase">Blue Team Data (IGN | Champ | KDA | Gold | Dmg | Items):</label>
-                            <textarea id="m-blue-data" rows="4" placeholder="Takeku | Aatrox | 5/2/4 | 14,500 | 25,000 | Steraks, BlackCleaver" class="w-full bg-[#0b0c10] border border-blue-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
+                            <label class="text-[9px] text-blue-400 font-bold uppercase">Blue Team Data Format: (IGN | Champion | KDA | Gold | Dmg | Item1, Item2, ...)</label>
+                            <textarea id="m-blue-data" rows="5" placeholder="PlayerName | Aatrox | 5/2/4 | 14,500 | 25,000 | Steraks, BlackCleaver, DeathDance" class="w-full bg-[#0b0c10] border border-blue-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
                         </div>
 
                         <div class="space-y-1">
-                            <label class="text-[9px] text-red-400 font-bold uppercase">Red Team Data (IGN | Champ | KDA | Gold | Dmg | Items):</label>
-                            <textarea id="m-red-data" rows="4" placeholder="Enemy1 | Camille | 2/3/1 | 13,000 | 22,000 | TrinityForce" class="w-full bg-[#0b0c10] border border-red-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
+                            <label class="text-[9px] text-red-400 font-bold uppercase">Red Team Data Format: (IGN | Champion | KDA | Gold | Dmg | Item1, Item2, ...)</label>
+                            <textarea id="m-red-data" rows="5" placeholder="EnemyName | Camille | 2/3/1 | 13,000 | 22,000 | TrinityForce, RavenousHydra" class="w-full bg-[#0b0c10] border border-red-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
                         </div>
                     </div>
 
@@ -415,7 +414,7 @@
                 </div>
                 <div class="flex items-center space-x-4">
                     <span id="match-modal-result-badge" class="px-3 py-1 rounded text-xs font-black uppercase">VICTORY</span>
-                    <span id="match-modal-score" class="text-2xl font-black text-white italic tracking-wider">27 - 23</span>
+                    <span id="match-modal-score" class="text-2xl font-black text-white italic tracking-wider">1 - 0</span>
                 </div>
             </div>
 
@@ -465,6 +464,24 @@
             if(!champName || champName === 'HERO' || champName === 'Champion') return "https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/champion-icons/-1.png";
             const clean = champName.replace(/[^a-zA-Z]/g, '');
             return `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/champion/${clean.charAt(0).toUpperCase() + clean.slice(1)}.png`;
+        }
+
+        // Opisyal na Wild Rift / LoL Item Icon mapping (CommunityDragon / DDragon links)
+        function getItemIconUrl(itemName) {
+            if (!itemName) return '';
+            const cleanItem = itemName.trim().toLowerCase();
+            // Halimbawa ng direct mapping para sa sikat na items
+            const itemMap = {
+                'steraks': '3053', 'blackcleaver': '3071', 'deathdance': '3812', 'infinityedge': '3031',
+                'trinityforce': '3078', 'ravenoushydra': '3074', 'luden': '6655', 'rabadon': '3089',
+                'warmog': '3083', 'locket': '3190', 'eclipse': '6692', 'kraken': '6672'
+            };
+            for (let key in itemMap) {
+                if (cleanItem.includes(key)) {
+                    return `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/item/${itemMap[key]}.png`;
+                }
+            }
+            return '';
         }
 
         window.addEventListener('load', () => {
@@ -616,12 +633,14 @@
         }
 
         function deleteItem(path, id) { if(confirm('Delete?')) db.ref(`${path}/${id}`).remove(); }
+        
         function fileToBase64(file) {
             return new Promise((resolve) => {
                 if(!file) { resolve(''); return; }
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
                 reader.onload = () => resolve(reader.result);
+                reader.onerror = () => resolve('');
             });
         }
 
@@ -659,60 +678,25 @@
               .catch(err => alert('Error adding player: ' + err.message));
         }
 
-        async function scanMultipleScreenshots() {
-            const files = document.getElementById('m-screenshots').files;
-            const statusEl = document.getElementById('ocr-status');
-            const btn = document.getElementById('btn-ocr-scan');
+        // Manual Template Loader para sa Blue at Red data text boxes
+        function loadTemplateData() {
+            const blueSample = 
+`Takeku | Aatrox | 5/2/4 | 14,500 | 25,000 | Steraks, BlackCleaver, DeathDance
+Player2 | Caitlyn | 8/2/1 | 16,000 | 32,000 | InfinityEdge
+Player3 | Ahri | 3/1/6 | 12,000 | 18,000 | Luden
+Player4 | LeeSin | 4/3/5 | 13,000 | 21,000 | DivineSunderer
+Player5 | Thresh | 1/2/10 | 10,000 | 9,000 | Warmog`;
 
-            if (!files || files.length === 0) return alert('Pumili muna ng kahit isang screenshot!');
+            const redSample = 
+`Enemy1 | Camille | 2/3/2 | 12,500 | 20,000 | TrinityForce, RavenousHydra
+Enemy2 | Riven | 3/3/1 | 13,000 | 22,000 | Eclipse
+Enemy3 | Syndra | 2/4/1 | 11,000 | 17,000 | Rabadon
+Enemy4 | Viego | 1/4/2 | 10,500 | 16,000 | Kraken
+Enemy5 | Nautilus | 0/3/4 | 9,000 | 8,000 | Locket`;
 
-            btn.disabled = true;
-            btn.innerText = "AI Scanning Images...";
-            let blueTeamRows = [];
-            let redTeamRows = [];
-
-            try {
-                for (let i = 0; i < files.length; i++) {
-                    statusEl.innerText = `Scanning image ${i + 1} of ${files.length}...`;
-                    const { data: { text } } = await Tesseract.recognize(files[i], 'eng');
-                    
-                    const textUpper = text.toUpperCase();
-                    if (textUpper.includes("VICTORY") || textUpper.includes("WIN")) {
-                        document.getElementById('m-result').value = "Win";
-                    } else if (textUpper.includes("DEFEAT") || textUpper.includes("LOSS")) {
-                        document.getElementById('m-result').value = "Lose";
-                    }
-                }
-
-                // Malinis na template para sa 5v5 match
-                blueTeamRows = [
-                    "RRS Tyad | Aatrox | 3/1/5 | 14,200 | 24,000 | Steraks, BlackCleaver",
-                    "RRS Winter | Caitlyn | 8/2/4 | 16,800 | 38,000 | InfinityEdge, RapidFire",
-                    "RRS Mid | Ahri | 4/3/7 | 12,500 | 19,000 | Luden, Shadowflame",
-                    "RRS Jg | LeeSin | 5/2/6 | 13,000 | 20,000 | DivineSunderer, Steraks",
-                    "RRS Sup | Thresh | 1/2/12 | 10,500 | 9,000 | DeadMansPlate, Warmog"
-                ];
-
-                redTeamRows = [
-                    "GRAYY | Camille | 2/4/3 | 12,000 | 22,000 | TrinityForce, RavenousHydra",
-                    "Reiy | Riven | 3/3/2 | 13,100 | 25,000 | Eclipse, DeathDance",
-                    "EnemyMid | Syndra | 2/4/1 | 11,500 | 18,000 | Luden, Rabadon",
-                    "EnemyJg | Viego | 2/5/3 | 11,000 | 17,000 | KrakenSlayer, Blade",
-                    "EnemySup | Nautilus | 0/4/5 | 9,500 | 8,000 | Locket, KnightVow"
-                ];
-
-                document.getElementById('m-blue-data').value = blueTeamRows.join('\n');
-                document.getElementById('m-red-data').value = redTeamRows.join('\n');
-                
-                statusEl.innerText = "Clean AI Scan Complete! Paki-check at i-save.";
-                alert("Na-scan na ang mga larawan! Tingnan ang malinis na format sa ibaba.");
-            } catch (err) {
-                console.error(err);
-                statusEl.innerText = "Error scanning image.";
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "AI Scan & Clean Fill Scoreboard";
-            }
+            document.getElementById('m-blue-data').value = blueSample;
+            document.getElementById('m-red-data').value = redSample;
+            alert('Clean template loaded! Pwede mo na i-edit ang mga pangalan at stats ayon sa gusto mo.');
         }
 
         function addMatch() {
@@ -841,7 +825,10 @@
                         let itemsHtml = '';
                         for(let k=0; k<6; k++) {
                             const itemName = itemsList[k] ? itemsList[k].trim() : '';
-                            if(itemName) {
+                            const itemImg = getItemIconUrl(itemName);
+                            if(itemName && itemImg) {
+                                itemsHtml += `<img src="${itemImg}" class="w-5 h-5 rounded bg-slate-800 border border-white/10 object-cover" title="${itemName}" onError="this.style.display='none'">`;
+                            } else if (itemName) {
                                 itemsHtml += `<div class="w-4 h-4 rounded bg-slate-800 border border-white/10 flex items-center justify-center text-[7px] text-slate-300 font-bold overflow-hidden" title="${itemName}">${itemName.substring(0,2)}</div>`;
                             } else {
                                 itemsHtml += `<div class="w-4 h-4 rounded bg-black/40 border border-white/5"></div>`;
@@ -856,7 +843,7 @@
                                 </div>
                                 <div class="text-right space-y-1">
                                     <p class="font-black text-slate-200 text-xs leading-none">${p[2]} <span class="text-[9px] text-slate-400 font-normal">(${p[3] || ''} Gold)</span></p>
-                                    <div class="flex items-center justify-end space-x-0.5">${itemsHtml}</div>
+                                    <div class="flex items-center justify-end space-x-1">${itemsHtml}</div>
                                 </div>
                             </div>
                         `;
