@@ -574,11 +574,17 @@
                 'gluttonousgreaves': '3006',
                 'oblivionorb': '3135',
                 'sunfireaegis': '3068',
-                'rodofages': '3027'
+                'rodofages': '3027',
+                'ludensecho': '3285', 'ludens': '3285',
+                'seraphsembrace': '3040', 'seraphs': '3040',
+                'tearofthegoddess': '3070', 'tear': '3070',
+                'rubycrystal': '1028',
+                'faeriecharm': '1004',
+                'amptome': '1001', 'amplifyingtome': '1052'
             };
 
             for (let key in itemMap) {
-                if (clean.includes(key) || key.includes(clean)) {
+                if (clean === key || clean.includes(key)) {
                     return `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/item/${itemMap[key]}.png`;
                 }
             }
