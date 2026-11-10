@@ -381,7 +381,7 @@
 
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 uppercase">Profile Photo:</label>
-                        <input type="file" id="c-pfp" accept="image/*" class="w-full text-xs text-slate-400 mt-1">
+                        <input type="file" id="p-pfp" accept="image/*" class="w-full text-xs text-slate-400 mt-1">
                     </div>
                     <button onclick="addCreator()" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save Creator</button>
                     <div id="admin-creators-list" class="space-y-2 max-h-40 overflow-y-auto mt-2"></div>
@@ -510,6 +510,25 @@
         let currentMatchFilter = 'ALL';
         const defaultLogoUrl = "https://i.ibb.co/6R7QW3L/79923.jpg";
         const ddragonVer = "13.24.1";
+
+        // Global item database mula sa Riot Data Dragon API
+        let riotItemMap = {};
+
+        // I-fetch ang buong listahan ng items mula sa Riot Games Data Dragon
+        fetch(`https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/data/en_US/item.json`)
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.data) {
+                    Object.keys(data.data).forEach(itemId => {
+                        const item = data.data[itemId];
+                        if (item && item.name) {
+                            const cleanName = item.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+                            riotItemMap[cleanName] = itemId;
+                        }
+                    });
+                }
+            })
+            .catch(err => console.log('Error fetching Riot items:', err));
         
         function getChampionIconUrl(champName) {
             if (!champName) return '';
@@ -531,88 +550,45 @@
             return `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/champion/${formattedName}.png`;
         }
 
-       function getItemIconUrl(itemName, gameCategory) {
+        function getItemIconUrl(itemName) {
             if (!itemName) return '';
-            let raw = itemName.trim().toLowerCase();
+            let cleanKey = itemName.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
 
-            // Direktang item ID mapping para sa mga karaniwang items sa laro
-            const directMap = {
-                'trinity force': '3078', 'sundered sky': '6610', 'divine sunderer': '6632',
-                'deaths dance': '3812', 'steraks gage': '3053', 'steraks': '3053',
-                'statikk shiv': '3087', 'infinity edge': '3031', 'collector': '6676',
-                'the collector': '6676', 'essence reaver': '3508', 'navori quickblades': '6675',
-                'phantom dancer': '3046', 'rapid firecannon': '3094', 'stormrazor': '3095',
-                'heartsteel': '3084', 'thornmail': '3075', 'sunfire aegis': '3068',
-                'warmogs armor': '3083', 'spirit visage': '3065', 'iceborn gauntlet': '3025',
-                'plated steelcaps': '3047', 'steelcaps': '3047', 'mercurys treads': '3111',
-                'lucidity boots': '3158', 'ionian boots of lucidity': '3158', 'berserkers greaves': '3006',
-                'ludens echo': '3285', 'ludens': '3285', 'rabadons deathcap': '3089',
-                'deathcap': '3089', 'infinity orb': '3165', 'void staff': '3135',
-                'morellonomicon': '3165', 'riftmaker': '4646', 'ardent censer': '3504',
-                'harmonic echo': '3165', 'staff of flowing water': '6616', 'redemption': '3107'
+            // 1. Hanapin sa awtomatikong nabasang Riot global item map
+            if (riotItemMap[cleanKey]) {
+                return `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/item/${riotItemMap[cleanKey]}.png`;
+            }
+
+            // 2. Fallback map para sa Wild Rift-exclusive shortcut names o alternate spellings
+            const fallbackMap = {
+                'trinityforce': '3078', 'sunderedsky': '6610', 'divinesunderer': '6632',
+                'deathsdance': '3812', 'steraksgage': '3053', 'steraks': '3053',
+                'statikkshiv': '3087', 'infinityedge': '3031', 'collector': '6676',
+                'thecollector': '6676', 'essencereaver': '3508', 'navoriquickblades': '6675',
+                'phantomdancer': '3046', 'rapidfirecannon': '3094', 'stormrazor': '3095',
+                'heartsteel': '3084', 'thornmail': '3075', 'sunfireaegis': '3068',
+                'warmogsarmor': '3083', 'spiritvisage': '3065', 'iceborngauntlet': '3025',
+                'platedsteelcaps': '3047', 'steelcaps': '3047', 'mercurystreads': '3111',
+                'lucidityboots': '3158', 'ionianbootsoflucidity': '3158', 'berserkersgreaves': '3006',
+                'ludensecho': '3285', 'ludens': '3285', 'rabadonsdeathcap': '3089',
+                'deathcap': '3089', 'infinityorb': '3165', 'voidstaff': '3135',
+                'morellonomicon': '3165', 'riftmaker': '4646', 'ardentcenser': '3504',
+                'harmonicecho': '3165', 'staffofflowingwater': '6616', 'redemption': '3107',
+                'rodofages': '3027', 'liandry': '6653', 'liandrystorment': '6653',
+                'amaranthstwinguard': '6665', 'twinguard': '6665', 'hollowradiance': '3068'
             };
 
-            let cleanKey = raw.replace(/[^a-z0-9]/g, '');
-            for (let key in directMap) {
-                if (cleanKey === key.replace(/[^a-z0-9]/g, '') || cleanKey.includes(key.replace(/[^a-z0-9]/g, ''))) {
-                    return `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/item/${directMap[key]}.png`;
+            for (let key in fallbackMap) {
+                if (cleanKey === key || cleanKey.includes(key)) {
+                    return `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/item/${fallbackMap[key]}.png`;
                 }
             }
 
-            return ''; // Walang Ruby Crystal; magiging blangko na lang kung sadyang hindi makilala
+            return '';
         }
 
-        const parseRows = (data, isBlue) => {
-            let html = '';
-            if(!data) return '<p class="text-[10px] text-slate-500 italic">No player stats recorded.</p>';
-            data.split('\n').forEach(line => {
-                if(!line.trim()) return;
-                
-                // Hatiin gamit ang comma o pipe para makuha ang mga items kahit anong format
-                let parts = line.split('|').map(s => s.trim());
-                let ign = parts[0] || 'Player';
-                let champ = parts[1] || 'Aatrox';
-                let kda = parts[2] || '0/0/0';
-                let gold = parts[3] || '0';
-                
-                // Kunin ang huling bahagi bilang items
-                let rawItemsStr = parts.length >= 5 ? parts[parts.length - 1] : '';
-                let itemsList = rawItemsStr ? rawItemsStr.split(',').map(i => i.trim()) : [];
-
-                let itemsHtml = '';
-                for(let k=0; k<6; k++) {
-                    const itemName = itemsList[k] || '';
-                    const itemImg = getItemIconUrl(itemName, m.game);
-                    if(itemName && itemImg) {
-                        itemsHtml += `<img src="${itemImg}" class="w-5 h-5 rounded bg-slate-800 border border-white/10 object-cover" title="${itemName}" onError="this.style.display='none'">`;
-                    } else {
-                        itemsHtml += `<div class="w-5 h-5 rounded bg-black/40 border border-white/5"></div>`;
-                    }
-                }
-
-                html += `
-                    <div class="bg-[#0b0c10] p-2.5 rounded border ${isBlue ? 'border-blue-500/20' : 'border-red-500/20'} space-y-1.5 text-xs">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center space-x-2">
-                                <img src="${getChampionIconUrl(champ)}" class="w-7 h-7 rounded-lg border border-white/10 object-cover" onError="this.src='https://via.placeholder.com/30'">
-                                <div><p class="font-black text-white text-[11px] leading-none">${ign}</p><p class="text-[9px] ${isBlue ? 'text-blue-400' : 'text-red-400'} font-bold">${champ}</p></div>
-                            </div>
-                            <div class="text-right">
-                                <p class="font-black text-slate-200 text-xs leading-none">${kda} <span class="text-[9px] text-slate-400 font-normal">(${gold} Gold)</span></p>
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-start space-x-1 pt-1 border-t border-white/5">${itemsHtml}</div>
-                    </div>
-                `;
-            });
-            return html;
-        };
-
-        function saveSiteLogo() {
-            const url = document.getElementById('setting-logo-url').value.trim();
-            if(!url) { alert('Ilagay ang valid logo URL!'); return; }
-            db.ref('settings/logo').set(url).then(() => alert('Logo updated!'));
-        }
+        // Nakakabit ang logo sa permanent image link
+        document.getElementById('header-logo').src = defaultLogoUrl;
 
         function openAdminModal() { document.getElementById('admin-modal').classList.remove('hidden'); }
         function closeAdminModal() { document.getElementById('admin-modal').classList.add('hidden'); }
@@ -1145,55 +1121,45 @@
                 let html = '';
                 if(!data) return '<p class="text-[10px] text-slate-500 italic">No player stats recorded.</p>';
                 data.split('\n').forEach(line => {
-                    const p = line.split('|').map(s => s.trim());
-                    if(p.length >= 3) {
-                        const champIcon = getChampionIconUrl(p[1]);
-                        const kda = p[2] || '0/0/0';
-                        const gold = p[3] || '0';
-                        
-                        // Laging kunin ang pinakadulong column bilang items list para sigurado
-                        let rawItemsStr = p[p.length - 1];
-                        let dmgDealt = '';
+                    if(!line.trim()) return;
+                    let parts = line.split('|').map(s => s.trim());
+                    let ign = parts[0] || 'Player';
+                    let champ = parts[1] || 'Aatrox';
+                    let kda = parts[2] || '0/0/0';
+                    let gold = parts[3] || '0';
+                    
+                    let rawItemsStr = parts.length >= 5 ? parts[parts.length - 1] : '';
+                    let itemsList = rawItemsStr ? rawItemsStr.split(',').map(i => i.trim()) : [];
 
-                        // Kung ang huling column ay puro numero o kaya ay KDA/Gold, ibig sabihin walang items
-                        if (rawItemsStr.includes('/') || !isNaN(rawItemsStr.replace(/,/g, ''))) {
-                            rawItemsStr = '';
-                        } else if (p.length >= 6) {
-                            dmgDealt = p[4];
+                    let itemsHtml = '';
+                    for(let k=0; k<6; k++) {
+                        const itemName = itemsList[k] || '';
+                        const itemImg = getItemIconUrl(itemName);
+                        if(itemName && itemImg) {
+                            itemsHtml += `<img src="${itemImg}" class="w-5 h-5 rounded bg-slate-800 border border-white/10 object-cover" title="${itemName}" onError="this.style.display='none'">`;
+                        } else {
+                            itemsHtml += `<div class="w-5 h-5 rounded bg-black/40 border border-white/5"></div>`;
                         }
-
-                        const itemsList = rawItemsStr ? rawItemsStr.split(',').map(i => i.trim()) : [];
-
-                        let itemsHtml = '';
-                        for(let k=0; k<6; k++) {
-                            const itemName = itemsList[k] || '';
-                            const itemImg = getItemIconUrl(itemName, m.game);
-                            if(itemImg && itemName) {
-                                itemsHtml += `<img src="${itemImg}" class="w-5 h-5 rounded bg-slate-800 border border-white/10 object-cover" title="${itemName}" onError="this.src='https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/item/1028.png'">`;
-                            } else {
-                                itemsHtml += `<div class="w-4 h-4 rounded bg-black/40 border border-white/5"></div>`;
-                            }
-                        }
-
-                        html += `
-                            <div class="bg-[#0b0c10] p-2.5 rounded border ${isBlue ? 'border-blue-500/20' : 'border-red-500/20'} space-y-1.5 text-xs">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center space-x-2">
-                                        <img src="${champIcon}" class="w-7 h-7 rounded-lg border border-white/10 object-cover" onError="this.src='https://via.placeholder.com/30'">
-                                        <div><p class="font-black text-white text-[11px] leading-none">${p[0]}</p><p class="text-[9px] ${isBlue ? 'text-blue-400' : 'text-red-400'} font-bold">${p[1] || ''}</p></div>
-                                    </div>
-                                    <div class="text-right">
-                                        <p class="font-black text-slate-200 text-xs leading-none">${kda} <span class="text-[9px] text-slate-400 font-normal">(${gold} Gold)</span></p>
-                                        ${dmgDealt ? `<p class="text-[9px] text-slate-400 mt-0.5">Dmg: <span class="text-red-400 font-bold">${dmgDealt}</span></p>` : ''}
-                                    </div>
-                                </div>
-                                <div class="flex items-center justify-start space-x-1 pt-1 border-t border-white/5">${itemsHtml}</div>
-                            </div>
-                        `;
                     }
+
+                    html += `
+                        <div class="bg-[#0b0c10] p-2.5 rounded border ${isBlue ? 'border-blue-500/20' : 'border-red-500/20'} space-y-1.5 text-xs">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <img src="${getChampionIconUrl(champ)}" class="w-7 h-7 rounded-lg border border-white/10 object-cover" onError="this.src='https://via.placeholder.com/30'">
+                                    <div><p class="font-black text-white text-[11px] leading-none">${ign}</p><p class="text-[9px] ${isBlue ? 'text-blue-400' : 'text-red-400'} font-bold">${champ}</p></div>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-black text-slate-200 text-xs leading-none">${kda} <span class="text-[9px] text-slate-400 font-normal">(${gold} Gold)</span></p>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-start space-x-1 pt-1 border-t border-white/5">${itemsHtml}</div>
+                        </div>
+                    `;
                 });
                 return html;
             };
+
             document.getElementById('blue-team-rows').innerHTML = parseRows(m.blueData, true);
             document.getElementById('red-team-rows').innerHTML = parseRows(m.redData, false);
 
