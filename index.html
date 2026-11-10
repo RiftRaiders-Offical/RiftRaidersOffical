@@ -596,7 +596,8 @@
                 }
             }
 
-            return ''; // I-balik ang blangko kung walang match para hindi mag-error/ruby crystal
+            // Fallback icon para hindi maging blangko
+            return `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/item/1028.png`;
         }
 
         db.ref('settings/logo').on('value', snap => {
@@ -1167,14 +1168,21 @@
                             }
                         }
 
+                        // Kung sakaling nakalagay ang items sa index 4 at walang ibang nakitang items list
+                        if (!rawItemsStr && p.length >= 5 && p[4].includes(',')) {
+                            rawItemsStr = p[4];
+                        } else if (!rawItemsStr && p.length === 4) {
+                            rawItemsStr = p[3]; // Kung KDA at Gold lang tapos may items na kasunod
+                        }
+
                         const itemsList = rawItemsStr ? rawItemsStr.split(',').map(i => i.trim()) : [];
 
                         let itemsHtml = '';
                         for(let k=0; k<6; k++) {
                             const itemName = itemsList[k] || '';
                             const itemImg = getItemIconUrl(itemName, m.game);
-                            if(itemName && itemImg) {
-                                itemsHtml += `<img src="${itemImg}" class="w-5 h-5 rounded bg-slate-800 border border-white/10 object-cover" title="${itemName}" onError="this.style.display='none'">`;
+                            if(itemImg) {
+                                itemsHtml += `<img src="${itemImg}" class="w-5 h-5 rounded bg-slate-800 border border-white/10 object-cover" title="${itemName || 'Item'}" onError="this.src='https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/item/1028.png'">`;
                             } else {
                                 itemsHtml += `<div class="w-4 h-4 rounded bg-black/40 border border-white/5"></div>`;
                             }
