@@ -324,18 +324,18 @@
                     <div class="border-t border-white/5 pt-3 space-y-3">
                         <div class="space-y-1">
                             <div class="flex justify-between items-center">
-                                <label class="text-[9px] text-blue-400 font-bold uppercase">Blue Team Data (IGN | Champ | KDA | Gold | Items)</label>
+                                <label class="text-[9px] text-blue-400 font-bold uppercase">Blue Team Data (IGN | Champ | KDA | Gold | [Dmg] | Items)</label>
                                 <button onclick="autoFormatRawData('m-blue-data')" type="button" class="text-[9px] bg-blue-600/30 text-blue-300 hover:bg-blue-600/50 px-2 py-0.5 rounded">Smart Auto-Format Text</button>
                             </div>
-                            <textarea id="m-blue-data" rows="5" placeholder="RRS Tyad | Aatrox | 9/5/7 | 16,805 | Sundered Sky, Amaranth's Twinguard, Sterak's Gage, Serpent's Fang, Mercury's Treads" class="w-full bg-[#0b0c10] border border-blue-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
+                            <textarea id="m-blue-data" rows="5" placeholder="RRS Tyad | Aatrox | 9/5/7 | 16,805 | 26,804 | Sundered Sky, Plated Steelcaps, Sterak's Gage" class="w-full bg-[#0b0c10] border border-blue-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
                         </div>
 
                         <div class="space-y-1">
                             <div class="flex justify-between items-center">
-                                <label class="text-[9px] text-red-400 font-bold uppercase">Red Team Data (IGN | Champ | KDA | Gold | Items)</label>
+                                <label class="text-[9px] text-red-400 font-bold uppercase">Red Team Data (IGN | Champ | KDA | Gold | [Dmg] | Items)</label>
                                 <button onclick="autoFormatRawData('m-red-data')" type="button" class="text-[9px] bg-red-600/30 text-red-300 hover:bg-red-600/50 px-2 py-0.5 rounded">Smart Auto-Format Text</button>
                             </div>
-                            <textarea id="m-red-data" rows="5" placeholder="VORTEX | Mordekaiser | 9/7/11 | 15,635 | Riftmaker, Dusk and Dawn, Thornmail, Liandry's Torment, Plated Steelcaps" class="w-full bg-[#0b0c10] border border-red-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
+                            <textarea id="m-red-data" rows="5" placeholder="VORTEX | Mordekaiser | 9/7/11 | 15,635 | 24,343 | Riftmaker, Thornmail, Plated Steelcaps" class="w-full bg-[#0b0c10] border border-red-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
                         </div>
                     </div>
 
@@ -571,7 +571,10 @@
                 'bootsofmana': '3020',
                 'ionianbootsoflucidity': '3158', 'lucidity': '3158',
                 'berserkersgreaves': '3006',
-                'gluttonousgreaves': '3006'
+                'gluttonousgreaves': '3006',
+                'oblivionorb': '3135',
+                'sunfireaegis': '3068',
+                'rodofages': '3027'
             };
 
             for (let key in itemMap) {
@@ -1130,7 +1133,11 @@
                     const p = line.split('|').map(s => s.trim());
                     if(p.length >= 3) {
                         const champIcon = getChampionIconUrl(p[1]);
-                        const itemsList = p[4] ? p[4].split(',') : [];
+                        const kda = p[2] || '0/0/0';
+                        const gold = p[3] || '0';
+                        const dmgDealt = p[4] && !p[4].includes(',') ? p[4] : '';
+                        const itemsList = p.length > 5 ? p[5].split(',') : (p[4] && p[4].includes(',') ? p[4].split(',') : []);
+
                         let itemsHtml = '';
                         for(let k=0; k<6; k++) {
                             const itemName = itemsList[k] ? itemsList[k].trim() : '';
@@ -1143,15 +1150,18 @@
                         }
 
                         html += `
-                            <div class="bg-[#0b0c10] p-2 rounded border ${isBlue ? 'border-blue-500/20' : 'border-red-500/20'} flex items-center justify-between text-xs">
-                                <div class="flex items-center space-x-2">
-                                    <img src="${champIcon}" class="w-7 h-7 rounded-lg border border-white/10 object-cover" onError="this.src='https://via.placeholder.com/30'">
-                                    <div><p class="font-black text-white text-[11px] leading-none">${p[0]}</p><p class="text-[9px] ${isBlue ? 'text-blue-400' : 'text-red-400'} font-bold">${p[1] || ''}</p></div>
+                            <div class="bg-[#0b0c10] p-2.5 rounded border ${isBlue ? 'border-blue-500/20' : 'border-red-500/20'} space-y-1.5 text-xs">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-2">
+                                        <img src="${champIcon}" class="w-7 h-7 rounded-lg border border-white/10 object-cover" onError="this.src='https://via.placeholder.com/30'">
+                                        <div><p class="font-black text-white text-[11px] leading-none">${p[0]}</p><p class="text-[9px] ${isBlue ? 'text-blue-400' : 'text-red-400'} font-bold">${p[1] || ''}</p></div>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="font-black text-slate-200 text-xs leading-none">${kda} <span class="text-[9px] text-slate-400 font-normal">(${gold} Gold)</span></p>
+                                        ${dmgDealt ? `<p class="text-[9px] text-slate-400 mt-0.5">Dmg Dealt: <span class="text-red-400 font-bold">${dmgDealt}</span></p>` : ''}
+                                    </div>
                                 </div>
-                                <div class="text-right space-y-1">
-                                    <p class="font-black text-slate-200 text-xs leading-none">${p[2]} <span class="text-[9px] text-slate-400 font-normal">(${p[3] || ''} Gold)</span></p>
-                                    <div class="flex items-center justify-end space-x-1">${itemsHtml}</div>
-                                </div>
+                                <div class="flex items-center justify-start space-x-1 pt-1 border-t border-white/5">${itemsHtml}</div>
                             </div>
                         `;
                     }
