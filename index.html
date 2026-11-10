@@ -97,7 +97,6 @@
                 </div>
             </div>
 
-            <!-- MATCH HISTORY GAME SELECTION TABS -->
             <div class="flex gap-2 overflow-x-auto pb-1 text-xs font-bold">
                 <button onclick="filterMatchGame('ALL')" class="match-tab bg-blue-600 text-white px-4 py-2 rounded-lg border border-blue-500/35 whitespace-nowrap transition">ALL GAMES</button>
                 <button onclick="filterMatchGame('Wild Rift')" class="match-tab bg-[#161822] text-slate-400 px-4 py-2 rounded-lg border border-white/5 whitespace-nowrap transition">WILD RIFT</button>
@@ -190,7 +189,13 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- 1. ADD & MANAGE PLAYER -->
                 <div class="bg-[#161822] p-5 rounded-xl border border-white/5 space-y-4">
-                    <h3 class="font-black text-xs uppercase text-red-500">1. Add & Manage Competitive Player</h3>
+                    <div class="flex justify-between items-center">
+                        <h3 id="player-form-title" class="font-black text-xs uppercase text-red-500">1. Add & Manage Competitive Player</h3>
+                        <button id="cancel-edit-btn" onclick="resetPlayerForm()" class="hidden text-[9px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded hover:bg-slate-700">Cancel Edit</button>
+                    </div>
+                    
+                    <input type="hidden" id="editing-player-id" value="">
+
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 uppercase">Select Game Category:</label>
                         <select id="p-game" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 text-white font-bold focus:outline-none focus:border-red-500">
@@ -202,7 +207,7 @@
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="text-[10px] font-bold text-slate-400 uppercase">IGN:</label>
-                            <input type="text" id="p-ign" placeholder="e.g. PlayerName" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
+                            <input type="text" id="p-ign" placeholder="e.g. RRS Tyad" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
                         </div>
                         <div>
                             <label class="text-[10px] font-bold text-slate-400 uppercase">Tag:</label>
@@ -211,8 +216,8 @@
                     </div>
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="text-[10px] font-bold text-slate-400 uppercase">Team Name:</label>
-                            <input type="text" id="p-team" placeholder="Rift Raiders (STI MEYC)" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase">Team Name / Tag:</label>
+                            <input type="text" id="p-team" placeholder="e.g. RRS, RFR, RRA" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
                         </div>
                         <div>
                             <label class="text-[10px] font-bold text-slate-400 uppercase">Team Logo URL:</label>
@@ -221,46 +226,48 @@
                     </div>
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 uppercase">Player Role:</label>
-                        <input type="text" id="p-role" placeholder="Baron Lane" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
+                        <input type="text" id="p-role" placeholder="Baron Lane / Mid / Support" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
                     </div>
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 uppercase">Profile Photo:</label>
                         <input type="file" id="p-pfp" accept="image/*" class="w-full text-xs text-slate-400 mt-1">
                     </div>
-                    <div>
-                        <label class="text-[10px] font-bold text-slate-400 uppercase">Team Logo Image File (Optional):</label>
-                        <input type="file" id="p-teamlogo-file" accept="image/*" class="w-full text-xs text-slate-400 mt-1">
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-bold text-slate-400 uppercase">Top 3 Champions / Agents (Photos):</label>
-                        <div class="grid grid-cols-3 gap-2 mt-1">
-                            <input type="file" id="p-c1" accept="image/*" class="w-full text-[10px] text-slate-400">
-                            <input type="file" id="p-c2" accept="image/*" class="w-full text-[10px] text-slate-400">
-                            <input type="file" id="p-c3" accept="image/*" class="w-full text-[10px] text-slate-400">
-                        </div>
-                    </div>
-                    <button onclick="addPlayer()" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save Player</button>
+                    <button id="save-player-btn" onclick="addPlayer()" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save Player</button>
                     
                     <div class="mt-4 pt-3 border-t border-white/5">
                         <p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Existing Players List:</p>
-                        <div id="admin-players-list" class="space-y-2 max-h-40 overflow-y-auto"></div>
+                        <div id="admin-players-list" class="space-y-2 max-h-48 overflow-y-auto"></div>
                     </div>
                 </div>
 
                 <!-- 2. ADD & MANAGE 5v5 MATCH -->
                 <div class="bg-[#161822] p-5 rounded-xl border border-white/5 space-y-4">
-                    <h3 class="font-black text-xs uppercase text-red-500">2. Add Full 5v5 Match (Custom Text Editor)</h3>
+                    <h3 class="font-black text-xs uppercase text-red-500">2. Add Full 5v5 Match</h3>
                     
-                    <!-- QUICK COMMAND BUTTONS FOR RRS MATCHES -->
+                    <!-- DYNAMIC TEAM PRESET BUTTONS FOR MATCH HISTORY DATA ENTRY -->
                     <div class="bg-[#0b0c10] p-3 rounded-lg border border-indigo-500/40 space-y-2">
                         <label class="text-[10px] font-bold text-indigo-400 uppercase flex items-center space-x-1">
-                            <i class="fa-solid fa-wand-magic-sparkles"></i>
-                            <span>RRS Match Command Auto-fill:</span>
+                            <i class="fa-solid fa-users"></i>
+                            <span>Quick Roster Auto-Fill into Blue Team Data:</span>
                         </label>
-                        <div class="grid grid-cols-3 gap-1.5">
-                            <button onclick="loadMatchCommand(1)" type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white py-1.5 rounded text-[10px] font-bold uppercase transition">Laro 1 (Win)</button>
-                            <button onclick="loadMatchCommand(2)" type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white py-1.5 rounded text-[10px] font-bold uppercase transition">Laro 2 (Defeat)</button>
-                            <button onclick="loadMatchCommand(3)" type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white py-1.5 rounded text-[10px] font-bold uppercase transition">Laro 3 (Win)</button>
+                        
+                        <div class="space-y-1.5">
+                            <p class="text-[9px] text-slate-400 font-bold uppercase">Wild Rift:</p>
+                            <div class="flex gap-1.5">
+                                <button onclick="autoFillTeamData('Wild Rift', 'RFR')" type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2 py-1 rounded text-[10px] font-bold uppercase transition">RFR (Wild Rift)</button>
+                                <button onclick="autoFillTeamData('Wild Rift', 'RRS')" type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2 py-1 rounded text-[10px] font-bold uppercase transition">RRS (Sentinel)</button>
+                            </div>
+
+                            <p class="text-[9px] text-slate-400 font-bold uppercase mt-1">League of Legends (PC):</p>
+                            <div class="flex gap-1.5">
+                                <button onclick="autoFillTeamData('League of Legends', 'RFR')" type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2 py-1 rounded text-[10px] font-bold uppercase transition">RFR (LoL PC)</button>
+                                <button onclick="autoFillTeamData('League of Legends', 'RRA')" type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2 py-1 rounded text-[10px] font-bold uppercase transition">RRA (Ascend)</button>
+                            </div>
+
+                            <p class="text-[9px] text-slate-400 font-bold uppercase mt-1">Valorant:</p>
+                            <div class="flex gap-1.5">
+                                <button onclick="autoFillTeamData('Valorant', 'RFR')" type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2 py-1 rounded text-[10px] font-bold uppercase transition">RFR (Valorant)</button>
+                            </div>
                         </div>
                     </div>
 
@@ -276,7 +283,7 @@
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="text-[10px] font-bold text-slate-400 uppercase">Our Team (Blue):</label>
-                            <input type="text" id="m-team" value="Rift Raiders (STI MEYC)" placeholder="Rift Raiders (STI MEYC)" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
+                            <input type="text" id="m-team" value="Rift Raiders" placeholder="Rift Raiders" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
                         </div>
                         <div>
                             <label class="text-[10px] font-bold text-slate-400 uppercase">Opponent (Red):</label>
@@ -311,13 +318,13 @@
 
                     <div class="border-t border-white/5 pt-3 space-y-3">
                         <div class="space-y-1">
-                            <label class="text-[9px] text-blue-400 font-bold uppercase">Blue Team Data Format: (IGN | Champion | KDA | Gold | Dmg | Item1, Item2, ...)</label>
-                            <textarea id="m-blue-data" rows="5" placeholder="PlayerName | Aatrox | 5/2/4 | 14,500 | 25,000 | Steraks, BlackCleaver, DeathDance" class="w-full bg-[#0b0c10] border border-blue-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
+                            <label class="text-[9px] text-blue-400 font-bold uppercase">Blue Team Data Format: (IGN | Champion | KDA | Gold | Item1, Item2...)</label>
+                            <textarea id="m-blue-data" rows="5" placeholder="RRS Tyad | Aatrox | 9/5/7 | 16,805 | Divine Sunderer, Death's Dance, Sterak's Gage, Plated Steelcaps" class="w-full bg-[#0b0c10] border border-blue-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
                         </div>
 
                         <div class="space-y-1">
-                            <label class="text-[9px] text-red-400 font-bold uppercase">Red Team Data Format: (IGN | Champion | KDA | Gold | Dmg | Item1, Item2, ...)</label>
-                            <textarea id="m-red-data" rows="5" placeholder="EnemyName | Camille | 2/3/1 | 13,000 | 22,000 | TrinityForce, RavenousHydra" class="w-full bg-[#0b0c10] border border-red-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
+                            <label class="text-[9px] text-red-400 font-bold uppercase">Red Team Data Format: (IGN | Champion | KDA | Gold | Item1, Item2...)</label>
+                            <textarea id="m-red-data" rows="5" placeholder="VORTEX | Mordekaiser | 9/7/11 | 15,635 | Riftmaker, Liandry's Torment, Rabadon's Deathcap, Mercury's Treads" class="w-full bg-[#0b0c10] border border-red-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
                         </div>
                     </div>
 
@@ -341,7 +348,6 @@
                         <input type="text" id="c-game" placeholder="e.g. Wild Rift" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1">
                     </div>
                     
-                    <!-- 4 SOCIAL LINKS INPUTS -->
                     <div class="space-y-2 bg-[#0b0c10] p-3 rounded-lg border border-white/5">
                         <label class="text-[10px] font-bold text-red-400 uppercase">Social Media Links (Optional):</label>
                         <div>
@@ -430,7 +436,7 @@
             </div>
 
             <div class="space-y-3 border-t border-white/5 pt-3">
-                <p id="modal-champs-title" class="text-slate-500 text-[9px] font-bold uppercase tracking-widest">MOST PLAYED CHAMPIONS & USAGE RATE (TOURNAMENT ONLY)</p>
+                <p id="modal-champs-title" class="text-slate-500 text-[9px] font-bold uppercase tracking-widest">MOST PLAYED CHAMPIONS (TOURNAMENT ONLY)</p>
                 <div id="modal-champs-list" class="space-y-2"></div>
             </div>
         </div>
@@ -441,7 +447,6 @@
         <div id="match-modal-card" class="bg-[#0b0c10] border border-blue-500/30 rounded-2xl p-4 sm:p-6 w-full max-w-4xl shadow-[0_0_50px_rgba(37,99,235,0.2)] relative transform scale-95 opacity-0 transition-all duration-300 space-y-4 max-h-[95vh] overflow-y-auto">
             <button onclick="closeMatchModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white w-7 h-7 flex items-center justify-center bg-white/10 rounded-full">✕</button>
 
-            <!-- MATCH HEADER BANNER -->
             <div class="flex flex-col sm:flex-row justify-between items-center border-b border-white/10 pb-3 gap-2 text-center sm:text-left">
                 <div>
                     <span id="match-modal-type" class="bg-blue-600/20 text-blue-400 border border-blue-500/30 text-[9px] font-black px-2.5 py-0.5 rounded uppercase">Tournament</span>
@@ -453,7 +458,6 @@
                 </div>
             </div>
 
-            <!-- 5v5 BLUE SIDE VS RED SIDE -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="bg-[#121624] border border-blue-500/30 rounded-xl p-3 space-y-2">
                     <div class="flex justify-between items-center text-xs font-black text-blue-400 border-b border-blue-500/20 pb-1.5 uppercase">
@@ -494,128 +498,57 @@
         let currentGameFilter = 'ALL';
         let currentMatchFilter = 'ALL';
         const defaultLogoUrl = "https://i.ibb.co/6R7QW3L/79923.jpg";
-
-        const ddragonVer = "14.1.1";
+        const ddragonVer = "13.24.1";
         
-     function getChampionIconUrl(champName) {
-    if (!champName) return '';
-    
-    let rawName = champName.trim();
-    let clean = rawName.toLowerCase().replace(/[^a-z0-9]/g, '');
-    
-    // Mapping para sa mga Pangalan sa Wild Rift / DDragon CDN Mismatch
-    const champMap = {
-        'kaisa': 'KaiSa',
-        'khazix': 'KhaZix',
-        'chogath': 'ChoGath',
-        'velkoz': 'Velkoz',
-        'wukong': 'MonkeyKing',
-        'monkeyking': 'MonkeyKing',
-        'jarvan': 'JarvanIV',
-        'jarvaniv': 'JarvanIV',
-        'missfortune': 'MissFortune',
-        'mf': 'MissFortune',
-        'twistedfate': 'TwistedFate',
-        'tf': 'TwistedFate',
-        'drmundo': 'DrMundo',
-        'mundo': 'DrMundo',
-        'masteryi': 'MasterYi',
-        'yi': 'MasterYi',
-        'leesin': 'LeeSin',
-        'xinzhao': 'XinZhao',
-        'tahmkench': 'TahmKench',
-        'aurelionsol': 'AurelionSol',
-        'asol': 'AurelionSol',
-        'renata': 'Renata',
-        'renataglasc': 'Renata',
-        'nunu': 'Nunu'
-    };
+        function getChampionIconUrl(champName) {
+            if (!champName) return '';
+            let rawName = champName.trim();
+            let clean = rawName.toLowerCase().replace(/[^a-z0-9]/g, '');
+            
+            const champMap = {
+                'kaisa': 'KaiSa', 'khazix': 'KhaZix', 'chogath': 'ChoGath',
+                'velkoz': 'Velkoz', 'wukong': 'MonkeyKing', 'monkeyking': 'MonkeyKing',
+                'jarvan': 'JarvanIV', 'jarvaniv': 'JarvanIV', 'missfortune': 'MissFortune',
+                'mf': 'MissFortune', 'twistedfate': 'TwistedFate', 'tf': 'TwistedFate',
+                'drmundo': 'DrMundo', 'mundo': 'DrMundo', 'masteryi': 'MasterYi',
+                'leesin': 'LeeSin', 'xinzhao': 'XinZhao', 'tahmkench': 'TahmKench',
+                'aurelionsol': 'AurelionSol', 'asol': 'AurelionSol', 'renata': 'Renata',
+                'nunu': 'Nunu'
+            };
 
-    let formattedName = '';
-
-    if (champMap[clean]) {
-        formattedName = champMap[clean];
-    } else {
-        // Standard Title Case (e.g., Aatrox, Skarner, Lissandra, Corki, Nami)
-        formattedName = rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase();
-    }
-
-    // Official Riot DDragon Champion Icon CDN
-    return `https://ddragon.leagueoflegends.com/cdn/13.24.1/img/champion/${formattedName}.png`;
-}
-     function getItemIconUrl(itemName) {
-    if (!itemName) return '';
-    
-    // Tinatanggal ang spaces, special characters, at ginagawang lowercase
-    let clean = itemName.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
-    
-    const itemMap = {
-        // Boots
-        'platedsteelcaps': '3047', 'steelcaps': '3047', 'tabi': '3047',
-        'ionianboots': '3158', 'ionianbootsoflucidity': '3158', 'lucidity': '3158',
-        'berserkersgreaves': '3006', 'berserkers': '3006',
-        'mercurystreads': '3111', 'mercurys': '3111', 'merc': '3111',
-        'sorcerersshoes': '3020', 'sorcerers': '3020',
-        'mobilityboots': '3117', 'mobs': '3117',
-
-        // Mythic / Major Items
-        'heartsteel': '3084',
-        'divinesunderer': '6632', 'sunderer': '6632',
-        'trinityforce': '3078', 'trinity': '3078',
-        'deathsdance': '3812', 'deathdance': '3812',
-        'steraksgage': '3053', 'steraks': '3053', 'sterak': '3053',
-        'guardianangel': '3026', 'ga': '3026',
-        'bladeoftheruinedking': '3153', 'botrk': '3153', 'ruinedking': '3153',
-        'riftmaker': '4646',
-        'liandrystorment': '6653', 'liandry': '6653', 'liandrys': '6653',
-        'rabadonsdeathcap': '3089', 'rabadon': '3089', 'deathcap': '3089',
-        'ludensecho': '6655', 'ludens': '6655', 'luden': '6655',
-        'infinityorb': '3165',
-        'infinityedge': '3031', 'ie': '3031',
-        'essencereaver': '3508',
-        'krakenslayer': '6672', 'kraken': '6672',
-        'phantomdancer': '3046', 'pd': '3046',
-        'rapidfirecannon': '3094', 'rfc': '3094',
-        'statikkshiv': '3087', 'statikk': '3087',
-        'bloodthirster': '3072', 'bt': '3072',
-        'collector': '6676', 'thecollector': '6676',
-        'navoriquickblades': '6675', 'navori': '6675',
-        'blackcleaver': '3071', 'cleaver': '3071',
-        'ravenoushydra': '3074', 'hydra': '3074',
-
-        // Tank & Support Items
-        'sunfireaegis': '3068', 'sunfire': '3068',
-        'warmogsarmor': '3083', 'warmogs': '3083', 'warmog': '3083',
-        'thornmail': '3075',
-        'locketofthesolari': '3190', 'locket': '3190',
-        'deadmansplate': '3742', 'deadman': '3742',
-        'ardentcenser': '3504', 'ardent': '3504',
-        'harmonicecho': '3001', 'harmonious': '3001', 'harmonic': '3001',
-        'athenesunholygrail': '3174', 'athenes': '3174', 'athene': '3174',
-        'protectorsvow': '3109', 'protector': '3109',
-        'umbralglave': '3134', 'umbralglaive': '3134', 'umbral': '3134',
-        'duskbladeofdraktharr': '3147', 'duskblade': '3147',
-        'hextechgunblade': '3146', 'gunblade': '3146',
-        'rodofages': '3027', 'roa': '3027',
-        'morellonomicon': '3165', 'morello': '3165'
-    };
-
-    // Hanapin sa dictionary
-    for (let key in itemMap) {
-        if (clean.includes(key) || key.includes(clean)) {
-            return `https://ddragon.leagueoflegends.com/cdn/13.24.1/img/item/${itemMap[key]}.png`;
+            let formattedName = champMap[clean] || (rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase());
+            return `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/champion/${formattedName}.png`;
         }
-    }
 
-    // Default icon (Ruby Crystal) sakaling hindi makilala ang item name para hindi maging transparent/blank
-    return `https://ddragon.leagueoflegends.com/cdn/13.24.1/img/item/1028.png`;
-}
+        function getItemIconUrl(itemName) {
+            if (!itemName) return '';
+            let clean = itemName.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+            
+            const itemMap = {
+                'platedsteelcaps': '3047', 'steelcaps': '3047', 'tabi': '3047',
+                'ionianboots': '3158', 'lucidity': '3158', 'berserkersgreaves': '3006',
+                'mercurystreads': '3111', 'sorcerersshoes': '3020', 'mobilityboots': '3117',
+                'heartsteel': '3084', 'divinesunderer': '6632', 'trinityforce': '3078',
+                'deathsdance': '3812', 'steraksgage': '3053', 'guardianangel': '3026',
+                'bladeoftheruinedking': '3153', 'botrk': '3153', 'riftmaker': '4646',
+                'liandrystorment': '6653', 'rabadonsdeathcap': '3089', 'ludensecho': '6655',
+                'infinityorb': '3165', 'infinityedge': '3031', 'essencereaver': '3508',
+                'krakenslayer': '6672', 'phantomdancer': '3046', 'rapidfirecannon': '3094',
+                'statikkshiv': '3087', 'bloodthirster': '3072', 'collector': '6676',
+                'navoriquickblades': '6675', 'blackcleaver': '3071', 'ravenoushydra': '3074',
+                'sunfireaegis': '3068', 'warmogsarmor': '3083', 'thornmail': '3075',
+                'locketofthesolari': '3190', 'deadmansplate': '3742', 'ardentcenser': '3504',
+                'harmonicecho': '3001', 'athenesunholygrail': '3174', 'protectorsvow': '3109',
+                'umbralglaive': '3134', 'duskbladeofdraktharr': '3147', 'hextechgunblade': '3146',
+                'rodofages': '3027', 'morellonomicon': '3165'
+            };
+
             for (let key in itemMap) {
-                if (clean.includes(key)) {
+                if (clean.includes(key) || key.includes(clean)) {
                     return `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/item/${itemMap[key]}.png`;
                 }
             }
-            return '';
+            return `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/item/1028.png`;
         }
 
         db.ref('settings/logo').on('value', snap => {
@@ -706,7 +639,7 @@
             filtered.forEach(p => {
                 const stats = calculateTeamTournamentStats(p.team);
                 grid.innerHTML += `
-                    <div onclick="openPlayerStats('${p.ign.replace(/'/g, "\\'")}', '${p.tag || ''}', '${p.game}', '${p.team}', '${p.role || ''}', '${stats.winrate}', '${stats.wins}', '${stats.losses}', '${p.pfp || ''}', '${p.champ1 || ''}', '${p.champ2 || ''}', '${p.champ3 || ''}', '${p.teamlogo || ''}')" class="bg-[#161822] rounded-xl overflow-hidden relative h-64 cursor-pointer group border border-white/5 shadow-md">
+                    <div onclick="openPlayerStats('${p.ign.replace(/'/g, "\\'")}', '${p.tag || ''}', '${p.game}', '${p.team}', '${p.role || ''}', '${stats.winrate}', '${stats.wins}', '${stats.losses}', '${p.pfp || ''}', '${p.teamlogo || ''}')" class="bg-[#161822] rounded-xl overflow-hidden relative h-64 cursor-pointer group border border-white/5 shadow-md">
                         <img src="${p.pfp || 'https://via.placeholder.com/150'}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition duration-500">
                         <div class="absolute inset-0 bg-gradient-to-t from-[#0b0c10] via-[#0b0c10]/30 to-transparent"></div>
                         <div class="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-emerald-400 text-[9px] font-black px-2 py-1 rounded border border-white/15">WR: ${stats.winrate}</div>
@@ -805,7 +738,18 @@
             container.innerHTML = '';
             if(allPlayers.length === 0) { container.innerHTML = '<p class="text-[10px] text-slate-500 italic">No players in database.</p>'; return; }
             allPlayers.forEach(p => {
-                container.innerHTML += `<div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/5 text-xs"><span class="font-bold text-slate-300 truncate">${p.ign} (${p.team})</span><button onclick="deleteItem('roster', '${p.id}')" class="bg-red-600/20 text-red-400 px-2 py-1 rounded text-[10px]">Delete</button></div>`;
+                container.innerHTML += `
+                    <div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/5 text-xs">
+                        <div class="truncate pr-2">
+                            <span class="font-bold text-slate-300">${p.ign}</span>
+                            <span class="text-[9px] text-slate-500 ml-1">(${p.game} • ${p.team})</span>
+                        </div>
+                        <div class="flex items-center space-x-1 shrink-0">
+                            <button onclick="editPlayer('${p.id}')" class="bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 px-2 py-1 rounded text-[10px] font-bold">Edit Profile</button>
+                            <button onclick="deleteItem('roster', '${p.id}')" class="bg-red-600/20 text-red-400 hover:bg-red-600/30 px-2 py-1 rounded text-[10px] font-bold">Delete</button>
+                        </div>
+                    </div>
+                `;
             });
         }
 
@@ -834,7 +778,7 @@
             });
         }
 
-        function deleteItem(path, id) { if(confirm('Delete?')) db.ref(`${path}/${id}`).remove(); }
+        function deleteItem(path, id) { if(confirm('Delete this item?')) db.ref(`${path}/${id}`).remove(); }
         
         function fileToBase64(file) {
             return new Promise((resolve) => {
@@ -846,7 +790,42 @@
             });
         }
 
+        // EDIT PLAYER PROFILE FUNCTION
+        function editPlayer(id) {
+            const player = allPlayers.find(p => p.id === id);
+            if (!player) return;
+
+            document.getElementById('editing-player-id').value = id;
+            document.getElementById('p-game').value = player.game || 'Wild Rift';
+            document.getElementById('p-ign').value = player.ign || '';
+            document.getElementById('p-tag').value = player.tag || '';
+            document.getElementById('p-team').value = player.team || '';
+            document.getElementById('p-teamlogo').value = player.teamlogo || '';
+            document.getElementById('p-role').value = player.role || '';
+
+            document.getElementById('player-form-title').innerText = "1. Edit Player Profile (" + player.ign + ")";
+            document.getElementById('save-player-btn').innerText = "Update Player Profile";
+            document.getElementById('cancel-edit-btn').classList.remove('hidden');
+
+            window.scrollTo({ top: document.getElementById('admin-dashboard-section').offsetTop, behavior: 'smooth' });
+        }
+
+        function resetPlayerForm() {
+            document.getElementById('editing-player-id').value = '';
+            document.getElementById('p-ign').value = '';
+            document.getElementById('p-tag').value = '';
+            document.getElementById('p-team').value = '';
+            document.getElementById('p-teamlogo').value = '';
+            document.getElementById('p-role').value = '';
+            document.getElementById('p-pfp').value = '';
+
+            document.getElementById('player-form-title').innerText = "1. Add & Manage Competitive Player";
+            document.getElementById('save-player-btn').innerText = "Save Player";
+            document.getElementById('cancel-edit-btn').classList.add('hidden');
+        }
+
         async function addPlayer() {
+            const editId = document.getElementById('editing-player-id').value;
             const game = document.getElementById('p-game').value;
             const ign = document.getElementById('p-ign').value.trim();
             const tag = document.getElementById('p-tag').value.trim();
@@ -856,83 +835,54 @@
 
             if(!ign) { alert('Mangyaring ilagay ang IGN ng player!'); return; }
             
-            const pfp = await fileToBase64(document.getElementById('p-pfp').files[0]);
-            const teamlogoFile = document.getElementById('p-teamlogo-file').files[0];
-            if(teamlogoFile) teamlogo = await fileToBase64(teamlogoFile);
-            
-            const champ1 = await fileToBase64(document.getElementById('p-c1').files[0]);
-            const champ2 = await fileToBase64(document.getElementById('p-c2').files[0]);
-            const champ3 = await fileToBase64(document.getElementById('p-c3').files[0]);
+            let pfp = await fileToBase64(document.getElementById('p-pfp').files[0]);
 
-            db.ref('roster').push({ game, ign, tag, team, teamlogo, role, pfp, champ1, champ2, champ3 })
-              .then(() => {
-                  alert('Player added successfully!');
-                  document.getElementById('p-ign').value = '';
-                  document.getElementById('p-tag').value = '';
-              })
-              .catch(err => alert('Error adding player: ' + err.message));
+            // Kapag nagi-edit at walang bagong in-upload na PFP, gamitin ang purong lumang PFP
+            if(editId && !pfp) {
+                const existing = allPlayers.find(p => p.id === editId);
+                if(existing) pfp = existing.pfp || '';
+            }
+
+            const playerData = { game, ign, tag, team, teamlogo, role, pfp };
+
+            if(editId) {
+                db.ref(`roster/${editId}`).update(playerData)
+                  .then(() => {
+                      alert('Player Profile updated successfully!');
+                      resetPlayerForm();
+                  })
+                  .catch(err => alert('Error updating player: ' + err.message));
+            } else {
+                db.ref('roster').push(playerData)
+                  .then(() => {
+                      alert('Player added successfully!');
+                      resetPlayerForm();
+                  })
+                  .catch(err => alert('Error adding player: ' + err.message));
+            }
         }
 
-        function loadMatchCommand(gameNum) {
-            if(gameNum === 1) {
-                document.getElementById('m-game').value = 'Wild Rift';
-                document.getElementById('m-opp').value = 'BrrBrrPatapim Team';
-                document.getElementById('m-score').value = '24 - 11';
-                document.getElementById('m-type').value = 'Tournament';
-                document.getElementById('m-result').value = 'Win';
-                document.getElementById('m-date').value = 'Wild Rift - 19:53';
-                document.getElementById('m-blue-data').value = 
-`RRS Tyad | Aatrox | 2/2/5 | 14,507 | 22,000 | DivineSunderer, DeathDance, Steraks
-RRS KyRem | Viego | 5/3/10 | 17,083 | 25,000 | TrinityForce, BladeOfTheRuinedKing, GuardianAngel
-RRS Winter | Gwen | 9/2/8 | 17,198 | 28,000 | NashorsTooth, Riftmaker, Rabadon
-IM ALONE AG... | Kaisa | 4/2/9 | 14,066 | 24,000 | Kraken, InfinityEdge, PhantomDancer
-RRS DNGR | Nautilus | 4/2/12 | 13,870 | 15,000 | Warmog, Locket, Thornmail`;
-                document.getElementById('m-red-data').value = 
-`BrrBrrPatapim | Malphite | 1/5/4 | 12,172 | 14,000 | Sunfire, Warmog, Thornmail
-Reiy | Riven | 3/3/4 | 14,112 | 21,000 | TrinityForce, DeathDance, RavenousHydra
-tum in jirey | Galio | 1/7/4 | 12,067 | 13,000 | RodOfAges, Locket
-OG Peyz | Lucian | 4/4/3 | 16,414 | 23,000 | EssenceReaver, InfinityEdge, RapidFirecannon
-OG Keria | Pyke | 2/5/6 | 10,718 | 11,000 | UmbralGlaive, DeadMansPlate`;
-            } else if(gameNum === 2) {
-                document.getElementById('m-game').value = 'Wild Rift';
-                document.getElementById('m-opp').value = 'VORTEX Team';
-                document.getElementById('m-score').value = '23 - 25';
-                document.getElementById('m-type').value = 'Tournament';
-                document.getElementById('m-result').value = 'Lose';
-                document.getElementById('m-date').value = 'Wild Rift - 17:17';
-                document.getElementById('m-blue-data').value = 
-`RRS Tyad | Skarner | 6/6/2 | 14,491 | 21,000 | TrinityForce, BlackCleaver, Steraks
-IM ALONE AG... | Shen | 2/4/13 | 10,213 | 12,000 | Sunfire, Warmog, Thornmail
-RRS Winter | Galio | 5/7/8 | 11,488 | 14,000 | RodOfAges, Locket, Morellonomicon
-Theo tôi Nguy... | MissFortune | 8/4/2 | 13,721 | 22,000 | EssenceReaver, InfinityEdge, Bloodthirster
-RRS DNGR | Rakan | 2/4/11 | 9,843 | 10,000 | Harmonic, Protector`;
-                document.getElementById('m-red-data').value = 
-`VORTEX | Fiora | 4/8/8 | 11,794 | 18,000 | TrinityForce, RavenousHydra, DeathDance
-2ez4Warren | Yone | 9/2/12 | 17,201 | 26,000 | BladeOfTheRuinedKing, InfinityEdge, GuardianAngel
-Khyden | Karma | 2/5/15 | 12,096 | 14,000 | Luden, Harmonious, Morellonomicon
-VERSACE | Lucian | 9/4/7 | 14,543 | 22,000 | EssenceReaver, Navori, InfinityEdge
-cawi | Lulu | 1/4/17 | 10,623 | 9,000 | Ardent, Harmonious`;
-            } else if(gameNum === 3) {
-                document.getElementById('m-game').value = 'Wild Rift';
-                document.getElementById('m-opp').value = 'VORTEX Team (Rematch)';
-                document.getElementById('m-score').value = '30 - 13';
-                document.getElementById('m-type').value = 'Tournament';
-                document.getElementById('m-result').value = 'Win';
-                document.getElementById('m-date').value = 'Wild Rift - 14:20';
-                document.getElementById('m-blue-data').value = 
-`RRS Tyad | Lucian | 4/2/6 | 12,313 | 19,000 | EssenceReaver, InfinityEdge, Statikk
-IM ALONE AG... | Kassadin | 4/2/10 | 11,635 | 17,000 | RodOfAges, Morellonomicon, Rabadon
-RRS Winter | Akali | 18/3/0 | 14,944 | 24,000 | Hextech, InfinityOrb, Rabadon
-Theo tôi Nguy... | Thresh | 2/3/8 | 10,738 | 12,000 | Deadman, Warmog, Thornmail
-RRS DNGR | Nautilus | 2/3/11 | 9,018 | 10,000 | Sunfire, Locket`;
-                document.getElementById('m-red-data').value = 
-`VORTEX | Irelia | 2/8/0 | 8,220 | 13,000 | BladeOfTheRuinedKing, TrinityForce
-VERSACE | Pyke | 1/4/4 | 8,868 | 9,000 | Umbral, Duskblade
-Khyden | Nautilus | 4/7/3 | 10,235 | 11,000 | Sunfire, Thornmail, Locket
-2ez4Warren | Jinx | 6/5/1 | 11,994 | 19,000 | Kraken, InfinityEdge, Statikk
-Lunae Cadentia | Lulu | 0/6/3 | 7,401 | 8,000 | Ardent, Athene`;
+        // AUTOMATIC ROSTER TO MATCH COMMAND AUTO-FILL
+        function autoFillTeamData(game, teamTag) {
+            document.getElementById('m-game').value = game;
+            
+            // Hahanapin ang mga players sa database na tugma sa game at team tag
+            const matchingPlayers = allPlayers.filter(p => 
+                p.game && p.game.toLowerCase() === game.toLowerCase() &&
+                p.team && p.team.trim().toUpperCase() === teamTag.toUpperCase()
+            );
+
+            if(matchingPlayers.length === 0) {
+                alert(`Walang nahanap na player sa Roster database para sa Game: ${game} at Team: ${teamTag}.\nMag-add muna ng players sa Section 1.`);
+                return;
             }
-            alert('Laro ' + gameNum + ' Command Loaded successfully!');
+
+            // I-fformat per line para sa Blue Team Command Textarea
+            const formattedLines = matchingPlayers.map(p => `${p.ign} | Aatrox | 0/0/0 | 0 | Divine Sunderer, Plated Steelcaps`);
+            
+            document.getElementById('m-blue-data').value = formattedLines.join('\n');
+            document.getElementById('m-team').value = `Rift Raiders (${teamTag})`;
+            alert(`Awtomatikong na-load ang Roster ng ${teamTag} (${game}) sa Blue Team Command Box!`);
         }
 
         function addMatch() {
@@ -978,7 +928,7 @@ Lunae Cadentia | Lulu | 0/6/3 | 7,401 | 8,000 | Ardent, Athene`;
             alert('Partner saved!');
         }
 
-        function openPlayerStats(name, tag, game, team, role, winrate, wins, losses, pfp, c1, c2, c3, teamlogo) {
+        function openPlayerStats(name, tag, game, team, role, winrate, wins, losses, pfp, teamlogo) {
             document.getElementById('modal-name').innerText = name;
             document.getElementById('modal-tag').innerText = tag ? '#' + tag : '';
             document.getElementById('modal-game').innerText = game;
@@ -1020,7 +970,7 @@ Lunae Cadentia | Lulu | 0/6/3 | 7,401 | 8,000 | Ardent, Athene`;
                     champsListEl.innerHTML += `
                         <div class="bg-[#0b0c10] p-2 rounded-xl border border-white/5 flex items-center justify-between text-xs">
                             <div class="flex items-center space-x-3">
-                                <img src="${getChampIconUrl(champ)}" class="w-9 h-9 rounded-lg border border-red-500/40 object-cover" onError="this.src='https://via.placeholder.com/40'">
+                                <img src="${getChampionIconUrl(champ)}" class="w-9 h-9 rounded-lg border border-red-500/40 object-cover" onError="this.src='https://via.placeholder.com/40'">
                                 <div><p class="font-black text-white text-xs leading-none">${champ}</p><p class="text-[9px] text-slate-400 mt-0.5">${count} Tournament Matches</p></div>
                             </div>
                             <div class="text-right"><span class="bg-red-600/20 text-red-400 border border-red-500/30 text-[10px] font-black px-2 py-0.5 rounded">${percent}% Pick</span></div>
@@ -1028,13 +978,7 @@ Lunae Cadentia | Lulu | 0/6/3 | 7,401 | 8,000 | Ardent, Athene`;
                     `;
                 });
             } else {
-                champsListEl.innerHTML = `
-                    <div class="flex gap-2">
-                        <img src="${c1 || 'https://via.placeholder.com/40'}" class="w-[45px] h-[45px] rounded-lg border border-red-500/30 object-cover">
-                        <img src="${c2 || 'https://via.placeholder.com/40'}" class="w-[45px] h-[45px] rounded-lg border border-red-500/30 object-cover">
-                        <img src="${c3 || 'https://via.placeholder.com/40'}" class="w-[45px] h-[45px] rounded-lg border border-red-500/30 object-cover">
-                    </div>
-                `;
+                champsListEl.innerHTML = `<p class="text-[10px] text-slate-500 italic">No tournament champions recorded yet.</p>`;
             }
 
             const backdrop = document.getElementById('player-modal-backdrop');
@@ -1068,8 +1012,8 @@ Lunae Cadentia | Lulu | 0/6/3 | 7,401 | 8,000 | Ardent, Athene`;
                 data.split('\n').forEach(line => {
                     const p = line.split('|').map(s => s.trim());
                     if(p.length >= 3) {
-                        const champIcon = getChampIconUrl(p[1]);
-                        const itemsList = p[5] ? p[5].split(',') : [];
+                        const champIcon = getChampionIconUrl(p[1]);
+                        const itemsList = p[4] ? p[4].split(',') : [];
                         let itemsHtml = '';
                         for(let k=0; k<6; k++) {
                             const itemName = itemsList[k] ? itemsList[k].trim() : '';
