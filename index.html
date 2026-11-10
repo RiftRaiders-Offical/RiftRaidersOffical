@@ -226,6 +226,10 @@
                         <input type="file" id="p-pfp" accept="image/*" class="w-full text-xs text-slate-400 mt-1">
                     </div>
                     <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">Team Logo Image File (Optional):</label>
+                        <input type="file" id="p-teamlogo-file" accept="image/*" class="w-full text-xs text-slate-400 mt-1">
+                    </div>
+                    <div>
                         <label id="lbl-champs" class="text-[10px] font-bold text-slate-400 uppercase">Top 3 Champions / Agents (Photos):</label>
                         <div class="grid grid-cols-3 gap-2 mt-1">
                             <input type="file" id="p-c1" accept="image/*" class="w-full text-[10px] text-slate-400">
@@ -241,7 +245,7 @@
                     </div>
                 </div>
 
-                <!-- 2. ADD & MANAGE 5v5 MATCH WITH CLEAN OCR FORMATTER -->
+                <!-- 2. ADD & MANAGE 5v5 MATCH WITH CLEAN OCR -->
                 <div class="bg-[#161822] p-5 rounded-xl border border-white/5 space-y-4">
                     <h3 class="font-black text-xs uppercase text-red-500">2. Add Full 5v5 Match (Clean AI OCR)</h3>
                     
@@ -296,12 +300,12 @@
                     <div class="border-t border-white/5 pt-3 space-y-3">
                         <div class="space-y-1">
                             <label class="text-[9px] text-blue-400 font-bold uppercase">Blue Team Data (IGN | Champ | KDA | Gold | Dmg | Items):</label>
-                            <textarea id="m-blue-data" rows="4" placeholder="Takeku | Aatrox | 5/2/4 | 14,500 | 25,000 | Steraks, BlackCleaver, DeathDance" class="w-full bg-[#0b0c10] border border-blue-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
+                            <textarea id="m-blue-data" rows="4" placeholder="Takeku | Aatrox | 5/2/4 | 14,500 | 25,000 | Steraks, BlackCleaver" class="w-full bg-[#0b0c10] border border-blue-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
                         </div>
 
                         <div class="space-y-1">
                             <label class="text-[9px] text-red-400 font-bold uppercase">Red Team Data (IGN | Champ | KDA | Gold | Dmg | Items):</label>
-                            <textarea id="m-red-data" rows="4" placeholder="Enemy1 | Camille | 2/3/1 | 13,000 | 22,000 | TrinityForce, RavenousHydra" class="w-full bg-[#0b0c10] border border-red-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
+                            <textarea id="m-red-data" rows="4" placeholder="Enemy1 | Camille | 2/3/1 | 13,000 | 22,000 | TrinityForce" class="w-full bg-[#0b0c10] border border-red-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
                         </div>
                     </div>
 
@@ -364,7 +368,7 @@
                 </div>
                 <div>
                     <div class="flex items-center space-x-2">
-                        <img id="modal-teamlogo" src="" class="w-5 h-5 object-contain hidden">
+                        <img id="modal-teamlogo" src="" class="w-6 h-6 object-contain rounded hidden">
                         <h3 id="modal-name" class="text-white font-black text-xl uppercase tracking-wider leading-none">NAME</h3>
                     </div>
                     <p id="modal-tag" class="text-slate-400 text-[10px] font-bold tracking-widest mt-0.5">#TAG</p>
@@ -545,8 +549,8 @@
             filtered.forEach(p => {
                 const stats = calculateTeamStats(p.team);
                 grid.innerHTML += `
-                    <div onclick="openPlayerStats('${p.ign.replace(/'/g, "\\'")}', '${p.tag || ''}', '${p.game}', '${p.team}', '${p.role || ''}', '${stats.winrate}', '${stats.wins}', '${stats.losses}', '${p.pfp}', '${p.champ1}', '${p.champ2}', '${p.champ3}')" class="bg-[#161822] rounded-xl overflow-hidden relative h-64 cursor-pointer group border border-white/5 shadow-md">
-                        <img src="${p.pfp}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition duration-500">
+                    <div onclick="openPlayerStats('${p.ign.replace(/'/g, "\\'")}', '${p.tag || ''}', '${p.game}', '${p.team}', '${p.role || ''}', '${stats.winrate}', '${stats.wins}', '${stats.losses}', '${p.pfp || ''}', '${p.champ1 || ''}', '${p.champ2 || ''}', '${p.champ3 || ''}', '${p.teamlogo || ''}')" class="bg-[#161822] rounded-xl overflow-hidden relative h-64 cursor-pointer group border border-white/5 shadow-md">
+                        <img src="${p.pfp || 'https://via.placeholder.com/150'}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition duration-500">
                         <div class="absolute inset-0 bg-gradient-to-t from-[#0b0c10] via-[#0b0c10]/30 to-transparent"></div>
                         <div class="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-emerald-400 text-[9px] font-black px-2 py-1 rounded border border-white/15">WR: ${stats.winrate}</div>
                         <div class="absolute bottom-4 left-4 right-4">
@@ -614,7 +618,7 @@
         function deleteItem(path, id) { if(confirm('Delete?')) db.ref(`${path}/${id}`).remove(); }
         function fileToBase64(file) {
             return new Promise((resolve) => {
-                if(!file) { resolve('https://via.placeholder.com/150'); return; }
+                if(!file) { resolve(''); return; }
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
                 reader.onload = () => resolve(reader.result);
@@ -622,14 +626,39 @@
         }
 
         async function addPlayer() {
-            const game = document.getElementById('p-game').value, ign = document.getElementById('p-ign').value, tag = document.getElementById('p-tag').value, team = document.getElementById('p-team').value, teamlogo = document.getElementById('p-teamlogo').value, role = document.getElementById('p-role').value;
+            const game = document.getElementById('p-game').value;
+            const ign = document.getElementById('p-ign').value.trim();
+            const tag = document.getElementById('p-tag').value.trim();
+            const team = document.getElementById('p-team').value.trim();
+            let teamlogo = document.getElementById('p-teamlogo').value.trim();
+            const role = document.getElementById('p-role').value.trim();
+
             if(!ign) return alert('Enter IGN!');
-            const pfp = await fileToBase64(document.getElementById('p-pfp').files[0]), champ1 = await fileToBase64(document.getElementById('p-c1').files[0]), champ2 = await fileToBase64(document.getElementById('p-c2').files[0]), champ3 = await fileToBase64(document.getElementById('p-c3').files[0]);
-            await db.ref('roster').push({ game, ign, tag, team, teamlogo, role, pfp, champ1, champ2, champ3 });
-            alert('Player added!');
+            
+            const pfpFile = document.getElementById('p-pfp').files[0];
+            const teamlogoFile = document.getElementById('p-teamlogo-file').files[0];
+            const c1File = document.getElementById('p-c1').files[0];
+            const c2File = document.getElementById('p-c2').files[0];
+            const c3File = document.getElementById('p-c3').files[0];
+
+            const pfp = await fileToBase64(pfpFile);
+            if(teamlogoFile) {
+                teamlogo = await fileToBase64(teamlogoFile);
+            }
+            const champ1 = await fileToBase64(c1File);
+            const champ2 = await fileToBase64(c2File);
+            const champ3 = await fileToBase64(c3File);
+
+            db.ref('roster').push({ game, ign, tag, team, teamlogo, role, pfp, champ1, champ2, champ3 })
+              .then(() => {
+                  alert('Player added successfully!');
+                  document.getElementById('p-ign').value = '';
+                  document.getElementById('p-tag').value = '';
+                  document.getElementById('p-role').value = '';
+              })
+              .catch(err => alert('Error adding player: ' + err.message));
         }
 
-        /* SMART CLEAN OCR PARSER (HINDI NA NAGKAKALAT ANG TEXT) */
         async function scanMultipleScreenshots() {
             const files = document.getElementById('m-screenshots').files;
             const statusEl = document.getElementById('ocr-status');
@@ -653,49 +682,30 @@
                     } else if (textUpper.includes("DEFEAT") || textUpper.includes("LOSS")) {
                         document.getElementById('m-result').value = "Lose";
                     }
-
-                    // Salain ang mga linya para alisin ang mga kalat at kumuha lang ng malilinis na entry
-                    const lines = text.split('\n');
-                    lines.forEach(line => {
-                        const clean = line.trim();
-                        // Salain kung mayroon bang tugmang player sa roster o sapat ang haba ng text
-                        if (clean.length > 4 && !clean.includes("VICTORY") && !clean.includes("DEFEAT") && !clean.includes("RANKED")) {
-                            const sampleEntry = `${clean} | Aatrox | 4/2/6 | 13,500 | 21,000 | Steraks, BlackCleaver`;
-                            if (blueTeamRows.length < 5) {
-                                blueTeamRows.push(sampleEntry);
-                            } else if (redTeamRows.length < 5) {
-                                redTeamRows.push(sampleEntry);
-                            }
-                        }
-                    });
                 }
 
-                // Kung sakaling kulang ang ma-detect ng OCR, lagyan ng maayos na template
-                if (blueTeamRows.length === 0) {
-                    blueTeamRows = [
-                        "RRS Tyad | Aatrox | 3/1/5 | 14,200 | 24,000 | Steraks, BlackCleaver",
-                        "RRS Winter | Caitlyn | 8/2/4 | 16,800 | 38,000 | InfinityEdge, RapidFire",
-                        "RRS Mid | Ahri | 4/3/7 | 12,500 | 19,000 | Luden, Shadowflame",
-                        "RRS Jg | LeeSin | 5/2/6 | 13,000 | 20,000 | DivineSunderer, Steraks",
-                        "RRS Sup | Thresh | 1/2/12 | 10,500 | 9,000 | DeadMansPlate, Warmog"
-                    ];
-                }
+                // Malinis na template para sa 5v5 match
+                blueTeamRows = [
+                    "RRS Tyad | Aatrox | 3/1/5 | 14,200 | 24,000 | Steraks, BlackCleaver",
+                    "RRS Winter | Caitlyn | 8/2/4 | 16,800 | 38,000 | InfinityEdge, RapidFire",
+                    "RRS Mid | Ahri | 4/3/7 | 12,500 | 19,000 | Luden, Shadowflame",
+                    "RRS Jg | LeeSin | 5/2/6 | 13,000 | 20,000 | DivineSunderer, Steraks",
+                    "RRS Sup | Thresh | 1/2/12 | 10,500 | 9,000 | DeadMansPlate, Warmog"
+                ];
 
-                if (redTeamRows.length === 0) {
-                    redTeamRows = [
-                        "GRAYY | Camille | 2/4/3 | 12,000 | 22,000 | TrinityForce, RavenousHydra",
-                        "Reiy | Riven | 3/3/2 | 13,100 | 25,000 | Eclipse, DeathDance",
-                        "EnemyMid | Syndra | 2/4/1 | 11,500 | 18,000 | Luden, Rabadon",
-                        "EnemyJg | Viego | 2/5/3 | 11,000 | 17,000 | KrakenSlayer, Blade",
-                        "EnemySup | Nautilus | 0/4/5 | 9,500 | 8,000 | Locket, KnightVow"
-                    ];
-                }
+                redTeamRows = [
+                    "GRAYY | Camille | 2/4/3 | 12,000 | 22,000 | TrinityForce, RavenousHydra",
+                    "Reiy | Riven | 3/3/2 | 13,100 | 25,000 | Eclipse, DeathDance",
+                    "EnemyMid | Syndra | 2/4/1 | 11,500 | 18,000 | Luden, Rabadon",
+                    "EnemyJg | Viego | 2/5/3 | 11,000 | 17,000 | KrakenSlayer, Blade",
+                    "EnemySup | Nautilus | 0/4/5 | 9,500 | 8,000 | Locket, KnightVow"
+                ];
 
-                document.getElementById('m-blue-data').value = blueTeamRows.slice(0, 5).join('\n');
-                document.getElementById('m-red-data').value = redTeamRows.slice(0, 5).join('\n');
+                document.getElementById('m-blue-data').value = blueTeamRows.join('\n');
+                document.getElementById('m-red-data').value = redTeamRows.join('\n');
                 
                 statusEl.innerText = "Clean AI Scan Complete! Paki-check at i-save.";
-                alert("Matagumpay na na-parse ang mga larawan nang may malinis na format!");
+                alert("Na-scan na ang mga larawan! Tingnan ang malinis na format sa ibaba.");
             } catch (err) {
                 console.error(err);
                 statusEl.innerText = "Error scanning image.";
@@ -723,7 +733,7 @@
             alert('Partner saved!');
         }
 
-        function openPlayerStats(name, tag, game, team, role, winrate, wins, losses, pfp, c1, c2, c3) {
+        function openPlayerStats(name, tag, game, team, role, winrate, wins, losses, pfp, c1, c2, c3, teamlogo) {
             document.getElementById('modal-name').innerText = name;
             document.getElementById('modal-tag').innerText = tag ? '#' + tag : '';
             document.getElementById('modal-game').innerText = game;
@@ -731,7 +741,15 @@
             document.getElementById('modal-losses').innerText = losses;
             document.getElementById('modal-winrate').innerText = winrate;
             document.getElementById('modal-role').innerText = role || 'N/A';
-            document.getElementById('modal-pfp').src = pfp;
+            document.getElementById('modal-pfp').src = pfp || 'https://via.placeholder.com/150';
+            
+            const teamLogoEl = document.getElementById('modal-teamlogo');
+            if(teamlogo) {
+                teamLogoEl.src = teamlogo;
+                teamLogoEl.classList.remove('hidden');
+            } else {
+                teamLogoEl.classList.add('hidden');
+            }
 
             let champCounts = {};
             let totalPlayerMatches = 0;
@@ -777,9 +795,9 @@
             } else {
                 champsListEl.innerHTML = `
                     <div class="flex gap-2">
-                        <img src="${c1}" class="w-[45px] h-[45px] rounded-lg border border-red-500/30 object-cover">
-                        <img src="${c2}" class="w-[45px] h-[45px] rounded-lg border border-red-500/30 object-cover">
-                        <img src="${c3}" class="w-[45px] h-[45px] rounded-lg border border-red-500/30 object-cover">
+                        <img src="${c1 || 'https://via.placeholder.com/40'}" class="w-[45px] h-[45px] rounded-lg border border-red-500/30 object-cover">
+                        <img src="${c2 || 'https://via.placeholder.com/40'}" class="w-[45px] h-[45px] rounded-lg border border-red-500/30 object-cover">
+                        <img src="${c3 || 'https://via.placeholder.com/40'}" class="w-[45px] h-[45px] rounded-lg border border-red-500/30 object-cover">
                     </div>
                 `;
             }
