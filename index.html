@@ -234,7 +234,7 @@
                             <input type="file" id="p-c3" accept="image/*" class="w-full text-[10px] text-slate-400">
                         </div>
                     </div>
-                    <button onclick="addPlayer()" id="btn-player" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save Player</button>
+                    <button onclick="addPlayer()" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save Player</button>
                     
                     <div class="mt-4 pt-3 border-t border-white/5">
                         <p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Existing Players List:</p>
@@ -322,6 +322,10 @@
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 uppercase">Game Streamed:</label>
                         <input type="text" id="c-game" placeholder="e.g. Wild Rift" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">Social Media Link (FB/YT/Twitch/TikTok):</label>
+                        <input type="text" id="c-link" placeholder="https://facebook.com/..." class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1">
                     </div>
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 uppercase">Profile Photo:</label>
@@ -450,7 +454,7 @@
 
         let allPlayers = [];
         let allMatches = {};
-        let allCreators = {};
+        let allCreators = [];
         let allPartners = {};
         let currentGameFilter = 'ALL';
         const defaultLogoUrl = "https://i.ibb.co/6R7QW3L/79923.jpg";
@@ -462,7 +466,6 @@
             return `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/champion/${clean.charAt(0).toUpperCase() + clean.slice(1)}.png`;
         }
 
-        // Pinahusay na Item Icon mapping para sa Wild Rift / LoL
         function getItemIconUrl(itemName) {
             if (!itemName) return '';
             const clean = itemName.trim().toLowerCase();
@@ -520,18 +523,6 @@
             document.getElementById('admin-pass-input').value = '';
         }
 
-        function calculateTeamStats(teamName) {
-            if (!teamName || !allMatches) return { wins: 0, losses: 0, winrate: '0%' };
-            const teamMatches = Object.values(allMatches).filter(m => m.team && m.team.trim().toLowerCase() === teamName.trim().toLowerCase());
-            let wins = 0, losses = 0;
-            teamMatches.forEach(m => {
-                if (m.result === 'Win') wins += 1;
-                else if (m.result === 'Lose') losses += 1;
-            });
-            const total = wins + losses;
-            return { wins, losses, winrate: total === 0 ? '0%' : Math.round((wins / total) * 100) + '%' };
-        }
-
         db.ref('matches').on('value', snap => { allMatches = snap.val() || {}; renderMatches(); renderAdminMatches(); renderRoster(); });
         db.ref('roster').on('value', snap => {
             allPlayers = [];
@@ -543,8 +534,17 @@
             renderRoster(); 
             renderAdminPlayers();
         });
-        db.ref('creators').on('value', snap => { allCreators = snap.val() || {}; renderCreators(); });
-        db.ref('partners').on('value', snap => { allPartners = snap.val() || {}; renderPartners(); });
+        db.ref('creators').on('value', snap => {
+            allCreators = [];
+            if(snap.exists()) {
+                snap.forEach(child => {
+                    allCreators.push({ id: child.key, ...child.val() });
+                });
+            }
+            renderCreators();
+            renderAdminCreators();
+        });
+        db.ref('partners').on('value', snap => { allPartners = snap.val() || {}; renderPartners(); renderAdminPartners(); });
 
         function filterGame(game) {
             currentGameFilter = game;
@@ -582,6 +582,18 @@
             });
         }
 
+        function calculateTeamStats(teamName) {
+            if (!teamName || !allMatches) return { wins: 0, losses: 0, winrate: '0%' };
+            const teamMatches = Object.values(allMatches).filter(m => m.team && m.team.trim().toLowerCase() === teamName.trim().toLowerCase());
+            let wins = 0, losses = 0;
+            teamMatches.forEach(m => {
+                if (m.result === 'Win') wins += 1;
+                else if (m.result === 'Lose') losses += 1;
+            });
+            const total = wins + losses;
+            return { wins, losses, winrate: total === 0 ? '0%' : Math.round((wins / total) * 100) + '%' };
+        }
+
         function renderMatches() {
             const list = document.getElementById('match-history-list');
             list.innerHTML = '';
@@ -609,8 +621,31 @@
         function renderCreators() {
             const grid = document.getElementById('creators-grid');
             grid.innerHTML = '';
-            Object.values(allCreators).forEach(c => {
-                grid.innerHTML += `<div class="bg-[#161822] border border-white/5 rounded-xl p-4 flex flex-col items-center text-center"><img src="${c.pfp}" class="w-14 h-14 rounded-full border-2 border-red-500/40 mb-2 object-cover"><h4 class="font-black text-white text-xs uppercase truncate w-full">${c.name}</h4><p class="text-[9px] text-slate-400 uppercase mt-0.5">${c.game || ''}</p></div>`;
+            if(allCreators.length === 0) {
+                grid.innerHTML = '<p class="text-xs text-slate-500 italic col-span-full">No content creators added yet.</p>';
+                return;
+            }
+            allCreators.forEach(c => {
+                let socialIcon = 'fa-solid fa-video';
+                let link = c.link || '#';
+                const lowerLink = link.toLowerCase();
+                if(lowerLink.includes('facebook') || lowerLink.includes('fb.')) socialIcon = 'fa-brands fa-facebook';
+                else if(lowerLink.includes('youtube') || lowerLink.includes('youtu.be')) socialIcon = 'fa-brands fa-youtube';
+                else if(lowerLink.includes('twitch')) socialIcon = 'fa-brands fa-twitch';
+                else if(lowerLink.includes('tiktok')) socialIcon = 'fa-brands fa-tiktok';
+
+                grid.innerHTML += `
+                    <a href="${link}" target="_blank" class="bg-[#161822] border border-white/5 hover:border-red-500/40 rounded-xl p-4 flex flex-col items-center text-center transition group">
+                        <div class="relative mb-2">
+                            <img src="${c.pfp || 'https://via.placeholder.com/100'}" class="w-14 h-14 rounded-full border-2 border-red-500/40 object-cover group-hover:scale-105 transition">
+                            <div class="absolute -bottom-1 -right-1 bg-red-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-[10px] shadow">
+                                <i class="${socialIcon}"></i>
+                            </div>
+                        </div>
+                        <h4 class="font-black text-white text-xs uppercase truncate w-full">${c.name}</h4>
+                        <p class="text-[9px] text-slate-400 uppercase mt-0.5">${c.game || 'Streamer'}</p>
+                    </a>
+                `;
             });
         }
 
@@ -625,10 +660,7 @@
         function renderAdminPlayers() {
             const container = document.getElementById('admin-players-list');
             container.innerHTML = '';
-            if(allPlayers.length === 0) {
-                container.innerHTML = '<p class="text-[10px] text-slate-500 italic">No players in database.</p>';
-                return;
-            }
+            if(allPlayers.length === 0) { container.innerHTML = '<p class="text-[10px] text-slate-500 italic">No players in database.</p>'; return; }
             allPlayers.forEach(p => {
                 container.innerHTML += `<div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/5 text-xs"><span class="font-bold text-slate-300 truncate">${p.ign} (${p.team})</span><button onclick="deleteItem('roster', '${p.id}')" class="bg-red-600/20 text-red-400 px-2 py-1 rounded text-[10px]">Delete</button></div>`;
             });
@@ -638,6 +670,25 @@
             const container = document.getElementById('admin-matches-list');
             container.innerHTML = '';
             Object.keys(allMatches).forEach(key => container.innerHTML += `<div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/5 text-xs"><span class="font-bold text-slate-300 truncate">${allMatches[key].team} vs ${allMatches[key].opponent}</span><button onclick="deleteItem('matches', '${key}')" class="bg-red-600/20 text-red-400 px-2 py-1 rounded text-[10px]">Delete</button></div>`);
+        }
+
+        function renderAdminCreators() {
+            const container = document.getElementById('admin-creators-list');
+            if(!container) return;
+            container.innerHTML = '';
+            if(allCreators.length === 0) { container.innerHTML = '<p class="text-[10px] text-slate-500 italic">No creators added.</p>'; return; }
+            allCreators.forEach(c => {
+                container.innerHTML += `<div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/5 text-xs"><span class="font-bold text-slate-300 truncate">${c.name}</span><button onclick="deleteItem('creators', '${c.id}')" class="bg-red-600/20 text-red-400 px-2 py-1 rounded text-[10px]">Delete</button></div>`;
+            });
+        }
+
+        function renderAdminPartners() {
+            const container = document.getElementById('admin-partners-list');
+            if(!container) return;
+            container.innerHTML = '';
+            Object.keys(allPartners).forEach(key => {
+                container.innerHTML += `<div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/5 text-xs"><span class="font-bold text-slate-300 truncate">${allPartners[key].name}</span><button onclick="deleteItem('partners', '${key}')" class="bg-red-600/20 text-red-400 px-2 py-1 rounded text-[10px]">Delete</button></div>`;
+            });
         }
 
         function deleteItem(path, id) { if(confirm('Delete?')) db.ref(`${path}/${id}`).remove(); }
@@ -652,7 +703,6 @@
             });
         }
 
-        // Inayos na Add Player Function para siguradong pumasok sa database at listahan
         async function addPlayer() {
             const game = document.getElementById('p-game').value;
             const ign = document.getElementById('p-ign').value.trim();
@@ -661,55 +711,40 @@
             let teamlogo = document.getElementById('p-teamlogo').value.trim();
             const role = document.getElementById('p-role').value.trim();
 
-            if(!ign) {
-                alert('Mangyaring ilagay ang IGN ng player!');
-                return;
-            }
+            if(!ign) { alert('Mangyaring ilagay ang IGN ng player!'); return; }
             
-            const pfpFile = document.getElementById('p-pfp').files[0];
+            const pfp = await fileToBase64(document.getElementById('p-pfp').files[0]);
             const teamlogoFile = document.getElementById('p-teamlogo-file').files[0];
-            const c1File = document.getElementById('p-c1').files[0];
-            const c2File = document.getElementById('p-c2').files[0];
-            const c3File = document.getElementById('p-c3').files[0];
-
-            const pfp = await fileToBase64(pfpFile);
-            if(teamlogoFile) {
-                teamlogo = await fileToBase64(teamlogoFile);
-            }
-            const champ1 = await fileToBase64(c1File);
-            const champ2 = await fileToBase64(c2File);
-            const champ3 = await fileToBase64(c3File);
+            if(teamlogoFile) teamlogo = await fileToBase64(teamlogoFile);
+            
+            const champ1 = await fileToBase64(document.getElementById('p-c1').files[0]);
+            const champ2 = await fileToBase64(document.getElementById('p-c2').files[0]);
+            const champ3 = await fileToBase64(document.getElementById('p-c3').files[0]);
 
             db.ref('roster').push({ game, ign, tag, team, teamlogo, role, pfp, champ1, champ2, champ3 })
               .then(() => {
                   alert('Player added successfully!');
                   document.getElementById('p-ign').value = '';
                   document.getElementById('p-tag').value = '';
-                  document.getElementById('p-team').value = '';
-                  document.getElementById('p-role').value = '';
-                  document.getElementById('p-pfp').value = '';
               })
               .catch(err => alert('Error adding player: ' + err.message));
         }
 
         function loadTemplateData() {
-            const blueSample = 
+            document.getElementById('m-blue-data').value = 
 `Takeku | Aatrox | 5/2/4 | 14,500 | 25,000 | Steraks, BlackCleaver, DeathDance
 Player2 | Caitlyn | 8/2/1 | 16,000 | 32,000 | InfinityEdge
 Player3 | Ahri | 3/1/6 | 12,000 | 18,000 | Luden
 Player4 | LeeSin | 4/3/5 | 13,000 | 21,000 | DivineSunderer
 Player5 | Thresh | 1/2/10 | 10,000 | 9,000 | Warmog`;
 
-            const redSample = 
+            document.getElementById('m-red-data').value = 
 `Enemy1 | Camille | 2/3/2 | 12,500 | 20,000 | TrinityForce, RavenousHydra
 Enemy2 | Riven | 3/3/1 | 13,000 | 22,000 | Eclipse
 Enemy3 | Syndra | 2/4/1 | 11,000 | 17,000 | Rabadon
 Enemy4 | Viego | 1/4/2 | 10,500 | 16,000 | Kraken
 Enemy5 | Nautilus | 0/3/4 | 9,000 | 8,000 | Locket`;
-
-            document.getElementById('m-blue-data').value = blueSample;
-            document.getElementById('m-red-data').value = redSample;
-            alert('Clean template loaded! Pwede mo na i-edit ang mga pangalan at stats.');
+            alert('Clean template loaded!');
         }
 
         function addMatch() {
@@ -719,9 +754,19 @@ Enemy5 | Nautilus | 0/3/4 | 9,000 | 8,000 | Locket`;
         }
 
         async function addCreator() {
-            const name = document.getElementById('c-name').value, game = document.getElementById('c-game').value, pfp = await fileToBase64(document.getElementById('c-pfp').files[0]);
-            await db.ref('creators').push({ name, game, pfp });
-            alert('Creator saved!');
+            const name = document.getElementById('c-name').value.trim();
+            const game = document.getElementById('c-game').value.trim();
+            const link = document.getElementById('c-link').value.trim();
+            const pfp = await fileToBase64(document.getElementById('c-pfp').files[0]);
+            
+            if(!name) { alert('Ilagay ang pangalan ng Creator!'); return; }
+            
+            db.ref('creators').push({ name, game, link, pfp }).then(() => {
+                alert('Creator saved successfully!');
+                document.getElementById('c-name').value = '';
+                document.getElementById('c-game').value = '';
+                document.getElementById('c-link').value = '';
+            });
         }
 
         async function addPartner() {
@@ -741,12 +786,8 @@ Enemy5 | Nautilus | 0/3/4 | 9,000 | 8,000 | Locket`;
             document.getElementById('modal-pfp').src = pfp || 'https://via.placeholder.com/150';
             
             const teamLogoEl = document.getElementById('modal-teamlogo');
-            if(teamlogo) {
-                teamLogoEl.src = teamlogo;
-                teamLogoEl.classList.remove('hidden');
-            } else {
-                teamLogoEl.classList.add('hidden');
-            }
+            if(teamlogo) { teamLogoEl.src = teamlogo; teamLogoEl.classList.remove('hidden'); }
+            else { teamLogoEl.classList.add('hidden'); }
 
             let champCounts = {};
             let totalPlayerMatches = 0;
@@ -765,27 +806,19 @@ Enemy5 | Nautilus | 0/3/4 | 9,000 | 8,000 | Locket`;
 
             const champsListEl = document.getElementById('modal-champs-list');
             champsListEl.innerHTML = '';
-            
             const champsArray = Object.keys(champCounts).sort((a,b) => champCounts[b] - champCounts[a]);
 
             if (champsArray.length > 0) {
                 champsArray.forEach(champ => {
                     const count = champCounts[champ];
                     const percent = Math.round((count / totalPlayerMatches) * 100);
-                    const champImgUrl = getChampIconUrl(champ);
-                    
                     champsListEl.innerHTML += `
                         <div class="bg-[#0b0c10] p-2 rounded-xl border border-white/5 flex items-center justify-between text-xs">
                             <div class="flex items-center space-x-3">
-                                <img src="${champImgUrl}" class="w-9 h-9 rounded-lg border border-red-500/40 object-cover" onError="this.src='https://via.placeholder.com/40'">
-                                <div>
-                                    <p class="font-black text-white text-xs leading-none">${champ}</p>
-                                    <p class="text-[9px] text-slate-400 mt-0.5">${count} Matches Played</p>
-                                </div>
+                                <img src="${getChampIconUrl(champ)}" class="w-9 h-9 rounded-lg border border-red-500/40 object-cover" onError="this.src='https://via.placeholder.com/40'">
+                                <div><p class="font-black text-white text-xs leading-none">${champ}</p><p class="text-[9px] text-slate-400 mt-0.5">${count} Matches Played</p></div>
                             </div>
-                            <div class="text-right">
-                                <span class="bg-red-600/20 text-red-400 border border-red-500/30 text-[10px] font-black px-2 py-0.5 rounded">${percent}% Pick</span>
-                            </div>
+                            <div class="text-right"><span class="bg-red-600/20 text-red-400 border border-red-500/30 text-[10px] font-black px-2 py-0.5 rounded">${percent}% Pick</span></div>
                         </div>
                     `;
                 });
@@ -802,10 +835,7 @@ Enemy5 | Nautilus | 0/3/4 | 9,000 | 8,000 | Locket`;
             const backdrop = document.getElementById('player-modal-backdrop');
             const card = document.getElementById('player-modal-card');
             backdrop.classList.remove('hidden');
-            requestAnimationFrame(() => {
-                backdrop.classList.add('opacity-100');
-                card.classList.remove('scale-95', 'opacity-0');
-            });
+            requestAnimationFrame(() => { backdrop.classList.add('opacity-100'); card.classList.remove('scale-95', 'opacity-0'); });
         }
 
         function closePlayerStats() {
@@ -870,10 +900,7 @@ Enemy5 | Nautilus | 0/3/4 | 9,000 | 8,000 | Locket`;
 
             const backdrop = document.getElementById('match-modal-backdrop');
             backdrop.classList.remove('hidden');
-            requestAnimationFrame(() => {
-                backdrop.classList.add('opacity-100');
-                document.getElementById('match-modal-card').classList.remove('scale-95', 'opacity-0');
-            });
+            requestAnimationFrame(() => { backdrop.classList.add('opacity-100'); document.getElementById('match-modal-card').classList.remove('scale-95', 'opacity-0'); });
         }
 
         function closeMatchModal() {
