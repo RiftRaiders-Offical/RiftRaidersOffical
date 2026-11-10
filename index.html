@@ -257,14 +257,17 @@
                 <div class="bg-[#161822] p-5 rounded-xl border border-white/5 space-y-4">
                     <h3 class="font-black text-xs uppercase text-red-500">2. Add Full 5v5 Match (Custom Text Editor)</h3>
                     
+                    <!-- QUICK COMMAND BUTTONS FOR RRS MATCHES -->
                     <div class="bg-[#0b0c10] p-3 rounded-lg border border-indigo-500/40 space-y-2">
                         <label class="text-[10px] font-bold text-indigo-400 uppercase flex items-center space-x-1">
                             <i class="fa-solid fa-wand-magic-sparkles"></i>
-                            <span>Smart Template Generator:</span>
+                            <span>RRS Match Command Auto-fill:</span>
                         </label>
-                        <button onclick="loadTemplateData()" type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white w-full py-2 rounded text-[11px] font-bold uppercase transition">
-                            Load Clean Template to Text Boxes
-                        </button>
+                        <div class="grid grid-cols-3 gap-1.5">
+                            <button onclick="loadMatchCommand(1)" type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white py-1.5 rounded text-[10px] font-bold uppercase transition">Laro 1 (Win)</button>
+                            <button onclick="loadMatchCommand(2)" type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white py-1.5 rounded text-[10px] font-bold uppercase transition">Laro 2 (Defeat)</button>
+                            <button onclick="loadMatchCommand(3)" type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white py-1.5 rounded text-[10px] font-bold uppercase transition">Laro 3 (Win)</button>
+                        </div>
                     </div>
 
                     <div>
@@ -288,8 +291,8 @@
                     </div>
                     <div class="grid grid-cols-3 gap-2">
                         <div>
-                            <label class="text-[10px] font-bold text-slate-400 uppercase">Match Score (ex. 1-0):</label>
-                            <input type="text" id="m-score" placeholder="1 - 0" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase">Match Score:</label>
+                            <input type="text" id="m-score" placeholder="24 - 11" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
                         </div>
                         <div>
                             <label class="text-[10px] font-bold text-slate-400 uppercase">Match Type:</label>
@@ -309,7 +312,7 @@
                     </div>
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 uppercase">Date / Time:</label>
-                        <input type="text" id="m-date" placeholder="e.g. May 2025 / 8:00 PM" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
+                        <input type="text" id="m-date" placeholder="Wild Rift - 19:53" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
                     </div>
 
                     <div class="border-t border-white/5 pt-3 space-y-3">
@@ -500,34 +503,33 @@
 
         const ddragonVer = "14.1.1";
         
-        // Advanced Champion Icon Mapper with Wild Rift / CommunityDragon CDN support
+        // Advanced Champion Icon Mapper with exact CommunityDragon / Riot CDN paths
         function getChampIconUrl(champName) {
             if(!champName || champName === 'HERO' || champName === 'Champion') return "https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/champion-icons/-1.png";
             
-            let clean = champName.trim();
-            const specialChamps = {
-                'kaisa': 'Kaisa', 'kai'\'sa': 'Kaisa', 'k\'aisa': 'Kaisa',
-                'leesin': 'LeeSin', 'masteryi': 'MasterYi', 'missfortune': 'MissFortune',
-                'jarvaniv': 'JarvanIV', 'xinzhao': 'XinZhao', 'tahmkench': 'TahmKench',
-                'twistedfate': 'TwistedFate', 'aurelionsol': 'AurelionSol', 'drmundo': 'DrMundo'
-            };
+            let clean = champName.trim().toLowerCase().replace(/[^a-z]/g, '');
             
-            let lookupKey = clean.toLowerCase().replace(/[^a-z]/g, '');
-            if(specialChamps[lookupKey]) {
-                clean = specialChamps[lookupKey];
-            } else {
-                clean = clean.charAt(0).toUpperCase() + clean.slice(1).replace(/[^a-zA-Z]/g, '');
+            const specialChamps = {
+                'kaisa': '145', 'leesin': '64', 'masteryi': '11', 'missfortune': '21',
+                'jarvaniv': '59', 'xinzhao': '5', 'tahmkench': '223', 'twistedfate': '4',
+                'aurelionsol': '136', 'drmundo': '36', 'skarner': '72', 'reksai': '421'
+            };
+
+            let champId = specialChamps[clean];
+            if (champId) {
+                return `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/champion-icons/${champId}.png`;
             }
-            return `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/champion-icons/${lookupKey === 'kaisa' ? 145 : 0}.png` || `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/champion/${clean}.png`;
+
+            let formattedName = champName.trim().charAt(0).toUpperCase() + champName.trim().slice(1).replace(/[^a-zA-Z]/g, '');
+            return `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/champion/${formattedName}.png`;
         }
 
-        // Advanced Wild Rift & LoL Item Icon Mapper using CommunityDragon / DataDragon CDN
+        // Advanced Wild Rift & LoL Item Icon Mapper
         function getItemIconUrl(itemName) {
             if (!itemName) return '';
             let clean = itemName.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
             
             const itemMap = {
-                // Wild Rift & PC Common Items
                 'divinesunderer': '6632', 'sunderer': '6632',
                 'deathdance': '3812', 'dance': '3812',
                 'sterak': '3053', 'steraks': '3053', 'steraksgauge': '3053',
@@ -836,21 +838,67 @@
               .catch(err => alert('Error adding player: ' + err.message));
         }
 
-        function loadTemplateData() {
-            document.getElementById('m-blue-data').value = 
-`Takeku | Aatrox | 5/2/4 | 14,500 | 25,000 | Steraks, BlackCleaver, DeathDance
-Player2 | Caitlyn | 8/2/1 | 16,000 | 32,000 | InfinityEdge
-Player3 | Ahri | 3/1/6 | 12,000 | 18,000 | Luden
-Player4 | LeeSin | 4/3/5 | 13,000 | 21,000 | DivineSunderer
-Player5 | Thresh | 1/2/10 | 10,000 | 9,000 | Warmog`;
-
-            document.getElementById('m-red-data').value = 
-`Enemy1 | Camille | 2/3/2 | 12,500 | 20,000 | TrinityForce, RavenousHydra
-Enemy2 | Riven | 3/3/1 | 13,000 | 22,000 | Eclipse
-Enemy3 | Syndra | 2/4/1 | 11,000 | 17,000 | Rabadon
-Enemy4 | Viego | 1/4/2 | 10,500 | 16,000 | Kraken
-Enemy5 | Nautilus | 0/3/4 | 9,000 | 8,000 | Locket`;
-            alert('Clean template loaded!');
+        // QUICK MATCH COMMAND AUTO-FILL FUNCTION
+        function loadMatchCommand(gameNum) {
+            if(gameNum === 1) {
+                document.getElementById('m-game').value = 'Wild Rift';
+                document.getElementById('m-opp').value = 'BrrBrrPatapim Team';
+                document.getElementById('m-score').value = '24 - 11';
+                document.getElementById('m-type').value = 'Tournament';
+                document.getElementById('m-result').value = 'Win';
+                document.getElementById('m-date').value = 'Wild Rift - 19:53';
+                document.getElementById('m-blue-data').value = 
+`RRS Tyad | Aatrox | 2/2/5 | 14,507 | 22,000 | DivineSunderer, DeathDance, Steraks
+RRS KyRem | Viego | 5/3/10 | 17,083 | 25,000 | TrinityForce, BladeOfTheRuinedKing, GuardianAngel
+RRS Winter | Gwen | 9/2/8 | 17,198 | 28,000 | NashorsTooth, Riftmaker, Rabadon
+IM ALONE AG... | Kaisa | 4/2/9 | 14,066 | 24,000 | Kraken, InfinityEdge, PhantomDancer
+RRS DNGR | Nautilus | 4/2/12 | 13,870 | 15,000 | Warmog, Locket, Thornmail`;
+                document.getElementById('m-red-data').value = 
+`BrrBrrPatapim | Malphite | 1/5/4 | 12,172 | 14,000 | Sunfire, Warmog, Thornmail
+Reiy | Riven | 3/3/4 | 14,112 | 21,000 | TrinityForce, DeathDance, RavenousHydra
+tum in jirey | Galio | 1/7/4 | 12,067 | 13,000 | RodOfAges, Locket
+OG Peyz | Lucian | 4/4/3 | 16,414 | 23,000 | EssenceReaver, InfinityEdge, RapidFirecannon
+OG Keria | Pyke | 2/5/6 | 10,718 | 11,000 | UmbralGlaive, DeadMansPlate`;
+            } else if(gameNum === 2) {
+                document.getElementById('m-game').value = 'Wild Rift';
+                document.getElementById('m-opp').value = 'VORTEX Team';
+                document.getElementById('m-score').value = '23 - 25';
+                document.getElementById('m-type').value = 'Tournament';
+                document.getElementById('m-result').value = 'Lose';
+                document.getElementById('m-date').value = 'Wild Rift - 17:17';
+                document.getElementById('m-blue-data').value = 
+`RRS Tyad | Skarner | 6/6/2 | 14,491 | 21,000 | TrinityForce, BlackCleaver, Steraks
+IM ALONE AG... | Shen | 2/4/13 | 10,213 | 12,000 | Sunfire, Warmog, Thornmail
+RRS Winter | Galio | 5/7/8 | 11,488 | 14,000 | RodOfAges, Locket, Morellonomicon
+Theo tôi Nguy... | MissFortune | 8/4/2 | 13,721 | 22,000 | EssenceReaver, InfinityEdge, Bloodthirster
+RRS DNGR | Rakan | 2/4/11 | 9,843 | 10,000 | Harmonic, Protector`;
+                document.getElementById('m-red-data').value = 
+`VORTEX | Fiora | 4/8/8 | 11,794 | 18,000 | TrinityForce, RavenousHydra, DeathDance
+2ez4Warren | Yone | 9/2/12 | 17,201 | 26,000 | BladeOfTheRuinedKing, InfinityEdge, GuardianAngel
+Khyden | Karma | 2/5/15 | 12,096 | 14,000 | Luden, Harmonious, Morellonomicon
+VERSACE | Lucian | 9/4/7 | 14,543 | 22,000 | EssenceReaver, Navori, InfinityEdge
+cawi | Lulu | 1/4/17 | 10,623 | 9,000 | Ardent, Harmonious`;
+            } else if(gameNum === 3) {
+                document.getElementById('m-game').value = 'Wild Rift';
+                document.getElementById('m-opp').value = 'VORTEX Team (Rematch)';
+                document.getElementById('m-score').value = '30 - 13';
+                document.getElementById('m-type').value = 'Tournament';
+                document.getElementById('m-result').value = 'Win';
+                document.getElementById('m-date').value = 'Wild Rift - 14:20';
+                document.getElementById('m-blue-data').value = 
+`RRS Tyad | Lucian | 4/2/6 | 12,313 | 19,000 | EssenceReaver, InfinityEdge, Statikk
+IM ALONE AG... | Kassadin | 4/2/10 | 11,635 | 17,000 | RodOfAges, Morellonomicon, Rabadon
+RRS Winter | Akali | 18/3/0 | 14,944 | 24,000 | Hextech, InfinityOrb, Rabadon
+Theo tôi Nguy... | Thresh | 2/3/8 | 10,738 | 12,000 | Deadman, Warmog, Thornmail
+RRS DNGR | Nautilus | 2/3/11 | 9,018 | 10,000 | Sunfire, Locket`;
+                document.getElementById('m-red-data').value = 
+`VORTEX | Irelia | 2/8/0 | 8,220 | 13,000 | BladeOfTheRuinedKing, TrinityForce
+VERSACE | Pyke | 1/4/4 | 8,868 | 9,000 | Umbral, Duskblade
+Khyden | Nautilus | 4/7/3 | 10,235 | 11,000 | Sunfire, Thornmail, Locket
+2ez4Warren | Jinx | 6/5/1 | 11,994 | 19,000 | Kraken, InfinityEdge, Statikk
+Lunae Cadentia | Lulu | 0/6/3 | 7,401 | 8,000 | Ardent, Athene`;
+            }
+            alert('Laro ' + gameNum + ' Command Loaded successfully!');
         }
 
         function addMatch() {
