@@ -323,21 +323,28 @@
                         <label class="text-[10px] font-bold text-slate-400 uppercase">Game Streamed:</label>
                         <input type="text" id="c-game" placeholder="e.g. Wild Rift" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1">
                     </div>
-                    <div class="grid grid-cols-2 gap-2">
+                    
+                    <!-- 4 SOCIAL LINKS INPUTS -->
+                    <div class="space-y-2 bg-[#0b0c10] p-3 rounded-lg border border-white/5">
+                        <label class="text-[10px] font-bold text-red-400 uppercase">Social Media Links (Optional):</label>
                         <div>
-                            <label class="text-[10px] font-bold text-slate-400 uppercase">Platform:</label>
-                            <select id="c-platform" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 text-white font-bold focus:outline-none focus:border-red-500">
-                                <option value="facebook">Facebook</option>
-                                <option value="youtube">YouTube</option>
-                                <option value="twitch">Twitch</option>
-                                <option value="tiktok">TikTok</option>
-                            </select>
+                            <span class="text-[9px] text-slate-400">Facebook Link:</span>
+                            <input type="text" id="c-fb" placeholder="https://facebook.com/..." class="w-full bg-[#161822] border border-white/10 px-2 py-1.5 rounded text-xs mt-0.5">
                         </div>
                         <div>
-                            <label class="text-[10px] font-bold text-slate-400 uppercase">Social Link URL:</label>
-                            <input type="text" id="c-link" placeholder="https://..." class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1">
+                            <span class="text-[9px] text-slate-400">YouTube Link:</span>
+                            <input type="text" id="c-yt" placeholder="https://youtube.com/..." class="w-full bg-[#161822] border border-white/10 px-2 py-1.5 rounded text-xs mt-0.5">
+                        </div>
+                        <div>
+                            <span class="text-[9px] text-slate-400">TikTok Link:</span>
+                            <input type="text" id="c-tt" placeholder="https://tiktok.com/@..." class="w-full bg-[#161822] border border-white/10 px-2 py-1.5 rounded text-xs mt-0.5">
+                        </div>
+                        <div>
+                            <span class="text-[9px] text-slate-400">Twitch Link:</span>
+                            <input type="text" id="c-tw" placeholder="https://twitch.tv/..." class="w-full bg-[#161822] border border-white/10 px-2 py-1.5 rounded text-xs mt-0.5">
                         </div>
                     </div>
+
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 uppercase">Profile Photo:</label>
                         <input type="file" id="c-pfp" accept="image/*" class="w-full text-xs text-slate-400 mt-1">
@@ -637,26 +644,21 @@
                 return;
             }
             allCreators.forEach(c => {
-                let socialIcon = 'fa-solid fa-video';
-                let link = c.link || '#';
-                const platform = c.platform || 'facebook';
-                
-                if(platform === 'facebook') socialIcon = 'fa-brands fa-facebook';
-                else if(platform === 'youtube') socialIcon = 'fa-brands fa-youtube';
-                else if(platform === 'twitch') socialIcon = 'fa-brands fa-twitch';
-                else if(platform === 'tiktok') socialIcon = 'fa-brands fa-tiktok';
+                let iconsHtml = '';
+                if(c.fb) iconsHtml += `<a href="${c.fb}" target="_blank" class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-[11px] hover:scale-110 transition"><i class="fa-brands fa-facebook-f"></i></a>`;
+                if(c.yt) iconsHtml += `<a href="${c.yt}" target="_blank" class="w-6 h-6 rounded-full bg-red-600 text-white flex items-center justify-center text-[11px] hover:scale-110 transition"><i class="fa-brands fa-youtube"></i></a>`;
+                if(c.tt) iconsHtml += `<a href="${c.tt}" target="_blank" class="w-6 h-6 rounded-full bg-slate-800 border border-white/20 text-white flex items-center justify-center text-[11px] hover:scale-110 transition"><i class="fa-brands fa-tiktok"></i></a>`;
+                if(c.tw) iconsHtml += `<a href="${c.tw}" target="_blank" class="w-6 h-6 rounded-full bg-purple-600 text-white flex items-center justify-center text-[11px] hover:scale-110 transition"><i class="fa-brands fa-twitch"></i></a>`;
 
                 grid.innerHTML += `
-                    <a href="${link}" target="_blank" class="bg-[#161822] border border-white/5 hover:border-red-500/40 rounded-xl p-4 flex flex-col items-center text-center transition group">
-                        <div class="relative mb-2">
-                            <img src="${c.pfp || 'https://via.placeholder.com/100'}" class="w-14 h-14 rounded-full border-2 border-red-500/40 object-cover group-hover:scale-105 transition">
-                            <div class="absolute -bottom-1 -right-1 bg-red-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-[10px] shadow">
-                                <i class="${socialIcon}"></i>
-                            </div>
-                        </div>
+                    <div class="bg-[#161822] border border-white/5 hover:border-red-500/40 rounded-xl p-4 flex flex-col items-center text-center transition group">
+                        <img src="${c.pfp || 'https://via.placeholder.com/100'}" class="w-14 h-14 rounded-full border-2 border-red-500/40 object-cover mb-2 group-hover:scale-105 transition">
                         <h4 class="font-black text-white text-xs uppercase truncate w-full">${c.name}</h4>
-                        <p class="text-[9px] text-slate-400 uppercase mt-0.5">${c.game || 'Streamer'}</p>
-                    </a>
+                        <p class="text-[9px] text-slate-400 uppercase mt-0.5 mb-3">${c.game || 'Streamer'}</p>
+                        <div class="flex items-center justify-center space-x-1.5 mt-auto">
+                            ${iconsHtml || '<span class="text-[9px] text-slate-500 italic">No socials</span>'}
+                        </div>
+                    </div>
                 `;
             });
         }
@@ -768,17 +770,22 @@ Enemy5 | Nautilus | 0/3/4 | 9,000 | 8,000 | Locket`;
         async function addCreator() {
             const name = document.getElementById('c-name').value.trim();
             const game = document.getElementById('c-game').value.trim();
-            const platform = document.getElementById('c-platform').value;
-            const link = document.getElementById('c-link').value.trim();
+            const fb = document.getElementById('c-fb').value.trim();
+            const yt = document.getElementById('c-yt').value.trim();
+            const tt = document.getElementById('c-tt').value.trim();
+            const tw = document.getElementById('c-tw').value.trim();
             const pfp = await fileToBase64(document.getElementById('c-pfp').files[0]);
             
             if(!name) { alert('Ilagay ang pangalan ng Creator!'); return; }
             
-            db.ref('creators').push({ name, game, platform, link, pfp }).then(() => {
+            db.ref('creators').push({ name, game, fb, yt, tt, tw, pfp }).then(() => {
                 alert('Creator saved successfully!');
                 document.getElementById('c-name').value = '';
                 document.getElementById('c-game').value = '';
-                document.getElementById('c-link').value = '';
+                document.getElementById('c-fb').value = '';
+                document.getElementById('c-yt').value = '';
+                document.getElementById('c-tt').value = '';
+                document.getElementById('c-tw').value = '';
             });
         }
 
