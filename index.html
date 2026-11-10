@@ -242,8 +242,13 @@
 
                 <!-- 2. ADD & MANAGE 5v5 MATCH -->
                 <div class="bg-[#161822] p-5 rounded-xl border border-white/5 space-y-4">
-                    <h3 class="font-black text-xs uppercase text-red-500">2. Add Full 5v5 Match</h3>
+                    <div class="flex justify-between items-center">
+                        <h3 id="match-form-title" class="font-black text-xs uppercase text-red-500">2. Add / Edit Full 5v5 Match</h3>
+                        <button id="cancel-match-edit-btn" onclick="resetMatchForm()" class="hidden text-[9px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded hover:bg-slate-700">Cancel Edit</button>
+                    </div>
                     
+                    <input type="hidden" id="editing-match-id" value="">
+
                     <!-- DYNAMIC TEAM PRESET BUTTONS FOR MATCH HISTORY DATA ENTRY -->
                     <div class="bg-[#0b0c10] p-3 rounded-lg border border-indigo-500/40 space-y-2">
                         <label class="text-[10px] font-bold text-indigo-400 uppercase flex items-center space-x-1">
@@ -318,17 +323,23 @@
 
                     <div class="border-t border-white/5 pt-3 space-y-3">
                         <div class="space-y-1">
-                            <label class="text-[9px] text-blue-400 font-bold uppercase">Blue Team Data Format: (IGN | Champion | KDA | Gold | Item1, Item2...)</label>
-                            <textarea id="m-blue-data" rows="5" placeholder="RRS Tyad | Aatrox | 9/5/7 | 16,805 | Divine Sunderer, Death's Dance, Sterak's Gage, Plated Steelcaps" class="w-full bg-[#0b0c10] border border-blue-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
+                            <div class="flex justify-between items-center">
+                                <label class="text-[9px] text-blue-400 font-bold uppercase">Blue Team Data (IGN | Champ | KDA | Gold | Items)</label>
+                                <button onclick="autoFormatRawData('m-blue-data')" type="button" class="text-[9px] bg-blue-600/30 text-blue-300 hover:bg-blue-600/50 px-2 py-0.5 rounded">Smart Auto-Format Text</button>
+                            </div>
+                            <textarea id="m-blue-data" rows="5" placeholder="RRS Tyad | Aatrox | 9/5/7 | 16,805 | Sundered Sky, Amaranth's Twinguard, Sterak's Gage, Serpent's Fang, Mercury's Treads" class="w-full bg-[#0b0c10] border border-blue-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
                         </div>
 
                         <div class="space-y-1">
-                            <label class="text-[9px] text-red-400 font-bold uppercase">Red Team Data Format: (IGN | Champion | KDA | Gold | Item1, Item2...)</label>
-                            <textarea id="m-red-data" rows="5" placeholder="VORTEX | Mordekaiser | 9/7/11 | 15,635 | Riftmaker, Liandry's Torment, Rabadon's Deathcap, Mercury's Treads" class="w-full bg-[#0b0c10] border border-red-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
+                            <div class="flex justify-between items-center">
+                                <label class="text-[9px] text-red-400 font-bold uppercase">Red Team Data (IGN | Champ | KDA | Gold | Items)</label>
+                                <button onclick="autoFormatRawData('m-red-data')" type="button" class="text-[9px] bg-red-600/30 text-red-300 hover:bg-red-600/50 px-2 py-0.5 rounded">Smart Auto-Format Text</button>
+                            </div>
+                            <textarea id="m-red-data" rows="5" placeholder="VORTEX | Mordekaiser | 9/7/11 | 15,635 | Riftmaker, Dusk and Dawn, Thornmail, Liandry's Torment, Plated Steelcaps" class="w-full bg-[#0b0c10] border border-red-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
                         </div>
                     </div>
 
-                    <button onclick="addMatch()" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save 5v5 Scoreboard</button>
+                    <button id="save-match-btn" onclick="addMatch()" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save 5v5 Scoreboard</button>
                     
                     <div class="mt-4 pt-3 border-t border-white/5">
                         <p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Existing Matches List:</p>
@@ -520,27 +531,74 @@
             return `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/champion/${formattedName}.png`;
         }
 
-        function getItemIconUrl(itemName) {
+        function getItemIconUrl(itemName, gameCategory) {
             if (!itemName) return '';
-            let clean = itemName.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
-            
+            let raw = itemName.trim();
+            let clean = raw.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+            // WILD RIFT DIRECT WIKI / RIFTGG CDN MAPPINGS
+            if (!gameCategory || gameCategory.toLowerCase().includes('wild rift')) {
+                const wrItems = {
+                    'sunderedsky': 'https://static.wikia.nocookie.net/leagueoflegends/images/1/1a/Sundered_Sky_WR_item.png',
+                    'trinityforce': 'https://static.wikia.nocookie.net/leagueoflegends/images/e/ef/Trinity_Force_WR_item.png',
+                    'divinesunderer': 'https://static.wikia.nocookie.net/leagueoflegends/images/f/f6/Divine_Sunderer_WR_item.png',
+                    'deathsdance': 'https://static.wikia.nocookie.net/leagueoflegends/images/8/83/Death%27s_Dance_WR_item.png',
+                    'steraksgage': 'https://static.wikia.nocookie.net/leagueoflegends/images/c/c9/Sterak%27s_Gage_WR_item.png',
+                    'steraks': 'https://static.wikia.nocookie.net/leagueoflegends/images/c/c9/Sterak%27s_Gage_WR_item.png',
+                    'serpentsfang': 'https://static.wikia.nocookie.net/leagueoflegends/images/2/29/Serpent%27s_Fang_WR_item.png',
+                    'essencereaver': 'https://static.wikia.nocookie.net/leagueoflegends/images/8/87/Essence_Reaver_WR_item.png',
+                    'stormrazor': 'https://static.wikia.nocookie.net/leagueoflegends/images/7/7b/Stormrazor_WR_item.png',
+                    'lorddominiksregard': 'https://static.wikia.nocookie.net/leagueoflegends/images/1/12/Lord_Dominik%27s_Regard_WR_item.png',
+                    'infinityedge': 'https://static.wikia.nocookie.net/leagueoflegends/images/8/85/Infinity_Edge_WR_item.png',
+                    'mawofmalmortius': 'https://static.wikia.nocookie.net/leagueoflegends/images/1/1b/Maw_of_Malmortius_WR_item.png',
+                    'thecollector': 'https://static.wikia.nocookie.net/leagueoflegends/images/9/91/The_Collector_WR_item.png',
+                    'collector': 'https://static.wikia.nocookie.net/leagueoflegends/images/9/91/The_Collector_WR_item.png',
+                    'mortalreminder': 'https://static.wikia.nocookie.net/leagueoflegends/images/5/5a/Mortal_Reminder_WR_item.png',
+                    'hexopticsc44': 'https://static.wikia.nocookie.net/leagueoflegends/images/a/a2/Hexoptics_C44_WR_item.png',
+                    'hexoptics': 'https://static.wikia.nocookie.net/leagueoflegends/images/a/a2/Hexoptics_C44_WR_item.png',
+                    'malignance': 'https://static.wikia.nocookie.net/leagueoflegends/images/e/e6/Malignance_WR_item.png',
+                    'infinityorb': 'https://static.wikia.nocookie.net/leagueoflegends/images/0/0f/Infinity_Orb_WR_item.png',
+                    'rabadonsdeathcap': 'https://static.wikia.nocookie.net/leagueoflegends/images/f/fb/Rabadon%27s_Deathcap_WR_item.png',
+                    'deathcap': 'https://static.wikia.nocookie.net/leagueoflegends/images/f/fb/Rabadon%27s_Deathcap_WR_item.png',
+                    'voidstaff': 'https://static.wikia.nocookie.net/leagueoflegends/images/6/67/Void_Staff_WR_item.png',
+                    'stormsurge': 'https://static.wikia.nocookie.net/leagueoflegends/images/0/0e/Stormsurge_WR_item.png',
+                    'morellonomicon': 'https://static.wikia.nocookie.net/leagueoflegends/images/8/89/Morellonomicon_WR_item.png',
+                    'riftmaker': 'https://static.wikia.nocookie.net/leagueoflegends/images/7/7b/Riftmaker_WR_item.png',
+                    'liandrystorment': 'https://static.wikia.nocookie.net/leagueoflegends/images/1/17/Liandry%27s_Torment_WR_item.png',
+                    'liandry': 'https://static.wikia.nocookie.net/leagueoflegends/images/1/17/Liandry%27s_Torment_WR_item.png',
+                    'duskanddawn': 'https://static.wikia.nocookie.net/leagueoflegends/images/8/82/Dusk_and_Dawn_WR_item.png',
+                    'heartsteel': 'https://static.wikia.nocookie.net/leagueoflegends/images/a/ab/Heartsteel_WR_item.png',
+                    'hollowradiance': 'https://static.wikia.nocookie.net/leagueoflegends/images/2/29/Hollow_Radiance_WR_item.png',
+                    'unendingdespair': 'https://static.wikia.nocookie.net/leagueoflegends/images/1/1b/Unending_Despair_WR_item.png',
+                    'amaranthstwinguard': 'https://static.wikia.nocookie.net/leagueoflegends/images/e/e0/Amaranth%27s_Twinguard_WR_item.png',
+                    'twinguard': 'https://static.wikia.nocookie.net/leagueoflegends/images/e/e0/Amaranth%27s_Twinguard_WR_item.png',
+                    'thornmail': 'https://static.wikia.nocookie.net/leagueoflegends/images/7/74/Thornmail_WR_item.png',
+                    'iceborngauntlet': 'https://static.wikia.nocookie.net/leagueoflegends/images/0/08/Iceborn_Gauntlet_WR_item.png',
+                    'gargoylestoneplate': 'https://static.wikia.nocookie.net/leagueoflegends/images/7/79/Gargoyle_Stoneplate_WR_item.png',
+                    'rumblevest': 'https://static.wikia.nocookie.net/leagueoflegends/images/6/60/Bami%27s_Cinder_WR_item.png',
+                    'harmonicecho': 'https://static.wikia.nocookie.net/leagueoflegends/images/5/5a/Harmonic_Echo_WR_item.png',
+                    'ardentcenser': 'https://static.wikia.nocookie.net/leagueoflegends/images/8/80/Ardent_Censer_WR_item.png',
+                    'redemption': 'https://static.wikia.nocookie.net/leagueoflegends/images/3/36/Redemption_WR_item.png',
+                    'staffofflowingwater': 'https://static.wikia.nocookie.net/leagueoflegends/images/4/4b/Staff_of_Flowing_Water_WR_item.png',
+                    'platedsteelcaps': 'https://static.wikia.nocookie.net/leagueoflegends/images/8/86/Plated_Steelcaps_WR_item.png',
+                    'mercurystreads': 'https://static.wikia.nocookie.net/leagueoflegends/images/f/f9/Mercury%27s_Treads_WR_item.png',
+                    'bootsofmana': 'https://static.wikia.nocookie.net/leagueoflegends/images/7/77/Boots_of_Mana_WR_item.png',
+                    'gluttonousgreaves': 'https://static.wikia.nocookie.net/leagueoflegends/images/b/bd/Gluttonous_Greaves_WR_item.png',
+                    'ionianbootsoflucidity': 'https://static.wikia.nocookie.net/leagueoflegends/images/2/23/Ionian_Boots_of_Lucidity_WR_item.png',
+                    'berserkersgreaves': 'https://static.wikia.nocookie.net/leagueoflegends/images/0/0e/Berserker%27s_Greaves_WR_item.png'
+                };
+
+                if (wrItems[clean]) {
+                    return wrItems[clean];
+                }
+            }
+
+            // LOL PC SHARED DDRAGON ITEMS
             const itemMap = {
-                'platedsteelcaps': '3047', 'steelcaps': '3047', 'tabi': '3047',
-                'ionianboots': '3158', 'lucidity': '3158', 'berserkersgreaves': '3006',
-                'mercurystreads': '3111', 'sorcerersshoes': '3020', 'mobilityboots': '3117',
-                'heartsteel': '3084', 'divinesunderer': '6632', 'trinityforce': '3078',
-                'deathsdance': '3812', 'steraksgage': '3053', 'guardianangel': '3026',
-                'bladeoftheruinedking': '3153', 'botrk': '3153', 'riftmaker': '4646',
-                'liandrystorment': '6653', 'rabadonsdeathcap': '3089', 'ludensecho': '6655',
-                'infinityorb': '3165', 'infinityedge': '3031', 'essencereaver': '3508',
-                'krakenslayer': '6672', 'phantomdancer': '3046', 'rapidfirecannon': '3094',
-                'statikkshiv': '3087', 'bloodthirster': '3072', 'collector': '6676',
-                'navoriquickblades': '6675', 'blackcleaver': '3071', 'ravenoushydra': '3074',
-                'sunfireaegis': '3068', 'warmogsarmor': '3083', 'thornmail': '3075',
-                'locketofthesolari': '3190', 'deadmansplate': '3742', 'ardentcenser': '3504',
-                'harmonicecho': '3001', 'athenesunholygrail': '3174', 'protectorsvow': '3109',
-                'umbralglaive': '3134', 'duskbladeofdraktharr': '3147', 'hextechgunblade': '3146',
-                'rodofages': '3027', 'morellonomicon': '3165'
+                'platedsteelcaps': '3047', 'ionianboots': '3158', 'berserkersgreaves': '3006',
+                'mercurystreads': '3111', 'sorcerersshoes': '3020', 'heartsteel': '3084',
+                'trinityforce': '3078', 'riftmaker': '4646', 'rabadonsdeathcap': '3089',
+                'infinityedge': '3031', 'voidstaff': '3135', 'thornmail': '3075'
             };
 
             for (let key in itemMap) {
@@ -548,6 +606,7 @@
                     return `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/item/${itemMap[key]}.png`;
                 }
             }
+
             return `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/item/1028.png`;
         }
 
@@ -756,7 +815,18 @@
         function renderAdminMatches() {
             const container = document.getElementById('admin-matches-list');
             container.innerHTML = '';
-            Object.keys(allMatches).forEach(key => container.innerHTML += `<div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/5 text-xs"><span class="font-bold text-slate-300 truncate">[${allMatches[key].game || 'Wild Rift'}] ${allMatches[key].team} vs ${allMatches[key].opponent}</span><button onclick="deleteItem('matches', '${key}')" class="bg-red-600/20 text-red-400 px-2 py-1 rounded text-[10px]">Delete</button></div>`);
+            Object.keys(allMatches).forEach(key => {
+                const m = allMatches[key];
+                container.innerHTML += `
+                    <div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/5 text-xs">
+                        <span class="font-bold text-slate-300 truncate">[${m.game || 'Wild Rift'}] ${m.team} vs ${m.opponent}</span>
+                        <div class="flex items-center space-x-1 shrink-0">
+                            <button onclick="editMatch('${key}')" class="bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 px-2 py-1 rounded text-[10px] font-bold">Edit Match</button>
+                            <button onclick="deleteItem('matches', '${key}')" class="bg-red-600/20 text-red-400 hover:bg-red-600/30 px-2 py-1 rounded text-[10px] font-bold">Delete</button>
+                        </div>
+                    </div>
+                `;
+            });
         }
 
         function renderAdminCreators() {
@@ -790,7 +860,6 @@
             });
         }
 
-        // EDIT PLAYER PROFILE FUNCTION
         function editPlayer(id) {
             const player = allPlayers.find(p => p.id === id);
             if (!player) return;
@@ -836,8 +905,6 @@
             if(!ign) { alert('Mangyaring ilagay ang IGN ng player!'); return; }
             
             let pfp = await fileToBase64(document.getElementById('p-pfp').files[0]);
-
-            // Kapag nagi-edit at walang bagong in-upload na PFP, gamitin ang purong lumang PFP
             if(editId && !pfp) {
                 const existing = allPlayers.find(p => p.id === editId);
                 if(existing) pfp = existing.pfp || '';
@@ -862,30 +929,45 @@
             }
         }
 
-        // AUTOMATIC ROSTER TO MATCH COMMAND AUTO-FILL
-        function autoFillTeamData(game, teamTag) {
-            document.getElementById('m-game').value = game;
-            
-            // Hahanapin ang mga players sa database na tugma sa game at team tag
-            const matchingPlayers = allPlayers.filter(p => 
-                p.game && p.game.toLowerCase() === game.toLowerCase() &&
-                p.team && p.team.trim().toUpperCase() === teamTag.toUpperCase()
-            );
+        // EDIT MATCH HISTORY FUNCTION
+        function editMatch(key) {
+            const m = allMatches[key];
+            if (!m) return;
 
-            if(matchingPlayers.length === 0) {
-                alert(`Walang nahanap na player sa Roster database para sa Game: ${game} at Team: ${teamTag}.\nMag-add muna ng players sa Section 1.`);
-                return;
-            }
+            document.getElementById('editing-match-id').value = key;
+            document.getElementById('m-game').value = m.game || 'Wild Rift';
+            document.getElementById('m-team').value = m.team || '';
+            document.getElementById('m-opp').value = m.opponent || '';
+            document.getElementById('m-score').value = m.score || '';
+            document.getElementById('m-type').value = m.type || 'Tournament';
+            document.getElementById('m-result').value = m.result || 'Win';
+            document.getElementById('m-date').value = m.date || '';
+            document.getElementById('m-blue-data').value = m.blueData || '';
+            document.getElementById('m-red-data').value = m.redData || '';
 
-            // I-fformat per line para sa Blue Team Command Textarea
-            const formattedLines = matchingPlayers.map(p => `${p.ign} | Aatrox | 0/0/0 | 0 | Divine Sunderer, Plated Steelcaps`);
-            
-            document.getElementById('m-blue-data').value = formattedLines.join('\n');
-            document.getElementById('m-team').value = `Rift Raiders (${teamTag})`;
-            alert(`Awtomatikong na-load ang Roster ng ${teamTag} (${game}) sa Blue Team Command Box!`);
+            document.getElementById('match-form-title').innerText = "2. Edit Match History (" + m.team + " vs " + m.opponent + ")";
+            document.getElementById('save-match-btn').innerText = "Update Scoreboard";
+            document.getElementById('cancel-match-edit-btn').classList.remove('hidden');
+
+            window.scrollTo({ top: document.getElementById('m-game').offsetTop - 50, behavior: 'smooth' });
+        }
+
+        function resetMatchForm() {
+            document.getElementById('editing-match-id').value = '';
+            document.getElementById('m-team').value = 'Rift Raiders';
+            document.getElementById('m-opp').value = '';
+            document.getElementById('m-score').value = '';
+            document.getElementById('m-date').value = '';
+            document.getElementById('m-blue-data').value = '';
+            document.getElementById('m-red-data').value = '';
+
+            document.getElementById('match-form-title').innerText = "2. Add / Edit Full 5v5 Match";
+            document.getElementById('save-match-btn').innerText = "Save 5v5 Scoreboard";
+            document.getElementById('cancel-match-edit-btn').classList.add('hidden');
         }
 
         function addMatch() {
+            const editKey = document.getElementById('editing-match-id').value;
             const game = document.getElementById('m-game').value;
             const team = document.getElementById('m-team').value;
             const opponent = document.getElementById('m-opp').value;
@@ -897,7 +979,67 @@
             const redData = document.getElementById('m-red-data').value;
 
             if(!team) return alert('Enter Team Name!');
-            db.ref('matches').push({ game, team, opponent, score, type, result, date, blueData, redData }).then(() => alert('Scoreboard saved!'));
+
+            const matchData = { game, team, opponent, score, type, result, date, blueData, redData };
+
+            if(editKey) {
+                db.ref(`matches/${editKey}`).update(matchData).then(() => {
+                    alert('Scoreboard updated successfully!');
+                    resetMatchForm();
+                });
+            } else {
+                db.ref('matches').push(matchData).then(() => {
+                    alert('Scoreboard saved!');
+                    resetMatchForm();
+                });
+            }
+        }
+
+        // SMART AUTO-FORMATTER HELPER FOR COPIED OCR / RAW TEXT
+        function autoFormatRawData(targetId) {
+            const el = document.getElementById(targetId);
+            let val = el.value.trim();
+            if(!val) return alert('Maglagay muna ng text bago i-auto format!');
+
+            let lines = val.split('\n').filter(l => l.trim() !== '');
+            let formattedLines = lines.map(line => {
+                if (line.includes('|')) return line; // Naka-format na
+                
+                // Hahanapin ang mga parts gamit ang spaces o commas
+                let parts = line.split(/\s{2,}|\t/).filter(p => p.trim() !== '');
+                if (parts.length >= 3) {
+                    let ign = parts[0] || 'Player';
+                    let champ = parts[1] || 'Aatrox';
+                    let kda = parts[2] || '0/0/0';
+                    let gold = parts[3] || '0';
+                    let items = parts.slice(4).join(', ') || 'Sundered Sky, Plated Steelcaps';
+                    return `${ign} | ${champ} | ${kda} | ${gold} | ${items}`;
+                }
+                return line;
+            });
+
+            el.value = formattedLines.join('\n');
+            alert('Awtomatikong inayos ang text format!');
+        }
+
+        function autoFillTeamData(game, teamTag) {
+            document.getElementById('m-game').value = game;
+            
+            const matchingPlayers = allPlayers.filter(p => 
+                p.game && p.game.toLowerCase() === game.toLowerCase() &&
+                p.team && p.team.trim().toUpperCase() === teamTag.toUpperCase()
+            );
+
+            if(matchingPlayers.length === 0) {
+                alert(`Walang nahanap na player sa Roster database para sa Game: ${game} at Team: ${teamTag}.\nMag-add muna ng players sa Section 1.`);
+                return;
+            }
+
+            const formattedLines = matchingPlayers.map(p => `${p.ign} | Aatrox | 0/0/0 | 0 | Sundered Sky, Plated Steelcaps`);
+            
+            document.getElementById('m-blue-data').value = formattedLines.join('\n');
+            document.getElementById('m-team').value = `Rift Raiders (${teamTag})`;
+            alert(`Awtomatikong na-load ang Roster ng ${teamTag} (${game}) sa Blue Team Command Box!`);
         }
 
         async function addCreator() {
@@ -1017,7 +1159,7 @@
                         let itemsHtml = '';
                         for(let k=0; k<6; k++) {
                             const itemName = itemsList[k] ? itemsList[k].trim() : '';
-                            const itemImg = getItemIconUrl(itemName);
+                            const itemImg = getItemIconUrl(itemName, m.game);
                             if(itemName && itemImg) {
                                 itemsHtml += `<img src="${itemImg}" class="w-5 h-5 rounded bg-slate-800 border border-white/10 object-cover" title="${itemName}" onError="this.style.display='none'">`;
                             } else if (itemName) {
