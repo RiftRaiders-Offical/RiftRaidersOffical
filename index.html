@@ -556,7 +556,6 @@
                 return `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/item/${riotItemMap[cleanKey]}.png`;
             }
 
-            // Pinalawak na Wild Rift items at PC item fallbacks
             const fallbackMap = {
                 'trinityforce': '3078', 'sunderedsky': '6610', 'divinesunderer': '6632',
                 'deathsdance': '3812', 'steraksgage': '3053', 'steraks': '3053',
@@ -573,7 +572,8 @@
                 'harmonicecho': '3165', 'staffofflowingwater': '6616', 'redemption': '3107',
                 'rodofages': '3027', 'liandry': '6653', 'liandrystorment': '6653',
                 'amaranthstwinguard': '6665', 'twinguard': '6665', 'hollowradiance': '3068',
-                'gluttonousgreaves': '3006', 'harmonic': '3165', 'ardent': '3504'
+                'gluttonousgreaves': '3006', 'harmonic': '3165', 'ardent': '3504',
+                'serpentsfang': '6695', 'twinguard': '6665'
             };
 
             for (let key in fallbackMap) {
@@ -585,7 +585,23 @@
             return '';
         }
 
-        document.getElementById('header-logo').src = defaultLogoUrl;
+        // Real-time listener para sa Website Logo mula sa Firebase
+        db.ref('settings/logo').on('value', snap => {
+            const logo = snap.val() || defaultLogoUrl;
+            document.getElementById('header-logo').src = logo;
+            const logoInput = document.getElementById('setting-logo-url');
+            if(logoInput) logoInput.value = logo;
+        });
+
+        function saveSiteLogo() {
+            const url = document.getElementById('setting-logo-url').value.trim();
+            if(!url) { alert('Ilagay ang valid logo URL!'); return; }
+            db.ref('settings/logo').set(url).then(() => {
+                alert('Logo updated successfully!');
+            }).catch(error => {
+                alert('Error updating logo: ' + error.message);
+            });
+        }
 
         function openAdminModal() { document.getElementById('admin-modal').classList.remove('hidden'); }
         function closeAdminModal() { document.getElementById('admin-modal').classList.add('hidden'); }
