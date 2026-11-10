@@ -596,7 +596,7 @@
                 }
             }
 
-            return `https://raw.communitydragon.org/latest/game/data/items/icons2d/1028_ruby_crystal.png`;
+            return ''; // I-balik ang blangko kung walang match para hindi mag-error/ruby crystal
         }
 
         db.ref('settings/logo').on('value', snap => {
@@ -1149,14 +1149,11 @@
                         const kda = p[2] || '0/0/0';
                         const gold = p[3] || '0';
                         
-                        // Hanapin ang part kung saan nakalagay ang mga items (huling bahagi o index 4/5)
                         let rawItemsStr = '';
                         let dmgDealt = '';
                         
                         if (p.length >= 6) {
-                            // Kung may damage at items
                             if (!p[4].includes(',') && isNaN(p[4].charAt(0))) {
-                                // baka item name ito
                                 rawItemsStr = p.slice(4).join(', ');
                             } else {
                                 dmgDealt = p[4];
