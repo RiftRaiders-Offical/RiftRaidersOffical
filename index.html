@@ -413,7 +413,7 @@
             </div>
 
             <div class="space-y-3 border-t border-white/5 pt-3">
-                <p id="modal-champs-title" class="text-slate-500 text-[9px] font-bold uppercase tracking-widest">MOST PLAYED CHAMPIONS & USAGE RATE</p>
+                <p id="modal-champs-title" class="text-slate-500 text-[9px] font-bold uppercase tracking-widest">MOST PLAYED CHAMPIONS & USAGE RATE (TOURNAMENT ONLY)</p>
                 <div id="modal-champs-list" class="space-y-2"></div>
             </div>
         </div>
@@ -584,7 +584,7 @@
             if(filtered.length === 0) { grid.innerHTML = '<p class="text-xs text-slate-500 italic py-4 text-center col-span-full">No players found.</p>'; return; }
 
             filtered.forEach(p => {
-                const stats = calculateTeamStats(p.team);
+                const stats = calculateTeamTournamentStats(p.team);
                 grid.innerHTML += `
                     <div onclick="openPlayerStats('${p.ign.replace(/'/g, "\\'")}', '${p.tag || ''}', '${p.game}', '${p.team}', '${p.role || ''}', '${stats.winrate}', '${stats.wins}', '${stats.losses}', '${p.pfp || ''}', '${p.champ1 || ''}', '${p.champ2 || ''}', '${p.champ3 || ''}', '${p.teamlogo || ''}')" class="bg-[#161822] rounded-xl overflow-hidden relative h-64 cursor-pointer group border border-white/5 shadow-md">
                         <img src="${p.pfp || 'https://via.placeholder.com/150'}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition duration-500">
@@ -600,9 +600,13 @@
             });
         }
 
-        function calculateTeamStats(teamName) {
+        // Tanging TOURNAMENT matches lamang ang binibilang para sa Win/Loss at Winrate ng Team
+        function calculateTeamTournamentStats(teamName) {
             if (!teamName || !allMatches) return { wins: 0, losses: 0, winrate: '0%' };
-            const teamMatches = Object.values(allMatches).filter(m => m.team && m.team.trim().toLowerCase() === teamName.trim().toLowerCase());
+            const teamMatches = Object.values(allMatches).filter(m => 
+                m.team && m.team.trim().toLowerCase() === teamName.trim().toLowerCase() &&
+                m.type && m.type.trim().toLowerCase() === 'tournament'
+            );
             let wins = 0, losses = 0;
             teamMatches.forEach(m => {
                 if (m.result === 'Win') wins += 1;
@@ -795,6 +799,7 @@ Enemy5 | Nautilus | 0/3/4 | 9,000 | 8,000 | Locket`;
             alert('Partner saved!');
         }
 
+        // Tanging Tournament matches lamang ang bibilangin sa Champion Usage sa Player Modal
         function openPlayerStats(name, tag, game, team, role, winrate, wins, losses, pfp, c1, c2, c3, teamlogo) {
             document.getElementById('modal-name').innerText = name;
             document.getElementById('modal-tag').innerText = tag ? '#' + tag : '';
@@ -813,15 +818,17 @@ Enemy5 | Nautilus | 0/3/4 | 9,000 | 8,000 | Locket`;
             let totalPlayerMatches = 0;
 
             Object.values(allMatches).forEach(m => {
-                const combined = (m.blueData || '') + '\n' + (m.redData || '');
-                combined.split('\n').forEach(line => {
-                    const p = line.split('|').map(s => s.trim());
-                    if(p[0] && p[0].toLowerCase() === name.toLowerCase()) {
-                        totalPlayerMatches++;
-                        const champ = p[1] || 'Unknown';
-                        champCounts[champ] = (champCounts[champ] || 0) + 1;
-                    }
-                });
+                if (m.type && m.type.trim().toLowerCase() === 'tournament') {
+                    const combined = (m.blueData || '') + '\n' + (m.redData || '');
+                    combined.split('\n').forEach(line => {
+                        const p = line.split('|').map(s => s.trim());
+                        if(p[0] && p[0].toLowerCase() === name.toLowerCase()) {
+                            totalPlayerMatches++;
+                            const champ = p[1] || 'Unknown';
+                            champCounts[champ] = (champCounts[champ] || 0) + 1;
+                        }
+                    });
+                }
             });
 
             const champsListEl = document.getElementById('modal-champs-list');
@@ -836,7 +843,7 @@ Enemy5 | Nautilus | 0/3/4 | 9,000 | 8,000 | Locket`;
                         <div class="bg-[#0b0c10] p-2 rounded-xl border border-white/5 flex items-center justify-between text-xs">
                             <div class="flex items-center space-x-3">
                                 <img src="${getChampIconUrl(champ)}" class="w-9 h-9 rounded-lg border border-red-500/40 object-cover" onError="this.src='https://via.placeholder.com/40'">
-                                <div><p class="font-black text-white text-xs leading-none">${champ}</p><p class="text-[9px] text-slate-400 mt-0.5">${count} Matches Played</p></div>
+                                <div><p class="font-black text-white text-xs leading-none">${champ}</p><p class="text-[9px] text-slate-400 mt-0.5">${count} Tournament Matches</p></div>
                             </div>
                             <div class="text-right"><span class="bg-red-600/20 text-red-400 border border-red-500/30 text-[10px] font-black px-2 py-0.5 rounded">${percent}% Pick</span></div>
                         </div>
