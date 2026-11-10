@@ -580,16 +580,23 @@
                 'tearofthegoddess': '3070', 'tear': '3070',
                 'rubycrystal': '1028',
                 'faeriecharm': '1004',
-                'amptome': '1001', 'amplifyingtome': '1052'
+                'amptome': '1001', 'amplifyingtome': '1052',
+                'bamiscinder': '3068', 'bamis': '3068',
+                'blastingwand': '1026',
+                'needlesslylargerod': '1038',
+                'bfsword': '1038',
+                'pickaxe': '1037',
+                'longsword': '1036',
+                'daggers': '1042', 'dagger': '1042'
             };
 
             for (let key in itemMap) {
-                if (clean === key || clean.includes(key)) {
+                if (clean === key || clean.includes(key) || key.startsWith(key)) {
                     return `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/item/${itemMap[key]}.png`;
                 }
             }
 
-            return `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/item/1028.png`;
+            return `https://raw.communitydragon.org/latest/game/data/items/icons2d/1028_ruby_crystal.png`;
         }
 
         db.ref('settings/logo').on('value', snap => {
