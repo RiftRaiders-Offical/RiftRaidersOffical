@@ -531,12 +531,11 @@
             return `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/champion/${formattedName}.png`;
         }
 
-       function getItemIconUrl(itemName, gameCategory) {
+        function getItemIconUrl(itemName, gameCategory) {
             if (!itemName) return '';
             let raw = itemName.trim();
             let clean = raw.toLowerCase().replace(/[^a-z0-9]/g, '');
 
-            // EXACT LOL PC / WILD RIFT SHARED D-DRAGON ID MAPPING (100% Working Links)
             const itemMap = {
                 'sunderedsky': '6610',
                 'trinityforce': '3078',
@@ -573,24 +572,6 @@
                 'ionianbootsoflucidity': '3158', 'lucidity': '3158',
                 'berserkersgreaves': '3006',
                 'gluttonousgreaves': '3006'
-            };
-
-            for (let key in itemMap) {
-                if (clean.includes(key) || key.includes(clean)) {
-                    return `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/item/${itemMap[key]}.png`;
-                }
-            }
-
-            // Fallback default kung sakaling may bagong item
-            return `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/item/3070.png`;
-        }
-            }
-
-            const itemMap = {
-                'platedsteelcaps': '3047', 'ionianboots': '3158', 'berserkersgreaves': '3006',
-                'mercurystreads': '3111', 'sorcerersshoes': '3020', 'heartsteel': '3084',
-                'trinityforce': '3078', 'riftmaker': '4646', 'rabadonsdeathcap': '3089',
-                'infinityedge': '3031', 'voidstaff': '3135', 'thornmail': '3075'
             };
 
             for (let key in itemMap) {
@@ -683,6 +664,7 @@
 
         function renderRoster() {
             const grid = document.getElementById('roster-grid');
+            if(!grid) return;
             grid.innerHTML = '';
             const filtered = allPlayers.filter(p => currentGameFilter === 'ALL' || p.game === currentGameFilter);
             if(filtered.length === 0) { grid.innerHTML = '<p class="text-xs text-slate-500 italic py-4 text-center col-span-full">No players found.</p>'; return; }
@@ -721,6 +703,7 @@
 
         function renderMatches() {
             const list = document.getElementById('match-history-list');
+            if(!list) return;
             list.innerHTML = '';
             
             const keys = Object.keys(allMatches).filter(key => {
@@ -751,6 +734,7 @@
 
         function renderCreators() {
             const grid = document.getElementById('creators-grid');
+            if(!grid) return;
             grid.innerHTML = '';
             if(allCreators.length === 0) {
                 grid.innerHTML = '<p class="text-xs text-slate-500 italic col-span-full">No content creators added yet.</p>';
@@ -778,6 +762,7 @@
 
         function renderPartners() {
             const grid = document.getElementById('partners-grid');
+            if(!grid) return;
             grid.innerHTML = '';
             Object.values(allPartners).forEach(p => {
                 grid.innerHTML += `<a href="${p.link || '#'}" target="_blank" class="bg-[#161822] px-4 py-2.5 rounded-xl border border-white/5 flex items-center space-x-2"><img src="${p.logo}" class="h-6 w-auto object-contain"><span class="text-xs font-bold text-slate-300">${p.name || ''}</span></a>`;
@@ -786,6 +771,7 @@
 
         function renderAdminPlayers() {
             const container = document.getElementById('admin-players-list');
+            if(!container) return;
             container.innerHTML = '';
             if(allPlayers.length === 0) { container.innerHTML = '<p class="text-[10px] text-slate-500 italic">No players in database.</p>'; return; }
             allPlayers.forEach(p => {
@@ -806,6 +792,7 @@
 
         function renderAdminMatches() {
             const container = document.getElementById('admin-matches-list');
+            if(!container) return;
             container.innerHTML = '';
             Object.keys(allMatches).forEach(key => {
                 const m = allMatches[key];
@@ -1149,7 +1136,7 @@
                             const itemName = itemsList[k] ? itemsList[k].trim() : '';
                             const itemImg = getItemIconUrl(itemName, m.game);
                             if(itemName && itemImg) {
-                                itemsHtml += `<img src="${itemImg}" class="w-5 h-5 rounded bg-slate-800 border border-white/10 object-cover" title="${itemName}" onError="this.src='https://raw.communitydragon.org/latest/game/data/items/icons2d/1028_ruby_crystal.png'">`;
+                                itemsHtml += `<img src="${itemImg}" class="w-5 h-5 rounded bg-slate-800 border border-white/10 object-cover" title="${itemName}" onError="this.src='https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/item/1028.png'">`;
                             } else {
                                 itemsHtml += `<div class="w-4 h-4 rounded bg-black/40 border border-white/5"></div>`;
                             }
