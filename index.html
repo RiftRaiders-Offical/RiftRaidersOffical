@@ -536,56 +536,47 @@
             let raw = itemName.trim();
             let clean = raw.toLowerCase().replace(/[^a-z0-9]/g, '');
 
-            // WILD RIFT DIRECT WIKI / RIFTGG CDN MAPPINGS
             if (!gameCategory || gameCategory.toLowerCase().includes('wild rift')) {
                 const wrItems = {
-                    'sunderedsky': 'https://static.wikia.nocookie.net/leagueoflegends/images/1/1a/Sundered_Sky_WR_item.png',
-                    'trinityforce': 'https://static.wikia.nocookie.net/leagueoflegends/images/e/ef/Trinity_Force_WR_item.png',
-                    'divinesunderer': 'https://static.wikia.nocookie.net/leagueoflegends/images/f/f6/Divine_Sunderer_WR_item.png',
-                    'deathsdance': 'https://static.wikia.nocookie.net/leagueoflegends/images/8/83/Death%27s_Dance_WR_item.png',
-                    'steraksgage': 'https://static.wikia.nocookie.net/leagueoflegends/images/c/c9/Sterak%27s_Gage_WR_item.png',
-                    'steraks': 'https://static.wikia.nocookie.net/leagueoflegends/images/c/c9/Sterak%27s_Gage_WR_item.png',
-                    'serpentsfang': 'https://static.wikia.nocookie.net/leagueoflegends/images/2/29/Serpent%27s_Fang_WR_item.png',
-                    'essencereaver': 'https://static.wikia.nocookie.net/leagueoflegends/images/8/87/Essence_Reaver_WR_item.png',
-                    'stormrazor': 'https://static.wikia.nocookie.net/leagueoflegends/images/7/7b/Stormrazor_WR_item.png',
-                    'lorddominiksregard': 'https://static.wikia.nocookie.net/leagueoflegends/images/1/12/Lord_Dominik%27s_Regard_WR_item.png',
-                    'infinityedge': 'https://static.wikia.nocookie.net/leagueoflegends/images/8/85/Infinity_Edge_WR_item.png',
-                    'mawofmalmortius': 'https://static.wikia.nocookie.net/leagueoflegends/images/1/1b/Maw_of_Malmortius_WR_item.png',
-                    'thecollector': 'https://static.wikia.nocookie.net/leagueoflegends/images/9/91/The_Collector_WR_item.png',
-                    'collector': 'https://static.wikia.nocookie.net/leagueoflegends/images/9/91/The_Collector_WR_item.png',
-                    'mortalreminder': 'https://static.wikia.nocookie.net/leagueoflegends/images/5/5a/Mortal_Reminder_WR_item.png',
-                    'hexopticsc44': 'https://static.wikia.nocookie.net/leagueoflegends/images/a/a2/Hexoptics_C44_WR_item.png',
-                    'hexoptics': 'https://static.wikia.nocookie.net/leagueoflegends/images/a/a2/Hexoptics_C44_WR_item.png',
-                    'malignance': 'https://static.wikia.nocookie.net/leagueoflegends/images/e/e6/Malignance_WR_item.png',
-                    'infinityorb': 'https://static.wikia.nocookie.net/leagueoflegends/images/0/0f/Infinity_Orb_WR_item.png',
-                    'rabadonsdeathcap': 'https://static.wikia.nocookie.net/leagueoflegends/images/f/fb/Rabadon%27s_Deathcap_WR_item.png',
-                    'deathcap': 'https://static.wikia.nocookie.net/leagueoflegends/images/f/fb/Rabadon%27s_Deathcap_WR_item.png',
-                    'voidstaff': 'https://static.wikia.nocookie.net/leagueoflegends/images/6/67/Void_Staff_WR_item.png',
-                    'stormsurge': 'https://static.wikia.nocookie.net/leagueoflegends/images/0/0e/Stormsurge_WR_item.png',
-                    'morellonomicon': 'https://static.wikia.nocookie.net/leagueoflegends/images/8/89/Morellonomicon_WR_item.png',
-                    'riftmaker': 'https://static.wikia.nocookie.net/leagueoflegends/images/7/7b/Riftmaker_WR_item.png',
-                    'liandrystorment': 'https://static.wikia.nocookie.net/leagueoflegends/images/1/17/Liandry%27s_Torment_WR_item.png',
-                    'liandry': 'https://static.wikia.nocookie.net/leagueoflegends/images/1/17/Liandry%27s_Torment_WR_item.png',
-                    'duskanddawn': 'https://static.wikia.nocookie.net/leagueoflegends/images/8/82/Dusk_and_Dawn_WR_item.png',
-                    'heartsteel': 'https://static.wikia.nocookie.net/leagueoflegends/images/a/ab/Heartsteel_WR_item.png',
-                    'hollowradiance': 'https://static.wikia.nocookie.net/leagueoflegends/images/2/29/Hollow_Radiance_WR_item.png',
-                    'unendingdespair': 'https://static.wikia.nocookie.net/leagueoflegends/images/1/1b/Unending_Despair_WR_item.png',
-                    'amaranthstwinguard': 'https://static.wikia.nocookie.net/leagueoflegends/images/e/e0/Amaranth%27s_Twinguard_WR_item.png',
-                    'twinguard': 'https://static.wikia.nocookie.net/leagueoflegends/images/e/e0/Amaranth%27s_Twinguard_WR_item.png',
-                    'thornmail': 'https://static.wikia.nocookie.net/leagueoflegends/images/7/74/Thornmail_WR_item.png',
-                    'iceborngauntlet': 'https://static.wikia.nocookie.net/leagueoflegends/images/0/08/Iceborn_Gauntlet_WR_item.png',
-                    'gargoylestoneplate': 'https://static.wikia.nocookie.net/leagueoflegends/images/7/79/Gargoyle_Stoneplate_WR_item.png',
-                    'rumblevest': 'https://static.wikia.nocookie.net/leagueoflegends/images/6/60/Bami%27s_Cinder_WR_item.png',
-                    'harmonicecho': 'https://static.wikia.nocookie.net/leagueoflegends/images/5/5a/Harmonic_Echo_WR_item.png',
-                    'ardentcenser': 'https://static.wikia.nocookie.net/leagueoflegends/images/8/80/Ardent_Censer_WR_item.png',
-                    'redemption': 'https://static.wikia.nocookie.net/leagueoflegends/images/3/36/Redemption_WR_item.png',
-                    'staffofflowingwater': 'https://static.wikia.nocookie.net/leagueoflegends/images/4/4b/Staff_of_Flowing_Water_WR_item.png',
-                    'platedsteelcaps': 'https://static.wikia.nocookie.net/leagueoflegends/images/8/86/Plated_Steelcaps_WR_item.png',
-                    'mercurystreads': 'https://static.wikia.nocookie.net/leagueoflegends/images/f/f9/Mercury%27s_Treads_WR_item.png',
-                    'bootsofmana': 'https://static.wikia.nocookie.net/leagueoflegends/images/7/77/Boots_of_Mana_WR_item.png',
-                    'gluttonousgreaves': 'https://static.wikia.nocookie.net/leagueoflegends/images/b/bd/Gluttonous_Greaves_WR_item.png',
-                    'ionianbootsoflucidity': 'https://static.wikia.nocookie.net/leagueoflegends/images/2/23/Ionian_Boots_of_Lucidity_WR_item.png',
-                    'berserkersgreaves': 'https://static.wikia.nocookie.net/leagueoflegends/images/0/0e/Berserker%27s_Greaves_WR_item.png'
+                    'sunderedsky': 'https://raw.communitydragon.org/latest/game/data/items/icons2d/sundered_sky.png',
+                    'trinityforce': 'https://raw.communitydragon.org/latest/game/data/items/icons2d/3078_trinityforce.png',
+                    'divinesunderer': 'https://raw.communitydragon.org/latest/game/data/items/icons2d/6632_divinesunderer.png',
+                    'deathsdance': 'https://raw.communitydragon.org/latest/game/data/items/icons2d/3812_deathsdance.png',
+                    'steraksgage': 'https://raw.communitydragon.org/latest/game/data/items/icons2d/3053_steraksgage.png',
+                    'steraks': 'https://raw.communitydragon.org/latest/game/data/items/icons2d/3053_steraksgage.png',
+                    'serpentsfang': 'https://raw.communitydragon.org/latest/game/data/items/icons2d/6695_serpentsfang.png',
+                    'essencereaver': 'https://raw.communitydragon.org/latest/game/data/items/icons2d/3508_essencereaver.png',
+                    'stormrazor': 'https://raw.communitydragon.org/latest/game/data/items/icons2d/3095_stormrazor.png',
+                    'lorddominiksregard': 'https://raw.communitydragon.org/latest/game/data/items/icons2d/3036_lorddominiksregard.png',
+                    'infinityedge': 'https://raw.communitydragon.org/latest/game/data/items/icons2d/3031_infinityedge.png',
+                    'mawofmalmortius': 'https://raw.communitydragon.org/latest/game/data/items/icons2d/3156_mawofmalmortius.png',
+                    'thecollector': 'https://raw.communitydragon.org/latest/game/data/items/icons2d/6676_thecollector.png',
+                    'collector': 'https://raw.communitydragon.org/latest/game/data/items/icons2d/6676_thecollector.png',
+                    'mortalreminder': 'https://raw.communitydragon.org/latest/game/data/items/icons2d/3033_mortalreminder.png',
+                    'malignance': 'https://raw.communitydragon.org/latest/game/data/items/icons2d/4646_malignance.png',
+                    'infinityorb': 'https://raw.communitydragon.org/latest/game/data/items/icons2d/3165_infinityorb.png',
+                    'rabadonsdeathcap': 'https://raw.communitydragon.org/latest/game/data/items/icons2d/3089_rabadonsdeathcap.png',
+                    'deathcap': 'https://raw.communitydragon.org/latest/game/data/items/icons2d/3089_rabadonsdeathcap.png',
+                    'voidstaff': 'https://raw.communitydragon.org/latest/game/data/items/icons2d/3135_voidstaff.png',
+                    'stormsurge': 'https://raw.communitydragon.org/latest/game/data/items/icons2d/4645_stormsurge.png',
+                    'morellonomicon': 'https://raw.communitydragon.org/latest/game/data/items/icons2d/3165_morellonomicon.png',
+                    'riftmaker': 'https://raw.communitydragon.org/latest/game/data/items/icons2d/4646_riftmaker.png',
+                    'liandrystorment': 'https://raw.communitydragon.org/latest/game/data/items/icons2d/6653_liandrystorment.png',
+                    'liandry': 'https://raw.communitydragon.org/latest/game/data/items/icons2d/6653_liandrystorment.png',
+                    'heartsteel': 'https://raw.communitydragon.org/latest/game/data/items/icons2d/3084_heartsteel.png',
+                    'hollowradiance': 'https://raw.communitydragon.org/latest/game/data/items/icons2d/3068_hollowradiance.png',
+                    'unendingdespair': 'https://raw.communitydragon.org/latest/game/data/items/icons2d/3075_unendingdespair.png',
+                    'amaranthstwinguard': 'https://raw.communitydragon.org/latest/game/data/items/icons2d/6665_twinguard.png',
+                    'twinguard': 'https://raw.communitydragon.org/latest/game/data/items/icons2d/6665_twinguard.png',
+                    'thornmail': 'https://raw.communitydragon.org/latest/game/data/items/icons2d/3075_thornmail.png',
+                    'iceborngauntlet': 'https://raw.communitydragon.org/latest/game/data/items/icons2d/3025_iceborngauntlet.png',
+                    'gargoylestoneplate': 'https://raw.communitydragon.org/latest/game/data/items/icons2d/3193_gargoylestoneplate.png',
+                    'rumblevest': 'https://raw.communitydragon.org/latest/game/data/items/icons2d/3068_bamiscinder.png',
+                    'platedsteelcaps': 'https://raw.communitydragon.org/latest/game/data/items/icons2d/3047_platedsteelcaps.png',
+                    'mercurystreads': 'https://raw.communitydragon.org/latest/game/data/items/icons2d/3111_mercurystreads.png',
+                    'bootsofmana': 'https://raw.communitydragon.org/latest/game/data/items/icons2d/3020_sorcerersshoes.png',
+                    'ionianbootsoflucidity': 'https://raw.communitydragon.org/latest/game/data/items/icons2d/3158_ionianbootsoflucidity.png',
+                    'berserkersgreaves': 'https://raw.communitydragon.org/latest/game/data/items/icons2d/3006_berserkersgreaves.png'
                 };
 
                 if (wrItems[clean]) {
@@ -593,7 +584,6 @@
                 }
             }
 
-            // LOL PC SHARED DDRAGON ITEMS
             const itemMap = {
                 'platedsteelcaps': '3047', 'ionianboots': '3158', 'berserkersgreaves': '3006',
                 'mercurystreads': '3111', 'sorcerersshoes': '3020', 'heartsteel': '3084',
@@ -929,7 +919,6 @@
             }
         }
 
-        // EDIT MATCH HISTORY FUNCTION
         function editMatch(key) {
             const m = allMatches[key];
             if (!m) return;
@@ -995,7 +984,6 @@
             }
         }
 
-        // SMART AUTO-FORMATTER HELPER FOR COPIED OCR / RAW TEXT
         function autoFormatRawData(targetId) {
             const el = document.getElementById(targetId);
             let val = el.value.trim();
@@ -1003,9 +991,7 @@
 
             let lines = val.split('\n').filter(l => l.trim() !== '');
             let formattedLines = lines.map(line => {
-                if (line.includes('|')) return line; // Naka-format na
-                
-                // Hahanapin ang mga parts gamit ang spaces o commas
+                if (line.includes('|')) return line;
                 let parts = line.split(/\s{2,}|\t/).filter(p => p.trim() !== '');
                 if (parts.length >= 3) {
                     let ign = parts[0] || 'Player';
@@ -1161,9 +1147,7 @@
                             const itemName = itemsList[k] ? itemsList[k].trim() : '';
                             const itemImg = getItemIconUrl(itemName, m.game);
                             if(itemName && itemImg) {
-                                itemsHtml += `<img src="${itemImg}" class="w-5 h-5 rounded bg-slate-800 border border-white/10 object-cover" title="${itemName}" onError="this.style.display='none'">`;
-                            } else if (itemName) {
-                                itemsHtml += `<div class="w-4 h-4 rounded bg-slate-800 border border-white/10 flex items-center justify-center text-[7px] text-slate-300 font-bold overflow-hidden" title="${itemName}">${itemName.substring(0,2)}</div>`;
+                                itemsHtml += `<img src="${itemImg}" class="w-5 h-5 rounded bg-slate-800 border border-white/10 object-cover" title="${itemName}" onError="this.src='https://raw.communitydragon.org/latest/game/data/items/icons2d/1028_ruby_crystal.png'">`;
                             } else {
                                 itemsHtml += `<div class="w-4 h-4 rounded bg-black/40 border border-white/5"></div>`;
                             }
