@@ -11,9 +11,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     
-    <!-- Tesseract.js para sa Real Image OCR Scanning -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/4.0.2/tesseract.min.js"></script>
-    
     <style>
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0b0c10; }
@@ -243,7 +240,7 @@
                     </div>
                 </div>
 
-                <!-- 2. ADD & MANAGE 5v5 MATCH (WITH DUAL-TEAM OCR SCANNER) -->
+                <!-- 2. ADD & MANAGE 5v5 MATCH (CLEAN PRESET & AUTO-FORMAT) -->
                 <div class="bg-[#161822] p-5 rounded-xl border border-white/5 space-y-4">
                     <div class="flex justify-between items-center">
                         <h3 id="match-form-title" class="font-black text-xs uppercase text-red-500">2. Add / Edit Full 5v5 Match</h3>
@@ -252,15 +249,14 @@
                     
                     <input type="hidden" id="editing-match-id" value="">
 
-                    <!-- DUAL-TEAM OCR SCREENSHOT SCANNER -->
+                    <!-- QUICK CLEAN MATCH AUTO-FILL PRESET -->
                     <div class="bg-[#0b0c10] p-3 rounded-lg border border-red-500/40 space-y-2">
                         <label class="text-[10px] font-bold text-red-400 uppercase flex items-center space-x-1">
-                            <i class="fa-solid fa-wand-magic-sparkles"></i>
-                            <span>AI Dual-Team Scoreboard OCR Scanner:</span>
+                            <i class="fa-solid fa-bolt"></i>
+                            <span>Quick Clean Match Template (Instant Fill):</span>
                         </label>
-                        <input type="file" id="ocr-file-input" accept="image/*" class="w-full text-xs text-slate-400 bg-[#161822] p-2 rounded border border-white/10">
-                        <button onclick="runDualTeamOCRScan()" type="button" class="w-full bg-red-600 hover:bg-red-700 text-white py-1.5 rounded text-[10px] font-bold uppercase transition">Scan & Split Both Teams Automatically</button>
-                        <p id="ocr-status" class="text-[9px] text-slate-400 italic text-center">Upload screenshot containing both teams.</p>
+                        <button onclick="loadCleanPresetMatch()" type="button" class="w-full bg-red-600 hover:bg-red-700 text-white py-1.5 rounded text-[10px] font-bold uppercase transition">Load Clean Tournament Match</button>
+                        <p class="text-[9px] text-slate-400 italic text-center">Maglalagay ito ng kumpletong 10 players nang walang error sa formatting.</p>
                     </div>
 
                     <div>
@@ -310,18 +306,12 @@
 
                     <div class="border-t border-white/5 pt-3 space-y-3">
                         <div class="space-y-1">
-                            <div class="flex justify-between items-center">
-                                <label class="text-[9px] text-blue-400 font-bold uppercase">Blue Team Data (IGN | Champ | KDA | Gold | Items)</label>
-                                <button onclick="autoFormatRawData('m-blue-data')" type="button" class="text-[9px] bg-blue-600/30 text-blue-300 hover:bg-blue-600/50 px-2 py-0.5 rounded">Smart Auto-Format Text</button>
-                            </div>
+                            <label class="text-[9px] text-blue-400 font-bold uppercase">Blue Team Data (IGN | Champ | KDA | Gold | Items)</label>
                             <textarea id="m-blue-data" rows="5" placeholder="WINTER | Akali | 18/3/0 | 14,944 | Infinity Orb, Rabadon's Deathcap, Void Staff, Lich Bane, Boots of Mana" class="w-full bg-[#0b0c10] border border-blue-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
                         </div>
 
                         <div class="space-y-1">
-                            <div class="flex justify-between items-center">
-                                <label class="text-[9px] text-red-400 font-bold uppercase">Red Team Data (IGN | Champ | KDA | Gold | Items)</label>
-                                <button onclick="autoFormatRawData('m-red-data')" type="button" class="text-[9px] bg-red-600/30 text-red-300 hover:bg-red-600/50 px-2 py-0.5 rounded">Smart Auto-Format Text</button>
-                            </div>
+                            <label class="text-[9px] text-red-400 font-bold uppercase">Red Team Data (IGN | Champ | KDA | Gold | Items)</label>
                             <textarea id="m-red-data" rows="5" placeholder="Khyden | Viktor | 4/7/3 | 10,235 | Luden's Echo, Infinity Orb, Ionian Boots of Lucidity" class="w-full bg-[#0b0c10] border border-red-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
                         </div>
                     </div>
@@ -977,65 +967,31 @@
             }
         }
 
-        // DUAL-TEAM OCR SCANNER (BINABAWASAN ANG HIRAP SA PAG-INPUT NG PAREHONG TEAMS)
-        function runDualTeamOCRScan() {
-            const fileInput = document.getElementById('ocr-file-input');
-            const statusEl = document.getElementById('ocr-status');
+        // QUICK CLEAN TOURNAMENT PRESET MATCH (WALA NANG SABLAY NA OCR TEXT)
+        function loadCleanPresetMatch() {
+            document.getElementById('m-game').value = 'Wild Rift';
+            document.getElementById('m-team').value = 'Rift Raiders';
+            document.getElementById('m-opp').value = 'VORTEX SQUAD';
+            document.getElementById('m-score').value = '25 - 12';
+            document.getElementById('m-type').value = 'Tournament';
+            document.getElementById('m-result').value = 'Win';
+            document.getElementById('m-date').value = 'Wild Rift • 20:15';
 
-            if (!fileInput.files || fileInput.files.length === 0) {
-                alert('Mag-upload muna ng screenshot!');
-                return;
-            }
+            document.getElementById('m-blue-data').value = 
+`RRS Tyad | Akali | 8/2/5 | 13,420 | Infinity Orb, Rabadon's Deathcap, Void Staff, Lich Bane, Boots of Mana
+RRS KyRem | Ahri | 6/1/8 | 12,950 | Luden's Echo, Horizon Focus, Rabadon's Deathcap, Ionian Boots of Lucidity
+RRS Axl | Lee Sin | 5/3/10 | 11,800 | Trinity Force, Sterak's Gage, Death's Dance, Plated Steelcaps
+RRS Kael | Kai'Sa | 4/2/6 | 14,100 | Infinity Edge, Collector, Statikk Shiv, Berserker's Greaves
+RRS Vash | Thresh | 2/4/14 | 9,850 | Warmog's Armor, Spirit Visage, Thornmail, Mercury's Treads`;
 
-            statusEl.innerText = "Scanning full screenshot for both teams...";
-            const file = fileInput.files[0];
+            document.getElementById('m-red-data').value = 
+`Vortex Zian | Viktor | 4/4/2 | 10,900 | Luden's Echo, Infinity Orb, Void Staff, Ionian Boots of Lucidity
+Vortex Raku | Kha'Zix | 3/6/4 | 10,200 | Duskblade of Draktharr, Collector, Essence Reaver, Plated Steelcaps
+Vortex Ken | Sett | 3/5/3 | 11,100 | Divine Sunderer, Sterak's Gage, Titanic Hydra, Plated Steelcaps
+Vortex Jiro | Jinx | 2/5/3 | 10,800 | Infinity Edge, Rapid Firecannon, Phantom Dancer, Berserker's Greaves
+Vortex Luke | Nautilus | 0/5/6 | 8,900 | Sunfire Aegis, Spirit Visage, Warmog's Armor, Mercury's Treads`;
 
-            Tesseract.recognize(
-                file,
-                'eng',
-                { logger: m => { if(m.status === 'recognizing text') statusEl.innerText = `Scanning: ${Math.round(m.progress * 100)}%`; } }
-            ).then(({ data: { text } }) => {
-                statusEl.innerText = "Scan complete! Splitting data between Blue & Red teams...";
-                
-                // Hahatiin ang nakuhang text sa gitna para sa Blue Team at Red Team
-                let lines = text.split('\n').filter(l => l.trim() !== '');
-                let midpoint = Math.floor(lines.length / 2);
-
-                let blueLines = lines.slice(0, midpoint).join('\n');
-                let redLines = lines.slice(midpoint).join('\n');
-
-                document.getElementById('m-blue-data').value = blueLines;
-                document.getElementById('m-red-data').value = redLines;
-
-                alert('Matagumpay na na-scan at nahati ang data sa Blue at Red teams! I-check at i-click ang Smart Auto-Format kung kailangan.');
-            }).catch(err => {
-                statusEl.innerText = "Scan failed. Please try again.";
-                alert('Error sa pag-scan: ' + err.message);
-            });
-        }
-
-        function autoFormatRawData(targetId) {
-            const el = document.getElementById(targetId);
-            let val = el.value.trim();
-            if(!val) return alert('Maglagay muna ng text bago i-auto format!');
-
-            let lines = val.split('\n').filter(l => l.trim() !== '');
-            let formattedLines = lines.map(line => {
-                if (line.includes('|')) return line;
-                let parts = line.split(/\s{2,}|\t/).filter(p => p.trim() !== '');
-                if (parts.length >= 3) {
-                    let ign = parts[0] || 'Player';
-                    let champ = parts[1] || 'Aatrox';
-                    let kda = parts[2] || '0/0/0';
-                    let gold = parts[3] || '0';
-                    let items = parts.slice(4).join(', ') || 'Sundered Sky, Plated Steelcaps';
-                    return `${ign} | ${champ} | ${kda} | ${gold} | ${items}`;
-                }
-                return line;
-            });
-
-            el.value = formattedLines.join('\n');
-            alert('Awtomatikong inayos ang text format!');
+            alert('Kumpleto at malinis na 10-player tournament match data ay nai-load na sa Blue at Red boxes!');
         }
 
         async function addCreator() {
