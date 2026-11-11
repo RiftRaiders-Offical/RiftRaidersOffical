@@ -243,7 +243,7 @@
                     </div>
                 </div>
 
-                <!-- 2. ADD & MANAGE 5v5 MATCH (WITH REAL OCR SCANNER) -->
+                <!-- 2. ADD & MANAGE 5v5 MATCH (WITH DUAL-TEAM OCR SCANNER) -->
                 <div class="bg-[#161822] p-5 rounded-xl border border-white/5 space-y-4">
                     <div class="flex justify-between items-center">
                         <h3 id="match-form-title" class="font-black text-xs uppercase text-red-500">2. Add / Edit Full 5v5 Match</h3>
@@ -252,15 +252,15 @@
                     
                     <input type="hidden" id="editing-match-id" value="">
 
-                    <!-- REAL OCR SCREENSHOT SCANNER -->
+                    <!-- DUAL-TEAM OCR SCREENSHOT SCANNER -->
                     <div class="bg-[#0b0c10] p-3 rounded-lg border border-red-500/40 space-y-2">
                         <label class="text-[10px] font-bold text-red-400 uppercase flex items-center space-x-1">
                             <i class="fa-solid fa-wand-magic-sparkles"></i>
-                            <span>AI Screenshot OCR Scanner (Extract Text from Image):</span>
+                            <span>AI Dual-Team Scoreboard OCR Scanner:</span>
                         </label>
                         <input type="file" id="ocr-file-input" accept="image/*" class="w-full text-xs text-slate-400 bg-[#161822] p-2 rounded border border-white/10">
-                        <button onclick="runRealOCRScan()" type="button" class="w-full bg-red-600 hover:bg-red-700 text-white py-1.5 rounded text-[10px] font-bold uppercase transition">Scan Uploaded Scoreboard Photo</button>
-                        <p id="ocr-status" class="text-[9px] text-slate-400 italic text-center">Upload a screenshot and click scan.</p>
+                        <button onclick="runDualTeamOCRScan()" type="button" class="w-full bg-red-600 hover:bg-red-700 text-white py-1.5 rounded text-[10px] font-bold uppercase transition">Scan & Split Both Teams Automatically</button>
+                        <p id="ocr-status" class="text-[9px] text-slate-400 italic text-center">Upload screenshot containing both teams.</p>
                     </div>
 
                     <div>
@@ -977,17 +977,17 @@
             }
         }
 
-        // TUNAY NA TESSERACT.JS OCR SCANNER FUNCTION
-        function runRealOCRScan() {
+        // DUAL-TEAM OCR SCANNER (BINABAWASAN ANG HIRAP SA PAG-INPUT NG PAREHONG TEAMS)
+        function runDualTeamOCRScan() {
             const fileInput = document.getElementById('ocr-file-input');
             const statusEl = document.getElementById('ocr-status');
 
             if (!fileInput.files || fileInput.files.length === 0) {
-                alert('Mag-upload muna ng scoreboard screenshot!');
+                alert('Mag-upload muna ng screenshot!');
                 return;
             }
 
-            statusEl.innerText = "Scanning image text... Please wait...";
+            statusEl.innerText = "Scanning full screenshot for both teams...";
             const file = fileInput.files[0];
 
             Tesseract.recognize(
@@ -995,13 +995,22 @@
                 'eng',
                 { logger: m => { if(m.status === 'recognizing text') statusEl.innerText = `Scanning: ${Math.round(m.progress * 100)}%`; } }
             ).then(({ data: { text } }) => {
-                statusEl.innerText = "Scan complete! Review and save data.";
-                // Ilalagay ang nabasang text sa Blue Team data box para ma-format mo
-                document.getElementById('m-blue-data').value = text;
-                alert('Matagumpay na na-scan ang larawan! Na-load ang text sa Blue Team Data box.');
+                statusEl.innerText = "Scan complete! Splitting data between Blue & Red teams...";
+                
+                // Hahatiin ang nakuhang text sa gitna para sa Blue Team at Red Team
+                let lines = text.split('\n').filter(l => l.trim() !== '');
+                let midpoint = Math.floor(lines.length / 2);
+
+                let blueLines = lines.slice(0, midpoint).join('\n');
+                let redLines = lines.slice(midpoint).join('\n');
+
+                document.getElementById('m-blue-data').value = blueLines;
+                document.getElementById('m-red-data').value = redLines;
+
+                alert('Matagumpay na na-scan at nahati ang data sa Blue at Red teams! I-check at i-click ang Smart Auto-Format kung kailangan.');
             }).catch(err => {
                 statusEl.innerText = "Scan failed. Please try again.";
-                alert('Error sa pag-scan ng larawan: ' + err.message);
+                alert('Error sa pag-scan: ' + err.message);
             });
         }
 
