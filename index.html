@@ -11,6 +11,9 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     
+    <!-- Tesseract.js para sa Real Image OCR Scanning -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/4.0.2/tesseract.min.js"></script>
+    
     <style>
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0b0c10; }
@@ -240,7 +243,7 @@
                     </div>
                 </div>
 
-                <!-- 2. ADD & MANAGE 5v5 MATCH (WITH AUTO-FILL DEMO MATCH BUTTON) -->
+                <!-- 2. ADD & MANAGE 5v5 MATCH (WITH REAL OCR SCANNER) -->
                 <div class="bg-[#161822] p-5 rounded-xl border border-white/5 space-y-4">
                     <div class="flex justify-between items-center">
                         <h3 id="match-form-title" class="font-black text-xs uppercase text-red-500">2. Add / Edit Full 5v5 Match</h3>
@@ -249,29 +252,15 @@
                     
                     <input type="hidden" id="editing-match-id" value="">
 
-                    <!-- AUTO-FILL MATCH HISTORY DEMO BUTTON -->
+                    <!-- REAL OCR SCREENSHOT SCANNER -->
                     <div class="bg-[#0b0c10] p-3 rounded-lg border border-red-500/40 space-y-2">
                         <label class="text-[10px] font-bold text-red-400 uppercase flex items-center space-x-1">
                             <i class="fa-solid fa-wand-magic-sparkles"></i>
-                            <span>Quick Demo Auto-Fill (Akali & Viktor Match):</span>
+                            <span>AI Screenshot OCR Scanner (Extract Text from Image):</span>
                         </label>
-                        <button onclick="autoFillDemoMatch()" type="button" class="w-full bg-red-600 hover:bg-red-700 text-white py-1.5 rounded text-[10px] font-bold uppercase transition">Auto-Fill Match Form Data</button>
-                    </div>
-
-                    <!-- QUICK ROSTER AUTO-FILL BUTTONS -->
-                    <div class="bg-[#0b0c10] p-3 rounded-lg border border-indigo-500/40 space-y-2">
-                        <label class="text-[10px] font-bold text-indigo-400 uppercase flex items-center space-x-1">
-                            <i class="fa-solid fa-users"></i>
-                            <span>Quick Roster Auto-Fill into Blue Team Data:</span>
-                        </label>
-                        
-                        <div class="space-y-1.5">
-                            <p class="text-[9px] text-slate-400 font-bold uppercase">Wild Rift:</p>
-                            <div class="flex gap-1.5">
-                                <button onclick="autoFillTeamData('Wild Rift', 'RFR')" type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2 py-1 rounded text-[10px] font-bold uppercase transition">RFR (Wild Rift)</button>
-                                <button onclick="autoFillTeamData('Wild Rift', 'RRS')" type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2 py-1 rounded text-[10px] font-bold uppercase transition">RRS (Sentinel)</button>
-                            </div>
-                        </div>
+                        <input type="file" id="ocr-file-input" accept="image/*" class="w-full text-xs text-slate-400 bg-[#161822] p-2 rounded border border-white/10">
+                        <button onclick="runRealOCRScan()" type="button" class="w-full bg-red-600 hover:bg-red-700 text-white py-1.5 rounded text-[10px] font-bold uppercase transition">Scan Uploaded Scoreboard Photo</button>
+                        <p id="ocr-status" class="text-[9px] text-slate-400 italic text-center">Upload a screenshot and click scan.</p>
                     </div>
 
                     <div>
@@ -988,23 +977,32 @@
             }
         }
 
-        // AUTO-FILL DEMO MATCH BUTTON HANDLER (WINTER AKALI & KHYDEN VIKTOR)
-        function autoFillDemoMatch() {
-            document.getElementById('m-game').value = 'Wild Rift';
-            document.getElementById('m-team').value = 'Rift Raiders';
-            document.getElementById('m-opp').value = 'VORTEX SQUAD';
-            document.getElementById('m-score').value = '22 - 10';
-            document.getElementById('m-type').value = 'Tournament';
-            document.getElementById('m-result').value = 'Win';
-            document.getElementById('m-date').value = 'Wild Rift - 18:40';
+        // TUNAY NA TESSERACT.JS OCR SCANNER FUNCTION
+        function runRealOCRScan() {
+            const fileInput = document.getElementById('ocr-file-input');
+            const statusEl = document.getElementById('ocr-status');
 
-            document.getElementById('m-blue-data').value = 
-                "WINTER | Akali | 18/3/0 | 14,944 | Infinity Orb, Rabadon's Deathcap, Void Staff, Lich Bane, Boots of Mana";
+            if (!fileInput.files || fileInput.files.length === 0) {
+                alert('Mag-upload muna ng scoreboard screenshot!');
+                return;
+            }
 
-            document.getElementById('m-red-data').value = 
-                "Khyden | Viktor | 4/7/3 | 10,235 | Luden's Echo, Infinity Orb, Ionian Boots of Lucidity";
+            statusEl.innerText = "Scanning image text... Please wait...";
+            const file = fileInput.files[0];
 
-            alert('Match Form successfully auto-filled with Winter (Akali) & Khyden (Viktor) stats!');
+            Tesseract.recognize(
+                file,
+                'eng',
+                { logger: m => { if(m.status === 'recognizing text') statusEl.innerText = `Scanning: ${Math.round(m.progress * 100)}%`; } }
+            ).then(({ data: { text } }) => {
+                statusEl.innerText = "Scan complete! Review and save data.";
+                // Ilalagay ang nabasang text sa Blue Team data box para ma-format mo
+                document.getElementById('m-blue-data').value = text;
+                alert('Matagumpay na na-scan ang larawan! Na-load ang text sa Blue Team Data box.');
+            }).catch(err => {
+                statusEl.innerText = "Scan failed. Please try again.";
+                alert('Error sa pag-scan ng larawan: ' + err.message);
+            });
         }
 
         function autoFormatRawData(targetId) {
@@ -1029,26 +1027,6 @@
 
             el.value = formattedLines.join('\n');
             alert('Awtomatikong inayos ang text format!');
-        }
-
-        function autoFillTeamData(game, teamTag) {
-            document.getElementById('m-game').value = game;
-            
-            const matchingPlayers = allPlayers.filter(p => 
-                p.game && p.game.toLowerCase() === game.toLowerCase() &&
-                p.team && p.team.trim().toUpperCase() === teamTag.toUpperCase()
-            );
-
-            if(matchingPlayers.length === 0) {
-                alert(`Walang nahanap na player sa Roster database para sa Game: ${game} at Team: ${teamTag}.\nMag-add muna ng players sa Section 1.`);
-                return;
-            }
-
-            const formattedLines = matchingPlayers.map(p => `${p.ign} | Aatrox | 0/0/0 | 0 | Sundered Sky, Plated Steelcaps`);
-            
-            document.getElementById('m-blue-data').value = formattedLines.join('\n');
-            document.getElementById('m-team').value = `Rift Raiders (${teamTag})`;
-            alert(`Awtomatikong na-load ang Roster ng ${teamTag} (${game}) sa Blue Team Command Box!`);
         }
 
         async function addCreator() {
