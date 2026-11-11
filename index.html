@@ -240,7 +240,7 @@
                     </div>
                 </div>
 
-                <!-- 2. ADD & MANAGE 5v5 MATCH (WITH AUTO-FILL BUTTONS) -->
+                <!-- 2. ADD & MANAGE 5v5 MATCH (WITH AUTO-FILL DEMO MATCH BUTTON) -->
                 <div class="bg-[#161822] p-5 rounded-xl border border-white/5 space-y-4">
                     <div class="flex justify-between items-center">
                         <h3 id="match-form-title" class="font-black text-xs uppercase text-red-500">2. Add / Edit Full 5v5 Match</h3>
@@ -248,6 +248,15 @@
                     </div>
                     
                     <input type="hidden" id="editing-match-id" value="">
+
+                    <!-- AUTO-FILL MATCH HISTORY DEMO BUTTON -->
+                    <div class="bg-[#0b0c10] p-3 rounded-lg border border-red-500/40 space-y-2">
+                        <label class="text-[10px] font-bold text-red-400 uppercase flex items-center space-x-1">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span>Quick Demo Auto-Fill (Akali & Viktor Match):</span>
+                        </label>
+                        <button onclick="autoFillDemoMatch()" type="button" class="w-full bg-red-600 hover:bg-red-700 text-white py-1.5 rounded text-[10px] font-bold uppercase transition">Auto-Fill Match Form Data</button>
+                    </div>
 
                     <!-- QUICK ROSTER AUTO-FILL BUTTONS -->
                     <div class="bg-[#0b0c10] p-3 rounded-lg border border-indigo-500/40 space-y-2">
@@ -261,17 +270,6 @@
                             <div class="flex gap-1.5">
                                 <button onclick="autoFillTeamData('Wild Rift', 'RFR')" type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2 py-1 rounded text-[10px] font-bold uppercase transition">RFR (Wild Rift)</button>
                                 <button onclick="autoFillTeamData('Wild Rift', 'RRS')" type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2 py-1 rounded text-[10px] font-bold uppercase transition">RRS (Sentinel)</button>
-                            </div>
-
-                            <p class="text-[9px] text-slate-400 font-bold uppercase mt-1">League of Legends (PC):</p>
-                            <div class="flex gap-1.5">
-                                <button onclick="autoFillTeamData('League of Legends', 'RFR')" type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2 py-1 rounded text-[10px] font-bold uppercase transition">RFR (LoL PC)</button>
-                                <button onclick="autoFillTeamData('League of Legends', 'RRA')" type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2 py-1 rounded text-[10px] font-bold uppercase transition">RRA (Ascend)</button>
-                            </div>
-
-                            <p class="text-[9px] text-slate-400 font-bold uppercase mt-1">Valorant:</p>
-                            <div class="flex gap-1.5">
-                                <button onclick="autoFillTeamData('Valorant', 'RFR')" type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2 py-1 rounded text-[10px] font-bold uppercase transition">RFR (Valorant)</button>
                             </div>
                         </div>
                     </div>
@@ -327,7 +325,7 @@
                                 <label class="text-[9px] text-blue-400 font-bold uppercase">Blue Team Data (IGN | Champ | KDA | Gold | Items)</label>
                                 <button onclick="autoFormatRawData('m-blue-data')" type="button" class="text-[9px] bg-blue-600/30 text-blue-300 hover:bg-blue-600/50 px-2 py-0.5 rounded">Smart Auto-Format Text</button>
                             </div>
-                            <textarea id="m-blue-data" rows="5" placeholder="Tyad | Aatrox | 9/5/7 | 16,805 | Sundered Sky, Amaranth's Twinguard, Sterak's Gage" class="w-full bg-[#0b0c10] border border-blue-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
+                            <textarea id="m-blue-data" rows="5" placeholder="WINTER | Akali | 18/3/0 | 14,944 | Infinity Orb, Rabadon's Deathcap, Void Staff, Lich Bane, Boots of Mana" class="w-full bg-[#0b0c10] border border-blue-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
                         </div>
 
                         <div class="space-y-1">
@@ -335,7 +333,7 @@
                                 <label class="text-[9px] text-red-400 font-bold uppercase">Red Team Data (IGN | Champ | KDA | Gold | Items)</label>
                                 <button onclick="autoFormatRawData('m-red-data')" type="button" class="text-[9px] bg-red-600/30 text-red-300 hover:bg-red-600/50 px-2 py-0.5 rounded">Smart Auto-Format Text</button>
                             </div>
-                            <textarea id="m-red-data" rows="5" placeholder="VORTEX | Mordekaiser | 9/7/11 | 15,635 | Riftmaker, Thornmail, Plated Steelcaps" class="w-full bg-[#0b0c10] border border-red-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
+                            <textarea id="m-red-data" rows="5" placeholder="Khyden | Viktor | 4/7/3 | 10,235 | Luden's Echo, Infinity Orb, Ionian Boots of Lucidity" class="w-full bg-[#0b0c10] border border-red-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
                         </div>
                     </div>
 
@@ -584,7 +582,7 @@
                 'spectralsickle': '3850', 'relicshield': '3858', 'immortaltreads': '3006',
                 'crimsonlucidity': '3158', 'gunmetalgreaves': '3006', 'chainlacedcrushers': '3111',
                 'armoredadvance': '3047', 'spellslingersshoes': '3020', 'armorcrusherboots': '3047',
-                'hexopticsc44': '3089', 'rumblevest': '3075'
+                'hexopticsc44': '3089', 'rumblevest': '3075', 'bootsofmana': '3111'
             };
 
             for (let key in fallbackMap) {
@@ -988,6 +986,25 @@
                     resetMatchForm();
                 });
             }
+        }
+
+        // AUTO-FILL DEMO MATCH BUTTON HANDLER (WINTER AKALI & KHYDEN VIKTOR)
+        function autoFillDemoMatch() {
+            document.getElementById('m-game').value = 'Wild Rift';
+            document.getElementById('m-team').value = 'Rift Raiders';
+            document.getElementById('m-opp').value = 'VORTEX SQUAD';
+            document.getElementById('m-score').value = '22 - 10';
+            document.getElementById('m-type').value = 'Tournament';
+            document.getElementById('m-result').value = 'Win';
+            document.getElementById('m-date').value = 'Wild Rift - 18:40';
+
+            document.getElementById('m-blue-data').value = 
+                "WINTER | Akali | 18/3/0 | 14,944 | Infinity Orb, Rabadon's Deathcap, Void Staff, Lich Bane, Boots of Mana";
+
+            document.getElementById('m-red-data').value = 
+                "Khyden | Viktor | 4/7/3 | 10,235 | Luden's Echo, Infinity Orb, Ionian Boots of Lucidity";
+
+            alert('Match Form successfully auto-filled with Winter (Akali) & Khyden (Viktor) stats!');
         }
 
         function autoFormatRawData(targetId) {
