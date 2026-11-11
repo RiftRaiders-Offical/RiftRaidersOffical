@@ -240,7 +240,7 @@
                     </div>
                 </div>
 
-                <!-- 2. ADD & MANAGE 5v5 MATCH (WITH AI OCR SCREENSHOT SCANNER SIMULATOR) -->
+                <!-- 2. ADD & MANAGE 5v5 MATCH -->
                 <div class="bg-[#161822] p-5 rounded-xl border border-white/5 space-y-4">
                     <div class="flex justify-between items-center">
                         <h3 id="match-form-title" class="font-black text-xs uppercase text-red-500">2. Add / Edit Full 5v5 Match</h3>
@@ -248,16 +248,6 @@
                     </div>
                     
                     <input type="hidden" id="editing-match-id" value="">
-
-                    <!-- AI SCREENSHOT SCANNER BOX -->
-                    <div class="bg-[#0b0c10] p-3 rounded-lg border border-red-500/40 space-y-2">
-                        <label class="text-[10px] font-bold text-red-400 uppercase flex items-center space-x-1">
-                            <i class="fa-solid fa-wand-magic-sparkles"></i>
-                            <span>AI Scoreboard Screenshot Scanner (Auto-Scan Items/KDA):</span>
-                        </label>
-                        <input type="file" id="ocr-screenshot-input" accept="image/*" class="w-full text-xs text-slate-400 bg-[#161822] p-2 rounded border border-white/10">
-                        <button onclick="simulateAIScreenshotScan()" type="button" class="w-full bg-red-600 hover:bg-red-700 text-white py-1.5 rounded text-[10px] font-bold uppercase transition">Scan Screenshot & Fill Data</button>
-                    </div>
 
                     <!-- DYNAMIC TEAM PRESET BUTTONS FOR MATCH HISTORY DATA ENTRY -->
                     <div class="bg-[#0b0c10] p-3 rounded-lg border border-indigo-500/40 space-y-2">
@@ -566,7 +556,6 @@
                 return `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/item/${riotItemMap[cleanKey]}.png`;
             }
 
-            // Kumpletong Wild Rift & PC Custom Item Fallback Map mula sa lahat ng screenshots
             const fallbackMap = {
                 'trinityforce': '3078', 'sunderedsky': '6610', 'divinesunderer': '6632',
                 'deathsdance': '3812', 'steraksgage': '3053', 'steraks': '3053',
@@ -607,7 +596,6 @@
             return '';
         }
 
-        // Real-time listener para sa Website Logo mula sa Firebase
         db.ref('settings/logo').on('value', snap => {
             const logo = snap.val() || defaultLogoUrl;
             document.getElementById('header-logo').src = logo;
@@ -1000,44 +988,6 @@
                     resetMatchForm();
                 });
             }
-        }
-
-        // SIMULATED AI SCREENSHOT SCANNER HANDLER
-        function simulateAIScreenshotScan() {
-            const fileInput = document.getElementById('ocr-screenshot-input');
-            if (!fileInput.files || fileInput.files.length === 0) {
-                alert('Mag-upload muna ng scoreboard screenshot bago i-scan!');
-                return;
-            }
-
-            alert('AI Scanner is parsing screenshot assets & items...');
-            
-            // Auto-populate sample match data base sa pinadalang laro mo para sa demonstration
-            setTimeout(() => {
-                document.getElementById('m-game').value = 'Wild Rift';
-                document.getElementById('m-team').value = 'Rift Raiders (RFR)';
-                document.getElementById('m-opp').value = 'VORTEX SQUAD';
-                document.getElementById('m-score').value = '24 - 11';
-                document.getElementById('m-type').value = 'Tournament';
-                document.getElementById('m-result').value = 'Win';
-                document.getElementById('m-date').value = 'Wild Rift - 19:53';
-
-                document.getElementById('m-blue-data').value = 
-                    "Tyad | Aatrox | 9/5/7 | 16,805 | Sundered Sky, Amaranth's Twinguard, Sterak's Gage, Serpent's Fang, Mercury's Treads\n" +
-                    "Ichi | Skarner | 5/5/11 | 14,436 | Heartsteel, Hollow Radiance, Unending Despair, Plated Steelcaps\n" +
-                    "Winter | Lissandra | 9/6/9 | 16,525 | Malignance, Infinity Orb, Rabadon's Deathcap, Void Staff, Boots of Mana\n" +
-                    "Tagawasak | Corki | 6/8/10 | 15,165 | Essence Reaver, Stormrazor, Lord Dominik's Regard, Infinity Edge, Gluttonous Greaves\n" +
-                    "DNGR | Nami | 1/4/24 | 12,525 | Harmonic Echo, Ardent Censer, Redemption, Staff of Flowing Water, Ionian Boots of Lucidity";
-
-                document.getElementById('m-red-data').value = 
-                    "VORTEX | Mordekaiser | 9/7/11 | 15,635 | Riftmaker, Dusk and Dawn, Thornmail, Liandry's Torment, Plated Steelcaps\n" +
-                    "Lunae Cadentia | Cho'Gath | 7/5/13 | 17,503 | Heartsteel, Unending Despair, Thornmail, Amaranth's Twinguard, Iceborn Gauntlet, Ionian Boots of Lucidity\n" +
-                    "2ez4Warren | Ahri | 3/4/13 | 15,356 | Stormsurge, Infinity Orb, Morellonomicon, Void Staff, Boots of Mana\n" +
-                    "cawi | Caitlyn | 7/8/6 | 14,319 | The Collector, Mortal Reminder, Hexoptics C44, Berserker's Greaves\n" +
-                    "VERSACE | Rell | 2/6/16 | 12,366 | Heartsteel, Rumble Vest, Gargoyle Stoneplate, Ionian Boots of Lucidity";
-
-                alert('Successfully scanned screenshot! All player stats and items have been populated automatically.');
-            }, 800);
         }
 
         function autoFormatRawData(targetId) {
