@@ -324,18 +324,18 @@
                     <div class="border-t border-white/5 pt-3 space-y-3">
                         <div class="space-y-1">
                             <div class="flex justify-between items-center">
-                                <label class="text-[9px] text-blue-400 font-bold uppercase">Blue Team Data (IGN | Champ | KDA | Gold | [Dmg] | Items)</label>
+                                <label class="text-[9px] text-blue-400 font-bold uppercase">Blue Team Data (IGN | Champ | KDA | Gold | Items)</label>
                                 <button onclick="autoFormatRawData('m-blue-data')" type="button" class="text-[9px] bg-blue-600/30 text-blue-300 hover:bg-blue-600/50 px-2 py-0.5 rounded">Smart Auto-Format Text</button>
                             </div>
-                            <textarea id="m-blue-data" rows="5" placeholder="RRS Tyad | Aatrox | 9/5/7 | 16,805 | 26,804 | Sundered Sky, Plated Steelcaps, Sterak's Gage" class="w-full bg-[#0b0c10] border border-blue-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
+                            <textarea id="m-blue-data" rows="5" placeholder="Tyad | Aatrox | 9/5/7 | 16,805 | Sundered Sky, Amaranth's Twinguard, Sterak's Gage" class="w-full bg-[#0b0c10] border border-blue-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
                         </div>
 
                         <div class="space-y-1">
                             <div class="flex justify-between items-center">
-                                <label class="text-[9px] text-red-400 font-bold uppercase">Red Team Data (IGN | Champ | KDA | Gold | [Dmg] | Items)</label>
+                                <label class="text-[9px] text-red-400 font-bold uppercase">Red Team Data (IGN | Champ | KDA | Gold | Items)</label>
                                 <button onclick="autoFormatRawData('m-red-data')" type="button" class="text-[9px] bg-red-600/30 text-red-300 hover:bg-red-600/50 px-2 py-0.5 rounded">Smart Auto-Format Text</button>
                             </div>
-                            <textarea id="m-red-data" rows="5" placeholder="VORTEX | Mordekaiser | 9/7/11 | 15,635 | 24,343 | Riftmaker, Thornmail, Plated Steelcaps" class="w-full bg-[#0b0c10] border border-red-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
+                            <textarea id="m-red-data" rows="5" placeholder="VORTEX | Mordekaiser | 9/7/11 | 15,635 | Riftmaker, Thornmail, Plated Steelcaps" class="w-full bg-[#0b0c10] border border-red-500/30 px-3 py-2 rounded text-xs text-slate-300 font-mono"></textarea>
                         </div>
                     </div>
 
@@ -556,6 +556,7 @@
                 return `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/item/${riotItemMap[cleanKey]}.png`;
             }
 
+            // Kumpletong Wild Rift & PC Custom Item Fallback Map mula sa lahat ng screenshots
             const fallbackMap = {
                 'trinityforce': '3078', 'sunderedsky': '6610', 'divinesunderer': '6632',
                 'deathsdance': '3812', 'steraksgage': '3053', 'steraks': '3053',
@@ -573,7 +574,17 @@
                 'rodofages': '3027', 'liandry': '6653', 'liandrystorment': '6653',
                 'amaranthstwinguard': '6665', 'twinguard': '6665', 'hollowradiance': '3068',
                 'gluttonousgreaves': '3006', 'harmonic': '3165', 'ardent': '3504',
-                'serpentsfang': '6695', 'twinguard': '6665'
+                'serpentsfang': '6695', 'whisperingcirclet': '3027', 'imperialmandate': '3107',
+                'oceanidstrident': '3135', 'hextechrocketbelt': '3152', 'horizonfocus': '4645',
+                'malignance': '6656', 'stormsurge': '4645', 'blackfiretorch': '4642',
+                'bloodletterscurse': '3135', 'cryptbloom': '4643', 'cosmicdrive': '4629',
+                'duskanddawn': '3031', 'yordletrap': '3084', 'mantleofthetwelfthhour': '3083',
+                'radiantvirtue': '3083', 'dawnshroud': '3068', 'unendingdespair': '3068',
+                'titanicandhydra': '3748', 'titanichydra': '3748', 'overlordsbloodmail': '6662',
+                'mikaelsblessing': '3222', 'shurelyasbattlesong': '2065', 'echoesofhelia': '3504',
+                'spectralsickle': '3850', 'relicshield': '3858', 'immortaltreads': '3006',
+                'crimsonlucidity': '3158', 'gunmetalgreaves': '3006', 'chainlacedcrushers': '3111',
+                'armoredadvance': '3047', 'spellslingersshoes': '3020', 'armorcrusherboots': '3047'
             };
 
             for (let key in fallbackMap) {
