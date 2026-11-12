@@ -642,6 +642,16 @@
                 return url;
             }
 
+            function getItemIconUrl(itemName) {
+            if (!itemName) return '';
+            let cleanKey = itemName.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+
+            if (riotItemMap[cleanKey]) {
+                const url = `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/item/${riotItemMap[cleanKey]}.png`;
+                warmImageCache(url);
+                return url;
+            }
+
             const fallbackMap = {
                 'trinityforce': '3078', 'sunderedsky': '6610', 'divinesunderer': '6632',
                 'deathsdance': '3812', 'steraksgage': '3053', 'steraks': '3053',
@@ -671,7 +681,8 @@
                 'crimsonlucidity': '3158', 'gunmetalgreaves': '3006', 'chainlacedcrushers': '3111',
                 'armoredadvance': '3047', 'spellslingersshoes': '3020', 'armorcrusherboots': '3047',
                 'hexopticsc44': '3089', 'rumblevest': '3075', 'bootsofmana': '3111',
-                'lichbane': '3100'
+                'lichbane': '3100', 'bladeoftheruinedking': '3153', 'mortalreminder': '3033',
+                'terminals': '3033', 'ancientcoin': '3107'
             };
 
             for (let key in fallbackMap) {
