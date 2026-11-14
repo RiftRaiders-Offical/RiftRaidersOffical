@@ -253,7 +253,7 @@
                     </div>
                 </div>
 
-                <!-- 2. ADD & MANAGE 5v5 MATCH (WITH AUTO-FILL DEMO MATCH BUTTON) -->
+                <!-- 2. ADD & MANAGE 5v5 MATCH -->
                 <div class="bg-[#161822] p-5 rounded-xl border border-white/5 space-y-4">
                     <div class="flex justify-between items-center">
                         <h3 id="match-form-title" class="font-black text-xs uppercase text-red-500">2. Add / Edit Full 5v5 Match</h3>
@@ -579,7 +579,6 @@
         let lastPartnersSignature = '';
 
         const defaultLogoUrl = "https://i.ibb.co/6R7QW3L/79923.jpg";
-        // Updated to 14.24.1 so Ambessa, Aurora, Ornn, and newer items exist on Riot CDN
         const ddragonVer = "14.24.1";
 
         let riotItemMap = {};
@@ -599,10 +598,9 @@
             })
             .catch(err => console.log('Error fetching Riot items:', err));
         
-       function getChampionIconUrl(champName) {
+        function getChampionIconUrl(champName) {
             if (!champName) return FALLBACK_IMAGES.champ;
             let rawName = champName.trim();
-            // Tinatanggal ang apostrophe, spaces, at special characters para maging malinis ang key
             let clean = rawName.toLowerCase().replace(/['\s]/g, '').replace(/[^a-z0-9]/g, '');
             
             const champMap = {
@@ -645,11 +643,6 @@
             warmImageCache(url);
             return url;
         }
-            let formattedName = champMap[clean] || (rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase());
-            const url = `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/champion/${formattedName}.png`;
-            warmImageCache(url);
-            return url;
-        }
 
         function getItemIconUrl(itemName) {
             if (!itemName) return '';
@@ -661,114 +654,40 @@
                 return url;
             }
 
-            // Cleaned fallback map without duplicate/clashing IDs
             const fallbackMap = {
-                'trinityforce': '3078',
-                'sunderedsky': '6610',
-                'divinesunderer': '6632',
-                'deathsdance': '3812',
-                'steraksgage': '3053',
-                'steraks': '3053',
-                'statikkshiv': '3087',
-                'infinityedge': '3031',
-                'collector': '6676',
-                'thecollector': '6676',
-                'essencereaver': '3508',
-                'navoriquickblades': '6675',
-                'navoriflickerblade': '6675',
-                'phantomdancer': '3046',
-                'rapidfirecannon': '3094',
-                'stormrazor': '3095',
-                'heartsteel': '3084',
-                'thornmail': '3075',
-                'sunfireaegis': '3068',
-                'warmogsarmor': '3083',
-                'spiritvisage': '3065',
-                'iceborngauntlet': '3025',
-                'platedsteelcaps': '3047',
-                'steelcaps': '3047',
-                'mercurystreads': '3111',
-                'lucidityboots': '3158',
-                'ionianbootsoflucidity': '3158',
-                'berserkersgreaves': '3006',
-                'gluttonousgreaves': '3006',
-                'ludensecho': '3285',
-                'ludenscompanion': '6655',
-                'ludens': '3285',
-                'rabadonsdeathcap': '3089',
-                'deathcap': '3089',
-                'infinityorb': '3165',
-                'voidstaff': '3135',
-                'morellonomicon': '3030',
-                'riftmaker': '4646',
-                'ardentcenser': '3504',
-                'ardent': '3504',
-                'harmonicecho': '3107',
-                'staffofflowingwater': '6616',
-                'redemption': '3107',
-                'rodofages': '3027',
-                'liandry': '6653',
-                'liandrystorment': '6653',
-                'amaranthstwinguard': '6665',
-                'twinguard': '6665',
-                'hollowradiance': '3068',
-                'serpentsfang': '6695',
-                'whisperingcirclet': '3027',
-                'imperialmandate': '4005',
-                'oceanidstrident': '3135',
-                'hextechrocketbelt': '3152',
-                'horizonfocus': '4645',
-                'malignance': '6656',
-                'stormsurge': '4645',
-                'blackfiretorch': '4642',
-                'bloodletterscurse': '3135',
-                'cryptbloom': '4643',
-                'cosmicdrive': '4629',
-                'duskanddawn': '3031',
-                'yordletrap': '3084',
-                'mantleofthetwelfthhour': '3083',
-                'radiantvirtue': '3083',
-                'dawnshroud': '3068',
-                'unendingdespair': '2502',
-                'titanicandhydra': '3748',
-                'titanichydra': '3748',
-                'overlordsbloodmail': '6662',
-                'mikaelsblessing': '3222',
-                'shurelyasbattlesong': '2065',
-                'echoesofhelia': '6620',
-                'spectralsickle': '3850',
-                'relicshield': '3858',
-                'immortaltreads': '3006',
-                'crimsonlucidity': '3158',
-                'gunmetalgreaves': '3006',
-                'chainlacedcrushers': '3111',
-                'armoredadvance': '3047',
-                'spellslingersshoes': '3020',
-                'armorcrusherboots': '3047',
-                'hexopticsc44': '3089',
-                'rumblevest': '3075',
-                'bootsofmana': '3020',
-                'lichbane': '3100',
-                'bladeoftheruinedking': '3153',
-                'mortalreminder': '3033',
-                'terminus': '3302',
-                'ancientcoin': '3865',
-                'blackcleaver': '3071',
-                'guardianangel': '3026',
-                'forceofnature': '4401',
-                'runaanshurricane': '3085',
-                'immortalshieldbow': '6673',
-                'crownoftheshatteredqueen': '4644',
-                'duskbladeofdraktharr': '6691',
-                'youmuusghostblade': '3142',
-                'bfsword': '1038',
-                'longsword': '1036',
-                'cloakofagility': '1018',
-                'chainvest': '1031',
-                'stasisenchant': '3157',
-                'teleportenchant': '3111',
-                'redeemingenchant': '3107',
-                'magnetronenchant': '3109'
+                'trinityforce': '3078', 'sunderedsky': '6610', 'divinesunderer': '6632',
+                'deathsdance': '3812', 'steraksgage': '3053', 'steraks': '3053',
+                'statikkshiv': '3087', 'infinityedge': '3031', 'collector': '6676',
+                'thecollector': '6676', 'essencereaver': '3508', 'navoriquickblades': '6675',
+                'phantomdancer': '3046', 'rapidfirecannon': '3094', 'stormrazor': '3095',
+                'heartsteel': '3084', 'thornmail': '3075', 'sunfireaegis': '3068',
+                'warmogsarmor': '3083', 'spiritvisage': '3065', 'iceborngauntlet': '3025',
+                'platedsteelcaps': '3047', 'steelcaps': '3047', 'mercurystreads': '3111',
+                'lucidityboots': '3158', 'ionianbootsoflucidity': '3158', 'berserkersgreaves': '3006',
+                'gluttonousgreaves': '3006', 'ludensecho': '3285', 'ludens': '3285',
+                'rabadonsdeathcap': '3089', 'deathcap': '3089', 'infinityorb': '3165',
+                'voidstaff': '3135', 'morellonomicon': '3030', 'riftmaker': '4646',
+                'ardentcenser': '3504', 'ardent': '3504', 'harmonicecho': '3107',
+                'staffofflowingwater': '6616', 'redemption': '3107', 'rodofages': '3027',
+                'liandry': '6653', 'liandrystorment': '6653', 'amaranthstwinguard': '6665',
+                'twinguard': '6665', 'hollowradiance': '3068', 'serpentsfang': '6695',
+                'whisperingcirclet': '3027', 'imperialmandate': '4005', 'oceanidstrident': '3135',
+                'hextechrocketbelt': '3152', 'horizonfocus': '4645', 'malignance': '6656',
+                'stormsurge': '4645', 'blackfiretorch': '4642', 'bloodletterscurse': '3135',
+                'cryptbloom': '4643', 'cosmicdrive': '4629', 'duskanddawn': '3031',
+                'yordletrap': '3084', 'mantleofthetwelfthhour': '3083', 'radiantvirtue': '3083',
+                'dawnshroud': '3068', 'unendingdespair': '2502', 'titanicandhydra': '3748',
+                'titanichydra': '3748', 'overlordsbloodmail': '6662', 'mikaelsblessing': '3222',
+                'shurelyasbattlesong': '2065', 'echoesofhelia': '6620', 'spectralsickle': '3850',
+                'relicshield': '3858', 'immortaltreads': '3006', 'crimsonlucidity': '3158',
+                'gunmetalgreaves': '3006', 'chainlacedcrushers': '3111', 'armoredadvance': '3047',
+                'spellslingersshoes': '3020', 'armorcrusherboots': '3047', 'hexopticsc44': '3089',
+                'rumblevest': '3075', 'bootsofmana': '3020', 'lichbane': '3100',
+                'bladeoftheruinedking': '3153', 'mortalreminder': '3033', 'terminus': '3302',
+                'ancientcoin': '3865', 'blackcleaver': '3071', 'guardianangel': '3026',
+                'forceofnature': '4401', 'runaanshurricane': '3085', 'immortalshieldbow': '6673',
+                'crownoftheshatteredqueen': '4644', 'stasisenchant': '3157', 'teleportenchant': '3111',
+                'redeemingenchant': '3107', 'magnetronenchant': '3109'
             };
 
             if (fallbackMap[cleanKey]) {
@@ -972,7 +891,6 @@
             grid.appendChild(emptyNote);
         }
 
-        // Improved Stats Calculator: Checks matches where the player's IGN played OR matches belonging to their Team
         function calculatePlayerTournamentStats(player) {
             if (!player || !allMatches) return { wins: 0, losses: 0, winrate: '0%' };
             const pIgn = (player.ign || '').trim().toLowerCase();
@@ -984,7 +902,6 @@
             Object.values(allMatches).forEach(m => {
                 if (!m.type || m.type.trim().toLowerCase() !== 'tournament') return;
 
-                // Check if player's IGN appears in Blue Team or Red Team rows
                 let foundInBlue = false;
                 let foundInRed = false;
 
@@ -1012,11 +929,9 @@
                     if (m.result === 'Win') wins++;
                     else if (m.result === 'Lose') losses++;
                 } else if (foundInRed) {
-                    // Red side wins when Blue side loses
                     if (m.result === 'Lose') wins++;
                     else if (m.result === 'Win') losses++;
                 } else if (pTeam && m.team) {
-                    // Fallback: match by team tag/name (supports "RRS" matching "Rift Raiders (RRS)")
                     const mTeam = m.team.trim().toLowerCase();
                     if (mTeam === pTeam || mTeam.includes(`(${pTeam})`) || mTeam.includes(pTeam)) {
                         if (m.result === 'Win') wins++;
@@ -1441,7 +1356,6 @@
 
             Object.values(allMatches).forEach(m => {
                 if (m.type && m.type.trim().toLowerCase() === 'tournament') {
-                    // Check Blue Team
                     (m.blueData || '').split('\n').forEach(line => {
                         const p = line.split('|').map(s => s.trim());
                         const rowIgn = (p[0] || '').toLowerCase();
@@ -1454,7 +1368,6 @@
                             if (m.result === 'Win') champStats[champ].wins++;
                         }
                     });
-                    // Check Red Team
                     (m.redData || '').split('\n').forEach(line => {
                         const p = line.split('|').map(s => s.trim());
                         const rowIgn = (p[0] || '').toLowerCase();
