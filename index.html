@@ -6,10 +6,8 @@
     <title>Rift Raiders - Official Guild</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Preconnect to Riot CDN for instant champion/item icons -->
     <link rel="preconnect" href="https://ddragon.leagueoflegends.com" crossorigin>
     
-    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     
@@ -19,7 +17,6 @@
         ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #ef4444; }
 
-        /* Smooth image fade-in instead of jarring flicker */
         .img-fade {
             opacity: 0;
             transition: opacity 0.25s ease-in-out;
@@ -31,7 +28,6 @@
 </head>
 <body class="bg-[#0b0c10] text-slate-100 font-sans antialiased pb-20">
 
-    <!-- HEADER NAVIGATION -->
     <header class="bg-[#0b0c10]/90 backdrop-blur-md sticky top-0 z-40 border-b border-white/5">
         <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
             <div class="flex items-center space-x-3">
@@ -55,7 +51,6 @@
         </div>
     </header>
 
-    <!-- ADMIN PASSWORD MODAL -->
     <div id="admin-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-[#161822] border border-white/10 rounded-2xl p-6 w-full max-w-xs text-center relative shadow-2xl">
             <button onclick="closeAdminModal()" class="absolute top-3 right-3 text-slate-400 hover:text-white text-sm">✕</button>
@@ -66,10 +61,8 @@
         </div>
     </div>
 
-    <!-- MAIN CONTENT -->
     <main class="max-w-5xl mx-auto px-4 py-6 space-y-10">
         
-        <!-- ABOUT US -->
         <section class="space-y-4 bg-[#161822]/40 border border-white/5 p-6 rounded-2xl">
             <div class="flex items-center space-x-2">
                 <div class="w-1 h-4 bg-red-600"></div>
@@ -80,7 +73,6 @@
             </p>
         </section>
 
-        <!-- MEET THE TEAMS -->
         <section class="space-y-4">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-2">
@@ -101,7 +93,6 @@
             </div>
         </section>
 
-        <!-- MATCH HISTORY WITH GAME TABS -->
         <section class="space-y-4">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-2">
@@ -120,7 +111,6 @@
             <div id="match-history-list" class="grid grid-cols-1 gap-3 text-xs text-slate-500">Loading matches...</div>
         </section>
 
-        <!-- CREATORS & PARTNERS -->
         <section class="space-y-4">
             <div class="flex items-center space-x-2">
                 <div class="w-1 h-4 bg-red-600"></div>
@@ -137,7 +127,6 @@
             <div class="flex flex-wrap items-center justify-start gap-4 py-2" id="partners-grid">Loading partners...</div>
         </section>
 
-        <!-- CONTACT US SECTION -->
         <section class="space-y-4 pt-4 border-t border-white/5">
             <div class="flex items-center space-x-2">
                 <div class="w-1 h-4 bg-red-600"></div>
@@ -176,7 +165,6 @@
             </div>
         </section>
 
-        <!-- HIDDEN ADMIN DASHBOARD -->
         <section id="admin-dashboard-section" class="hidden space-y-6 pt-6 border-t border-red-500/30">
             <div class="flex justify-between items-center bg-[#161822] p-4 rounded-xl border border-red-500/40">
                 <div class="flex items-center space-x-3">
@@ -189,7 +177,6 @@
                 <button onclick="lockAdmin()" class="bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/40 px-3 py-1 rounded text-[10px] font-bold">Lock Admin</button>
             </div>
 
-            <!-- SITE LOGO SETTINGS -->
             <div class="bg-[#161822] p-5 rounded-xl border border-white/5 space-y-4">
                 <h3 class="font-black text-xs uppercase text-red-500">0. Edit Website Logo URL</h3>
                 <div>
@@ -200,7 +187,6 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- 1. ADD & MANAGE PLAYER -->
                 <div class="bg-[#161822] p-5 rounded-xl border border-white/5 space-y-4">
                     <div class="flex justify-between items-center">
                         <h3 id="player-form-title" class="font-black text-xs uppercase text-red-500">1. Add & Manage Competitive Player</h3>
@@ -253,7 +239,6 @@
                     </div>
                 </div>
 
-                <!-- 2. ADD & MANAGE 5v5 MATCH -->
                 <div class="bg-[#161822] p-5 rounded-xl border border-white/5 space-y-4">
                     <div class="flex justify-between items-center">
                         <h3 id="match-form-title" class="font-black text-xs uppercase text-red-500">2. Add / Edit Full 5v5 Match</h3>
@@ -262,7 +247,6 @@
                     
                     <input type="hidden" id="editing-match-id" value="">
 
-                    <!-- AUTO-FILL MATCH HISTORY DEMO BUTTON -->
                     <div class="bg-[#0b0c10] p-3 rounded-lg border border-red-500/40 space-y-2">
                         <label class="text-[10px] font-bold text-red-400 uppercase flex items-center space-x-1">
                             <i class="fa-solid fa-wand-magic-sparkles"></i>
@@ -271,7 +255,6 @@
                         <button onclick="autoFillDemoMatch()" type="button" class="w-full bg-red-600 hover:bg-red-700 text-white py-1.5 rounded text-[10px] font-bold uppercase transition">Auto-Fill Match Form Data</button>
                     </div>
 
-                    <!-- QUICK ROSTER AUTO-FILL BUTTONS -->
                     <div class="bg-[#0b0c10] p-3 rounded-lg border border-indigo-500/40 space-y-2">
                         <label class="text-[10px] font-bold text-indigo-400 uppercase flex items-center space-x-1">
                             <i class="fa-solid fa-users"></i>
@@ -358,7 +341,6 @@
                     </div>
                 </div>
 
-                <!-- 3. CREATOR & 4. PARTNER PANELS -->
                 <div class="bg-[#161822] p-5 rounded-xl border border-white/5 space-y-4">
                     <h3 class="font-black text-xs uppercase text-red-500">3. Add & Manage Content Creator</h3>
                     <div>
@@ -419,7 +401,6 @@
         </section>
     </main>
 
-    <!-- PLAYER STATS MODAL POPUP -->
     <div id="player-modal-backdrop" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 hidden transition-opacity duration-300">
         <div id="player-modal-card" class="bg-[#121212] border border-red-600/30 rounded-2xl p-5 w-full max-w-md shadow-[0_0_30px_rgba(255,42,45,0.15)] relative transform scale-95 opacity-0 transition-all duration-300 max-h-[90vh] overflow-y-auto">
             <button onclick="closePlayerStats()" class="absolute top-4 right-4 text-slate-500 hover:text-white w-6 h-6 flex items-center justify-center bg-white/5 rounded-full">✕</button>
@@ -464,7 +445,6 @@
         </div>
     </div>
 
-    <!-- FULL 5v5 SCOREBOARD MODAL -->
     <div id="match-modal-backdrop" class="fixed inset-0 bg-black/95 flex items-center justify-center z-50 p-2 sm:p-4 hidden transition-opacity duration-300">
         <div id="match-modal-card" class="bg-[#0b0c10] border border-blue-500/30 rounded-2xl p-4 sm:p-6 w-full max-w-4xl shadow-[0_0_50px_rgba(37,99,235,0.2)] relative transform scale-95 opacity-0 transition-all duration-300 space-y-4 max-h-[95vh] overflow-y-auto">
             <button onclick="closeMatchModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white w-7 h-7 flex items-center justify-center bg-white/10 rounded-full">✕</button>
@@ -891,16 +871,21 @@
             grid.appendChild(emptyNote);
         }
 
+        // STRICT STATS CALCULATOR: Only counts matches that strictly match the player's game category (Wild Rift vs League of Legends)
         function calculatePlayerTournamentStats(player) {
             if (!player || !allMatches) return { wins: 0, losses: 0, winrate: '0%' };
             const pIgn = (player.ign || '').trim().toLowerCase();
             const pIgnNoTag = pIgn.replace(/^(rrs|rfr|rra)\s+/i, '').trim();
-            const pTeam = (player.team || '').trim().toLowerCase();
+            const pGame = (player.game || 'Wild Rift').trim().toLowerCase();
 
             let wins = 0, losses = 0;
 
             Object.values(allMatches).forEach(m => {
                 if (!m.type || m.type.trim().toLowerCase() !== 'tournament') return;
+                
+                // Siguraduhing tugma ang game category (Wild Rift match ay para sa Wild Rift player lang, LoL PC sa LoL PC lang)
+                const mGame = (m.game || 'Wild Rift').trim().toLowerCase();
+                if (mGame !== pGame) return;
 
                 let foundInBlue = false;
                 let foundInRed = false;
@@ -931,12 +916,6 @@
                 } else if (foundInRed) {
                     if (m.result === 'Lose') wins++;
                     else if (m.result === 'Win') losses++;
-                } else if (pTeam && m.team) {
-                    const mTeam = m.team.trim().toLowerCase();
-                    if (mTeam === pTeam || mTeam.includes(`(${pTeam})`) || mTeam.includes(pTeam)) {
-                        if (m.result === 'Win') wins++;
-                        else if (m.result === 'Lose') losses++;
-                    }
                 }
             });
 
@@ -1353,9 +1332,13 @@
             let totalPlayerMatches = 0;
             const targetIgn = (name || '').trim().toLowerCase();
             const targetIgnNoTag = targetIgn.replace(/^(rrs|rfr|rra)\s+/i, '').trim();
+            const targetGame = (game || 'Wild Rift').trim().toLowerCase();
 
             Object.values(allMatches).forEach(m => {
                 if (m.type && m.type.trim().toLowerCase() === 'tournament') {
+                    const mGame = (m.game || 'Wild Rift').trim().toLowerCase();
+                    if (mGame !== targetGame) return;
+
                     (m.blueData || '').split('\n').forEach(line => {
                         const p = line.split('|').map(s => s.trim());
                         const rowIgn = (p[0] || '').toLowerCase();
