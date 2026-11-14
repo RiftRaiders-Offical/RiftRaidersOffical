@@ -599,10 +599,11 @@
             })
             .catch(err => console.log('Error fetching Riot items:', err));
         
-        function getChampionIconUrl(champName) {
+       function getChampionIconUrl(champName) {
             if (!champName) return FALLBACK_IMAGES.champ;
             let rawName = champName.trim();
-            let clean = rawName.toLowerCase().replace(/[^a-z0-9]/g, '');
+            // Tinatanggal ang apostrophe, spaces, at special characters para maging malinis ang key
+            let clean = rawName.toLowerCase().replace(/['\s]/g, '').replace(/[^a-z0-9]/g, '');
             
             const champMap = {
                 'kaisa': 'KaiSa',
@@ -639,6 +640,11 @@
                 'leblanc': 'Leblanc'
             };
 
+            let formattedName = champMap[clean] || (rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase().replace(/['\s]/g, ''));
+            const url = `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/champion/${formattedName}.png`;
+            warmImageCache(url);
+            return url;
+        }
             let formattedName = champMap[clean] || (rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase());
             const url = `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/champion/${formattedName}.png`;
             warmImageCache(url);
