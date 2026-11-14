@@ -392,7 +392,6 @@
 
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 uppercase">Profile Photo (Auto-Optimized):</label>
-                        <!-- Fixed duplicate ID bug: changed from p-pfp to c-pfp -->
                         <input type="file" id="c-pfp" accept="image/*" class="w-full text-xs text-slate-400 mt-1">
                     </div>
                     <button onclick="addCreator()" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save Creator</button>
@@ -502,21 +501,12 @@
     </div>
 
     <script>
-        /* ============================================================================
-           DEEP IMAGE LOADING FIXES:
-           1. Instant Embedded SVG Fallbacks (Replaces broken via.placeholder.com)
-           2. One-Shot Error Guard (Prevents infinite network retry loops)
-           3. In-Memory Image Preloader Cache (Keeps images warm across tab switches)
-           4. Client-Side Canvas Compression (Shrinks large uploads before Firebase)
-           5. Non-Destructive DOM Updates (Prevents full-grid image flashing)
-        ============================================================================ */
         const FALLBACK_IMAGES = {
             player: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300"><rect width="300" height="300" fill="#161822"/><circle cx="150" cy="115" r="48" fill="#26293a"/><path d="M70 265c0-44 36-80 80-80s80 36 80 80" fill="#26293a"/><text x="150" y="285" font-family="Arial,sans-serif" font-size="12" font-weight="bold" fill="#ef4444" text-anchor="middle">RIFT RAIDERS</text></svg>`),
             champ: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60"><rect width="60" height="60" rx="8" fill="#1f2937"/><text x="30" y="36" font-family="Arial,sans-serif" font-size="16" font-weight="bold" fill="#ef4444" text-anchor="middle">RR</text></svg>`),
             logo: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><rect width="80" height="80" rx="14" fill="#161822" stroke="#ef4444" stroke-width="3"/><text x="40" y="50" font-family="Arial,sans-serif" font-size="26" font-weight="900" fill="#ffffff" text-anchor="middle">RR</text></svg>`)
         };
 
-        // Prevents infinite onerror network loops
         function handleImgError(imgEl, type) {
             if (!imgEl || imgEl.dataset.fallbackApplied === "true") return;
             imgEl.dataset.fallbackApplied = "true";
@@ -524,7 +514,6 @@
             imgEl.classList.add('loaded');
         }
 
-        // Preloads and pins image objects in browser RAM so switching tabs never re-fetches
         const preloadedUrls = new Map();
         function warmImageCache(url) {
             if (!url || url.startsWith('data:') || preloadedUrls.has(url)) return;
@@ -534,7 +523,6 @@
             preloadedUrls.set(url, img);
         }
 
-        // Compresses & resizes uploaded images on canvas before saving to Firebase
         function fileToCompressedBase64(file, maxSize = 420, quality = 0.78) {
             return new Promise((resolve) => {
                 if (!file) { resolve(''); return; }
@@ -591,7 +579,8 @@
         let lastPartnersSignature = '';
 
         const defaultLogoUrl = "https://i.ibb.co/6R7QW3L/79923.jpg";
-        const ddragonVer = "13.24.1";
+        // Updated to 14.24.1 so Ambessa, Aurora, Ornn, and newer items exist on Riot CDN
+        const ddragonVer = "14.24.1";
 
         let riotItemMap = {};
 
@@ -616,14 +605,38 @@
             let clean = rawName.toLowerCase().replace(/[^a-z0-9]/g, '');
             
             const champMap = {
-                'kaisa': 'KaiSa', 'khazix': 'KhaZix', 'chogath': 'ChoGath',
-                'velkoz': 'Velkoz', 'wukong': 'MonkeyKing', 'monkeyking': 'MonkeyKing',
-                'jarvan': 'JarvanIV', 'jarvaniv': 'JarvanIV', 'missfortune': 'MissFortune',
-                'mf': 'MissFortune', 'twistedfate': 'TwistedFate', 'tf': 'TwistedFate',
-                'drmundo': 'DrMundo', 'mundo': 'DrMundo', 'masteryi': 'MasterYi',
-                'leesin': 'LeeSin', 'xinzhao': 'XinZhao', 'tahmkench': 'TahmKench',
-                'aurelionsol': 'AurelionSol', 'asol': 'AurelionSol', 'renata': 'Renata',
-                'nunu': 'Nunu'
+                'kaisa': 'KaiSa',
+                'khazix': 'KhaZix',
+                'chogath': 'ChoGath',
+                'velkoz': 'Velkoz',
+                'wukong': 'MonkeyKing',
+                'monkeyking': 'MonkeyKing',
+                'jarvan': 'JarvanIV',
+                'jarvaniv': 'JarvanIV',
+                'missfortune': 'MissFortune',
+                'mf': 'MissFortune',
+                'twistedfate': 'TwistedFate',
+                'tf': 'TwistedFate',
+                'drmundo': 'DrMundo',
+                'mundo': 'DrMundo',
+                'masteryi': 'MasterYi',
+                'leesin': 'LeeSin',
+                'xinzhao': 'XinZhao',
+                'tahmkench': 'TahmKench',
+                'aurelionsol': 'AurelionSol',
+                'asol': 'AurelionSol',
+                'renata': 'Renata',
+                'renataglasc': 'Renata',
+                'nunu': 'Nunu',
+                'ambessa': 'Ambessa',
+                'aurora': 'Aurora',
+                'ornn': 'Ornn',
+                'orn': 'Ornn',
+                'belveth': 'Belveth',
+                'ksante': 'KSante',
+                'reksai': 'RekSai',
+                'kogmaw': 'KogMaw',
+                'leblanc': 'Leblanc'
             };
 
             let formattedName = champMap[clean] || (rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase());
@@ -642,40 +655,124 @@
                 return url;
             }
 
+            // Cleaned fallback map without duplicate/clashing IDs
             const fallbackMap = {
-                'trinityforce': '3078', 'sunderedsky': '6610', 'divinesunderer': '6632',
-                'deathsdance': '3812', 'steraksgage': '3053', 'steraks': '3053',
-                'statikkshiv': '3087', 'infinityedge': '3031', 'collector': '6676',
-                'thecollector': '6676', 'essencereaver': '3508', 'navoriquickblades': '6675',
-                'phantomdancer': '3046', 'rapidfirecannon': '3094', 'stormrazor': '3095',
-                'heartsteel': '3084', 'thornmail': '3075', 'sunfireaegis': '3068',
-                'warmogsarmor': '3083', 'spiritvisage': '3065', 'iceborngauntlet': '3025',
-                'platedsteelcaps': '3047', 'steelcaps': '3047', 'mercurystreads': '3111',
-                'lucidityboots': '3158', 'ionianbootsoflucidity': '3158', 'berserkersgreaves': '3006',
-                'ludensecho': '3285', 'ludens': '3285', 'rabadonsdeathcap': '3089',
-                'deathcap': '3089', 'infinityorb': '3165', 'voidstaff': '3135',
-                'morellonomicon': '3030', 'riftmaker': '4646', 'ardentcenser': '3504',
-                'harmonicecho': '3107', 'staffofflowingwater': '6616', 'redemption': '3107',
-                'rodofages': '3027', 'liandry': '6653', 'liandrystorment': '6653',
-                'amaranthstwinguard': '6665', 'twinguard': '6665', 'hollowradiance': '3068',
-                'gluttonousgreaves': '3006', 'ardent': '3504',
-                'serpentsfang': '6695', 'whisperingcirclet': '3027', 'imperialmandate': '3107',
-                'oceanidstrident': '3135', 'hextechrocketbelt': '3152', 'horizonfocus': '4645',
-                'malignance': '6656', 'stormsurge': '4645', 'blackfiretorch': '4642',
-                'bloodletterscurse': '3135', 'cryptbloom': '4643', 'cosmicdrive': '4629',
-                'duskanddawn': '3031', 'yordletrap': '3084', 'mantleofthetwelfthhour': '3083',
-                'radiantvirtue': '3083', 'dawnshroud': '3068', 'unendingdespair': '3068',
-                'titanicandhydra': '3748', 'titanichydra': '3748', 'overlordsbloodmail': '6662',
-                'mikaelsblessing': '3222', 'shurelyasbattlesong': '2065', 'echoesofhelia': '3504',
-                'spectralsickle': '3850', 'relicshield': '3858', 'immortaltreads': '3006',
-                'crimsonlucidity': '3158', 'gunmetalgreaves': '3006', 'chainlacedcrushers': '3111',
-                'armoredadvance': '3047', 'spellslingersshoes': '3020', 'armorcrusherboots': '3047',
-                'hexopticsc44': '3089', 'rumblevest': '3075', 'bootsofmana': '3111',
-                'lichbane': '3100'
+                'trinityforce': '3078',
+                'sunderedsky': '6610',
+                'divinesunderer': '6632',
+                'deathsdance': '3812',
+                'steraksgage': '3053',
+                'steraks': '3053',
+                'statikkshiv': '3087',
+                'infinityedge': '3031',
+                'collector': '6676',
+                'thecollector': '6676',
+                'essencereaver': '3508',
+                'navoriquickblades': '6675',
+                'navoriflickerblade': '6675',
+                'phantomdancer': '3046',
+                'rapidfirecannon': '3094',
+                'stormrazor': '3095',
+                'heartsteel': '3084',
+                'thornmail': '3075',
+                'sunfireaegis': '3068',
+                'warmogsarmor': '3083',
+                'spiritvisage': '3065',
+                'iceborngauntlet': '3025',
+                'platedsteelcaps': '3047',
+                'steelcaps': '3047',
+                'mercurystreads': '3111',
+                'lucidityboots': '3158',
+                'ionianbootsoflucidity': '3158',
+                'berserkersgreaves': '3006',
+                'gluttonousgreaves': '3006',
+                'ludensecho': '3285',
+                'ludenscompanion': '6655',
+                'ludens': '3285',
+                'rabadonsdeathcap': '3089',
+                'deathcap': '3089',
+                'infinityorb': '3165',
+                'voidstaff': '3135',
+                'morellonomicon': '3030',
+                'riftmaker': '4646',
+                'ardentcenser': '3504',
+                'ardent': '3504',
+                'harmonicecho': '3107',
+                'staffofflowingwater': '6616',
+                'redemption': '3107',
+                'rodofages': '3027',
+                'liandry': '6653',
+                'liandrystorment': '6653',
+                'amaranthstwinguard': '6665',
+                'twinguard': '6665',
+                'hollowradiance': '3068',
+                'serpentsfang': '6695',
+                'whisperingcirclet': '3027',
+                'imperialmandate': '4005',
+                'oceanidstrident': '3135',
+                'hextechrocketbelt': '3152',
+                'horizonfocus': '4645',
+                'malignance': '6656',
+                'stormsurge': '4645',
+                'blackfiretorch': '4642',
+                'bloodletterscurse': '3135',
+                'cryptbloom': '4643',
+                'cosmicdrive': '4629',
+                'duskanddawn': '3031',
+                'yordletrap': '3084',
+                'mantleofthetwelfthhour': '3083',
+                'radiantvirtue': '3083',
+                'dawnshroud': '3068',
+                'unendingdespair': '2502',
+                'titanicandhydra': '3748',
+                'titanichydra': '3748',
+                'overlordsbloodmail': '6662',
+                'mikaelsblessing': '3222',
+                'shurelyasbattlesong': '2065',
+                'echoesofhelia': '6620',
+                'spectralsickle': '3850',
+                'relicshield': '3858',
+                'immortaltreads': '3006',
+                'crimsonlucidity': '3158',
+                'gunmetalgreaves': '3006',
+                'chainlacedcrushers': '3111',
+                'armoredadvance': '3047',
+                'spellslingersshoes': '3020',
+                'armorcrusherboots': '3047',
+                'hexopticsc44': '3089',
+                'rumblevest': '3075',
+                'bootsofmana': '3020',
+                'lichbane': '3100',
+                'bladeoftheruinedking': '3153',
+                'mortalreminder': '3033',
+                'terminus': '3302',
+                'ancientcoin': '3865',
+                'blackcleaver': '3071',
+                'guardianangel': '3026',
+                'forceofnature': '4401',
+                'runaanshurricane': '3085',
+                'immortalshieldbow': '6673',
+                'crownoftheshatteredqueen': '4644',
+                'duskbladeofdraktharr': '6691',
+                'youmuusghostblade': '3142',
+                'bfsword': '1038',
+                'longsword': '1036',
+                'cloakofagility': '1018',
+                'chainvest': '1031',
+                'stasisenchant': '3157',
+                'teleportenchant': '3111',
+                'redeemingenchant': '3107',
+                'magnetronenchant': '3109'
             };
 
+            if (fallbackMap[cleanKey]) {
+                const url = `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/item/${fallbackMap[cleanKey]}.png`;
+                warmImageCache(url);
+                return url;
+            }
+
             for (let key in fallbackMap) {
-                if (cleanKey === key || cleanKey.includes(key)) {
+                if (cleanKey.includes(key)) {
                     const url = `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/item/${fallbackMap[key]}.png`;
                     warmImageCache(url);
                     return url;
@@ -723,7 +820,6 @@
             document.getElementById('admin-pass-input').value = '';
         }
 
-        // Firebase Listeners: Separated so match updates only update Winrate text badges instead of destroying & reloading all player images
         db.ref('matches').on('value', snap => {
             allMatches = snap.val() || {};
             renderMatches();
@@ -777,7 +873,6 @@
                     btn.className = 'game-tab bg-[#161822] text-slate-400 px-4 py-2 rounded-lg border border-white/5 whitespace-nowrap transition';
                 }
             });
-            // Filter existing cards with CSS display instead of destroying and re-downloading images
             const cards = document.querySelectorAll('#roster-grid [data-player-card]');
             if (cards.length > 0) {
                 let visibleCount = 0;
@@ -807,14 +902,13 @@
             renderMatches();
         }
 
-        // Updates only the winrate badge text when matches change, keeping all player <img> elements untouched!
         function updateRosterWinrateBadgesOnly() {
             const cards = document.querySelectorAll('#roster-grid [data-player-card]');
             cards.forEach(card => {
                 const playerId = card.getAttribute('data-player-id');
                 const p = allPlayers.find(item => item.id === playerId);
                 if (!p) return;
-                const stats = calculateTeamTournamentStats(p.team);
+                const stats = calculatePlayerTournamentStats(p);
                 const badge = card.querySelector('[data-wr-badge]');
                 if (badge) badge.textContent = `WR: ${stats.winrate}`;
             });
@@ -839,7 +933,7 @@
 
             let visibleCount = 0;
             allPlayers.forEach(p => {
-                const stats = calculateTeamTournamentStats(p.team);
+                const stats = calculatePlayerTournamentStats(p);
                 const pGame = p.game || 'Wild Rift';
                 const isVisible = (currentGameFilter === 'ALL' || pGame === currentGameFilter);
                 if (isVisible) visibleCount++;
@@ -872,17 +966,59 @@
             grid.appendChild(emptyNote);
         }
 
-        function calculateTeamTournamentStats(teamName) {
-            if (!teamName || !allMatches) return { wins: 0, losses: 0, winrate: '0%' };
-            const teamMatches = Object.values(allMatches).filter(m => 
-                m.team && m.team.trim().toLowerCase() === teamName.trim().toLowerCase() &&
-                m.type && m.type.trim().toLowerCase() === 'tournament'
-            );
+        // Improved Stats Calculator: Checks matches where the player's IGN played OR matches belonging to their Team
+        function calculatePlayerTournamentStats(player) {
+            if (!player || !allMatches) return { wins: 0, losses: 0, winrate: '0%' };
+            const pIgn = (player.ign || '').trim().toLowerCase();
+            const pIgnNoTag = pIgn.replace(/^(rrs|rfr|rra)\s+/i, '').trim();
+            const pTeam = (player.team || '').trim().toLowerCase();
+
             let wins = 0, losses = 0;
-            teamMatches.forEach(m => {
-                if (m.result === 'Win') wins += 1;
-                else if (m.result === 'Lose') losses += 1;
+
+            Object.values(allMatches).forEach(m => {
+                if (!m.type || m.type.trim().toLowerCase() !== 'tournament') return;
+
+                // Check if player's IGN appears in Blue Team or Red Team rows
+                let foundInBlue = false;
+                let foundInRed = false;
+
+                if (m.blueData && pIgn) {
+                    m.blueData.split('\n').forEach(line => {
+                        const rowIgn = (line.split('|')[0] || '').trim().toLowerCase();
+                        const rowIgnNoTag = rowIgn.replace(/^(rrs|rfr|rra)\s+/i, '').trim();
+                        if (rowIgn && (rowIgn === pIgn || (pIgnNoTag && rowIgnNoTag === pIgnNoTag))) {
+                            foundInBlue = true;
+                        }
+                    });
+                }
+
+                if (m.redData && pIgn) {
+                    m.redData.split('\n').forEach(line => {
+                        const rowIgn = (line.split('|')[0] || '').trim().toLowerCase();
+                        const rowIgnNoTag = rowIgn.replace(/^(rrs|rfr|rra)\s+/i, '').trim();
+                        if (rowIgn && (rowIgn === pIgn || (pIgnNoTag && rowIgnNoTag === pIgnNoTag))) {
+                            foundInRed = true;
+                        }
+                    });
+                }
+
+                if (foundInBlue) {
+                    if (m.result === 'Win') wins++;
+                    else if (m.result === 'Lose') losses++;
+                } else if (foundInRed) {
+                    // Red side wins when Blue side loses
+                    if (m.result === 'Lose') wins++;
+                    else if (m.result === 'Win') losses++;
+                } else if (pTeam && m.team) {
+                    // Fallback: match by team tag/name (supports "RRS" matching "Rift Raiders (RRS)")
+                    const mTeam = m.team.trim().toLowerCase();
+                    if (mTeam === pTeam || mTeam.includes(`(${pTeam})`) || mTeam.includes(pTeam)) {
+                        if (m.result === 'Win') wins++;
+                        else if (m.result === 'Lose') losses++;
+                    }
+                }
             });
+
             const total = wins + losses;
             return { wins, losses, winrate: total === 0 ? '0%' : Math.round((wins / total) * 100) + '%' };
         }
@@ -1267,7 +1403,7 @@
         function openPlayerStatsById(playerId) {
             const p = allPlayers.find(item => item.id === playerId);
             if (!p) return;
-            const stats = calculateTeamTournamentStats(p.team);
+            const stats = calculatePlayerTournamentStats(p);
             openPlayerStats(p.ign, p.tag || '', p.game || 'Wild Rift', p.team || '', p.role || '', stats.winrate, stats.wins, stats.losses, p.pfp || '', p.teamlogo || '');
         }
 
@@ -1292,18 +1428,37 @@
                 teamLogoEl.classList.add('hidden');
             }
 
-            let champCounts = {};
+            let champStats = {};
             let totalPlayerMatches = 0;
+            const targetIgn = (name || '').trim().toLowerCase();
+            const targetIgnNoTag = targetIgn.replace(/^(rrs|rfr|rra)\s+/i, '').trim();
 
             Object.values(allMatches).forEach(m => {
                 if (m.type && m.type.trim().toLowerCase() === 'tournament') {
-                    const combined = (m.blueData || '') + '\n' + (m.redData || '');
-                    combined.split('\n').forEach(line => {
+                    // Check Blue Team
+                    (m.blueData || '').split('\n').forEach(line => {
                         const p = line.split('|').map(s => s.trim());
-                        if(p[0] && p[0].toLowerCase() === name.toLowerCase()) {
+                        const rowIgn = (p[0] || '').toLowerCase();
+                        const rowIgnNoTag = rowIgn.replace(/^(rrs|rfr|rra)\s+/i, '').trim();
+                        if (rowIgn && (rowIgn === targetIgn || (targetIgnNoTag && rowIgnNoTag === targetIgnNoTag))) {
                             totalPlayerMatches++;
                             const champ = p[1] || 'Unknown';
-                            champCounts[champ] = (champCounts[champ] || 0) + 1;
+                            if (!champStats[champ]) champStats[champ] = { count: 0, wins: 0 };
+                            champStats[champ].count++;
+                            if (m.result === 'Win') champStats[champ].wins++;
+                        }
+                    });
+                    // Check Red Team
+                    (m.redData || '').split('\n').forEach(line => {
+                        const p = line.split('|').map(s => s.trim());
+                        const rowIgn = (p[0] || '').toLowerCase();
+                        const rowIgnNoTag = rowIgn.replace(/^(rrs|rfr|rra)\s+/i, '').trim();
+                        if (rowIgn && (rowIgn === targetIgn || (targetIgnNoTag && rowIgnNoTag === targetIgnNoTag))) {
+                            totalPlayerMatches++;
+                            const champ = p[1] || 'Unknown';
+                            if (!champStats[champ]) champStats[champ] = { count: 0, wins: 0 };
+                            champStats[champ].count++;
+                            if (m.result === 'Lose') champStats[champ].wins++;
                         }
                     });
                 }
@@ -1311,19 +1466,23 @@
 
             const champsListEl = document.getElementById('modal-champs-list');
             champsListEl.innerHTML = '';
-            const champsArray = Object.keys(champCounts).sort((a,b) => champCounts[b] - champCounts[a]);
+            const champsArray = Object.keys(champStats).sort((a,b) => champStats[b].count - champStats[a].count);
 
             if (champsArray.length > 0) {
                 champsArray.forEach(champ => {
-                    const count = champCounts[champ];
-                    const percent = Math.round((count / totalPlayerMatches) * 100);
+                    const data = champStats[champ];
+                    const pickPercent = Math.round((data.count / totalPlayerMatches) * 100);
+                    const champWr = Math.round((data.wins / data.count) * 100);
                     champsListEl.innerHTML += `
                         <div class="bg-[#0b0c10] p-2 rounded-xl border border-white/5 flex items-center justify-between text-xs">
                             <div class="flex items-center space-x-3">
                                 <img src="${getChampionIconUrl(champ)}" decoding="async" onerror="handleImgError(this, 'champ')" class="w-9 h-9 rounded-lg border border-red-500/40 object-cover">
-                                <div><p class="font-black text-white text-xs leading-none">${champ}</p><p class="text-[9px] text-slate-400 mt-0.5">${count} Tournament Matches</p></div>
+                                <div>
+                                    <p class="font-black text-white text-xs leading-none">${champ}</p>
+                                    <p class="text-[9px] text-slate-400 mt-0.5">${data.count} Matches • <span class="text-emerald-400 font-bold">${champWr}% WR</span></p>
+                                </div>
                             </div>
-                            <div class="text-right"><span class="bg-red-600/20 text-red-400 border border-red-500/30 text-[10px] font-black px-2 py-0.5 rounded">${percent}% Pick</span></div>
+                            <div class="text-right"><span class="bg-red-600/20 text-red-400 border border-red-500/30 text-[10px] font-black px-2 py-0.5 rounded">${pickPercent}% Pick</span></div>
                         </div>
                     `;
                 });
