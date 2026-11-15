@@ -13,9 +13,19 @@
     
     <style>
         ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #0b0c10; }
+        ::-webkit-scrollbar-track { background: #07080c; }
         ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #ef4444; }
+
+        body {
+            /* HD Background inspired by image_be99e5.png without T1 logo */
+            background-color: #0b0c14;
+            background-image: linear-gradient(to bottom, rgba(11, 12, 20, 0.85), rgba(7, 8, 12, 0.95)), 
+                              url('https://i.ibb.co/6R7QW3L/79923.jpg'); /* Fallback pattern/logo */
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+        }
 
         .img-fade {
             opacity: 0;
@@ -26,9 +36,9 @@
         }
     </style>
 </head>
-<body class="bg-[#0b0c10] text-slate-100 font-sans antialiased pb-20">
+<body class="text-slate-100 font-sans antialiased pb-20">
 
-    <header class="bg-[#0b0c10]/90 backdrop-blur-md sticky top-0 z-40 border-b border-white/5">
+    <header class="bg-[#0b0c14]/90 backdrop-blur-md sticky top-0 z-40 border-b border-white/5 shadow-lg">
         <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
             <div class="flex items-center space-x-3">
                 <img id="header-logo" src="https://i.ibb.co/6R7QW3L/79923.jpg" decoding="async" onerror="handleImgError(this, 'logo')" alt="Rift Raiders Logo" class="h-9 w-auto object-contain">
@@ -43,7 +53,7 @@
                     <i class="fa-solid fa-paper-plane"></i>
                     <span>APPLY</span>
                 </a>
-                <button onclick="openAdminModal()" class="bg-[#161822] hover:bg-slate-800 text-slate-400 hover:text-white px-3 py-1.5 rounded-lg font-bold text-xs flex items-center justify-center space-x-1.5 transition border border-white/5" title="Admin Portal">
+                <button onclick="openAdminModal()" class="bg-[#161822]/80 hover:bg-slate-800 text-slate-400 hover:text-white px-3 py-1.5 rounded-lg font-bold text-xs flex items-center justify-center space-x-1.5 transition border border-white/5" title="Admin Portal">
                     <i class="fa-solid fa-lock text-red-500"></i>
                     <span>ADMIN</span>
                 </button>
@@ -64,17 +74,17 @@
     <main class="max-w-5xl mx-auto px-4 py-6 space-y-10">
         
         <!-- ABOUT US -->
-        <section class="space-y-4 bg-[#161822]/40 border border-white/5 p-6 rounded-2xl">
+        <section class="space-y-4 bg-[#161822]/60 backdrop-blur-md border border-white/10 p-6 rounded-2xl shadow-xl">
             <div class="flex items-center space-x-2">
                 <div class="w-1 h-4 bg-red-600"></div>
                 <h2 class="font-black text-sm text-white uppercase tracking-widest">About Us</h2>
             </div>
-            <p class="text-xs md:text-sm text-slate-400 leading-relaxed">
+            <p class="text-xs md:text-sm text-slate-300 leading-relaxed">
                 Rift Raiders began its journey in 2024 as a dedicated competitive team. After a year of climbing the ranks, we expanded in April 2025 by establishing our official guild. Today, we continue to field elite rosters ready to conquer the rift and arena.
             </p>
         </section>
 
-        <!-- ACHIEVEMENTS & MILESTONES (Updated with 2026 Tournaments & The Spirit Showdown) -->
+        <!-- ACHIEVEMENTS & MILESTONES -->
         <section class="space-y-4">
             <div class="flex items-center space-x-2">
                 <div class="w-1 h-4 bg-red-600"></div>
@@ -82,39 +92,45 @@
             </div>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                <!-- Achievement Card 1 -->
-                <div class="bg-[#161822] border border-white/5 rounded-xl overflow-hidden group hover:border-red-500/30 transition">
-                    <div class="h-32 bg-slate-900 overflow-hidden relative">
-                        <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-75" alt="Tournament Win">
-                        <div class="absolute top-2 right-2 bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded uppercase">2026</div>
+                <!-- Achievement Card 1: The Spirit Showdown (Poster Image) -->
+                <div class="bg-[#161822]/80 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden group hover:border-red-500/40 transition shadow-xl flex flex-col">
+                    <div class="h-36 bg-slate-900 overflow-hidden relative">
+                        <img src="https://i.ibb.co/30Zp57h/image-bea890.png" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="The Spirit Showdown">
+                        <div class="absolute top-2 right-2 bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded uppercase shadow">Feb 21, 2026</div>
                     </div>
-                    <div class="p-4 space-y-1">
-                        <h3 class="font-black text-white text-xs uppercase tracking-wider">The Spirit Showdown</h3>
-                        <p class="text-[11px] text-slate-400">Successfully organized and hosted a grassroots esports tournament last February 21, 2026[cite: 6], strengthening the Wild Rift PH community.</p>
-                    </div>
-                </div>
-
-                <!-- Achievement Card 2 -->
-                <div class="bg-[#161822] border border-white/5 rounded-xl overflow-hidden group hover:border-red-500/30 transition">
-                    <div class="h-32 bg-slate-900 overflow-hidden relative">
-                        <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-75" alt="Rank Climb">
-                        <div class="absolute top-2 right-2 bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded uppercase">2024 - 2026</div>
-                    </div>
-                    <div class="p-4 space-y-1">
-                        <h3 class="font-black text-white text-xs uppercase tracking-wider">Elite Roster Dominance</h3>
-                        <p class="text-[11px] text-slate-400">Consistent competitive presence, actively competing in major tournaments across Wild Rift, League of Legends (PC), and Valorant.</p>
+                    <div class="p-4 space-y-1 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-black text-white text-xs uppercase tracking-wider">The Spirit Showdown</h3>
+                            <p class="text-[11px] text-slate-300 mt-1">Successfully organized and hosted a grassroots 5v5 esports tournament last February 21, 2026[cite: 6], showcasing competitive integrity and passion for the Wild Rift PH community.</p>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Achievement Card 3 -->
-                <div class="bg-[#161822] border border-white/5 rounded-xl overflow-hidden group hover:border-red-500/30 transition">
-                    <div class="h-32 bg-slate-900 overflow-hidden relative">
-                        <img src="https://images.unsplash.com/photo-1538481199705-c710c4e965fc?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-75" alt="Community">
-                        <div class="absolute top-2 right-2 bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded uppercase">Expanding</div>
+                <!-- Achievement Card 2: Elite Roster Dominance (Stream Match Image) -->
+                <div class="bg-[#161822]/80 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden group hover:border-red-500/40 transition shadow-xl flex flex-col">
+                    <div class="h-36 bg-slate-900 overflow-hidden relative">
+                        <img src="https://i.ibb.co/6c2W57h/image-bea5c2.png" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="Elite Roster Dominance">
+                        <div class="absolute top-2 right-2 bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded uppercase shadow">2024 - 2026</div>
                     </div>
-                    <div class="p-4 space-y-1">
-                        <h3 class="font-black text-white text-xs uppercase tracking-wider">Community & Guild Growth</h3>
-                        <p class="text-[11px] text-slate-400">Expanded our footprint through official guild structure, content creators, and solid community networks.</p>
+                    <div class="p-4 space-y-1 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-black text-white text-xs uppercase tracking-wider">Elite Roster Dominance</h3>
+                            <p class="text-[11px] text-slate-300 mt-1">Active and consistent competitive presence, battling it out in major tournaments and scrims across Wild Rift, League of Legends (PC), and Valorant.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Achievement Card 3: Community & Guild Growth (Discord Image) -->
+                <div class="bg-[#161822]/80 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden group hover:border-red-500/40 transition shadow-xl flex flex-col">
+                    <div class="h-36 bg-slate-900 overflow-hidden relative">
+                        <img src="https://i.ibb.co/2sZp57h/image-bea547.png" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="Community & Guild Growth">
+                        <div class="absolute top-2 right-2 bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded uppercase shadow">Active</div>
+                    </div>
+                    <div class="p-4 space-y-1 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-black text-white text-xs uppercase tracking-wider">Community & Guild Growth</h3>
+                            <p class="text-[11px] text-slate-300 mt-1">Built robust community networks and active Discord channels to coordinate teams, manage scrims, and unite players.</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -130,14 +146,14 @@
             </div>
             
             <div class="flex gap-2 overflow-x-auto pb-1 text-xs font-bold">
-                <button onclick="filterGame('ALL')" class="game-tab bg-red-600 text-white px-4 py-2 rounded-lg border border-red-500/35 whitespace-nowrap transition">ALL</button>
-                <button onclick="filterGame('Wild Rift')" class="game-tab bg-[#161822] text-slate-400 px-4 py-2 rounded-lg border border-white/5 whitespace-nowrap transition">WILD RIFT</button>
-                <button onclick="filterGame('League of Legends')" class="game-tab bg-[#161822] text-slate-400 px-4 py-2 rounded-lg border border-white/5 whitespace-nowrap transition">LOL PC</button>
-                <button onclick="filterGame('Valorant')" class="game-tab bg-[#161822] text-slate-400 px-4 py-2 rounded-lg border border-white/5 whitespace-nowrap transition">VALORANT</button>
+                <button onclick="filterGame('ALL')" class="game-tab bg-red-600 text-white px-4 py-2 rounded-lg border border-red-500/35 whitespace-nowrap transition shadow">ALL</button>
+                <button onclick="filterGame('Wild Rift')" class="game-tab bg-[#161822]/80 backdrop-blur-md text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition">WILD RIFT</button>
+                <button onclick="filterGame('League of Legends')" class="game-tab bg-[#161822]/80 backdrop-blur-md text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition">LOL PC</button>
+                <button onclick="filterGame('Valorant')" class="game-tab bg-[#161822]/80 backdrop-blur-md text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition">VALORANT</button>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4" id="roster-grid">
-                <div class="text-xs text-slate-500 py-4">Loading rosters...</div>
+                <div class="text-xs text-slate-400 py-4">Loading rosters...</div>
             </div>
         </section>
 
@@ -151,13 +167,13 @@
             </div>
 
             <div class="flex gap-2 overflow-x-auto pb-1 text-xs font-bold">
-                <button onclick="filterMatchGame('ALL')" class="match-tab bg-blue-600 text-white px-4 py-2 rounded-lg border border-blue-500/35 whitespace-nowrap transition">ALL GAMES</button>
-                <button onclick="filterMatchGame('Wild Rift')" class="match-tab bg-[#161822] text-slate-400 px-4 py-2 rounded-lg border border-white/5 whitespace-nowrap transition">WILD RIFT</button>
-                <button onclick="filterMatchGame('League of Legends')" class="match-tab bg-[#161822] text-slate-400 px-4 py-2 rounded-lg border border-white/5 whitespace-nowrap transition">LOL PC</button>
-                <button onclick="filterMatchGame('Valorant')" class="match-tab bg-[#161822] text-slate-400 px-4 py-2 rounded-lg border border-white/5 whitespace-nowrap transition">VALORANT</button>
+                <button onclick="filterMatchGame('ALL')" class="match-tab bg-blue-600 text-white px-4 py-2 rounded-lg border border-blue-500/35 whitespace-nowrap transition shadow">ALL GAMES</button>
+                <button onclick="filterMatchGame('Wild Rift')" class="match-tab bg-[#161822]/80 backdrop-blur-md text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition">WILD RIFT</button>
+                <button onclick="filterMatchGame('League of Legends')" class="match-tab bg-[#161822]/80 backdrop-blur-md text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition">LOL PC</button>
+                <button onclick="filterMatchGame('Valorant')" class="match-tab bg-[#161822]/80 backdrop-blur-md text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition">VALORANT</button>
             </div>
 
-            <div id="match-history-list" class="grid grid-cols-1 gap-3 text-xs text-slate-500">Loading matches...</div>
+            <div id="match-history-list" class="grid grid-cols-1 gap-3 text-xs text-slate-400">Loading matches...</div>
         </section>
 
         <!-- CREATORS & PARTNERS -->
@@ -177,38 +193,38 @@
             <div class="flex flex-wrap items-center justify-start gap-4 py-2" id="partners-grid">Loading partners...</div>
         </section>
 
-        <section class="space-y-4 pt-4 border-t border-white/5">
+        <section class="space-y-4 pt-4 border-t border-white/10">
             <div class="flex items-center space-x-2">
                 <div class="w-1 h-4 bg-red-600"></div>
                 <h2 class="font-black text-sm text-white uppercase tracking-widest">Contact Us</h2>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <a href="https://www.facebook.com/share/19VTbrcjga/" target="_blank" class="bg-[#161822] border border-white/5 hover:border-red-500/30 p-4 rounded-xl flex items-center space-x-3 transition group">
+                <a href="https://www.facebook.com/share/19VTbrcjga/" target="_blank" class="bg-[#161822]/80 backdrop-blur-md border border-white/10 hover:border-red-500/30 p-4 rounded-xl flex items-center space-x-3 transition group shadow-lg">
                     <div class="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 text-lg group-hover:scale-110 transition">
                         <i class="fa-brands fa-facebook-f"></i>
                     </div>
                     <div>
-                        <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Facebook Page</p>
+                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Facebook Page</p>
                         <p class="text-xs font-bold text-slate-200 group-hover:text-white truncate">Rift Raiders FB</p>
                     </div>
                 </a>
 
-                <a href="https://discord.gg/x3M8dZ7fmR" target="_blank" class="bg-[#161822] border border-white/5 hover:border-red-500/30 p-4 rounded-xl flex items-center space-x-3 transition group">
+                <a href="https://discord.gg/x3M8dZ7fmR" target="_blank" class="bg-[#161822]/80 backdrop-blur-md border border-white/10 hover:border-red-500/30 p-4 rounded-xl flex items-center space-x-3 transition group shadow-lg">
                     <div class="w-10 h-10 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 text-lg group-hover:scale-110 transition">
                         <i class="fa-brands fa-discord"></i>
                     </div>
                     <div>
-                        <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Discord Server</p>
+                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Discord Server</p>
                         <p class="text-xs font-bold text-slate-200 group-hover:text-white truncate">Join Community</p>
                     </div>
                 </a>
 
-                <a href="mailto:riftraiders.wr@gmail.com" class="bg-[#161822] border border-white/5 hover:border-red-500/30 p-4 rounded-xl flex items-center space-x-3 transition group">
+                <a href="mailto:riftraiders.wr@gmail.com" class="bg-[#161822]/80 backdrop-blur-md border border-white/10 hover:border-red-500/30 p-4 rounded-xl flex items-center space-x-3 transition group shadow-lg">
                     <div class="w-10 h-10 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 text-lg group-hover:scale-110 transition">
                         <i class="fa-solid fa-envelope"></i>
                     </div>
                     <div>
-                        <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Email Support</p>
+                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Email Support</p>
                         <p class="text-xs font-bold text-slate-200 group-hover:text-white truncate">riftraiders.wr@gmail.com</p>
                     </div>
                 </a>
@@ -216,7 +232,7 @@
         </section>
 
         <section id="admin-dashboard-section" class="hidden space-y-6 pt-6 border-t border-red-500/30">
-            <div class="flex justify-between items-center bg-[#161822] p-4 rounded-xl border border-red-500/40">
+            <div class="flex justify-between items-center bg-[#161822] p-4 rounded-xl border border-red-500/40 shadow-xl">
                 <div class="flex items-center space-x-3">
                     <div class="w-8 h-8 rounded-full bg-red-600/20 border border-red-500/40 flex items-center justify-center font-black text-red-500 text-xs">YOU</div>
                     <div>
@@ -227,17 +243,17 @@
                 <button onclick="lockAdmin()" class="bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/40 px-3 py-1 rounded text-[10px] font-bold">Lock Admin</button>
             </div>
 
-            <div class="bg-[#161822] p-5 rounded-xl border border-white/5 space-y-4">
+            <div class="bg-[#161822] p-5 rounded-xl border border-white/10 space-y-4 shadow-xl">
                 <h3 class="font-black text-xs uppercase text-red-500">0. Edit Website Logo URL</h3>
                 <div>
                     <label class="text-[10px] font-bold text-slate-400 uppercase">Logo Image Link (URL):</label>
-                    <input type="text" id="setting-logo-url" placeholder="https://..." class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
+                    <input type="text" id="setting-logo-url" placeholder="https://..." class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500 text-white">
                 </div>
                 <button onclick="saveSiteLogo()" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Update Logo</button>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bg-[#161822] p-5 rounded-xl border border-white/5 space-y-4">
+                <div class="bg-[#161822] p-5 rounded-xl border border-white/10 space-y-4 shadow-xl">
                     <div class="flex justify-between items-center">
                         <h3 id="player-form-title" class="font-black text-xs uppercase text-red-500">1. Add & Manage Competitive Player</h3>
                         <button id="cancel-edit-btn" onclick="resetPlayerForm()" class="hidden text-[9px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded hover:bg-slate-700">Cancel Edit</button>
@@ -256,26 +272,26 @@
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="text-[10px] font-bold text-slate-400 uppercase">IGN:</label>
-                            <input type="text" id="p-ign" placeholder="e.g. RRS Tyad" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
+                            <input type="text" id="p-ign" placeholder="e.g. RRS Tyad" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500 text-white">
                         </div>
                         <div>
                             <label class="text-[10px] font-bold text-slate-400 uppercase">Tag:</label>
-                            <input type="text" id="p-tag" placeholder="e.g. PH1" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
+                            <input type="text" id="p-tag" placeholder="e.g. PH1" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500 text-white">
                         </div>
                     </div>
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="text-[10px] font-bold text-slate-400 uppercase">Team Name / Tag:</label>
-                            <input type="text" id="p-team" placeholder="e.g. RRS, RFR, RRA" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
+                            <input type="text" id="p-team" placeholder="e.g. RRS, RFR, RRA" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500 text-white">
                         </div>
                         <div>
                             <label class="text-[10px] font-bold text-slate-400 uppercase">Team Logo URL:</label>
-                            <input type="text" id="p-teamlogo" placeholder="https://... logo.png" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
+                            <input type="text" id="p-teamlogo" placeholder="https://... logo.png" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500 text-white">
                         </div>
                     </div>
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 uppercase">Player Role:</label>
-                        <input type="text" id="p-role" placeholder="Baron Lane / Mid / Support" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
+                        <input type="text" id="p-role" placeholder="Baron Lane / Mid / Support" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500 text-white">
                     </div>
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 uppercase">Profile Photo (Auto-Optimized):</label>
@@ -283,13 +299,13 @@
                     </div>
                     <button id="save-player-btn" onclick="addPlayer()" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save Player</button>
                     
-                    <div class="mt-4 pt-3 border-t border-white/5">
+                    <div class="mt-4 pt-3 border-t border-white/10">
                         <p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Existing Players List:</p>
                         <div id="admin-players-list" class="space-y-2 max-h-48 overflow-y-auto"></div>
                     </div>
                 </div>
 
-                <div class="bg-[#161822] p-5 rounded-xl border border-white/5 space-y-4">
+                <div class="bg-[#161822] p-5 rounded-xl border border-white/10 space-y-4 shadow-xl">
                     <div class="flex justify-between items-center">
                         <h3 id="match-form-title" class="font-black text-xs uppercase text-red-500">2. Add / Edit Full 5v5 Match</h3>
                         <button id="cancel-match-edit-btn" onclick="resetMatchForm()" class="hidden text-[9px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded hover:bg-slate-700">Cancel Edit</button>
@@ -332,17 +348,17 @@
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="text-[10px] font-bold text-slate-400 uppercase">Our Team (Blue):</label>
-                            <input type="text" id="m-team" value="Rift Raiders" placeholder="Rift Raiders" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
+                            <input type="text" id="m-team" value="Rift Raiders" placeholder="Rift Raiders" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500 text-white">
                         </div>
                         <div>
                             <label class="text-[10px] font-bold text-slate-400 uppercase">Opponent (Red):</label>
-                            <input type="text" id="m-opp" placeholder="Opponent Team" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
+                            <input type="text" id="m-opp" placeholder="Opponent Team" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500 text-white">
                         </div>
                     </div>
                     <div class="grid grid-cols-3 gap-2">
                         <div>
                             <label class="text-[10px] font-bold text-slate-400 uppercase">Match Score:</label>
-                            <input type="text" id="m-score" placeholder="24 - 11" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
+                            <input type="text" id="m-score" placeholder="24 - 11" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500 text-white">
                         </div>
                         <div>
                             <label class="text-[10px] font-bold text-slate-400 uppercase">Match Type:</label>
@@ -362,10 +378,10 @@
                     </div>
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 uppercase">Date / Time:</label>
-                        <input type="text" id="m-date" placeholder="Wild Rift - 19:53" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500">
+                        <input type="text" id="m-date" placeholder="Wild Rift - 19:53" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500 text-white">
                     </div>
 
-                    <div class="border-t border-white/5 pt-3 space-y-3">
+                    <div class="border-t border-white/10 pt-3 space-y-3">
                         <div class="space-y-1">
                             <div class="flex justify-between items-center">
                                 <label class="text-[9px] text-blue-400 font-bold uppercase">Blue Team Data (IGN | Champ | KDA | Gold | Items)</label>
@@ -385,40 +401,40 @@
 
                     <button id="save-match-btn" onclick="addMatch()" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save 5v5 Scoreboard</button>
                     
-                    <div class="mt-4 pt-3 border-t border-white/5">
+                    <div class="mt-4 pt-3 border-t border-white/10">
                         <p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Existing Matches List:</p>
                         <div id="admin-matches-list" class="space-y-2 max-h-40 overflow-y-auto"></div>
                     </div>
                 </div>
 
-                <div class="bg-[#161822] p-5 rounded-xl border border-white/5 space-y-4">
+                <div class="bg-[#161822] p-5 rounded-xl border border-white/10 space-y-4 shadow-xl">
                     <h3 class="font-black text-xs uppercase text-red-500">3. Add & Manage Content Creator</h3>
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 uppercase">Creator Name:</label>
-                        <input type="text" id="c-name" placeholder="e.g. Creator Name" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1">
+                        <input type="text" id="c-name" placeholder="e.g. Creator Name" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 text-white">
                     </div>
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 uppercase">Game Streamed:</label>
-                        <input type="text" id="c-game" placeholder="e.g. Wild Rift" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1">
+                        <input type="text" id="c-game" placeholder="e.g. Wild Rift" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 text-white">
                     </div>
                     
-                    <div class="space-y-2 bg-[#0b0c10] p-3 rounded-lg border border-white/5">
+                    <div class="space-y-2 bg-[#0b0c10] p-3 rounded-lg border border-white/10">
                         <label class="text-[10px] font-bold text-red-400 uppercase">Social Media Links (Optional):</label>
                         <div>
                             <span class="text-[9px] text-slate-400">Facebook Link:</span>
-                            <input type="text" id="c-fb" placeholder="https://facebook.com/..." class="w-full bg-[#161822] border border-white/10 px-2 py-1.5 rounded text-xs mt-0.5">
+                            <input type="text" id="c-fb" placeholder="https://facebook.com/..." class="w-full bg-[#161822] border border-white/10 px-2 py-1.5 rounded text-xs mt-0.5 text-white">
                         </div>
                         <div>
                             <span class="text-[9px] text-slate-400">YouTube Link:</span>
-                            <input type="text" id="c-yt" placeholder="https://youtube.com/..." class="w-full bg-[#161822] border border-white/10 px-2 py-1.5 rounded text-xs mt-0.5">
+                            <input type="text" id="c-yt" placeholder="https://youtube.com/..." class="w-full bg-[#161822] border border-white/10 px-2 py-1.5 rounded text-xs mt-0.5 text-white">
                         </div>
                         <div>
                             <span class="text-[9px] text-slate-400">TikTok Link:</span>
-                            <input type="text" id="c-tt" placeholder="https://tiktok.com/@..." class="w-full bg-[#161822] border border-white/10 px-2 py-1.5 rounded text-xs mt-0.5">
+                            <input type="text" id="c-tt" placeholder="https://tiktok.com/@..." class="w-full bg-[#161822] border border-white/10 px-2 py-1.5 rounded text-xs mt-0.5 text-white">
                         </div>
                         <div>
                             <span class="text-[9px] text-slate-400">Twitch Link:</span>
-                            <input type="text" id="c-tw" placeholder="https://twitch.tv/..." class="w-full bg-[#161822] border border-white/10 px-2 py-1.5 rounded text-xs mt-0.5">
+                            <input type="text" id="c-tw" placeholder="https://twitch.tv/..." class="w-full bg-[#161822] border border-white/10 px-2 py-1.5 rounded text-xs mt-0.5 text-white">
                         </div>
                     </div>
 
@@ -430,11 +446,11 @@
                     <div id="admin-creators-list" class="space-y-2 max-h-40 overflow-y-auto mt-2"></div>
                 </div>
 
-                <div class="bg-[#161822] p-5 rounded-xl border border-white/5 space-y-4">
+                <div class="bg-[#161822] p-5 rounded-xl border border-white/10 space-y-4 shadow-xl">
                     <h3 class="font-black text-xs uppercase text-red-500">4. Add & Manage Partnership / Sponsor</h3>
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 uppercase">Partner Name:</label>
-                        <input type="text" id="part-name" placeholder="e.g. Brand Name" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1">
+                        <input type="text" id="part-name" placeholder="e.g. Brand Name" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 text-white">
                     </div>
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 uppercase">Logo Image (Auto-Optimized):</label>
@@ -442,7 +458,7 @@
                     </div>
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 uppercase">Link:</label>
-                        <input type="text" id="part-link" placeholder="https://..." class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1">
+                        <input type="text" id="part-link" placeholder="https://..." class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 text-white">
                     </div>
                     <button onclick="addPartner()" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save Partner</button>
                     <div id="admin-partners-list" class="space-y-2 max-h-40 overflow-y-auto mt-2"></div>
@@ -488,7 +504,7 @@
                 </div>
             </div>
 
-            <div class="space-y-3 border-t border-white/5 pt-3">
+            <div class="space-y-3 border-t border-white/10 pt-3">
                 <p id="modal-champs-title" class="text-slate-500 text-[9px] font-bold uppercase tracking-widest">MOST PLAYED CHAMPIONS (TOURNAMENT ONLY)</p>
                 <div id="modal-champs-list" class="space-y-2"></div>
             </div>
@@ -801,9 +817,9 @@
             document.querySelectorAll('.game-tab').forEach(btn => {
                 const text = btn.innerText.toLowerCase();
                 if(text.includes(game.toLowerCase()) || (game === 'ALL' && text === 'all')) {
-                    btn.className = 'game-tab bg-red-600 text-white px-4 py-2 rounded-lg border border-red-500/35 whitespace-nowrap transition';
+                    btn.className = 'game-tab bg-red-600 text-white px-4 py-2 rounded-lg border border-red-500/35 whitespace-nowrap transition shadow';
                 } else {
-                    btn.className = 'game-tab bg-[#161822] text-slate-400 px-4 py-2 rounded-lg border border-white/5 whitespace-nowrap transition';
+                    btn.className = 'game-tab bg-[#161822]/85 text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition';
                 }
             });
             const cards = document.querySelectorAll('#roster-grid [data-player-card]');
@@ -827,9 +843,9 @@
             document.querySelectorAll('.match-tab').forEach(btn => {
                 const text = btn.innerText.toLowerCase();
                 if(text.includes(game.toLowerCase()) || (game === 'ALL' && text.includes('all'))) {
-                    btn.className = 'match-tab bg-blue-600 text-white px-4 py-2 rounded-lg border border-blue-500/35 whitespace-nowrap transition';
+                    btn.className = 'match-tab bg-blue-600 text-white px-4 py-2 rounded-lg border border-blue-500/35 whitespace-nowrap transition shadow';
                 } else {
-                    btn.className = 'match-tab bg-[#161822] text-slate-400 px-4 py-2 rounded-lg border border-white/5 whitespace-nowrap transition';
+                    btn.className = 'match-tab bg-[#161822]/85 text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition';
                 }
             });
             renderMatches();
@@ -860,7 +876,7 @@
 
             grid.innerHTML = '';
             if(allPlayers.length === 0) {
-                grid.innerHTML = '<p class="text-xs text-slate-500 italic py-4 text-center col-span-full">No players found.</p>';
+                grid.innerHTML = '<p class="text-xs text-slate-400 italic py-4 text-center col-span-full">No players found.</p>';
                 return;
             }
 
@@ -876,17 +892,17 @@
                 card.setAttribute('data-player-card', 'true');
                 card.setAttribute('data-player-id', p.id);
                 card.setAttribute('data-game', pGame);
-                card.className = `bg-[#161822] rounded-xl overflow-hidden relative h-64 cursor-pointer group border border-white/5 shadow-md ${isVisible ? '' : 'hidden'}`;
+                card.className = `bg-[#161822]/85 backdrop-blur-md rounded-xl overflow-hidden relative h-64 cursor-pointer group border border-white/10 shadow-xl ${isVisible ? '' : 'hidden'}`;
                 card.onclick = () => openPlayerStatsById(p.id);
 
                 card.innerHTML = `
                     <img src="${imgSrc}" decoding="async" onload="this.classList.add('loaded')" onerror="handleImgError(this, 'player')" class="img-fade w-full h-full object-cover opacity-80 group-hover:scale-105 transition duration-500">
                     <div class="absolute inset-0 bg-gradient-to-t from-[#0b0c10] via-[#0b0c10]/30 to-transparent"></div>
-                    <div data-wr-badge class="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-emerald-400 text-[9px] font-black px-2 py-1 rounded border border-white/15">WR: ${stats.winrate}</div>
+                    <div data-wr-badge class="absolute top-3 right-3 bg-black/70 backdrop-blur-md text-emerald-400 text-[9px] font-black px-2 py-1 rounded border border-white/15 shadow">WR: ${stats.winrate}</div>
                     <div class="absolute bottom-4 left-4 right-4">
-                        <span class="bg-[#ff2a2d] text-white text-[9px] font-black px-2 py-0.5 rounded uppercase">${pGame}</span>
+                        <span class="bg-[#ff2a2d] text-white text-[9px] font-black px-2 py-0.5 rounded uppercase shadow"></span>${pGame}</span>
                         <h3 class="text-white font-black text-xl mt-1 uppercase truncate">${p.ign}</h3>
-                        <p class="text-slate-400 text-[10px] font-bold uppercase mt-1 truncate">${p.team || ''} ${p.role ? '• ' + p.role : ''}</p>
+                        <p class="text-slate-300 text-[10px] font-bold uppercase mt-1 truncate">${p.team || ''} ${p.role ? '• ' + p.role : ''}</p>
                     </div>
                 `;
                 grid.appendChild(card);
@@ -894,7 +910,7 @@
 
             const emptyNote = document.createElement('p');
             emptyNote.id = 'roster-empty-msg';
-            emptyNote.className = `text-xs text-slate-500 italic py-4 text-center col-span-full ${visibleCount > 0 ? 'hidden' : ''}`;
+            emptyNote.className = `text-xs text-slate-400 italic py-4 text-center col-span-full ${visibleCount > 0 ? 'hidden' : ''}`;
             emptyNote.textContent = 'No players found in this category.';
             grid.appendChild(emptyNote);
         }
@@ -960,15 +976,15 @@
                 return m.game && m.game.toLowerCase() === currentMatchFilter.toLowerCase();
             });
 
-            if(keys.length === 0) { list.innerHTML = '<div class="text-xs text-slate-500 italic col-span-full py-4 text-center">No match history found for this category.</div>'; return; }
+            if(keys.length === 0) { list.innerHTML = '<div class="text-xs text-slate-400 italic col-span-full py-4 text-center">No match history found for this category.</div>'; return; }
 
             keys.forEach(key => {
                 const m = allMatches[key];
                 let color = m.result === 'Win' ? 'text-green-400 bg-green-500/10 border-green-500/20' : 'text-red-400 bg-red-500/10 border-red-500/20';
                 list.innerHTML += `
-                    <div onclick="openMatchDetails('${key}')" class="bg-[#161822] border border-white/5 hover:border-blue-500/40 rounded-xl p-4 space-y-2 cursor-pointer transition">
+                    <div onclick="openMatchDetails('${key}')" class="bg-[#161822]/85 backdrop-blur-md border border-white/10 hover:border-blue-500/40 rounded-xl p-4 space-y-2 cursor-pointer transition shadow-xl">
                         <div class="flex justify-between items-center">
-                            <div class="text-[10px] font-bold text-slate-400"><span class="text-blue-400 font-bold uppercase">${m.game || 'Wild Rift'}</span> • ${m.type} • ${m.date || 'Recent'}</div>
+                            <div class="text-[10px] font-bold text-slate-300"><span class="text-blue-400 font-bold uppercase">${m.game || 'Wild Rift'}</span> • ${m.type} • ${m.date || 'Recent'}</div>
                             <div class="px-3 py-0.5 rounded border font-black uppercase text-[10px] ${color}">${m.result}</div>
                         </div>
                         <div class="flex justify-between items-center">
@@ -990,7 +1006,7 @@
 
             grid.innerHTML = '';
             if(allCreators.length === 0) {
-                grid.innerHTML = '<p class="text-xs text-slate-500 italic col-span-full">No content creators added yet.</p>';
+                grid.innerHTML = '<p class="text-xs text-slate-400 italic col-span-full">No content creators added yet.</p>';
                 return;
             }
             allCreators.forEach(c => {
@@ -1003,12 +1019,12 @@
                 const avatarSrc = (c.pfp && c.pfp.trim() !== '') ? c.pfp : FALLBACK_IMAGES.player;
 
                 grid.innerHTML += `
-                    <div class="bg-[#161822] border border-white/5 hover:border-red-500/40 rounded-xl p-4 flex flex-col items-center text-center transition group">
+                    <div class="bg-[#161822]/85 backdrop-blur-md border border-white/10 hover:border-red-500/40 rounded-xl p-4 flex flex-col items-center text-center transition group shadow-xl">
                         <img src="${avatarSrc}" decoding="async" onload="this.classList.add('loaded')" onerror="handleImgError(this, 'player')" class="img-fade w-14 h-14 rounded-full border-2 border-red-500/40 object-cover mb-2 group-hover:scale-105 transition">
                         <h4 class="font-black text-white text-xs uppercase truncate w-full">${c.name}</h4>
-                        <p class="text-[9px] text-slate-400 uppercase mt-0.5 mb-3">${c.game || 'Streamer'}</p>
+                        <p class="text-[9px] text-slate-300 uppercase mt-0.5 mb-3">${c.game || 'Streamer'}</p>
                         <div class="flex items-center justify-center space-x-1.5 mt-auto">
-                            ${iconsHtml || '<span class="text-[9px] text-slate-500 italic">No socials</span>'}
+                            ${iconsHtml || '<span class="text-[9px] text-slate-400 italic">No socials</span>'}
                         </div>
                     </div>
                 `;
@@ -1026,12 +1042,12 @@
             grid.innerHTML = '';
             const partnersList = Object.values(allPartners);
             if (partnersList.length === 0) {
-                grid.innerHTML = '<p class="text-xs text-slate-500 italic">No partners added yet.</p>';
+                grid.innerHTML = '<p class="text-xs text-slate-400 italic">No partners added yet.</p>';
                 return;
             }
             partnersList.forEach(p => {
                 const logoSrc = (p.logo && p.logo.trim() !== '') ? p.logo : FALLBACK_IMAGES.logo;
-                grid.innerHTML += `<a href="${p.link || '#'}" target="_blank" class="bg-[#161822] px-4 py-2.5 rounded-xl border border-white/5 flex items-center space-x-2"><img src="${logoSrc}" decoding="async" onload="this.classList.add('loaded')" onerror="handleImgError(this, 'logo')" class="img-fade h-6 w-auto object-contain"><span class="text-xs font-bold text-slate-300">${p.name || ''}</span></a>`;
+                grid.innerHTML += `<a href="${p.link || '#'}" target="_blank" class="bg-[#161822]/85 backdrop-blur-md px-4 py-2.5 rounded-xl border border-white/10 flex items-center space-x-2 shadow-lg"><img src="${logoSrc}" decoding="async" onload="this.classList.add('loaded')" onerror="handleImgError(this, 'logo')" class="img-fade h-6 w-auto object-contain"><span class="text-xs font-bold text-slate-200">${p.name || ''}</span></a>`;
             });
         }
 
@@ -1039,13 +1055,13 @@
             const container = document.getElementById('admin-players-list');
             if(!container) return;
             container.innerHTML = '';
-            if(allPlayers.length === 0) { container.innerHTML = '<p class="text-[10px] text-slate-500 italic">No players in database.</p>'; return; }
+            if(allPlayers.length === 0) { container.innerHTML = '<p class="text-[10px] text-slate-400 italic">No players in database.</p>'; return; }
             allPlayers.forEach(p => {
                 container.innerHTML += `
-                    <div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/5 text-xs">
+                    <div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/10 text-xs">
                         <div class="truncate pr-2">
-                            <span class="font-bold text-slate-300">${p.ign}</span>
-                            <span class="text-[9px] text-slate-500 ml-1">(${p.game} • ${p.team})</span>
+                            <span class="font-bold text-slate-200">${p.ign}</span>
+                            <span class="text-[9px] text-slate-400 ml-1">(${p.game} • ${p.team})</span>
                         </div>
                         <div class="flex items-center space-x-1 shrink-0">
                             <button onclick="editPlayer('${p.id}')" class="bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 px-2 py-1 rounded text-[10px] font-bold">Edit Profile</button>
@@ -1063,8 +1079,8 @@
             Object.keys(allMatches).forEach(key => {
                 const m = allMatches[key];
                 container.innerHTML += `
-                    <div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/5 text-xs">
-                        <span class="font-bold text-slate-300 truncate">[${m.game || 'Wild Rift'}] ${m.team} vs ${m.opponent}</span>
+                    <div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/10 text-xs">
+                        <span class="font-bold text-slate-200 truncate">[${m.game || 'Wild Rift'}] ${m.team} vs ${m.opponent}</span>
                         <div class="flex items-center space-x-1 shrink-0">
                             <button onclick="editMatch('${key}')" class="bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 px-2 py-1 rounded text-[10px] font-bold">Edit Match</button>
                             <button onclick="deleteItem('matches', '${key}')" class="bg-red-600/20 text-red-400 hover:bg-red-600/30 px-2 py-1 rounded text-[10px] font-bold">Delete</button>
@@ -1078,9 +1094,9 @@
             const container = document.getElementById('admin-creators-list');
             if(!container) return;
             container.innerHTML = '';
-            if(allCreators.length === 0) { container.innerHTML = '<p class="text-[10px] text-slate-500 italic">No creators added.</p>'; return; }
+            if(allCreators.length === 0) { container.innerHTML = '<p class="text-[10px] text-slate-400 italic">No creators added.</p>'; return; }
             allCreators.forEach(c => {
-                container.innerHTML += `<div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/5 text-xs"><span class="font-bold text-slate-300 truncate">${c.name}</span><button onclick="deleteItem('creators', '${c.id}')" class="bg-red-600/20 text-red-400 px-2 py-1 rounded text-[10px]">Delete</button></div>`;
+                container.innerHTML += `<div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/10 text-xs"><span class="font-bold text-slate-200 truncate">${c.name}</span><button onclick="deleteItem('creators', '${c.id}')" class="bg-red-600/20 text-red-400 px-2 py-1 rounded text-[10px]">Delete</button></div>`;
             });
         }
 
@@ -1089,7 +1105,7 @@
             if(!container) return;
             container.innerHTML = '';
             Object.keys(allPartners).forEach(key => {
-                container.innerHTML += `<div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/5 text-xs"><span class="font-bold text-slate-300 truncate">${allPartners[key].name}</span><button onclick="deleteItem('partners', '${key}')" class="bg-red-600/20 text-red-400 px-2 py-1 rounded text-[10px]">Delete</button></div>`;
+                container.innerHTML += `<div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/10 text-xs"><span class="font-bold text-slate-200 truncate">${allPartners[key].name}</span><button onclick="deleteItem('partners', '${key}')" class="bg-red-600/20 text-red-400 px-2 py-1 rounded text-[10px]">Delete</button></div>`;
             });
         }
 
@@ -1402,7 +1418,7 @@
                     const pickPercent = Math.round((data.count / totalPlayerMatches) * 100);
                     const champWr = Math.round((data.wins / data.count) * 100);
                     champsListEl.innerHTML += `
-                        <div class="bg-[#0b0c10] p-2 rounded-xl border border-white/5 flex items-center justify-between text-xs">
+                        <div class="bg-[#0b0c10] p-2 rounded-xl border border-white/10 flex items-center justify-between text-xs">
                             <div class="flex items-center space-x-3">
                                 <img src="${getChampionIconUrl(champ)}" decoding="async" onerror="handleImgError(this, 'champ')" class="w-9 h-9 rounded-lg border border-red-500/40 object-cover">
                                 <div>
@@ -1415,7 +1431,7 @@
                     `;
                 });
             } else {
-                champsListEl.innerHTML = `<p class="text-[10px] text-slate-500 italic">No tournament champions recorded yet.</p>`;
+                champsListEl.innerHTML = `<p class="text-[10px] text-slate-400 italic">No tournament champions recorded yet.</p>`;
             }
 
             const backdrop = document.getElementById('player-modal-backdrop');
@@ -1445,7 +1461,7 @@
 
             const parseRows = (data, isBlue) => {
                 let html = '';
-                if(!data) return '<p class="text-[10px] text-slate-500 italic">No player stats recorded.</p>';
+                if(!data) return '<p class="text-[10px] text-slate-400 italic">No player stats recorded.</p>';
                 data.split('\n').forEach(line => {
                     if(!line.trim()) return;
                     let parts = line.split('|').map(s => s.trim());
@@ -1479,7 +1495,7 @@
                                     <p class="font-black text-slate-200 text-xs leading-none">${kda} <span class="text-[9px] text-slate-400 font-normal">(${gold} Gold)</span></p>
                                 </div>
                             </div>
-                            <div class="flex items-center justify-start space-x-1 pt-1 border-t border-white/5">${itemsHtml}</div>
+                            <div class="flex items-center justify-start space-x-1 pt-1 border-t border-white/10">${itemsHtml}</div>
                         </div>
                     `;
                 });
