@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://ddragon.leagueoflegends.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -24,6 +25,12 @@
             background-size: cover;
             background-attachment: fixed;
             background-position: center;
+        }
+
+        .gaming-font {
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(239, 68, 68, 0.5), 0 0 40px rgba(239, 68, 68, 0.3);
         }
 
         .img-fade {
@@ -70,7 +77,36 @@
         </div>
     </div>
 
-    <main class="max-w-5xl mx-auto px-4 py-6 space-y-10">
+    <main class="max-w-5xl mx-auto px-4 py-6 space-y-8">
+
+        <!-- GAMING BANNER & QUICK JUMP NAVIGATION -->
+        <div class="text-center space-y-4 py-4">
+            <h1 class="gaming-font text-2xl sm:text-4xl lg:text-5xl font-black text-white uppercase tracking-wider">
+                WELCOME TO <span class="text-red-600">RIFT RAIDERS</span> OFFICIAL
+            </h1>
+            <p class="text-xs sm:text-sm text-slate-400 max-w-xl mx-auto">
+                Explore our rosters, match scoreboards, tournament milestones, and latest announcements below.
+            </p>
+
+            <!-- Quick Jump Navigation Buttons -->
+            <div class="flex flex-wrap items-center justify-center gap-2 pt-2">
+                <a href="#about-us-section" class="bg-[#161822]/90 hover:bg-red-600 hover:text-white text-slate-300 border border-white/10 px-3.5 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider transition shadow">
+                    <i class="fa-solid fa-shield-halved mr-1 text-red-500"></i> About Us
+                </a>
+                <a href="#teams-section" class="bg-[#161822]/90 hover:bg-red-600 hover:text-white text-slate-300 border border-white/10 px-3.5 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider transition shadow">
+                    <i class="fa-solid fa-users mr-1 text-red-500"></i> Meet The Teams
+                </a>
+                <a href="#matches-section" class="bg-[#161822]/90 hover:bg-red-600 hover:text-white text-slate-300 border border-white/10 px-3.5 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider transition shadow">
+                    <i class="fa-solid fa-gamepad mr-1 text-blue-500"></i> Match History
+                </a>
+                <a href="#creators-section" class="bg-[#161822]/90 hover:bg-red-600 hover:text-white text-slate-300 border border-white/10 px-3.5 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider transition shadow">
+                    <i class="fa-solid fa-video mr-1 text-purple-500"></i> Creators
+                </a>
+                <a href="#contact-section" class="bg-[#161822]/90 hover:bg-red-600 hover:text-white text-slate-300 border border-white/10 px-3.5 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider transition shadow">
+                    <i class="fa-solid fa-envelope mr-1 text-emerald-500"></i> Contact Us
+                </a>
+            </div>
+        </div>
 
         <!-- NEWS / ANNOUNCEMENTS CAROUSEL -->
         <section id="news-section" class="space-y-3 hidden">
@@ -91,7 +127,7 @@
         </section>
         
         <!-- ABOUT US -->
-        <section class="space-y-4 bg-[#161822]/60 backdrop-blur-md border border-white/10 p-6 rounded-2xl shadow-xl">
+        <section id="about-us-section" class="space-y-4 bg-[#161822]/60 backdrop-blur-md border border-white/10 p-6 rounded-2xl shadow-xl scroll-mt-20">
             <div class="flex items-center space-x-2">
                 <div class="w-1 h-4 bg-red-600"></div>
                 <h2 class="font-black text-sm text-white uppercase tracking-widest">About Us</h2>
@@ -151,7 +187,7 @@
         </section>
 
         <!-- MEET THE TEAMS -->
-        <section class="space-y-4">
+        <section id="teams-section" class="space-y-4 scroll-mt-20">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-2">
                     <div class="w-1 h-4 bg-red-600"></div>
@@ -172,7 +208,7 @@
         </section>
 
         <!-- MATCH HISTORY WITH GAME TABS -->
-        <section class="space-y-4">
+        <section id="matches-section" class="space-y-4 scroll-mt-20">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-2">
                     <div class="w-1 h-4 bg-red-600"></div>
@@ -191,7 +227,7 @@
         </section>
 
         <!-- CREATORS & PARTNERS -->
-        <section class="space-y-4">
+        <section id="creators-section" class="space-y-4 scroll-mt-20">
             <div class="flex items-center space-x-2">
                 <div class="w-1 h-4 bg-red-600"></div>
                 <h2 class="font-black text-sm text-white uppercase tracking-widest">Meet The Creators</h2>
@@ -207,7 +243,7 @@
             <div class="flex flex-wrap items-center justify-start gap-4 py-2" id="partners-grid">Loading partners...</div>
         </section>
 
-        <section class="space-y-4 pt-4 border-t border-white/10">
+        <section id="contact-section" class="space-y-4 pt-4 border-t border-white/10 scroll-mt-20">
             <div class="flex items-center space-x-2">
                 <div class="w-1 h-4 bg-red-600"></div>
                 <h2 class="font-black text-sm text-white uppercase tracking-widest">Contact Us</h2>
@@ -675,7 +711,6 @@
 
         window.addEventListener('mouseup', () => { cropState.isDragging = false; });
 
-        // Touch support for mobile
         viewport.addEventListener('touchstart', (e) => {
             if(e.touches.length === 1) {
                 cropState.isDragging = true;
@@ -699,8 +734,7 @@
                     cropState.scale = 1;
                     document.getElementById('crop-zoom').value = 1;
                     
-                    // Center initial position
-                    const vSize = 192; // 192px viewport
+                    const vSize = 192;
                     let baseScale = Math.max(vSize / cropState.imgObj.width, vSize / cropState.imgObj.height);
                     cropState.scale = baseScale;
                     document.getElementById('crop-zoom').min = baseScale;
@@ -740,11 +774,10 @@
             canvas.height = 400;
             const ctx = canvas.getContext('2d');
             
-            const vSize = 192; // Viewport size in CSS pixels
+            const vSize = 192;
             const renderW = cropState.imgObj.width * cropState.scale;
             const renderH = cropState.imgObj.height * cropState.scale;
 
-            // Calculate source coordinates based on viewport translation
             let sx = (-cropState.posX / renderW) * cropState.imgObj.width;
             let sy = (-cropState.posY / renderH) * cropState.imgObj.height;
             let sSize = (vSize / renderW) * cropState.imgObj.width;
