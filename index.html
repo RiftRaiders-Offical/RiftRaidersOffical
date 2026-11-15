@@ -18,10 +18,10 @@
         ::-webkit-scrollbar-thumb:hover { background: #ef4444; }
 
         body {
-            /* HD Background inspired by image_be99e5.png without T1 logo */
+            /* HD Background inspired by the purple/blue smoke theme */
             background-color: #0b0c14;
             background-image: linear-gradient(to bottom, rgba(11, 12, 20, 0.85), rgba(7, 8, 12, 0.95)), 
-                              url('https://i.ibb.co/6R7QW3L/79923.jpg'); /* Fallback pattern/logo */
+                              url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=1920&auto=format&fit=crop');
             background-size: cover;
             background-attachment: fixed;
             background-position: center;
@@ -92,8 +92,8 @@
             </div>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                <!-- Achievement Card 1: The Spirit Showdown (Poster Image) -->
-                <div class="bg-[#161822]/80 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden group hover:border-red-500/40 transition shadow-xl flex flex-col">
+                <!-- Achievement Card 1: The Spirit Showdown (Poster) -->
+                <div class="bg-[#161822]/85 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden group hover:border-red-500/40 transition shadow-xl flex flex-col">
                     <div class="h-36 bg-slate-900 overflow-hidden relative">
                         <img src="https://i.ibb.co/30Zp57h/image-bea890.png" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="The Spirit Showdown">
                         <div class="absolute top-2 right-2 bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded uppercase shadow">Feb 21, 2026</div>
@@ -106,8 +106,8 @@
                     </div>
                 </div>
 
-                <!-- Achievement Card 2: Elite Roster Dominance (Stream Match Image) -->
-                <div class="bg-[#161822]/80 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden group hover:border-red-500/40 transition shadow-xl flex flex-col">
+                <!-- Achievement Card 2: Elite Roster Dominance (Stream Setup) -->
+                <div class="bg-[#161822]/85 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden group hover:border-red-500/40 transition shadow-xl flex flex-col">
                     <div class="h-36 bg-slate-900 overflow-hidden relative">
                         <img src="https://i.ibb.co/6c2W57h/image-bea5c2.png" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="Elite Roster Dominance">
                         <div class="absolute top-2 right-2 bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded uppercase shadow">2024 - 2026</div>
@@ -115,13 +115,13 @@
                     <div class="p-4 space-y-1 flex-1 flex flex-col justify-between">
                         <div>
                             <h3 class="font-black text-white text-xs uppercase tracking-wider">Elite Roster Dominance</h3>
-                            <p class="text-[11px] text-slate-300 mt-1">Active and consistent competitive presence, battling it out in major tournaments and scrims across Wild Rift, League of Legends (PC), and Valorant.</p>
+                            <p class="text-[11px] text-slate-300 mt-1">Active and consistent competitive presence, battling it out in major tournaments and live matches across Wild Rift, League of Legends (PC), and Valorant.</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Achievement Card 3: Community & Guild Growth (Discord Image) -->
-                <div class="bg-[#161822]/80 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden group hover:border-red-500/40 transition shadow-xl flex flex-col">
+                <!-- Achievement Card 3: Community & Guild Growth (Discord) -->
+                <div class="bg-[#161822]/85 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden group hover:border-red-500/40 transition shadow-xl flex flex-col">
                     <div class="h-36 bg-slate-900 overflow-hidden relative">
                         <img src="https://i.ibb.co/2sZp57h/image-bea547.png" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="Community & Guild Growth">
                         <div class="absolute top-2 right-2 bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded uppercase shadow">Active</div>
@@ -147,9 +147,9 @@
             
             <div class="flex gap-2 overflow-x-auto pb-1 text-xs font-bold">
                 <button onclick="filterGame('ALL')" class="game-tab bg-red-600 text-white px-4 py-2 rounded-lg border border-red-500/35 whitespace-nowrap transition shadow">ALL</button>
-                <button onclick="filterGame('Wild Rift')" class="game-tab bg-[#161822]/80 backdrop-blur-md text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition">WILD RIFT</button>
-                <button onclick="filterGame('League of Legends')" class="game-tab bg-[#161822]/80 backdrop-blur-md text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition">LOL PC</button>
-                <button onclick="filterGame('Valorant')" class="game-tab bg-[#161822]/80 backdrop-blur-md text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition">VALORANT</button>
+                <button onclick="filterGame('Wild Rift')" class="game-tab bg-[#161822]/85 backdrop-blur-md text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition">WILD RIFT</button>
+                <button onclick="filterGame('League of Legends')" class="game-tab bg-[#161822]/85 backdrop-blur-md text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition">LOL PC</button>
+                <button onclick="filterGame('Valorant')" class="game-tab bg-[#161822]/85 backdrop-blur-md text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition">VALORANT</button>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4" id="roster-grid">
@@ -168,9 +168,9 @@
 
             <div class="flex gap-2 overflow-x-auto pb-1 text-xs font-bold">
                 <button onclick="filterMatchGame('ALL')" class="match-tab bg-blue-600 text-white px-4 py-2 rounded-lg border border-blue-500/35 whitespace-nowrap transition shadow">ALL GAMES</button>
-                <button onclick="filterMatchGame('Wild Rift')" class="match-tab bg-[#161822]/80 backdrop-blur-md text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition">WILD RIFT</button>
-                <button onclick="filterMatchGame('League of Legends')" class="match-tab bg-[#161822]/80 backdrop-blur-md text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition">LOL PC</button>
-                <button onclick="filterMatchGame('Valorant')" class="match-tab bg-[#161822]/80 backdrop-blur-md text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition">VALORANT</button>
+                <button onclick="filterMatchGame('Wild Rift')" class="match-tab bg-[#161822]/85 backdrop-blur-md text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition">WILD RIFT</button>
+                <button onclick="filterMatchGame('League of Legends')" class="match-tab bg-[#161822]/85 backdrop-blur-md text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition">LOL PC</button>
+                <button onclick="filterMatchGame('Valorant')" class="match-tab bg-[#161822]/85 backdrop-blur-md text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition">VALORANT</button>
             </div>
 
             <div id="match-history-list" class="grid grid-cols-1 gap-3 text-xs text-slate-400">Loading matches...</div>
@@ -199,7 +199,7 @@
                 <h2 class="font-black text-sm text-white uppercase tracking-widest">Contact Us</h2>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <a href="https://www.facebook.com/share/19VTbrcjga/" target="_blank" class="bg-[#161822]/80 backdrop-blur-md border border-white/10 hover:border-red-500/30 p-4 rounded-xl flex items-center space-x-3 transition group shadow-lg">
+                <a href="https://www.facebook.com/share/19VTbrcjga/" target="_blank" class="bg-[#161822]/85 backdrop-blur-md border border-white/10 hover:border-red-500/30 p-4 rounded-xl flex items-center space-x-3 transition group shadow-lg">
                     <div class="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 text-lg group-hover:scale-110 transition">
                         <i class="fa-brands fa-facebook-f"></i>
                     </div>
@@ -209,7 +209,7 @@
                     </div>
                 </a>
 
-                <a href="https://discord.gg/x3M8dZ7fmR" target="_blank" class="bg-[#161822]/80 backdrop-blur-md border border-white/10 hover:border-red-500/30 p-4 rounded-xl flex items-center space-x-3 transition group shadow-lg">
+                <a href="https://discord.gg/x3M8dZ7fmR" target="_blank" class="bg-[#161822]/85 backdrop-blur-md border border-white/10 hover:border-red-500/30 p-4 rounded-xl flex items-center space-x-3 transition group shadow-lg">
                     <div class="w-10 h-10 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 text-lg group-hover:scale-110 transition">
                         <i class="fa-brands fa-discord"></i>
                     </div>
@@ -219,7 +219,7 @@
                     </div>
                 </a>
 
-                <a href="mailto:riftraiders.wr@gmail.com" class="bg-[#161822]/80 backdrop-blur-md border border-white/10 hover:border-red-500/30 p-4 rounded-xl flex items-center space-x-3 transition group shadow-lg">
+                <a href="mailto:riftraiders.wr@gmail.com" class="bg-[#161822]/85 backdrop-blur-md border border-white/10 hover:border-red-500/30 p-4 rounded-xl flex items-center space-x-3 transition group shadow-lg">
                     <div class="w-10 h-10 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 text-lg group-hover:scale-110 transition">
                         <i class="fa-solid fa-envelope"></i>
                     </div>
@@ -900,7 +900,7 @@
                     <div class="absolute inset-0 bg-gradient-to-t from-[#0b0c10] via-[#0b0c10]/30 to-transparent"></div>
                     <div data-wr-badge class="absolute top-3 right-3 bg-black/70 backdrop-blur-md text-emerald-400 text-[9px] font-black px-2 py-1 rounded border border-white/15 shadow">WR: ${stats.winrate}</div>
                     <div class="absolute bottom-4 left-4 right-4">
-                        <span class="bg-[#ff2a2d] text-white text-[9px] font-black px-2 py-0.5 rounded uppercase shadow"></span>${pGame}</span>
+                        <span class="bg-[#ff2a2d] text-white text-[9px] font-black px-2 py-0.5 rounded uppercase shadow">${pGame}</span>
                         <h3 class="text-white font-black text-xl mt-1 uppercase truncate">${p.ign}</h3>
                         <p class="text-slate-300 text-[10px] font-bold uppercase mt-1 truncate">${p.team || ''} ${p.role ? '• ' + p.role : ''}</p>
                     </div>
