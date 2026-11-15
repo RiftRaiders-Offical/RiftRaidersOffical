@@ -63,6 +63,7 @@
 
     <main class="max-w-5xl mx-auto px-4 py-6 space-y-10">
         
+        <!-- ABOUT US -->
         <section class="space-y-4 bg-[#161822]/40 border border-white/5 p-6 rounded-2xl">
             <div class="flex items-center space-x-2">
                 <div class="w-1 h-4 bg-red-600"></div>
@@ -73,6 +74,53 @@
             </p>
         </section>
 
+        <!-- ACHIEVEMENTS & MILESTONES (Bagong Dagdag sa Ibaba ng About Us) -->
+        <section class="space-y-4">
+            <div class="flex items-center space-x-2">
+                <div class="w-1 h-4 bg-red-600"></div>
+                <h2 class="font-black text-sm text-white uppercase tracking-widest">Guild Achievements & Milestones</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <!-- Achievement Card 1 -->
+                <div class="bg-[#161822] border border-white/5 rounded-xl overflow-hidden group hover:border-red-500/30 transition">
+                    <div class="h-32 bg-slate-900 overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-75" alt="Tournament Win">
+                        <div class="absolute top-2 right-2 bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded uppercase">2025</div>
+                    </div>
+                    <div class="p-4 space-y-1">
+                        <h3 class="font-black text-white text-xs uppercase tracking-wider">Official Guild Launch</h3>
+                        <p class="text-[11px] text-slate-400">Expanded our competitive roots into a full-pledged multi-game guild structure.</p>
+                    </div>
+                </div>
+
+                <!-- Achievement Card 2 -->
+                <div class="bg-[#161822] border border-white/5 rounded-xl overflow-hidden group hover:border-red-500/30 transition">
+                    <div class="h-32 bg-slate-900 overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-75" alt="Rank Climb">
+                        <div class="absolute top-2 right-2 bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded uppercase">2024 - 2025</div>
+                    </div>
+                    <div class="p-4 space-y-1">
+                        <h3 class="font-black text-white text-xs uppercase tracking-wider">Elite Roster Dominance</h3>
+                        <p class="text-[11px] text-slate-400">Consistent top-tier tournament finishes across Wild Rift and League PC scrims.</p>
+                    </div>
+                </div>
+
+                <!-- Achievement Card 3 -->
+                <div class="bg-[#161822] border border-white/5 rounded-xl overflow-hidden group hover:border-red-500/30 transition">
+                    <div class="h-32 bg-slate-900 overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1538481199705-c710c4e965fc?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-75" alt="Community">
+                        <div class="absolute top-2 right-2 bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded uppercase">Growing</div>
+                    </div>
+                    <div class="p-4 space-y-1">
+                        <h3 class="font-black text-white text-xs uppercase tracking-wider">Community & Partners</h3>
+                        <p class="text-[11px] text-slate-400">Built active content creator partnerships and dedicated community networks.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MEET THE TEAMS -->
         <section class="space-y-4">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-2">
@@ -93,6 +141,7 @@
             </div>
         </section>
 
+        <!-- MATCH HISTORY WITH GAME TABS -->
         <section class="space-y-4">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-2">
@@ -111,6 +160,7 @@
             <div id="match-history-list" class="grid grid-cols-1 gap-3 text-xs text-slate-500">Loading matches...</div>
         </section>
 
+        <!-- CREATORS & PARTNERS -->
         <section class="space-y-4">
             <div class="flex items-center space-x-2">
                 <div class="w-1 h-4 bg-red-600"></div>
@@ -584,38 +634,16 @@
             let clean = rawName.toLowerCase().replace(/['\s]/g, '').replace(/[^a-z0-9]/g, '');
             
             const champMap = {
-                'kaisa': 'KaiSa',
-                'khazix': 'KhaZix',
-                'chogath': 'ChoGath',
-                'velkoz': 'Velkoz',
-                'wukong': 'MonkeyKing',
-                'monkeyking': 'MonkeyKing',
-                'jarvan': 'JarvanIV',
-                'jarvaniv': 'JarvanIV',
-                'missfortune': 'MissFortune',
-                'mf': 'MissFortune',
-                'twistedfate': 'TwistedFate',
-                'tf': 'TwistedFate',
-                'drmundo': 'DrMundo',
-                'mundo': 'DrMundo',
-                'masteryi': 'MasterYi',
-                'leesin': 'LeeSin',
-                'xinzhao': 'XinZhao',
-                'tahmkench': 'TahmKench',
-                'aurelionsol': 'AurelionSol',
-                'asol': 'AurelionSol',
-                'renata': 'Renata',
-                'renataglasc': 'Renata',
-                'nunu': 'Nunu',
-                'ambessa': 'Ambessa',
-                'aurora': 'Aurora',
-                'ornn': 'Ornn',
-                'orn': 'Ornn',
-                'belveth': 'Belveth',
-                'ksante': 'KSante',
-                'reksai': 'RekSai',
-                'kogmaw': 'KogMaw',
-                'leblanc': 'Leblanc'
+                'kaisa': 'KaiSa', 'khazix': 'KhaZix', 'chogath': 'ChoGath',
+                'velkoz': 'Velkoz', 'wukong': 'MonkeyKing', 'monkeyking': 'MonkeyKing',
+                'jarvan': 'JarvanIV', 'jarvaniv': 'JarvanIV', 'missfortune': 'MissFortune',
+                'mf': 'MissFortune', 'twistedfate': 'TwistedFate', 'tf': 'TwistedFate',
+                'drmundo': 'DrMundo', 'mundo': 'DrMundo', 'masteryi': 'MasterYi',
+                'leesin': 'LeeSin', 'xinzhao': 'XinZhao', 'tahmkench': 'TahmKench',
+                'aurelionsol': 'AurelionSol', 'asol': 'AurelionSol', 'renata': 'Renata',
+                'renataglasc': 'Renata', 'nunu': 'Nunu', 'ambessa': 'Ambessa',
+                'aurora': 'Aurora', 'ornn': 'Ornn', 'orn': 'Ornn', 'belveth': 'Belveth',
+                'ksante': 'KSante', 'reksai': 'RekSai', 'kogmaw': 'KogMaw', 'leblanc': 'Leblanc'
             };
 
             let formattedName = champMap[clean] || (rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase().replace(/['\s]/g, ''));
@@ -871,7 +899,6 @@
             grid.appendChild(emptyNote);
         }
 
-        // STRICT STATS CALCULATOR: Only counts matches that strictly match the player's game category (Wild Rift vs League of Legends)
         function calculatePlayerTournamentStats(player) {
             if (!player || !allMatches) return { wins: 0, losses: 0, winrate: '0%' };
             const pIgn = (player.ign || '').trim().toLowerCase();
@@ -883,7 +910,6 @@
             Object.values(allMatches).forEach(m => {
                 if (!m.type || m.type.trim().toLowerCase() !== 'tournament') return;
                 
-                // Siguraduhing tugma ang game category (Wild Rift match ay para sa Wild Rift player lang, LoL PC sa LoL PC lang)
                 const mGame = (m.game || 'Wild Rift').trim().toLowerCase();
                 if (mGame !== pGame) return;
 
@@ -1041,7 +1067,7 @@
                         <span class="font-bold text-slate-300 truncate">[${m.game || 'Wild Rift'}] ${m.team} vs ${m.opponent}</span>
                         <div class="flex items-center space-x-1 shrink-0">
                             <button onclick="editMatch('${key}')" class="bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 px-2 py-1 rounded text-[10px] font-bold">Edit Match</button>
-                            <button onclick="deleteItem('matches', '${key}')" class="bg-red-600/20 text-red-400 hover:bg-red-600/30 px-2 py-1 rounded text-[10px] font-bold">Delete</button>
+                            <button onclick="deleteItem('matches', '${key}')" class="bg-red-600/20 text-red-400 px-2 py-1 rounded text-[10px] font-bold">Delete</button>
                         </div>
                     </div>
                 `;
