@@ -18,7 +18,6 @@
         ::-webkit-scrollbar-thumb:hover { background: #ef4444; }
 
         body {
-            /* Updated Website Background */
             background-color: #0b0c14;
             background-image: linear-gradient(to bottom, rgba(11, 12, 20, 0.85), rgba(7, 8, 12, 0.95)), 
                               url('https://basepic.com/SvemRWV6/b92d00df-c182-4e99-8fea-c19d638676f0.jpg');
@@ -72,6 +71,26 @@
     </div>
 
     <main class="max-w-5xl mx-auto px-4 py-6 space-y-10">
+
+        <!-- NEWS / ANNOUNCEMENTS CAROUSEL (TAAS NG ABOUT US) -->
+        <section id="news-section" class="space-y-3 hidden">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <div class="w-1 h-4 bg-red-600"></div>
+                    <h2 class="font-black text-sm text-white uppercase tracking-widest">News & Announcements</h2>
+                </div>
+                <div class="flex items-center space-x-1" id="news-nav-controls">
+                    <button onclick="prevNewsSlide()" class="w-7 h-7 rounded-lg bg-[#161822] border border-white/10 hover:bg-slate-800 text-slate-300 flex items-center justify-center transition"><i class="fa-solid fa-chevron-left text-xs"></i></button>
+                    <button onclick="nextNewsSlide()" class="w-7 h-7 rounded-lg bg-[#161822] border border-white/10 hover:bg-slate-800 text-slate-300 flex items-center justify-center transition"><i class="fa-solid fa-chevron-right text-xs"></i></button>
+                </div>
+            </div>
+
+            <div class="relative overflow-hidden rounded-2xl border border-white/10 bg-[#161822]/85 backdrop-blur-md shadow-xl">
+                <div id="news-carousel-container" class="flex transition-transform duration-300 ease-in-out">
+                    <!-- Dynamic News Slides -->
+                </div>
+            </div>
+        </section>
         
         <!-- ABOUT US -->
         <section class="space-y-4 bg-[#161822]/60 backdrop-blur-md border border-white/10 p-6 rounded-2xl shadow-xl">
@@ -92,7 +111,6 @@
             </div>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                <!-- Achievement Card 1: The Spirit Showdown -->
                 <div class="bg-[#161822]/85 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden group hover:border-red-500/40 transition shadow-xl flex flex-col">
                     <div class="h-36 bg-slate-900 overflow-hidden relative">
                         <img src="https://basepic.com/3CE5wRff/54a869d5-12fa-4e33-b0e9-346c65b6c21f.png" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="The Spirit Showdown">
@@ -106,7 +124,6 @@
                     </div>
                 </div>
 
-                <!-- Achievement Card 2: Elite Roster Dominance -->
                 <div class="bg-[#161822]/85 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden group hover:border-red-500/40 transition shadow-xl flex flex-col">
                     <div class="h-36 bg-slate-900 overflow-hidden relative">
                         <img src="https://basepic.com/FJ4BMxde/7c7ec39d-c3d2-4c91-a96e-c45d2b9a4343.png" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="Elite Roster Dominance">
@@ -120,7 +137,6 @@
                     </div>
                 </div>
 
-                <!-- Achievement Card 3: Community & Guild Growth -->
                 <div class="bg-[#161822]/85 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden group hover:border-red-500/40 transition shadow-xl flex flex-col">
                     <div class="h-36 bg-slate-900 overflow-hidden relative">
                         <img src="https://basepic.com/UZKYBjWe/b92d00df-c182-4e99-8fea-c19d638676f0.jpg" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="Community & Guild Growth" onerror="this.src='https://basepic.com/UZKYBjWe'">
@@ -231,16 +247,42 @@
             </div>
         </section>
 
+        <!-- ADMIN DASHBOARD -->
         <section id="admin-dashboard-section" class="hidden space-y-6 pt-6 border-t border-red-500/30">
             <div class="flex justify-between items-center bg-[#161822] p-4 rounded-xl border border-red-500/40 shadow-xl">
                 <div class="flex items-center space-x-3">
                     <div class="w-8 h-8 rounded-full bg-red-600/20 border border-red-500/40 flex items-center justify-center font-black text-red-500 text-xs">YOU</div>
                     <div>
                         <h3 class="text-white font-black text-xs uppercase tracking-wider">Admin Dashboard Unlocked</h3>
-                        <p class="text-[9px] text-slate-400">Management Panel Active • Auto Image Compression Enabled</p>
+                        <p class="text-[9px] text-slate-400">Management Panel Active • Auto Image Cropping & Compression</p>
                     </div>
                 </div>
                 <button onclick="lockAdmin()" class="bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/40 px-3 py-1 rounded text-[10px] font-bold">Lock Admin</button>
+            </div>
+
+            <!-- NEWS / ANNOUNCEMENT ADMIN PANEL -->
+            <div class="bg-[#161822] p-5 rounded-xl border border-white/10 space-y-4 shadow-xl">
+                <h3 class="font-black text-xs uppercase text-red-500">Manage News & Announcements</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">News Title:</label>
+                        <input type="text" id="n-title" placeholder="e.g. Tournament Announcement" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 text-white">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">Working Link (Optional):</label>
+                        <input type="text" id="n-link" placeholder="https://..." class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 text-white">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase">Announcement Description / Details:</label>
+                    <textarea id="n-desc" rows="3" placeholder="Ilagay ang detalye ng balita rito..." class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 text-slate-300"></textarea>
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase">News Photo (Auto-Optimized):</label>
+                    <input type="file" id="n-img" accept="image/*" class="w-full text-xs text-slate-400 mt-1">
+                </div>
+                <button onclick="addNews()" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Publish Announcement</button>
+                <div id="admin-news-list" class="space-y-2 max-h-40 overflow-y-auto mt-2"></div>
             </div>
 
             <div class="bg-[#161822] p-5 rounded-xl border border-white/10 space-y-4 shadow-xl">
@@ -294,7 +336,7 @@
                         <input type="text" id="p-role" placeholder="Baron Lane / Mid / Support" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500 text-white">
                     </div>
                     <div>
-                        <label class="text-[10px] font-bold text-slate-400 uppercase">Profile Photo (Auto-Optimized):</label>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">Profile Photo (Auto-Cropped Square):</label>
                         <input type="file" id="p-pfp" accept="image/*" class="w-full text-xs text-slate-400 mt-1">
                     </div>
                     <button id="save-player-btn" onclick="addPlayer()" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save Player</button>
@@ -439,7 +481,7 @@
                     </div>
 
                     <div>
-                        <label class="text-[10px] font-bold text-slate-400 uppercase">Profile Photo (Auto-Optimized):</label>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">Profile Photo (Auto-Cropped):</label>
                         <input type="file" id="c-pfp" accept="image/*" class="w-full text-xs text-slate-400 mt-1">
                     </div>
                     <button onclick="addCreator()" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save Creator</button>
@@ -467,6 +509,17 @@
         </section>
     </main>
 
+    <!-- NEWS DETAILS MODAL -->
+    <div id="news-modal-backdrop" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 hidden transition-opacity duration-300">
+        <div class="bg-[#121212] border border-red-600/30 rounded-2xl p-6 w-full max-w-lg shadow-2xl relative">
+            <button onclick="closeNewsModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white w-7 h-7 flex items-center justify-center bg-white/5 rounded-full">✕</button>
+            <div id="news-modal-content" class="space-y-4">
+                <!-- Dynamically Populated -->
+            </div>
+        </div>
+    </div>
+
+    <!-- PLAYER STATS MODAL -->
     <div id="player-modal-backdrop" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 hidden transition-opacity duration-300">
         <div id="player-modal-card" class="bg-[#121212] border border-red-600/30 rounded-2xl p-5 w-full max-w-md shadow-[0_0_30px_rgba(255,42,45,0.15)] relative transform scale-95 opacity-0 transition-all duration-300 max-h-[90vh] overflow-y-auto">
             <button onclick="closePlayerStats()" class="absolute top-4 right-4 text-slate-500 hover:text-white w-6 h-6 flex items-center justify-center bg-white/5 rounded-full">✕</button>
@@ -511,6 +564,7 @@
         </div>
     </div>
 
+    <!-- MATCH DETAILS MODAL -->
     <div id="match-modal-backdrop" class="fixed inset-0 bg-black/95 flex items-center justify-center z-50 p-2 sm:p-4 hidden transition-opacity duration-300">
         <div id="match-modal-card" class="bg-[#0b0c10] border border-blue-500/30 rounded-2xl p-4 sm:p-6 w-full max-w-4xl shadow-[0_0_50px_rgba(37,99,235,0.2)] relative transform scale-95 opacity-0 transition-all duration-300 space-y-4 max-h-[95vh] overflow-y-auto">
             <button onclick="closeMatchModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white w-7 h-7 flex items-center justify-center bg-white/10 rounded-full">✕</button>
@@ -569,7 +623,35 @@
             preloadedUrls.set(url, img);
         }
 
-        function fileToCompressedBase64(file, maxSize = 420, quality = 0.78) {
+        /* AUTO CROP & COMPRESS FOR PLAYER / CREATOR PROFILES */
+        function fileToCroppedSquareBase64(file, size = 400, quality = 0.8) {
+            return new Promise((resolve) => {
+                if (!file) { resolve(''); return; }
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = size;
+                        canvas.height = size;
+                        const ctx = canvas.getContext('2d');
+                        
+                        let sWidth = Math.min(img.width, img.height);
+                        let sX = (img.width - sWidth) / 2;
+                        let sY = (img.height - sWidth) / 2;
+
+                        ctx.drawImage(img, sX, sY, sWidth, sWidth, 0, 0, size, size);
+                        resolve(canvas.toDataURL('image/jpeg', quality));
+                    };
+                    img.onerror = () => resolve(e.target.result || '');
+                    img.src = e.target.result;
+                };
+                reader.onerror = () => resolve('');
+            });
+        }
+
+        function fileToCompressedBase64(file, maxSize = 800, quality = 0.8) {
             return new Promise((resolve) => {
                 if (!file) { resolve(''); return; }
                 const reader = new FileReader();
@@ -618,6 +700,8 @@
         let allMatches = {};
         let allCreators = [];
         let allPartners = {};
+        let allNews = [];
+        let currentNewsIndex = 0;
         let currentGameFilter = 'ALL';
         let currentMatchFilter = 'ALL';
         let lastRosterSignature = '';
@@ -812,6 +896,136 @@
             renderAdminPartners();
         });
 
+        db.ref('news').on('value', snap => {
+            allNews = [];
+            if(snap.exists()) {
+                snap.forEach(child => {
+                    const n = { id: child.key, ...child.val() };
+                    allNews.push(n);
+                });
+            }
+            renderNewsCarousel();
+            renderAdminNews();
+        });
+
+        function renderNewsCarousel() {
+            const section = document.getElementById('news-section');
+            const container = document.getElementById('news-carousel-container');
+            const controls = document.getElementById('news-nav-controls');
+            if(!section || !container) return;
+
+            if(allNews.length === 0) {
+                section.classList.add('hidden');
+                return;
+            }
+
+            section.classList.remove('hidden');
+            if(allNews.length <= 1) {
+                if(controls) controls.classList.add('hidden');
+            } else {
+                if(controls) controls.classList.remove('hidden');
+            }
+
+            if(currentNewsIndex >= allNews.length) currentNewsIndex = 0;
+
+            container.innerHTML = '';
+            allNews.forEach((news, idx) => {
+                const activeClass = idx === currentNewsIndex ? 'block' : 'hidden';
+                container.innerHTML += `
+                    <div class="news-slide w-full shrink-0 ${activeClass} cursor-pointer group" onclick="openNewsModal('${news.id}')">
+                        <div class="grid grid-cols-1 md:grid-cols-3">
+                            <div class="h-48 md:h-52 bg-slate-900 overflow-hidden relative">
+                                <img src="${news.img || FALLBACK_IMAGES.logo}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                                <div class="absolute top-2 left-2 bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded uppercase shadow">ANNOUNCEMENT</div>
+                            </div>
+                            <div class="md:col-span-2 p-5 flex flex-col justify-between space-y-3">
+                                <div>
+                                    <h3 class="font-black text-white text-base md:text-lg uppercase tracking-wider group-hover:text-red-500 transition">${news.title}</h3>
+                                    <p class="text-xs text-slate-300 mt-2 line-clamp-3 leading-relaxed">${news.desc}</p>
+                                </div>
+                                <div class="flex items-center justify-between pt-2 border-t border-white/10">
+                                    <span class="text-[10px] text-red-400 font-bold uppercase flex items-center space-x-1">
+                                        <span>Read Full Details & Link</span>
+                                        <i class="fa-solid fa-arrow-right"></i>
+                                    </span>
+                                    <span class="text-[10px] text-slate-400">${idx + 1} of ${allNews.length}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function nextNewsSlide() {
+            if (allNews.length <= 1) return;
+            currentNewsIndex = (currentNewsIndex + 1) % allNews.length;
+            renderNewsCarousel();
+        }
+
+        function prevNewsSlide() {
+            if (allNews.length <= 1) return;
+            currentNewsIndex = (currentNewsIndex - 1 + allNews.length) % allNews.length;
+            renderNewsCarousel();
+        }
+
+        function openNewsModal(id) {
+            const news = allNews.find(n => n.id === id);
+            if(!news) return;
+
+            const modalContent = document.getElementById('news-modal-content');
+            let linkHtml = news.link ? `<a href="${news.link}" target="_blank" class="inline-block bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition uppercase tracking-wider mt-2"><i class="fa-solid fa-external-link-alt mr-1"></i> Visit Link</a>` : '';
+
+            modalContent.innerHTML = `
+                <div class="h-48 rounded-xl overflow-hidden bg-slate-900 border border-white/10 mb-3">
+                    <img src="${news.img || FALLBACK_IMAGES.logo}" class="w-full h-full object-cover">
+                </div>
+                <span class="bg-red-600/20 text-red-400 border border-red-500/30 text-[9px] font-black px-2.5 py-0.5 rounded uppercase">Announcement</span>
+                <h3 class="text-white font-black text-lg uppercase tracking-wider mt-1">${news.title}</h3>
+                <p class="text-xs text-slate-300 whitespace-pre-wrap leading-relaxed">${news.desc}</p>
+                <div class="pt-2">${linkHtml}</div>
+            `;
+
+            const backdrop = document.getElementById('news-modal-backdrop');
+            backdrop.classList.remove('hidden');
+        }
+
+        function closeNewsModal() {
+            document.getElementById('news-modal-backdrop').classList.add('hidden');
+        }
+
+        async function addNews() {
+            const title = document.getElementById('n-title').value.trim();
+            const desc = document.getElementById('n-desc').value.trim();
+            const link = document.getElementById('n-link').value.trim();
+            const img = await fileToCompressedBase64(document.getElementById('n-img').files[0], 800, 0.8);
+
+            if(!title || !desc) { alert('Ilagay ang Title at Description ng Balita!'); return; }
+
+            db.ref('news').push({ title, desc, link, img }).then(() => {
+                alert('News published successfully!');
+                document.getElementById('n-title').value = '';
+                document.getElementById('n-desc').value = '';
+                document.getElementById('n-link').value = '';
+                document.getElementById('n-img').value = '';
+            });
+        }
+
+        function renderAdminNews() {
+            const container = document.getElementById('admin-news-list');
+            if(!container) return;
+            container.innerHTML = '';
+            if(allNews.length === 0) { container.innerHTML = '<p class="text-[10px] text-slate-400 italic">No news announcements posted.</p>'; return; }
+            allNews.forEach(n => {
+                container.innerHTML += `
+                    <div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/10 text-xs">
+                        <span class="font-bold text-slate-200 truncate pr-2">${n.title}</span>
+                        <button onclick="deleteItem('news', '${n.id}')" class="bg-red-600/20 text-red-400 hover:bg-red-600/30 px-2 py-1 rounded text-[10px] font-bold shrink-0">Delete</button>
+                    </div>
+                `;
+            });
+        }
+
         function filterGame(game) {
             currentGameFilter = game;
             document.querySelectorAll('.game-tab').forEach(btn => {
@@ -957,7 +1171,7 @@
                     else if (m.result === 'Lose') losses++;
                 } else if (foundInRed) {
                     if (m.result === 'Lose') wins++;
-                    else if (m.result === 'Win') losses++;
+                    else if (m.result === 'Win') wins++; // Corrected logic for red team win
                 }
             });
 
@@ -1155,7 +1369,7 @@
 
             if(!ign) { alert('Mangyaring ilagay ang IGN ng player!'); return; }
             
-            let pfp = await fileToCompressedBase64(document.getElementById('p-pfp').files[0], 420, 0.78);
+            let pfp = await fileToCroppedSquareBase64(document.getElementById('p-pfp').files[0], 400, 0.8);
             if(editId && !pfp) {
                 const existing = allPlayers.find(p => p.id === editId);
                 if(existing) pfp = existing.pfp || '';
@@ -1314,7 +1528,7 @@
             const yt = document.getElementById('c-yt').value.trim();
             const tt = document.getElementById('c-tt').value.trim();
             const tw = document.getElementById('c-tw').value.trim();
-            const pfp = await fileToCompressedBase64(document.getElementById('c-pfp').files[0], 300, 0.78);
+            const pfp = await fileToCroppedSquareBase64(document.getElementById('c-pfp').files[0], 300, 0.8);
             
             if(!name) { alert('Ilagay ang pangalan ng Creator!'); return; }
             
