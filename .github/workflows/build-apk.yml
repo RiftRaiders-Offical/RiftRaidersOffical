@@ -19,27 +19,31 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Prepare Web Assets and Install
+      - name: Fix Web Assets Directory
         run: |
+          # Kung ang www ay isang file, burahin muna para maging totoong folder ito
+          if [ -f "www" ]; then
+            rm -f www
+          fi
+          
           # Gumawa ng www folder kung wala pa
           mkdir -p www
           
-          # Kung may index.html sa root, kopyahin sa www/
+          # Ilipat o kopyahin ang index.html kung naroroon
           if [ -f "index.html" ]; then
             cp index.html www/index.html
-          fi
-          
-          # Kung wala pa ring index.html sa www, gumawa ng default placeholder para hindi mag-error
-          if [ ! -f "www/index.html" ]; then
+          elif [ ! -f "www/index.html" ]; then
             echo "<!DOCTYPE html><html><head><title>Rift Raiders</title></head><body><h1>Rift Raiders</h1></body></html>" > www/index.html
           fi
 
-          npm install
+      - name: Install Dependencies
+        run: npm install
 
-      - name: Add and Sync Android
-        run: |
-          npx cap add android || true
-          npx cap sync android
+      - name: Add Capacitor Android
+        run: npx cap add android || true
+
+      - name: Sync Capacitor Android
+        run: npx cap sync android
 
       - name: Build Debug APK with Gradle
         run: |
