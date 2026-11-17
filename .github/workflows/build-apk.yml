@@ -27,11 +27,13 @@ jobs:
       - name: Install Project Dependencies
         run: npm install
 
-      - name: Create Web Assets Directory
+      - name: Prepare Web Assets Directory (www)
         run: |
-          mkdir -p www
+          mkdir -p www || true
           if [ -f "index.html" ]; then
-            cp index.html www/
+            cp -f index.html www/
+          else
+            echo "<h1>Rift Raiders</h1>" > www/index.html
           fi
 
       - name: Install Capacitor Android Platform
