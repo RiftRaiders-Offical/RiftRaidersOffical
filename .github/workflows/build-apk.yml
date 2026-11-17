@@ -26,13 +26,13 @@ jobs:
 
       - name: Prepare Web Directory and Install
         run: |
-          mkdir -p www
+          if [ ! -d "www" ]; then mkdir -p www; fi
           if [ -f index.html ]; then cp index.html www/index.html; fi
           npm install
 
       - name: Add Capacitor Android Platform
         run: |
-          npx cap add android
+          npx cap add android || true
 
       - name: Sync Capacitor Android
         run: |
