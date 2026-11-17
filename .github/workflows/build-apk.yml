@@ -24,12 +24,11 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Prepare Web and Capacitor Android
+      - name: Install and Build Setup
         run: |
           mkdir -p www
           if [ -f index.html ]; then cp index.html www/index.html; fi
           npm install
-          npx cap add android
           npx cap sync android
 
       - name: Build Debug APK
