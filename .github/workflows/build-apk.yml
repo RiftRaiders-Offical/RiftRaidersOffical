@@ -32,6 +32,9 @@ jobs:
           npx cap sync android
 
       - name: Build Debug APK
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Build Debug APK with Gradle
         run: |
           cd android
           chmod +x gradlew
