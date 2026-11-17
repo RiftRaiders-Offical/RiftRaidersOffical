@@ -24,10 +24,12 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Install dependencies and initialize Android
+      - name: Prepare Web Directory and Dependencies
         run: |
+          mkdir -p www
+          if [ -f index.html ]; then cp index.html www/index.html; fi
           npm install
-          npx cap add android
+          npx cap add android || true
           npx cap sync android
 
       - name: Build Debug APK
