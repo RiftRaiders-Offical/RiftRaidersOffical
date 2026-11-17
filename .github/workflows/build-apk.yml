@@ -29,7 +29,11 @@ jobs:
 
       - name: Prepare Web Assets Directory (www)
         run: |
-          mkdir -p www || true
+          # Siguraduhing tatanggalin kung may nakaharang na file na www
+          if [ -f "www" ]; then
+            rm -f www
+          fi
+          mkdir -p www
           if [ -f "index.html" ]; then
             cp -f index.html www/
           else
