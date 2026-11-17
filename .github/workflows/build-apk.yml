@@ -24,13 +24,12 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Prepare Project and Dependencies
+      - name: Prepare Web and Capacitor Android
         run: |
           mkdir -p www
           if [ -f index.html ]; then cp index.html www/index.html; fi
           npm install
-          npx cap init "Rift Raiders" "com.riftraiders.official" --web-dir www --npm-client npm || true
-          npx cap add android || true
+          npx cap add android
           npx cap sync android
 
       - name: Build Debug APK
