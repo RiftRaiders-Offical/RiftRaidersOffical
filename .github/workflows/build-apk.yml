@@ -24,11 +24,15 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Verify and Install Dependencies
+      - name: Prepare Web Directory and Install
         run: |
-          echo "Checking files..."
-          ls -la
+          mkdir -p www
+          if [ -f index.html ]; then cp index.html www/index.html; fi
           npm install
+
+      - name: Add Capacitor Android Platform
+        run: |
+          npx cap add android
 
       - name: Sync Capacitor Android
         run: |
