@@ -2,8 +2,9 @@
   "name": "rift-raiders-official",
   "version": "1.0.0",
   "description": "Rift Raiders Official Guild App",
+  "main": "index.js",
   "scripts": {
-    "build": "echo 'Static HTML ready'"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "@capacitor/core": "^6.0.0"
