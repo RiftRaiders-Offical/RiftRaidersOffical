@@ -27,14 +27,6 @@ jobs:
       - name: Install Project Dependencies
         run: npm install
 
-      - name: Ensure WWW Folder Exists
-        run: |
-          mkdir -p www
-          if [ -f "index.html" ]; then
-            cp index.html www/
-          fi
-          # Kung may iba pang web assets ka tulad ng js, css, o images sa root, kopyahin din dito kung kailangan
-
       - name: Install Capacitor Android Platform
         run: npx cap add android
 
