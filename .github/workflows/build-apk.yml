@@ -19,12 +19,30 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Install Node and Build APK
+      - name: Prepare Web Assets and Install
         run: |
-          node -v
+          # Gumawa ng www folder kung wala pa
+          mkdir -p www
+          
+          # Kung may index.html sa root, kopyahin sa www/
+          if [ -f "index.html" ]; then
+            cp index.html www/index.html
+          fi
+          
+          # Kung wala pa ring index.html sa www, gumawa ng default placeholder para hindi mag-error
+          if [ ! -f "www/index.html" ]; then
+            echo "<!DOCTYPE html><html><head><title>Rift Raiders</title></head><body><h1>Rift Raiders</h1></body></html>" > www/index.html
+          fi
+
           npm install
+
+      - name: Add and Sync Android
+        run: |
           npx cap add android || true
           npx cap sync android
+
+      - name: Build Debug APK with Gradle
+        run: |
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug
