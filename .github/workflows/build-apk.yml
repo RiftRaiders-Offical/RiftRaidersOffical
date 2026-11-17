@@ -27,6 +27,9 @@ jobs:
       - name: Install Project Dependencies
         run: npm install
 
+      - name: Install Capacitor Android Platform
+        run: npx cap add android
+
       - name: Install Capacitor Assets Tool
         run: npm install @capacitor/assets --save-dev
 
