@@ -835,59 +835,62 @@
         const db = firebase.database();
 
         /* CAPACITOR PUSH NOTIFICATIONS (ANDROID / MOBILE APP) */
-        async function setupCapacitorPushNotifications() {
-            const PushNotifications = window.Capacitor?.Plugins?.PushNotifications;
-            if (!PushNotifications) {
-                console.log("Running in web browser - native Capacitor push skipped.");
-                return;
-            }
+      async function setupCapacitorPushNotifications() {
+    const PushNotifications = window.Capacitor?.Plugins?.PushNotifications;
+    if (!PushNotifications) {
+        console.log("Running in web browser - native Capacitor push skipped.");
+        return;
+    }
 
-            try {
-                let permStatus = await PushNotifications.checkPermissions();
-                if (permStatus.receive === 'prompt') {
-                    permStatus = await PushNotifications.requestPermissions();
-                    await new Promise((resolve) => setTimeout(resolve, 300));
-                }
-
-                if (permStatus.receive !== 'granted') {
-                    console.log("Push notification permission not granted.");
-                    return;
-                }
-
-                PushNotifications.addListener('registration', (token) => {
-                    console.log('FCM Device Token:', token.value);
-                    const safeKey = token.value.replace(/[.#$\[\]]/g, '_');
-                    db.ref('fcm_tokens/' + safeKey).set({
-                        token: token.value,
-                        platform: 'android',
-                        updatedAt: firebase.database.ServerValue.TIMESTAMP
-                    }).catch(err => console.error('Error saving FCM token:', err));
-                });
-
-                PushNotifications.addListener('registrationError', (err) => {
-                    console.error('Push registration error:', err);
-                    alert("Push registration error: " + JSON.stringify(err));
-                });
-
-                PushNotifications.addListener('pushNotificationReceived', (notification) => {
-                    alert(`${notification.title || 'Rift Raiders'}\n${notification.body || ''}`);
-                });
-
-                PushNotifications.addListener('pushNotificationActionPerformed', (action) => {
-                    console.log('Notification clicked:', action.notification);
-                });
-
-                try {
-                    await PushNotifications.register();
-                } catch (regErr) {
-                    console.error("PushNotifications.register() failed:", regErr);
-                    alert("Push register error: " + (regErr?.message || regErr));
-                }
-            } catch (error) {
-                console.error("Capacitor push setup error:", error);
-            }
+    try {
+        let permStatus = await PushNotifications.checkPermissions();
+        if (permStatus.receive === 'prompt') {
+            permStatus = await PushNotifications.requestPermissions();
         }
 
+        if (permStatus.receive !== 'granted') {
+            console.log("Push notification permission not granted.");
+            return;
+        }
+
+        PushNotifications.addListener('registration', (token) => {
+            try {
+                console.log('FCM Device Token:', token.value);
+                const safeKey = String(token.value || '').replace(/[.#$\[\]]/g, '_');
+                if (!safeKey) return;
+                db.ref('fcm_tokens/' + safeKey).set({
+                    token: token.value,
+                    platform: 'android',
+                    updatedAt: firebase.database.ServerValue.TIMESTAMP
+                }).catch(err => console.error('Error saving FCM token:', err));
+            } catch (cbErr) {
+                console.error('Registration callback error:', cbErr);
+            }
+        });
+
+        PushNotifications.addListener('registrationError', (err) => {
+            console.error('Push registration error:', err);
+        });
+
+        PushNotifications.addListener('pushNotificationReceived', (notification) => {
+            alert(`${notification.title || 'Rift Raiders'}\n${notification.body || ''}`);
+        });
+
+        PushNotifications.addListener('pushNotificationActionPerformed', (action) => {
+            console.log('Notification clicked:', action.notification);
+        });
+
+        setTimeout(async () => {
+            try {
+                await PushNotifications.register();
+            } catch (regErr) {
+                console.error("PushNotifications.register() failed:", regErr);
+            }
+        }, 800);
+    } catch (error) {
+        console.error("Capacitor push setup error:", error);
+    }
+}
         document.addEventListener('DOMContentLoaded', () => {
             setupCapacitorPushNotifications();
         });
