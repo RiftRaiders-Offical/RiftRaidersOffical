@@ -834,6 +834,57 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
+        /* CAPACITOR PUSH NOTIFICATIONS (ANDROID / MOBILE APP) */
+        async function setupCapacitorPushNotifications() {
+            const PushNotifications = window.Capacitor?.Plugins?.PushNotifications;
+            if (!PushNotifications) {
+                console.log("Running in web browser - native Capacitor push skipped.");
+                return;
+            }
+
+            try {
+                let permStatus = await PushNotifications.checkPermissions();
+                if (permStatus.receive === 'prompt') {
+                    permStatus = await PushNotifications.requestPermissions();
+                }
+
+                if (permStatus.receive !== 'granted') {
+                    console.log("Push notification permission not granted.");
+                    return;
+                }
+
+                await PushNotifications.register();
+
+                PushNotifications.addListener('registration', (token) => {
+                    console.log('FCM Device Token:', token.value);
+                    const safeKey = token.value.replace(/[.#$\[\]]/g, '_');
+                    db.ref('fcm_tokens/' + safeKey).set({
+                        token: token.value,
+                        platform: 'android',
+                        updatedAt: firebase.database.ServerValue.TIMESTAMP
+                    }).catch(err => console.error('Error saving FCM token:', err));
+                });
+
+                PushNotifications.addListener('registrationError', (err) => {
+                    console.error('Push registration error:', err);
+                });
+
+                PushNotifications.addListener('pushNotificationReceived', (notification) => {
+                    alert(`${notification.title || 'Rift Raiders'}\n${notification.body || ''}`);
+                });
+
+                PushNotifications.addListener('pushNotificationActionPerformed', (action) => {
+                    console.log('Notification clicked:', action.notification);
+                });
+            } catch (error) {
+                console.error("Capacitor push setup error:", error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setupCapacitorPushNotifications();
+        });
+
         let allPlayers = [];
         let allMatches = {};
         let allCreators = [];
