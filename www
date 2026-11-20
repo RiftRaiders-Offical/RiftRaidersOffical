@@ -23,7 +23,6 @@
             background-image: linear-gradient(to bottom, rgba(11, 12, 20, 0.85), rgba(7, 8, 12, 0.95)), 
                               url('https://basepic.com/SvemRWV6/b92d00df-c182-4e99-8fea-c19d638676f0.jpg');
             background-size: cover;
-            background-attachment: fixed;
             background-position: center;
         }
 
@@ -666,19 +665,23 @@
         };
 
         function handleImgError(imgEl, type) {
-            if (!imgEl || imgEl.dataset.fallbackApplied === "true") return;
-            imgEl.dataset.fallbackApplied = "true";
-            imgEl.src = FALLBACK_IMAGES[type] || FALLBACK_IMAGES.player;
-            imgEl.classList.add('loaded');
+            try {
+                if (!imgEl || imgEl.dataset.fallbackApplied === "true") return;
+                imgEl.dataset.fallbackApplied = "true";
+                imgEl.src = FALLBACK_IMAGES[type] || FALLBACK_IMAGES.player;
+                imgEl.classList.add('loaded');
+            } catch (e) {}
         }
 
         const preloadedUrls = new Map();
         function warmImageCache(url) {
-            if (!url || url.startsWith('data:') || preloadedUrls.has(url)) return;
-            const img = new Image();
-            img.decoding = 'async';
-            img.src = url;
-            preloadedUrls.set(url, img);
+            try {
+                if (!url || url.startsWith('data:') || preloadedUrls.has(url)) return;
+                const img = new Image();
+                img.decoding = 'async';
+                img.src = url;
+                preloadedUrls.set(url, img);
+            } catch (e) {}
         }
 
         /* INTERACTIVE CROPPER LOGIC */
@@ -696,11 +699,21 @@
         const viewport = document.getElementById('crop-viewport');
         const cropImg = document.getElementById('crop-img');
 
-        viewport.addEventListener('mousedown', (e) => {
-            cropState.isDragging = true;
-            cropState.startX = e.clientX - cropState.posX;
-            cropState.startY = e.clientY - cropState.posY;
-        });
+        if (viewport) {
+            viewport.addEventListener('mousedown', (e) => {
+                cropState.isDragging = true;
+                cropState.startX = e.clientX - cropState.posX;
+                cropState.startY = e.clientY - cropState.posY;
+            });
+
+            viewport.addEventListener('touchstart', (e) => {
+                if(e.touches.length === 1) {
+                    cropState.isDragging = true;
+                    cropState.startX = e.touches[0].clientX - cropState.posX;
+                    cropState.startY = e.touches[0].clientY - cropState.posY;
+                }
+            });
+        }
 
         window.addEventListener('mousemove', (e) => {
             if (!cropState.isDragging) return;
@@ -711,13 +724,6 @@
 
         window.addEventListener('mouseup', () => { cropState.isDragging = false; });
 
-        viewport.addEventListener('touchstart', (e) => {
-            if(e.touches.length === 1) {
-                cropState.isDragging = true;
-                cropState.startX = e.touches[0].clientX - cropState.posX;
-                cropState.startY = e.touches[0].clientY - cropState.posY;
-            }
-        });
         window.addEventListener('touchmove', (e) => {
             if (!cropState.isDragging || e.touches.length !== 1) return;
             cropState.posX = e.touches[0].clientX - cropState.startX;
@@ -831,48 +837,18 @@
             messagingSenderId: "103200979693",
             appId: "1:103200979693:web:48d4b7f6e65734f2756ae4"
         };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
 
-        /* CAPACITOR PUSH NOTIFICATIONS (SAFE MODE - NO REGISTER CRASH) */
-        async function setupCapacitorPushNotifications() {
-            const PushNotifications = window.Capacitor?.Plugins?.PushNotifications;
-            if (!PushNotifications) {
-                console.log("Running in web browser - native Capacitor push skipped.");
-                return;
-            }
-
-            try {
-                let permStatus = await PushNotifications.checkPermissions();
-                if (permStatus.receive === 'prompt') {
-                    permStatus = await PushNotifications.requestPermissions();
-                    await new Promise((resolve) => setTimeout(resolve, 500));
+        let db = null;
+        try {
+            if (window.firebase) {
+                if (!firebase.apps.length) {
+                    firebase.initializeApp(firebaseConfig);
                 }
-
-                if (permStatus.receive !== 'granted') {
-                    console.log("Push notification permission not granted.");
-                    return;
-                }
-
-                PushNotifications.addListener('pushNotificationReceived', (notification) => {
-                    try {
-                        alert(`${notification.title || 'Rift Raiders'}\n${notification.body || ''}`);
-                    } catch (e) {}
-                });
-
-                PushNotifications.addListener('pushNotificationActionPerformed', (action) => {
-                    console.log('Notification clicked:', action.notification);
-                });
-
-                console.log("Notification permission granted; native register paused for crash-free mode.");
-            } catch (error) {
-                console.error("Capacitor push setup error:", error);
+                db = firebase.database();
             }
+        } catch (err) {
+            console.error("Firebase init error:", err);
         }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            setupCapacitorPushNotifications();
-        });
 
         let allPlayers = [];
         let allMatches = {};
@@ -891,20 +867,22 @@
 
         let riotItemMap = {};
 
-        fetch(`https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/data/en_US/item.json`)
-            .then(res => res.json())
-            .then(data => {
-                if (data && data.data) {
-                    Object.keys(data.data).forEach(itemId => {
-                        const item = data.data[itemId];
-                        if (item && item.name) {
-                            const cleanName = item.name.toLowerCase().replace(/[^a-z0-9]/g, '');
-                            riotItemMap[cleanName] = itemId;
-                        }
-                    });
-                }
-            })
-            .catch(err => console.log('Error fetching Riot items:', err));
+        try {
+            fetch(`https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/data/en_US/item.json`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.data) {
+                        Object.keys(data.data).forEach(itemId => {
+                            const item = data.data[itemId];
+                            if (item && item.name) {
+                                const cleanName = item.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+                                riotItemMap[cleanName] = itemId;
+                            }
+                        });
+                    }
+                })
+                .catch(err => console.log('Error fetching Riot items:', err));
+        } catch (e) {}
         
         function getChampionIconUrl(champName) {
             if (!champName) return FALLBACK_IMAGES.champ;
@@ -993,18 +971,23 @@
             return '';
         }
 
-        db.ref('settings/logo').on('value', snap => {
-            const logo = snap.val() || defaultLogoUrl;
-            const logoEl = document.getElementById('header-logo');
-            if (logoEl && logoEl.src !== logo) {
-                delete logoEl.dataset.fallbackApplied;
-                logoEl.src = logo;
-            }
-            const logoInput = document.getElementById('setting-logo-url');
-            if(logoInput) logoInput.value = logo;
-        });
+        if (db) {
+            db.ref('settings/logo').on('value', snap => {
+                try {
+                    const logo = snap.val() || defaultLogoUrl;
+                    const logoEl = document.getElementById('header-logo');
+                    if (logoEl && logoEl.src !== logo) {
+                        delete logoEl.dataset.fallbackApplied;
+                        logoEl.src = logo;
+                    }
+                    const logoInput = document.getElementById('setting-logo-url');
+                    if(logoInput) logoInput.value = logo;
+                } catch (e) {}
+            });
+        }
 
         function saveSiteLogo() {
+            if (!db) return;
             const url = document.getElementById('setting-logo-url').value.trim();
             if(!url) { alert('Ilagay ang valid logo URL!'); return; }
             db.ref('settings/logo').set(url).then(() => {
@@ -1031,60 +1014,72 @@
             document.getElementById('admin-pass-input').value = '';
         }
 
-        db.ref('matches').on('value', snap => {
-            allMatches = snap.val() || {};
-            renderMatches();
-            renderAdminMatches();
-            updateRosterWinrateBadgesOnly();
-        });
-
-        db.ref('roster').on('value', snap => {
-            allPlayers = [];
-            if(snap.exists()) {
-                snap.forEach(child => {
-                    const p = { id: child.key, ...child.val() };
-                    if (p.pfp) warmImageCache(p.pfp);
-                    if (p.teamlogo) warmImageCache(p.teamlogo);
-                    allPlayers.push(p);
-                });
-            }
-            renderRoster(true); 
-            renderAdminPlayers();
-        });
-
-        db.ref('creators').on('value', snap => {
-            allCreators = [];
-            if(snap.exists()) {
-                snap.forEach(child => {
-                    const c = { id: child.key, ...child.val() };
-                    if (c.pfp) warmImageCache(c.pfp);
-                    allCreators.push(c);
-                });
-            }
-            renderCreators();
-            renderAdminCreators();
-        });
-
-        db.ref('partners').on('value', snap => {
-            allPartners = snap.val() || {};
-            Object.values(allPartners).forEach(p => {
-                if (p && p.logo) warmImageCache(p.logo);
+        if (db) {
+            db.ref('matches').on('value', snap => {
+                try {
+                    allMatches = snap.val() || {};
+                    renderMatches();
+                    renderAdminMatches();
+                    updateRosterWinrateBadgesOnly();
+                } catch (e) {}
             });
-            renderPartners();
-            renderAdminPartners();
-        });
 
-        db.ref('news').on('value', snap => {
-            allNews = [];
-            if(snap.exists()) {
-                snap.forEach(child => {
-                    const n = { id: child.key, ...child.val() };
-                    allNews.push(n);
-                });
-            }
-            renderNewsCarousel();
-            renderAdminNews();
-        });
+            db.ref('roster').on('value', snap => {
+                try {
+                    allPlayers = [];
+                    if(snap.exists()) {
+                        snap.forEach(child => {
+                            const p = { id: child.key, ...child.val() };
+                            if (p.pfp) warmImageCache(p.pfp);
+                            if (p.teamlogo) warmImageCache(p.teamlogo);
+                            allPlayers.push(p);
+                        });
+                    }
+                    renderRoster(true); 
+                    renderAdminPlayers();
+                } catch (e) {}
+            });
+
+            db.ref('creators').on('value', snap => {
+                try {
+                    allCreators = [];
+                    if(snap.exists()) {
+                        snap.forEach(child => {
+                            const c = { id: child.key, ...child.val() };
+                            if (c.pfp) warmImageCache(c.pfp);
+                            allCreators.push(c);
+                        });
+                    }
+                    renderCreators();
+                    renderAdminCreators();
+                } catch (e) {}
+            });
+
+            db.ref('partners').on('value', snap => {
+                try {
+                    allPartners = snap.val() || {};
+                    Object.values(allPartners).forEach(p => {
+                        if (p && p.logo) warmImageCache(p.logo);
+                    });
+                    renderPartners();
+                    renderAdminPartners();
+                } catch (e) {}
+            });
+
+            db.ref('news').on('value', snap => {
+                try {
+                    allNews = [];
+                    if(snap.exists()) {
+                        snap.forEach(child => {
+                            const n = { id: child.key, ...child.val() };
+                            allNews.push(n);
+                        });
+                    }
+                    renderNewsCarousel();
+                    renderAdminNews();
+                } catch (e) {}
+            });
+        }
 
         function renderNewsCarousel() {
             const section = document.getElementById('news-section');
@@ -1113,7 +1108,7 @@
                     <div class="news-slide w-full shrink-0 ${activeClass} cursor-pointer group" onclick="openNewsModal('${news.id}')">
                         <div class="grid grid-cols-1 md:grid-cols-3">
                             <div class="h-48 md:h-52 bg-slate-900 overflow-hidden relative">
-                                <img src="${news.img || FALLBACK_IMAGES.logo}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                                <img src="${news.img || FALLBACK_IMAGES.logo}" onerror="handleImgError(this, 'logo')" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                                 <div class="absolute top-2 left-2 bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded uppercase shadow">ANNOUNCEMENT</div>
                             </div>
                             <div class="md:col-span-2 p-5 flex flex-col justify-between space-y-3">
@@ -1156,7 +1151,7 @@
 
             modalContent.innerHTML = `
                 <div class="h-48 rounded-xl overflow-hidden bg-slate-900 border border-white/10 mb-3">
-                    <img src="${news.img || FALLBACK_IMAGES.logo}" class="w-full h-full object-cover">
+                    <img src="${news.img || FALLBACK_IMAGES.logo}" onerror="handleImgError(this, 'logo')" class="w-full h-full object-cover">
                 </div>
                 <span class="bg-red-600/20 text-red-400 border border-red-500/30 text-[9px] font-black px-2.5 py-0.5 rounded uppercase">Announcement</span>
                 <h3 class="text-white font-black text-lg uppercase tracking-wider mt-1">${news.title}</h3>
@@ -1172,6 +1167,7 @@
         }
 
         async function addNews() {
+            if (!db) return;
             const title = document.getElementById('n-title').value.trim();
             const desc = document.getElementById('n-desc').value.trim();
             const link = document.getElementById('n-link').value.trim();
@@ -1315,7 +1311,7 @@
             let wins = 0, losses = 0;
 
             Object.values(allMatches).forEach(m => {
-                if (!m.type || m.type.trim().toLowerCase() !== 'tournament') return;
+                if (!m || !m.type || m.type.trim().toLowerCase() !== 'tournament') return;
                 
                 const mGame = (m.game || 'Wild Rift').trim().toLowerCase();
                 if (mGame !== pGame) return;
@@ -1363,6 +1359,7 @@
             
             const keys = Object.keys(allMatches).filter(key => {
                 const m = allMatches[key];
+                if (!m) return false;
                 if (currentMatchFilter === 'ALL') return true;
                 return m.game && m.game.toLowerCase() === currentMatchFilter.toLowerCase();
             });
@@ -1375,12 +1372,12 @@
                 list.innerHTML += `
                     <div onclick="openMatchDetails('${key}')" class="bg-[#161822]/85 backdrop-blur-md border border-white/10 hover:border-blue-500/40 rounded-xl p-4 space-y-2 cursor-pointer transition shadow-xl">
                         <div class="flex justify-between items-center">
-                            <div class="text-[10px] font-bold text-slate-300"><span class="text-blue-400 font-bold uppercase">${m.game || 'Wild Rift'}</span> • ${m.type} • ${m.date || 'Recent'}</div>
-                            <div class="px-3 py-0.5 rounded border font-black uppercase text-[10px] ${color}">${m.result}</div>
+                            <div class="text-[10px] font-bold text-slate-300"><span class="text-blue-400 font-bold uppercase">${m.game || 'Wild Rift'}</span> • ${m.type || 'Match'} • ${m.date || 'Recent'}</div>
+                            <div class="px-3 py-0.5 rounded border font-black uppercase text-[10px] ${color}">${m.result || ''}</div>
                         </div>
                         <div class="flex justify-between items-center">
-                            <div class="text-white font-black text-sm uppercase">${m.team} vs ${m.opponent}</div>
-                            <div class="text-xs font-bold text-slate-200">Score: ${m.score}</div>
+                            <div class="text-white font-black text-sm uppercase">${m.team || ''} vs ${m.opponent || ''}</div>
+                            <div class="text-xs font-bold text-slate-200">Score: ${m.score || '0 - 0'}</div>
                         </div>
                     </div>
                 `;
@@ -1437,6 +1434,7 @@
                 return;
             }
             partnersList.forEach(p => {
+                if (!p) return;
                 const logoSrc = (p.logo && p.logo.trim() !== '') ? p.logo : FALLBACK_IMAGES.logo;
                 grid.innerHTML += `<a href="${p.link || '#'}" target="_blank" class="bg-[#161822]/85 backdrop-blur-md px-4 py-2.5 rounded-xl border border-white/10 flex items-center space-x-2 shadow-lg"><img src="${logoSrc}" decoding="async" onload="this.classList.add('loaded')" onerror="handleImgError(this, 'logo')" class="img-fade h-6 w-auto object-contain"><span class="text-xs font-bold text-slate-200">${p.name || ''}</span></a>`;
             });
@@ -1469,6 +1467,7 @@
             container.innerHTML = '';
             Object.keys(allMatches).forEach(key => {
                 const m = allMatches[key];
+                if (!m) return;
                 container.innerHTML += `
                     <div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/10 text-xs">
                         <span class="font-bold text-slate-200 truncate">[${m.game || 'Wild Rift'}] ${m.team} vs ${m.opponent}</span>
@@ -1496,11 +1495,13 @@
             if(!container) return;
             container.innerHTML = '';
             Object.keys(allPartners).forEach(key => {
-                container.innerHTML += `<div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/10 text-xs"><span class="font-bold text-slate-200 truncate">${allPartners[key].name}</span><button onclick="deleteItem('partners', '${key}')" class="bg-red-600/20 text-red-400 px-2 py-1 rounded text-[10px]">Delete</button></div>`;
+                const p = allPartners[key];
+                if (!p) return;
+                container.innerHTML += `<div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/10 text-xs"><span class="font-bold text-slate-200 truncate">${p.name}</span><button onclick="deleteItem('partners', '${key}')" class="bg-red-600/20 text-red-400 px-2 py-1 rounded text-[10px]">Delete</button></div>`;
             });
         }
 
-        function deleteItem(path, id) { if(confirm('Delete this item?')) db.ref(`${path}/${id}`).remove(); }
+        function deleteItem(path, id) { if(db && confirm('Delete this item?')) db.ref(`${path}/${id}`).remove(); }
 
         function editPlayer(id) {
             const player = allPlayers.find(p => p.id === id);
@@ -1538,6 +1539,7 @@
         }
 
         async function addPlayer() {
+            if (!db) return;
             const editId = document.getElementById('editing-player-id').value;
             const game = document.getElementById('p-game').value;
             const ign = document.getElementById('p-ign').value.trim();
@@ -1613,6 +1615,7 @@
         }
 
         function addMatch() {
+            if (!db) return;
             const editKey = document.getElementById('editing-match-id').value;
             const game = document.getElementById('m-game').value;
             const team = document.getElementById('m-team').value;
@@ -1704,6 +1707,7 @@
         }
 
         async function addCreator() {
+            if (!db) return;
             const name = document.getElementById('c-name').value.trim();
             const game = document.getElementById('c-game').value.trim();
             const fb = document.getElementById('c-fb').value.trim();
@@ -1727,6 +1731,7 @@
         }
 
         async function addPartner() {
+            if (!db) return;
             const name = document.getElementById('part-name').value.trim();
             const link = document.getElementById('part-link').value.trim();
             const logo = await fileToCompressedBase64(document.getElementById('part-logo').files[0], 300, 0.82);
@@ -1773,6 +1778,7 @@
             const targetGame = (game || 'Wild Rift').trim().toLowerCase();
 
             Object.values(allMatches).forEach(m => {
+                if (!m) return;
                 if (m.type && m.type.trim().toLowerCase() === 'tournament') {
                     const mGame = (m.game || 'Wild Rift').trim().toLowerCase();
                     if (mGame !== targetGame) return;
