@@ -864,7 +864,6 @@
                     console.log('Notification clicked:', action.notification);
                 });
 
-                // Naka-pause muna ang native PushNotifications.register() para hindi mag-crash pagka-Allow
                 console.log("Notification permission granted; native register paused for crash-free mode.");
             } catch (error) {
                 console.error("Capacitor push setup error:", error);
