@@ -846,14 +846,13 @@
                 let permStatus = await PushNotifications.checkPermissions();
                 if (permStatus.receive === 'prompt') {
                     permStatus = await PushNotifications.requestPermissions();
+                    await new Promise((resolve) => setTimeout(resolve, 300));
                 }
 
                 if (permStatus.receive !== 'granted') {
                     console.log("Push notification permission not granted.");
                     return;
                 }
-
-                await PushNotifications.register();
 
                 PushNotifications.addListener('registration', (token) => {
                     console.log('FCM Device Token:', token.value);
@@ -867,6 +866,7 @@
 
                 PushNotifications.addListener('registrationError', (err) => {
                     console.error('Push registration error:', err);
+                    alert("Push registration error: " + JSON.stringify(err));
                 });
 
                 PushNotifications.addListener('pushNotificationReceived', (notification) => {
@@ -876,6 +876,13 @@
                 PushNotifications.addListener('pushNotificationActionPerformed', (action) => {
                     console.log('Notification clicked:', action.notification);
                 });
+
+                try {
+                    await PushNotifications.register();
+                } catch (regErr) {
+                    console.error("PushNotifications.register() failed:", regErr);
+                    alert("Push register error: " + (regErr?.message || regErr));
+                }
             } catch (error) {
                 console.error("Capacitor push setup error:", error);
             }
