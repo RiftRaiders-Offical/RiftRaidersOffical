@@ -27,8 +27,8 @@ jobs:
       - name: Install Project Dependencies
         run: npm install
 
-      - name: Install Capacitor Push Notifications Plugin
-        run: npm install @capacitor/push-notifications
+      - name: Install Capacitor Push Notifications Plugin (v6)
+        run: npm install @capacitor/push-notifications@6
 
       - name: Prepare Web Assets Directory (www)
         run: |
