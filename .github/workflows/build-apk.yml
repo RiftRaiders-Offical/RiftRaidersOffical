@@ -27,9 +27,10 @@ jobs:
 
       - name: Prepare Web Assets Directory (www)
         run: |
-          if [ ! -e www ]; then
-            mkdir www
+          if [ -e www ] && [ ! -d www ]; then
+            rm -f www
           fi
+          mkdir -p www
           if [ -f index.html ]; then
             cp -f index.html www/index.html
           elif [ ! -f www/index.html ]; then
