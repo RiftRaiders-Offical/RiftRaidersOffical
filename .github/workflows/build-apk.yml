@@ -21,16 +21,32 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Setup Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '17'
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          accept-android-sdk-licenses: true
+          log-accepted-android-sdk-licenses: true
+
+      - name: Accept all Android SDK licenses non-interactively
+        run: |
+          SDK_ROOT="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-/usr/local/lib/android/sdk}}"
+          for bin in \
+            "$SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" \
+            "$SDK_ROOT/cmdline-tools/tools/bin/sdkmanager" \
+            "$SDK_ROOT/tools/bin/sdkmanager"
+          do
+            if [ -x "$bin" ]; then
+              yes | "$bin" --sdk_root="$SDK_ROOT" --licenses >/dev/null 2>&1 || true
+            fi
+          done
 
       - name: Ensure www directory and synced web files
         run: |
