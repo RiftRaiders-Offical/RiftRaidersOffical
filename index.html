@@ -21,7 +21,7 @@
         body {
             background-color: #0b0c14;
             background-image: linear-gradient(to bottom, rgba(11, 12, 20, 0.85), rgba(7, 8, 12, 0.95)), 
-                              url('https://basepic.com/SvemRWV6/b92d00df-c182-4e99-8fea-c19d638676f0.jpg');
+                              url('https://i.ibb.co/6R7QW3L/79923.jpg');
             background-size: cover;
             background-position: center;
         }
@@ -146,7 +146,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 <div class="bg-[#161822]/85 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden group hover:border-red-500/40 transition shadow-xl flex flex-col">
                     <div class="h-36 bg-slate-900 overflow-hidden relative">
-                        <img src="https://basepic.com/3CE5wRff/54a869d5-12fa-4e33-b0e9-346c65b6c21f.png" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="The Spirit Showdown">
+                        <img src="https://i.ibb.co/6R7QW3L/79923.jpg" onerror="handleImgError(this, 'logo')" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="The Spirit Showdown">
                         <div class="absolute top-2 right-2 bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded uppercase shadow">Feb 21, 2026</div>
                     </div>
                     <div class="p-4 space-y-1 flex-1 flex flex-col justify-between">
@@ -159,7 +159,7 @@
 
                 <div class="bg-[#161822]/85 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden group hover:border-red-500/40 transition shadow-xl flex flex-col">
                     <div class="h-36 bg-slate-900 overflow-hidden relative">
-                        <img src="https://basepic.com/FJ4BMxde/7c7ec39d-c3d2-4c91-a96e-c45d2b9a4343.png" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="Elite Roster Dominance">
+                        <img src="https://i.ibb.co/6R7QW3L/79923.jpg" onerror="handleImgError(this, 'logo')" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="Elite Roster Dominance">
                         <div class="absolute top-2 right-2 bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded uppercase shadow">2024 - 2026</div>
                     </div>
                     <div class="p-4 space-y-1 flex-1 flex flex-col justify-between">
@@ -172,7 +172,7 @@
 
                 <div class="bg-[#161822]/85 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden group hover:border-red-500/40 transition shadow-xl flex flex-col">
                     <div class="h-36 bg-slate-900 overflow-hidden relative">
-                        <img src="https://basepic.com/UZKYBjWe/b92d00df-c182-4e99-8fea-c19d638676f0.jpg" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="Community & Guild Growth" onerror="this.src='https://basepic.com/UZKYBjWe'">
+                        <img src="https://i.ibb.co/6R7QW3L/79923.jpg" onerror="handleImgError(this, 'logo')" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="Community & Guild Growth">
                         <div class="absolute top-2 right-2 bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded uppercase shadow">Active</div>
                     </div>
                     <div class="p-4 space-y-1 flex-1 flex flex-col justify-between">
@@ -683,6 +683,42 @@
                 preloadedUrls.set(url, img);
             } catch (e) {}
         }
+
+        /* SAFE DELAYED CAPACITOR NOTIFICATION PERMISSION (NO REGISTER CALL) */
+        let permissionPromptTriggered = false;
+        async function requestDelayedNotificationPermissionSafe() {
+            if (permissionPromptTriggered) return;
+            permissionPromptTriggered = true;
+
+            try {
+                const PushNotifications = window.Capacitor?.Plugins?.PushNotifications;
+                if (!PushNotifications) return;
+
+                let status = null;
+                try {
+                    status = await PushNotifications.checkPermissions();
+                } catch (e) {
+                    console.log("checkPermissions skipped:", e);
+                    return;
+                }
+
+                if (status && status.receive === 'prompt') {
+                    try {
+                        await PushNotifications.requestPermissions();
+                    } catch (e) {
+                        console.log("requestPermissions skipped:", e);
+                    }
+                }
+            } catch (err) {
+                console.log("Safe notification flow error:", err);
+            }
+        }
+
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                requestDelayedNotificationPermissionSafe();
+            }, 1200);
+        });
 
         /* INTERACTIVE CROPPER LOGIC */
         let cropState = {
