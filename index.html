@@ -779,18 +779,18 @@
         window.addEventListener('mouseup', () => { cropState.isDragging = false; });
 
         viewport.addEventListener('touchstart', (e) => {
-            if(e.touches.length === 1) {
+            if (e.touches.length === 1) {
                 cropState.isDragging = true;
                 cropState.startX = e.touches[0].clientX - cropState.posX;
                 cropState.startY = e.touches[0].clientY - cropState.posY;
             }
-        });
+        }, { passive: true });
         window.addEventListener('touchmove', (e) => {
             if (!cropState.isDragging || e.touches.length !== 1) return;
             cropState.posX = e.touches[0].clientX - cropState.startX;
             cropState.posY = e.touches[0].clientY - cropState.startY;
             updateCropTransform();
-        });
+        }, { passive: true });
         window.addEventListener('touchend', () => { cropState.isDragging = false; });
 
         function previewAndCropImage(input) {
@@ -798,11 +798,8 @@
             const reader = new FileReader();
             reader.onload = (e) => {
                 cropState.imgObj.onload = () => {
-                    cropState.scale = 1;
-                    document.getElementById('crop-zoom').value = 1;
-                    
                     const vSize = 192;
-                    let baseScale = Math.max(vSize / cropState.imgObj.width, vSize / cropState.imgObj.height);
+                    const baseScale = Math.max(vSize / cropState.imgObj.width, vSize / cropState.imgObj.height);
                     cropState.scale = baseScale;
                     document.getElementById('crop-zoom').min = baseScale;
                     document.getElementById('crop-zoom').max = baseScale * 4;
@@ -822,8 +819,9 @@
 
         function updateCropTransform() {
             const zoomVal = parseFloat(document.getElementById('crop-zoom').value);
+            const minZoom = parseFloat(document.getElementById('crop-zoom').min) || 1;
             cropState.scale = zoomVal;
-            document.getElementById('zoom-val').innerText = Math.round((zoomVal / document.getElementById('crop-zoom').min) * 100) + '%';
+            document.getElementById('zoom-val').innerText = Math.round((zoomVal / minZoom) * 100) + '%';
             cropImg.style.width = (cropState.imgObj.width * cropState.scale) + 'px';
             cropImg.style.height = (cropState.imgObj.height * cropState.scale) + 'px';
             cropImg.style.transform = `translate(${cropState.posX}px, ${cropState.posY}px)`;
@@ -845,9 +843,9 @@
             const renderW = cropState.imgObj.width * cropState.scale;
             const renderH = cropState.imgObj.height * cropState.scale;
 
-            let sx = (-cropState.posX / renderW) * cropState.imgObj.width;
-            let sy = (-cropState.posY / renderH) * cropState.imgObj.height;
-            let sSize = (vSize / renderW) * cropState.imgObj.width;
+            const sx = (-cropState.posX / renderW) * cropState.imgObj.width;
+            const sy = (-cropState.posY / renderH) * cropState.imgObj.height;
+            const sSize = (vSize / renderW) * cropState.imgObj.width;
 
             ctx.drawImage(cropState.imgObj, sx, sy, sSize, sSize, 0, 0, 400, 400);
             cropState.finalBase64 = canvas.toDataURL('image/jpeg', 0.85);
@@ -907,6 +905,11 @@
         let fcmMessaging = null;
         let swRegistrationRef = null;
 
+        function setPushStatusText(msg) {
+            const statusEl = document.getElementById("fcm-token-status");
+            if (statusEl) statusEl.textContent = msg;
+        }
+
         async function registerRiftRaidersSW() {
             if (!("serviceWorker" in navigator)) return null;
             try {
@@ -922,6 +925,10 @@
 
         function initFirebaseCloudMessaging() {
             if (typeof firebase.messaging !== "function") return;
+            if (!firebase.messaging.isSupported || !firebase.messaging.isSupported()) {
+                setPushStatusText("Push status: Web Push is not supported in this browser/webview.");
+                return;
+            }
             try {
                 fcmMessaging = firebase.messaging();
                 fcmMessaging.usePublicVapidKey(VAPID_KEY);
@@ -930,7 +937,7 @@
                     if (reg && fcmMessaging) {
                         fcmMessaging.useServiceWorker(reg);
                     }
-                    if (Notification.permission === "granted") {
+                    if ("Notification" in window && Notification.permission === "granted") {
                         retrieveAndStoreFcmToken(reg);
                     }
                 });
@@ -954,12 +961,9 @@
                 if (reg) options.serviceWorkerRegistration = reg;
 
                 const token = await fcmMessaging.getToken(options);
-                const statusEl = document.getElementById("fcm-token-status");
                 if (token) {
                     console.log("FCM Token:", token);
-                    if (statusEl) {
-                        statusEl.textContent = "FCM Token: " + token;
-                    }
+                    setPushStatusText("FCM Token: " + token);
                     const tokenKey = btoa(token).replace(/[^a-zA-Z0-9]/g, "").slice(-40);
                     db.ref(`fcmTokens/${tokenKey}`).set({
                         token,
@@ -968,35 +972,34 @@
                     }).catch(() => {});
                     return token;
                 }
-                if (statusEl) {
-                    statusEl.textContent = "Push status: No FCM token returned.";
-                }
+                setPushStatusText("Push status: No FCM token returned.");
                 return null;
             } catch (err) {
                 console.error("Error getting FCM token:", err);
-                const statusEl = document.getElementById("fcm-token-status");
-                if (statusEl) {
-                    statusEl.textContent = "Push status: Error getting token (" + (err.message || err) + ")";
-                }
+                setPushStatusText("Push status: Error getting token (" + (err.message || err) + ")");
                 return null;
             }
         }
 
         async function requestWebPushPermission() {
-            if (!("Notification" in window)) {
+            const isWebPushSupported = ("Notification" in window) &&
+                (!firebase.messaging || !firebase.messaging.isSupported || firebase.messaging.isSupported());
+
+            if (!isWebPushSupported) {
+                setPushStatusText("Push status: Browser/webview does not support Web Push.");
                 alert("Hindi suportado ng browser na ito ang push notifications.");
                 return;
             }
             try {
                 const perm = await Notification.requestPermission();
                 if (perm !== "granted") {
-                    const statusEl = document.getElementById("fcm-token-status");
-                    if (statusEl) statusEl.textContent = "Push status: Permission not granted (" + perm + ").";
+                    setPushStatusText("Push status: Permission not granted (" + perm + ").");
                     return;
                 }
                 await retrieveAndStoreFcmToken();
             } catch (err) {
                 console.error("Notification permission error:", err);
+                setPushStatusText("Push status: Permission error (" + (err.message || err) + ")");
             }
         }
 
@@ -1399,8 +1402,8 @@
         
         function getChampionIconUrl(champName) {
             if (!champName) return FALLBACK_IMAGES.champ;
-            let rawName = champName.trim();
-            let clean = rawName.toLowerCase().replace(/['\s]/g, '').replace(/[^a-z0-9]/g, '');
+            const rawName = champName.trim();
+            const clean = rawName.toLowerCase().replace(/['\s]/g, '').replace(/[^a-z0-9]/g, '');
             
             const champMap = {
                 'kaisa': 'KaiSa', 'khazix': 'KhaZix', 'chogath': 'ChoGath',
@@ -1415,7 +1418,7 @@
                 'ksante': 'KSante', 'reksai': 'RekSai', 'kogmaw': 'KogMaw', 'leblanc': 'Leblanc'
             };
 
-            let formattedName = champMap[clean] || (rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase().replace(/['\s]/g, ''));
+            const formattedName = champMap[clean] || (rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase().replace(/['\s]/g, ''));
             const url = `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/champion/${formattedName}.png`;
             warmImageCache(url);
             return url;
@@ -1423,7 +1426,7 @@
 
         function getItemIconUrl(itemName) {
             if (!itemName) return '';
-            let cleanKey = itemName.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+            const cleanKey = itemName.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
 
             if (riotItemMap[cleanKey]) {
                 const url = `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/item/${riotItemMap[cleanKey]}.png`;
@@ -1473,7 +1476,7 @@
                 return url;
             }
 
-            for (let key in fallbackMap) {
+            for (const key in fallbackMap) {
                 if (cleanKey.includes(key)) {
                     const url = `https://ddragon.leagueoflegends.com/cdn/${ddragonVer}/img/item/${fallbackMap[key]}.png`;
                     warmImageCache(url);
@@ -1492,12 +1495,12 @@
                 logoEl.src = logo;
             }
             const logoInput = document.getElementById('setting-logo-url');
-            if(logoInput) logoInput.value = logo;
+            if (logoInput) logoInput.value = logo;
         });
 
         function saveSiteLogo() {
             const url = document.getElementById('setting-logo-url').value.trim();
-            if(!url) { alert('Ilagay ang valid logo URL!'); return; }
+            if (!url) { alert('Ilagay ang valid logo URL!'); return; }
             db.ref('settings/logo').set(url).then(() => {
                 alert('Logo updated successfully!');
             }).catch(error => {
@@ -1531,7 +1534,7 @@
 
         db.ref('roster').on('value', snap => {
             allPlayers = [];
-            if(snap.exists()) {
+            if (snap.exists()) {
                 snap.forEach(child => {
                     const p = { id: child.key, ...child.val() };
                     if (p.pfp) warmImageCache(p.pfp);
@@ -1545,7 +1548,7 @@
 
         db.ref('creators').on('value', snap => {
             allCreators = [];
-            if(snap.exists()) {
+            if (snap.exists()) {
                 snap.forEach(child => {
                     const c = { id: child.key, ...child.val() };
                     if (c.pfp) warmImageCache(c.pfp);
@@ -1567,7 +1570,7 @@
 
         db.ref('news').on('value', snap => {
             allNews = [];
-            if(snap.exists()) {
+            if (snap.exists()) {
                 snap.forEach(child => {
                     const n = { id: child.key, ...child.val() };
                     allNews.push(n);
@@ -1581,21 +1584,21 @@
             const section = document.getElementById('news-section');
             const container = document.getElementById('news-carousel-container');
             const controls = document.getElementById('news-nav-controls');
-            if(!section || !container) return;
+            if (!section || !container) return;
 
-            if(allNews.length === 0) {
+            if (allNews.length === 0) {
                 section.classList.add('hidden');
                 return;
             }
 
             section.classList.remove('hidden');
-            if(allNews.length <= 1) {
-                if(controls) controls.classList.add('hidden');
+            if (allNews.length <= 1) {
+                if (controls) controls.classList.add('hidden');
             } else {
-                if(controls) controls.classList.remove('hidden');
+                if (controls) controls.classList.remove('hidden');
             }
 
-            if(currentNewsIndex >= allNews.length) currentNewsIndex = 0;
+            if (currentNewsIndex >= allNews.length) currentNewsIndex = 0;
 
             container.innerHTML = '';
             allNews.forEach((news, idx) => {
@@ -1640,10 +1643,10 @@
 
         function openNewsModal(id) {
             const news = allNews.find(n => n.id === id);
-            if(!news) return;
+            if (!news) return;
 
             const modalContent = document.getElementById('news-modal-content');
-            let linkHtml = news.link ? `<a href="${news.link}" target="_blank" class="inline-block bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition uppercase tracking-wider mt-2"><i class="fa-solid fa-external-link-alt mr-1"></i> Visit Link</a>` : '';
+            const linkHtml = news.link ? `<a href="${news.link}" target="_blank" class="inline-block bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition uppercase tracking-wider mt-2"><i class="fa-solid fa-external-link-alt mr-1"></i> Visit Link</a>` : '';
 
             modalContent.innerHTML = `
                 <div class="h-48 rounded-xl overflow-hidden bg-slate-900 border border-white/10 mb-3">
@@ -1668,7 +1671,7 @@
             const link = document.getElementById('n-link').value.trim();
             const img = await fileToCompressedBase64(document.getElementById('n-img').files[0], 800, 0.8);
 
-            if(!title || !desc) { alert('Ilagay ang Title at Description ng Balita!'); return; }
+            if (!title || !desc) { alert('Ilagay ang Title at Description ng Balita!'); return; }
 
             db.ref('news').push({ title, desc, link, img }).then(() => {
                 alert('News published successfully!');
@@ -1681,9 +1684,9 @@
 
         function renderAdminNews() {
             const container = document.getElementById('admin-news-list');
-            if(!container) return;
+            if (!container) return;
             container.innerHTML = '';
-            if(allNews.length === 0) { container.innerHTML = '<p class="text-[10px] text-slate-400 italic">No news announcements posted.</p>'; return; }
+            if (allNews.length === 0) { container.innerHTML = '<p class="text-[10px] text-slate-400 italic">No news announcements posted.</p>'; return; }
             allNews.forEach(n => {
                 container.innerHTML += `
                     <div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/10 text-xs">
@@ -1698,7 +1701,7 @@
             currentGameFilter = game;
             document.querySelectorAll('.game-tab').forEach(btn => {
                 const text = btn.innerText.toLowerCase();
-                if(text.includes(game.toLowerCase()) || (game === 'ALL' && text === 'all')) {
+                if (text.includes(game.toLowerCase()) || (game === 'ALL' && text === 'all')) {
                     btn.className = 'game-tab bg-red-600 text-white px-4 py-2 rounded-lg border border-red-500/35 whitespace-nowrap transition shadow';
                 } else {
                     btn.className = 'game-tab bg-[#161822]/85 text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition';
@@ -1724,7 +1727,7 @@
             currentMatchFilter = game;
             document.querySelectorAll('.match-tab').forEach(btn => {
                 const text = btn.innerText.toLowerCase();
-                if(text.includes(game.toLowerCase()) || (game === 'ALL' && text.includes('all'))) {
+                if (text.includes(game.toLowerCase()) || (game === 'ALL' && text.includes('all'))) {
                     btn.className = 'match-tab bg-blue-600 text-white px-4 py-2 rounded-lg border border-blue-500/35 whitespace-nowrap transition shadow';
                 } else {
                     btn.className = 'match-tab bg-[#161822]/85 text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition';
@@ -1747,7 +1750,7 @@
 
         function renderRoster(forceRebuild = false) {
             const grid = document.getElementById('roster-grid');
-            if(!grid) return;
+            if (!grid) return;
 
             const newSignature = JSON.stringify(allPlayers.map(p => [p.id, p.ign, p.tag, p.game, p.team, p.role, p.pfp, p.teamlogo]));
             if (!forceRebuild && newSignature === lastRosterSignature) {
@@ -1757,7 +1760,7 @@
             lastRosterSignature = newSignature;
 
             grid.innerHTML = '';
-            if(allPlayers.length === 0) {
+            if (allPlayers.length === 0) {
                 grid.innerHTML = '<p class="text-xs text-slate-400 italic py-4 text-center col-span-full">No players found.</p>';
                 return;
             }
@@ -1849,7 +1852,7 @@
 
         function renderMatches() {
             const list = document.getElementById('match-history-list');
-            if(!list) return;
+            if (!list) return;
             list.innerHTML = '';
             
             const keys = Object.keys(allMatches).filter(key => {
@@ -1858,11 +1861,11 @@
                 return m.game && m.game.toLowerCase() === currentMatchFilter.toLowerCase();
             });
 
-            if(keys.length === 0) { list.innerHTML = '<div class="text-xs text-slate-400 italic col-span-full py-4 text-center">No match history found for this category.</div>'; return; }
+            if (keys.length === 0) { list.innerHTML = '<div class="text-xs text-slate-400 italic col-span-full py-4 text-center">No match history found for this category.</div>'; return; }
 
             keys.forEach(key => {
                 const m = allMatches[key];
-                let color = m.result === 'Win' ? 'text-green-400 bg-green-500/10 border-green-500/20' : 'text-red-400 bg-red-500/10 border-red-500/20';
+                const color = m.result === 'Win' ? 'text-green-400 bg-green-500/10 border-green-500/20' : 'text-red-400 bg-red-500/10 border-red-500/20';
                 list.innerHTML += `
                     <div onclick="openMatchDetails('${key}')" class="bg-[#161822]/85 backdrop-blur-md border border-white/10 hover:border-blue-500/40 rounded-xl p-4 space-y-2 cursor-pointer transition shadow-xl">
                         <div class="flex justify-between items-center">
@@ -1880,23 +1883,23 @@
 
         function renderCreators() {
             const grid = document.getElementById('creators-grid');
-            if(!grid) return;
+            if (!grid) return;
 
             const sig = JSON.stringify(allCreators);
             if (sig === lastCreatorsSignature) return;
             lastCreatorsSignature = sig;
 
             grid.innerHTML = '';
-            if(allCreators.length === 0) {
+            if (allCreators.length === 0) {
                 grid.innerHTML = '<p class="text-xs text-slate-400 italic col-span-full">No content creators added yet.</p>';
                 return;
             }
             allCreators.forEach(c => {
                 let iconsHtml = '';
-                if(c.fb) iconsHtml += `<a href="${c.fb}" target="_blank" class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-[11px] hover:scale-110 transition"><i class="fa-brands fa-facebook-f"></i></a>`;
-                if(c.yt) iconsHtml += `<a href="${c.yt}" target="_blank" class="w-6 h-6 rounded-full bg-red-600 text-white flex items-center justify-center text-[11px] hover:scale-110 transition"><i class="fa-brands fa-youtube"></i></a>`;
-                if(c.tt) iconsHtml += `<a href="${c.tt}" target="_blank" class="w-6 h-6 rounded-full bg-slate-800 border border-white/20 text-white flex items-center justify-center text-[11px] hover:scale-110 transition"><i class="fa-brands fa-tiktok"></i></a>`;
-                if(c.tw) iconsHtml += `<a href="${c.tw}" target="_blank" class="w-6 h-6 rounded-full bg-purple-600 text-white flex items-center justify-center text-[11px] hover:scale-110 transition"><i class="fa-brands fa-twitch"></i></a>`;
+                if (c.fb) iconsHtml += `<a href="${c.fb}" target="_blank" class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-[11px] hover:scale-110 transition"><i class="fa-brands fa-facebook-f"></i></a>`;
+                if (c.yt) iconsHtml += `<a href="${c.yt}" target="_blank" class="w-6 h-6 rounded-full bg-red-600 text-white flex items-center justify-center text-[11px] hover:scale-110 transition"><i class="fa-brands fa-youtube"></i></a>`;
+                if (c.tt) iconsHtml += `<a href="${c.tt}" target="_blank" class="w-6 h-6 rounded-full bg-slate-800 border border-white/20 text-white flex items-center justify-center text-[11px] hover:scale-110 transition"><i class="fa-brands fa-tiktok"></i></a>`;
+                if (c.tw) iconsHtml += `<a href="${c.tw}" target="_blank" class="w-6 h-6 rounded-full bg-purple-600 text-white flex items-center justify-center text-[11px] hover:scale-110 transition"><i class="fa-brands fa-twitch"></i></a>`;
 
                 const avatarSrc = (c.pfp && c.pfp.trim() !== '') ? c.pfp : FALLBACK_IMAGES.player;
 
@@ -1915,7 +1918,7 @@
 
         function renderPartners() {
             const grid = document.getElementById('partners-grid');
-            if(!grid) return;
+            if (!grid) return;
 
             const sig = JSON.stringify(allPartners);
             if (sig === lastPartnersSignature) return;
@@ -1935,9 +1938,9 @@
 
         function renderAdminPlayers() {
             const container = document.getElementById('admin-players-list');
-            if(!container) return;
+            if (!container) return;
             container.innerHTML = '';
-            if(allPlayers.length === 0) { container.innerHTML = '<p class="text-[10px] text-slate-400 italic">No players in database.</p>'; return; }
+            if (allPlayers.length === 0) { container.innerHTML = '<p class="text-[10px] text-slate-400 italic">No players in database.</p>'; return; }
             allPlayers.forEach(p => {
                 container.innerHTML += `
                     <div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/10 text-xs">
@@ -1956,7 +1959,7 @@
 
         function renderAdminMatches() {
             const container = document.getElementById('admin-matches-list');
-            if(!container) return;
+            if (!container) return;
             container.innerHTML = '';
             Object.keys(allMatches).forEach(key => {
                 const m = allMatches[key];
@@ -1974,9 +1977,9 @@
 
         function renderAdminCreators() {
             const container = document.getElementById('admin-creators-list');
-            if(!container) return;
+            if (!container) return;
             container.innerHTML = '';
-            if(allCreators.length === 0) { container.innerHTML = '<p class="text-[10px] text-slate-400 italic">No creators added.</p>'; return; }
+            if (allCreators.length === 0) { container.innerHTML = '<p class="text-[10px] text-slate-400 italic">No creators added.</p>'; return; }
             allCreators.forEach(c => {
                 container.innerHTML += `<div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/10 text-xs"><span class="font-bold text-slate-200 truncate">${c.name}</span><button onclick="deleteItem('creators', '${c.id}')" type="button" class="bg-red-600/20 text-red-400 px-2 py-1 rounded text-[10px]">Delete</button></div>`;
             });
@@ -1984,14 +1987,14 @@
 
         function renderAdminPartners() {
             const container = document.getElementById('admin-partners-list');
-            if(!container) return;
+            if (!container) return;
             container.innerHTML = '';
             Object.keys(allPartners).forEach(key => {
                 container.innerHTML += `<div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/10 text-xs"><span class="font-bold text-slate-200 truncate">${allPartners[key].name}</span><button onclick="deleteItem('partners', '${key}')" type="button" class="bg-red-600/20 text-red-400 px-2 py-1 rounded text-[10px]">Delete</button></div>`;
             });
         }
 
-        function deleteItem(path, id) { if(confirm('Delete this item?')) db.ref(`${path}/${id}`).remove(); }
+        function deleteItem(path, id) { if (confirm('Delete this item?')) db.ref(`${path}/${id}`).remove(); }
 
         function editPlayer(id) {
             const player = allPlayers.find(p => p.id === id);
@@ -2034,23 +2037,23 @@
             const ign = document.getElementById('p-ign').value.trim();
             const tag = document.getElementById('p-tag').value.trim();
             const team = document.getElementById('p-team').value.trim();
-            let teamlogo = document.getElementById('p-teamlogo').value.trim();
+            const teamlogo = document.getElementById('p-teamlogo').value.trim();
             const role = document.getElementById('p-role').value.trim();
 
-            if(!ign) { alert('Mangyaring ilagay ang IGN ng player!'); return; }
+            if (!ign) { alert('Mangyaring ilagay ang IGN ng player!'); return; }
             
             let pfp = cropState.finalBase64;
-            if(!pfp && document.getElementById('p-pfp').files[0]) {
+            if (!pfp && document.getElementById('p-pfp').files[0]) {
                 pfp = await fileToCompressedBase64(document.getElementById('p-pfp').files[0], 400, 0.8);
             }
-            if(editId && !pfp) {
+            if (editId && !pfp) {
                 const existing = allPlayers.find(p => p.id === editId);
-                if(existing) pfp = existing.pfp || '';
+                if (existing) pfp = existing.pfp || '';
             }
 
             const playerData = { game, ign, tag, team, teamlogo, role, pfp };
 
-            if(editId) {
+            if (editId) {
                 db.ref(`roster/${editId}`).update(playerData)
                   .then(() => {
                       alert('Player Profile updated successfully!');
@@ -2115,11 +2118,11 @@
             const blueData = document.getElementById('m-blue-data').value;
             const redData = document.getElementById('m-red-data').value;
 
-            if(!team) return alert('Enter Team Name!');
+            if (!team) return alert('Enter Team Name!');
 
             const matchData = { game, team, opponent, score, type, result, date, blueData, redData };
 
-            if(editKey) {
+            if (editKey) {
                 db.ref(`matches/${editKey}`).update(matchData).then(() => {
                     alert('Scoreboard updated successfully!');
                     resetMatchForm();
@@ -2152,19 +2155,19 @@
 
         function autoFormatRawData(targetId) {
             const el = document.getElementById(targetId);
-            let val = el.value.trim();
-            if(!val) return alert('Maglagay muna ng text bago i-auto format!');
+            const val = el.value.trim();
+            if (!val) return alert('Maglagay muna ng text bago i-auto format!');
 
-            let lines = val.split('\n').filter(l => l.trim() !== '');
-            let formattedLines = lines.map(line => {
+            const lines = val.split('\n').filter(l => l.trim() !== '');
+            const formattedLines = lines.map(line => {
                 if (line.includes('|')) return line;
-                let parts = line.split(/\s{2,}|\t/).filter(p => p.trim() !== '');
+                const parts = line.split(/\s{2,}|\t/).filter(p => p.trim() !== '');
                 if (parts.length >= 3) {
-                    let ign = parts[0] || 'Player';
-                    let champ = parts[1] || 'Aatrox';
-                    let kda = parts[2] || '0/0/0';
-                    let gold = parts[3] || '0';
-                    let items = parts.slice(4).join(', ') || 'Sundered Sky, Plated Steelcaps';
+                    const ign = parts[0] || 'Player';
+                    const champ = parts[1] || 'Aatrox';
+                    const kda = parts[2] || '0/0/0';
+                    const gold = parts[3] || '0';
+                    const items = parts.slice(4).join(', ') || 'Sundered Sky, Plated Steelcaps';
                     return `${ign} | ${champ} | ${kda} | ${gold} | ${items}`;
                 }
                 return line;
@@ -2182,7 +2185,7 @@
                 p.team && p.team.trim().toUpperCase() === teamTag.toUpperCase()
             );
 
-            if(matchingPlayers.length === 0) {
+            if (matchingPlayers.length === 0) {
                 alert(`Walang nahanap na player sa Roster database para sa Game: ${game} at Team: ${teamTag}.\nMag-add muna ng players sa Section 1.`);
                 return;
             }
@@ -2203,7 +2206,7 @@
             const tw = document.getElementById('c-tw').value.trim();
             const pfp = await fileToCompressedBase64(document.getElementById('c-pfp').files[0], 300, 0.8);
             
-            if(!name) { alert('Ilagay ang pangalan ng Creator!'); return; }
+            if (!name) { alert('Ilagay ang pangalan ng Creator!'); return; }
             
             db.ref('creators').push({ name, game, fb, yt, tt, tw, pfp }).then(() => {
                 alert('Creator saved successfully!');
@@ -2250,14 +2253,14 @@
             modalPfp.src = (pfp && pfp.trim() !== '') ? pfp : FALLBACK_IMAGES.player;
             
             const teamLogoEl = document.getElementById('modal-teamlogo');
-            if(teamlogo && teamlogo.trim() !== '') {
+            if (teamlogo && teamlogo.trim() !== '') {
                 teamLogoEl.src = teamlogo;
                 teamLogoEl.classList.remove('hidden');
             } else {
                 teamLogoEl.classList.add('hidden');
             }
 
-            let champStats = {};
+            const champStats = {};
             let totalPlayerMatches = 0;
             const targetIgn = (name || '').trim().toLowerCase();
             const targetIgnNoTag = targetIgn.replace(/^(rrs|rfr|rra)\s+/i, '').trim();
@@ -2337,7 +2340,7 @@
 
         function openMatchDetails(key) {
             const m = allMatches[key];
-            if(!m) return;
+            if (!m) return;
             document.getElementById('match-modal-type').innerText = `${m.game || 'Wild Rift'} • ${m.type || 'Tournament'}`;
             document.getElementById('match-modal-teams').innerText = `${m.team} vs ${m.opponent}`;
             document.getElementById('match-modal-score').innerText = m.score || '0 - 0';
@@ -2348,23 +2351,23 @@
 
             const parseRows = (data, isBlue) => {
                 let html = '';
-                if(!data) return '<p class="text-[10px] text-slate-400 italic">No player stats recorded.</p>';
+                if (!data) return '<p class="text-[10px] text-slate-400 italic">No player stats recorded.</p>';
                 data.split('\n').forEach(line => {
-                    if(!line.trim()) return;
-                    let parts = line.split('|').map(s => s.trim());
-                    let ign = parts[0] || 'Player';
-                    let champ = parts[1] || 'Aatrox';
-                    let kda = parts[2] || '0/0/0';
-                    let gold = parts[3] || '0';
+                    if (!line.trim()) return;
+                    const parts = line.split('|').map(s => s.trim());
+                    const ign = parts[0] || 'Player';
+                    const champ = parts[1] || 'Aatrox';
+                    const kda = parts[2] || '0/0/0';
+                    const gold = parts[3] || '0';
                     
-                    let rawItemsStr = parts.length >= 5 ? parts[parts.length - 1] : '';
-                    let itemsList = rawItemsStr ? rawItemsStr.split(',').map(i => i.trim()) : [];
+                    const rawItemsStr = parts.length >= 5 ? parts[parts.length - 1] : '';
+                    const itemsList = rawItemsStr ? rawItemsStr.split(',').map(i => i.trim()) : [];
 
                     let itemsHtml = '';
-                    for(let k=0; k<6; k++) {
+                    for (let k = 0; k < 6; k++) {
                         const itemName = itemsList[k] || '';
                         const itemImg = getItemIconUrl(itemName);
-                        if(itemName && itemImg) {
+                        if (itemName && itemImg) {
                             itemsHtml += `<img src="${itemImg}" decoding="async" class="w-5 h-5 rounded bg-slate-800 border border-white/10 object-cover" title="${itemName}" onerror="this.onerror=null;this.style.display='none'">`;
                         } else {
                             itemsHtml += `<div class="w-5 h-5 rounded bg-black/40 border border-white/5"></div>`;
