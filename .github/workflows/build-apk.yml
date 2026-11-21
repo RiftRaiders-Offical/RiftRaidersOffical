@@ -30,25 +30,10 @@ jobs:
           java-version: '17'
 
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v4
         with:
           accept-android-sdk-licenses: true
-          log-accepted-android-sdk-licenses: true
-
-      - name: Accept Android SDK Licenses
-        run: |
-          SDK_ROOT="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-/usr/local/lib/android/sdk}}"
-          for bin in \
-            "$SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" \
-            "$SDK_ROOT/cmdline-tools/20.0/bin/sdkmanager" \
-            "$SDK_ROOT/cmdline-tools/16.0/bin/sdkmanager" \
-            "$SDK_ROOT/cmdline-tools/tools/bin/sdkmanager" \
-            "$SDK_ROOT/tools/bin/sdkmanager"
-          do
-            if [ -x "$bin" ]; then
-              (while true; do echo y; sleep 0.1; done) | "$bin" --sdk_root="$SDK_ROOT" --licenses >/dev/null 2>&1 || true
-            fi
-          done
+          log-accepted-android-sdk-licenses: false
 
       - name: Prepare www folder and index.html
         run: |
@@ -65,6 +50,7 @@ jobs:
             echo "Error: index.html not found in root or www/"
             exit 1
           fi
+          ls -la www
 
       - name: Initialize Capacitor and Android project if missing
         run: |
