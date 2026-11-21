@@ -35,33 +35,40 @@ jobs:
           accept-android-sdk-licenses: true
           log-accepted-android-sdk-licenses: true
 
-      - name: Accept all Android SDK licenses non-interactively
+      - name: Accept Android SDK Licenses
         run: |
           SDK_ROOT="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-/usr/local/lib/android/sdk}}"
           for bin in \
             "$SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" \
+            "$SDK_ROOT/cmdline-tools/20.0/bin/sdkmanager" \
+            "$SDK_ROOT/cmdline-tools/16.0/bin/sdkmanager" \
             "$SDK_ROOT/cmdline-tools/tools/bin/sdkmanager" \
             "$SDK_ROOT/tools/bin/sdkmanager"
           do
             if [ -x "$bin" ]; then
-              yes | "$bin" --sdk_root="$SDK_ROOT" --licenses >/dev/null 2>&1 || true
+              (while true; do echo y; sleep 0.1; done) | "$bin" --sdk_root="$SDK_ROOT" --licenses >/dev/null 2>&1 || true
             fi
           done
 
-      - name: Ensure www directory and synced web files
+      - name: Prepare www folder and index.html
         run: |
-          if [ -f "www" ] && [ ! -d "www" ]; then
-            rm -f www
+          set -e
+          if [ -e "www" ] && [ ! -d "www" ]; then
+            rm -f "www"
           fi
-          mkdir -p www
+          mkdir -p "www"
           if [ -f "index.html" ]; then
-            cp -f index.html www/index.html
+            cp -f "index.html" "www/index.html"
           elif [ -f "www/index.html" ]; then
-            cp -f www/index.html index.html
+            cp -f "www/index.html" "index.html"
+          else
+            echo "Error: index.html not found in root or www/"
+            exit 1
           fi
 
       - name: Initialize Capacitor and Android project if missing
         run: |
+          set -e
           if [ ! -f "package.json" ]; then
             npm init -y
           fi
@@ -83,6 +90,7 @@ jobs:
 
       - name: Bump Android versionCode and versionName
         run: |
+          set -e
           GRADLE_FILE="android/app/build.gradle"
           if [ -f "$GRADLE_FILE" ]; then
             NEW_VERSION_CODE=$((100 + ${GITHUB_RUN_NUMBER:-1}))
@@ -106,11 +114,13 @@ jobs:
 
       - name: Sync web assets to Android
         run: |
-          cp -f index.html www/index.html 2>/dev/null || true
+          set -e
+          cp -f "index.html" "www/index.html"
           npx cap copy android
 
       - name: Build Debug APK
         run: |
+          set -e
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug
