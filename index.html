@@ -63,7 +63,7 @@
                     <i class="fa-solid fa-paper-plane"></i>
                     <span>APPLY</span>
                 </a>
-                <button onclick="openAdminModal()" class="bg-[#161822]/80 hover:bg-slate-800 text-slate-400 hover:text-white px-3 py-1.5 rounded-lg font-bold text-xs flex items-center justify-center space-x-1.5 transition border border-white/5" title="Admin Portal">
+                <button onclick="openAdminModal()" type="button" class="bg-[#161822]/80 hover:bg-slate-800 text-slate-400 hover:text-white px-3 py-1.5 rounded-lg font-bold text-xs flex items-center justify-center space-x-1.5 transition border border-white/5" title="Admin Portal">
                     <i class="fa-solid fa-lock text-red-500"></i>
                     <span>ADMIN</span>
                 </button>
@@ -73,11 +73,11 @@
 
     <div id="admin-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-[#161822] border border-white/10 rounded-2xl p-6 w-full max-w-xs text-center relative shadow-2xl">
-            <button onclick="closeAdminModal()" class="absolute top-3 right-3 text-slate-400 hover:text-white text-sm">✕</button>
+            <button onclick="closeAdminModal()" type="button" class="absolute top-3 right-3 text-slate-400 hover:text-white text-sm">✕</button>
             <div class="text-red-500 font-black italic text-xl mb-1">RR ADMIN PORTAL</div>
             <p class="text-[10px] text-slate-400 mb-4">Enter password to access management settings</p>
             <input type="password" id="admin-pass-input" placeholder="Enter Password" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs text-white text-center mb-3 focus:outline-none focus:border-red-500">
-            <button onclick="verifyAdminPass()" class="w-full bg-red-600 hover:bg-red-700 py-2 rounded text-xs font-bold uppercase tracking-wider transition">Login</button>
+            <button onclick="verifyAdminPass()" type="button" class="w-full bg-red-600 hover:bg-red-700 py-2 rounded text-xs font-bold uppercase tracking-wider transition">Login</button>
         </div>
     </div>
 
@@ -120,8 +120,8 @@
                     <h2 class="font-black text-sm text-white uppercase tracking-widest">News & Announcements</h2>
                 </div>
                 <div class="flex items-center space-x-1" id="news-nav-controls">
-                    <button onclick="prevNewsSlide()" class="w-7 h-7 rounded-lg bg-[#161822] border border-white/10 hover:bg-slate-800 text-slate-300 flex items-center justify-center transition"><i class="fa-solid fa-chevron-left text-xs"></i></button>
-                    <button onclick="nextNewsSlide()" class="w-7 h-7 rounded-lg bg-[#161822] border border-white/10 hover:bg-slate-800 text-slate-300 flex items-center justify-center transition"><i class="fa-solid fa-chevron-right text-xs"></i></button>
+                    <button onclick="prevNewsSlide()" type="button" class="w-7 h-7 rounded-lg bg-[#161822] border border-white/10 hover:bg-slate-800 text-slate-300 flex items-center justify-center transition"><i class="fa-solid fa-chevron-left text-xs"></i></button>
+                    <button onclick="nextNewsSlide()" type="button" class="w-7 h-7 rounded-lg bg-[#161822] border border-white/10 hover:bg-slate-800 text-slate-300 flex items-center justify-center transition"><i class="fa-solid fa-chevron-right text-xs"></i></button>
                 </div>
             </div>
 
@@ -136,19 +136,19 @@
                 <div class="w-1 h-4 bg-red-600"></div>
                 <h2 class="font-black text-sm text-white uppercase tracking-widest">About Us</h2>
             </div>
-            <p class="text-xs md:text-sm text-slate-300 leading-relaxed">
+            <p id="about-us-text" class="text-xs md:text-sm text-slate-300 leading-relaxed whitespace-pre-line">
                 Rift Raiders began its journey in 2024 as a dedicated competitive team. After a year of climbing the ranks, we expanded in April 2025 by establishing our official guild. Today, we continue to field elite rosters ready to conquer the rift and arena.
             </p>
         </section>
 
         <!-- ACHIEVEMENTS & MILESTONES -->
-        <section class="space-y-4">
+        <section id="achievements-section" class="space-y-4 scroll-mt-20">
             <div class="flex items-center space-x-2">
                 <div class="w-1 h-4 bg-red-600"></div>
                 <h2 class="font-black text-sm text-white uppercase tracking-widest">Guild Achievements & Milestones</h2>
             </div>
             
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <div id="achievements-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 <div class="bg-[#161822]/85 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden group hover:border-red-500/40 transition shadow-xl flex flex-col">
                     <div class="h-36 bg-slate-900 overflow-hidden relative">
                         <img src="https://basepic.com/3CE5wRff/54a869d5-12fa-4e33-b0e9-346c65b6c21f.png" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="The Spirit Showdown">
@@ -200,10 +200,10 @@
             </div>
             
             <div class="flex gap-2 overflow-x-auto pb-1 text-xs font-bold">
-                <button onclick="filterGame('ALL')" class="game-tab bg-red-600 text-white px-4 py-2 rounded-lg border border-red-500/35 whitespace-nowrap transition shadow">ALL</button>
-                <button onclick="filterGame('Wild Rift')" class="game-tab bg-[#161822]/85 backdrop-blur-md text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition">WILD RIFT</button>
-                <button onclick="filterGame('League of Legends')" class="game-tab bg-[#161822]/85 backdrop-blur-md text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition">LOL PC</button>
-                <button onclick="filterGame('Valorant')" class="game-tab bg-[#161822]/85 backdrop-blur-md text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition">VALORANT</button>
+                <button onclick="filterGame('ALL')" type="button" class="game-tab bg-red-600 text-white px-4 py-2 rounded-lg border border-red-500/35 whitespace-nowrap transition shadow">ALL</button>
+                <button onclick="filterGame('Wild Rift')" type="button" class="game-tab bg-[#161822]/85 backdrop-blur-md text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition">WILD RIFT</button>
+                <button onclick="filterGame('League of Legends')" type="button" class="game-tab bg-[#161822]/85 backdrop-blur-md text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition">LOL PC</button>
+                <button onclick="filterGame('Valorant')" type="button" class="game-tab bg-[#161822]/85 backdrop-blur-md text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition">VALORANT</button>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4" id="roster-grid">
@@ -221,10 +221,10 @@
             </div>
 
             <div class="flex gap-2 overflow-x-auto pb-1 text-xs font-bold">
-                <button onclick="filterMatchGame('ALL')" class="match-tab bg-blue-600 text-white px-4 py-2 rounded-lg border border-blue-500/35 whitespace-nowrap transition shadow">ALL GAMES</button>
-                <button onclick="filterMatchGame('Wild Rift')" class="match-tab bg-[#161822]/85 backdrop-blur-md text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition">WILD RIFT</button>
-                <button onclick="filterMatchGame('League of Legends')" class="match-tab bg-[#161822]/85 backdrop-blur-md text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition">LOL PC</button>
-                <button onclick="filterMatchGame('Valorant')" class="match-tab bg-[#161822]/85 backdrop-blur-md text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition">VALORANT</button>
+                <button onclick="filterMatchGame('ALL')" type="button" class="match-tab bg-blue-600 text-white px-4 py-2 rounded-lg border border-blue-500/35 whitespace-nowrap transition shadow">ALL GAMES</button>
+                <button onclick="filterMatchGame('Wild Rift')" type="button" class="match-tab bg-[#161822]/85 backdrop-blur-md text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition">WILD RIFT</button>
+                <button onclick="filterMatchGame('League of Legends')" type="button" class="match-tab bg-[#161822]/85 backdrop-blur-md text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition">LOL PC</button>
+                <button onclick="filterMatchGame('Valorant')" type="button" class="match-tab bg-[#161822]/85 backdrop-blur-md text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition">VALORANT</button>
             </div>
 
             <div id="match-history-list" class="grid grid-cols-1 gap-3 text-xs text-slate-400">Loading matches...</div>
@@ -292,10 +292,49 @@
                     <div class="w-8 h-8 rounded-full bg-red-600/20 border border-red-500/40 flex items-center justify-center font-black text-red-500 text-xs">YOU</div>
                     <div>
                         <h3 class="text-white font-black text-xs uppercase tracking-wider">Admin Dashboard Unlocked</h3>
-                        <p class="text-[9px] text-slate-400">Management Panel Active • Custom Image Cropper Enabled</p>
+                        <p class="text-[9px] text-slate-400">Management Panel Active • About, Achievements & Cropper Ready</p>
                     </div>
                 </div>
-                <button onclick="lockAdmin()" class="bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/40 px-3 py-1 rounded text-[10px] font-bold">Lock Admin</button>
+                <button onclick="lockAdmin()" type="button" class="bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/40 px-3 py-1 rounded text-[10px] font-bold">Lock Admin</button>
+            </div>
+
+            <!-- EDIT ABOUT US ADMIN -->
+            <div class="bg-[#161822] p-5 rounded-xl border border-white/10 space-y-4 shadow-xl">
+                <h3 class="font-black text-xs uppercase text-red-500">Edit About Us</h3>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase">About Us Description:</label>
+                    <textarea id="setting-about-us" rows="4" placeholder="Ilagay ang About Us description ng Rift Raiders..." class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500 text-slate-200"></textarea>
+                </div>
+                <button onclick="saveAboutUs()" type="button" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save About Us</button>
+            </div>
+
+            <!-- MANAGE GUILD ACHIEVEMENTS & MILESTONES -->
+            <div class="bg-[#161822] p-5 rounded-xl border border-white/10 space-y-4 shadow-xl">
+                <div class="flex justify-between items-center">
+                    <h3 id="achievement-form-title" class="font-black text-xs uppercase text-red-500">Manage Guild Achievements & Milestones</h3>
+                    <button id="cancel-achievement-edit-btn" onclick="resetAchievementForm()" type="button" class="hidden text-[9px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded hover:bg-slate-700">Cancel Edit</button>
+                </div>
+                <input type="hidden" id="editing-achievement-id" value="">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">Achievement Title:</label>
+                        <input type="text" id="a-title" placeholder="e.g. The Spirit Showdown" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 text-white">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">Date / Tag Badge:</label>
+                        <input type="text" id="a-date" placeholder="e.g. Feb 21, 2026 or Active" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 text-white">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase">Description / Milestone Details:</label>
+                    <textarea id="a-desc" rows="3" placeholder="Ilagay ang detalye ng achievement o milestone..." class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 text-slate-300"></textarea>
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase">Achievement Photo:</label>
+                    <input type="file" id="a-img" accept="image/*" class="w-full text-xs text-slate-400 mt-1">
+                </div>
+                <button id="save-achievement-btn" onclick="saveAchievement()" type="button" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save Achievement</button>
+                <div id="admin-achievements-list" class="space-y-2 max-h-48 overflow-y-auto mt-2"></div>
             </div>
 
             <!-- NEWS ADMIN -->
@@ -319,7 +358,7 @@
                     <label class="text-[10px] font-bold text-slate-400 uppercase">News Photo:</label>
                     <input type="file" id="n-img" accept="image/*" class="w-full text-xs text-slate-400 mt-1">
                 </div>
-                <button onclick="addNews()" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Publish Announcement</button>
+                <button onclick="addNews()" type="button" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Publish Announcement</button>
                 <div id="admin-news-list" class="space-y-2 max-h-40 overflow-y-auto mt-2"></div>
             </div>
 
@@ -329,14 +368,14 @@
                     <label class="text-[10px] font-bold text-slate-400 uppercase">Logo Image Link (URL):</label>
                     <input type="text" id="setting-logo-url" placeholder="https://..." class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500 text-white">
                 </div>
-                <button onclick="saveSiteLogo()" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Update Logo</button>
+                <button onclick="saveSiteLogo()" type="button" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Update Logo</button>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="bg-[#161822] p-5 rounded-xl border border-white/10 space-y-4 shadow-xl">
                     <div class="flex justify-between items-center">
                         <h3 id="player-form-title" class="font-black text-xs uppercase text-red-500">1. Add & Manage Competitive Player</h3>
-                        <button id="cancel-edit-btn" onclick="resetPlayerForm()" class="hidden text-[9px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded hover:bg-slate-700">Cancel Edit</button>
+                        <button id="cancel-edit-btn" onclick="resetPlayerForm()" type="button" class="hidden text-[9px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded hover:bg-slate-700">Cancel Edit</button>
                     </div>
                     
                     <input type="hidden" id="editing-player-id" value="">
@@ -378,7 +417,7 @@
                         <input type="file" id="p-pfp" accept="image/*" onchange="previewAndCropImage(this)" class="w-full text-xs text-slate-400 mt-1">
                     </div>
                     
-                    <button id="save-player-btn" onclick="addPlayer()" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save Player</button>
+                    <button id="save-player-btn" onclick="addPlayer()" type="button" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save Player</button>
                     
                     <div class="mt-4 pt-3 border-t border-white/10">
                         <p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Existing Players List:</p>
@@ -389,7 +428,7 @@
                 <div class="bg-[#161822] p-5 rounded-xl border border-white/10 space-y-4 shadow-xl">
                     <div class="flex justify-between items-center">
                         <h3 id="match-form-title" class="font-black text-xs uppercase text-red-500">2. Add / Edit Full 5v5 Match</h3>
-                        <button id="cancel-match-edit-btn" onclick="resetMatchForm()" class="hidden text-[9px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded hover:bg-slate-700">Cancel Edit</button>
+                        <button id="cancel-match-edit-btn" onclick="resetMatchForm()" type="button" class="hidden text-[9px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded hover:bg-slate-700">Cancel Edit</button>
                     </div>
                     
                     <input type="hidden" id="editing-match-id" value="">
@@ -480,7 +519,7 @@
                         </div>
                     </div>
 
-                    <button id="save-match-btn" onclick="addMatch()" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save 5v5 Scoreboard</button>
+                    <button id="save-match-btn" onclick="addMatch()" type="button" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save 5v5 Scoreboard</button>
                     
                     <div class="mt-4 pt-3 border-t border-white/10">
                         <p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Existing Matches List:</p>
@@ -523,7 +562,7 @@
                         <label class="text-[10px] font-bold text-slate-400 uppercase">Profile Photo:</label>
                         <input type="file" id="c-pfp" accept="image/*" class="w-full text-xs text-slate-400 mt-1">
                     </div>
-                    <button onclick="addCreator()" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save Creator</button>
+                    <button onclick="addCreator()" type="button" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save Creator</button>
                     <div id="admin-creators-list" class="space-y-2 max-h-40 overflow-y-auto mt-2"></div>
                 </div>
 
@@ -541,7 +580,7 @@
                         <label class="text-[10px] font-bold text-slate-400 uppercase">Link:</label>
                         <input type="text" id="part-link" placeholder="https://..." class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 text-white">
                     </div>
-                    <button onclick="addPartner()" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save Partner</button>
+                    <button onclick="addPartner()" type="button" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save Partner</button>
                     <div id="admin-partners-list" class="space-y-2 max-h-40 overflow-y-auto mt-2"></div>
                 </div>
             </div>
@@ -567,8 +606,8 @@
             </div>
 
             <div class="flex space-x-2 pt-2">
-                <button onclick="cancelCrop()" class="w-1/2 bg-slate-800 hover:bg-slate-700 py-2 rounded text-xs font-bold uppercase transition text-slate-300">Cancel</button>
-                <button onclick="confirmCrop()" class="w-1/2 bg-red-600 hover:bg-red-700 py-2 rounded text-xs font-bold uppercase transition text-white">Crop & Save</button>
+                <button onclick="cancelCrop()" type="button" class="w-1/2 bg-slate-800 hover:bg-slate-700 py-2 rounded text-xs font-bold uppercase transition text-slate-300">Cancel</button>
+                <button onclick="confirmCrop()" type="button" class="w-1/2 bg-red-600 hover:bg-red-700 py-2 rounded text-xs font-bold uppercase transition text-white">Crop & Save</button>
             </div>
         </div>
     </div>
@@ -576,7 +615,7 @@
     <!-- NEWS DETAILS MODAL -->
     <div id="news-modal-backdrop" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 hidden transition-opacity duration-300">
         <div class="bg-[#121212] border border-red-600/30 rounded-2xl p-6 w-full max-w-lg shadow-2xl relative">
-            <button onclick="closeNewsModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white w-7 h-7 flex items-center justify-center bg-white/5 rounded-full">✕</button>
+            <button onclick="closeNewsModal()" type="button" class="absolute top-4 right-4 text-slate-400 hover:text-white w-7 h-7 flex items-center justify-center bg-white/5 rounded-full">✕</button>
             <div id="news-modal-content" class="space-y-4"></div>
         </div>
     </div>
@@ -584,7 +623,7 @@
     <!-- PLAYER STATS MODAL -->
     <div id="player-modal-backdrop" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 hidden transition-opacity duration-300">
         <div id="player-modal-card" class="bg-[#121212] border border-red-600/30 rounded-2xl p-5 w-full max-w-md shadow-[0_0_30px_rgba(255,42,45,0.15)] relative transform scale-95 opacity-0 transition-all duration-300 max-h-[90vh] overflow-y-auto">
-            <button onclick="closePlayerStats()" class="absolute top-4 right-4 text-slate-500 hover:text-white w-6 h-6 flex items-center justify-center bg-white/5 rounded-full">✕</button>
+            <button onclick="closePlayerStats()" type="button" class="absolute top-4 right-4 text-slate-500 hover:text-white w-6 h-6 flex items-center justify-center bg-white/5 rounded-full">✕</button>
 
             <div class="flex items-center space-x-4 mb-5">
                 <div class="w-[60px] h-[60px] rounded-lg border-[3px] border-red-500 overflow-hidden bg-slate-800 shrink-0">
@@ -629,7 +668,7 @@
     <!-- MATCH DETAILS MODAL -->
     <div id="match-modal-backdrop" class="fixed inset-0 bg-black/95 flex items-center justify-center z-50 p-2 sm:p-4 hidden transition-opacity duration-300">
         <div id="match-modal-card" class="bg-[#0b0c10] border border-blue-500/30 rounded-2xl p-4 sm:p-6 w-full max-w-4xl shadow-[0_0_50px_rgba(37,99,235,0.2)] relative transform scale-95 opacity-0 transition-all duration-300 space-y-4 max-h-[95vh] overflow-y-auto">
-            <button onclick="closeMatchModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white w-7 h-7 flex items-center justify-center bg-white/10 rounded-full">✕</button>
+            <button onclick="closeMatchModal()" type="button" class="absolute top-4 right-4 text-slate-400 hover:text-white w-7 h-7 flex items-center justify-center bg-white/10 rounded-full">✕</button>
 
             <div class="flex flex-col sm:flex-row justify-between items-center border-b border-white/10 pb-3 gap-2 text-center sm:text-left">
                 <div>
@@ -857,11 +896,42 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
+        const defaultAboutText = "Rift Raiders began its journey in 2024 as a dedicated competitive team. After a year of climbing the ranks, we expanded in April 2025 by establishing our official guild. Today, we continue to field elite rosters ready to conquer the rift and arena.";
+
+        const defaultAchievements = [
+            {
+                id: 'default-1',
+                title: 'The Spirit Showdown',
+                date: 'Feb 21, 2026',
+                desc: 'Successfully organized and hosted a grassroots 5v5 esports tournament last February 21, 2026, showcasing competitive integrity and passion for the Wild Rift PH community.',
+                img: 'https://basepic.com/3CE5wRff/54a869d5-12fa-4e33-b0e9-346c65b6c21f.png',
+                isDefault: true
+            },
+            {
+                id: 'default-2',
+                title: 'Elite Roster Dominance',
+                date: '2024 - 2026',
+                desc: 'Active and consistent competitive presence, battling it out in major tournaments and live matches across Wild Rift, League of Legends (PC), and Valorant.',
+                img: 'https://basepic.com/FJ4BMxde/7c7ec39d-c3d2-4c91-a96e-c45d2b9a4343.png',
+                isDefault: true
+            },
+            {
+                id: 'default-3',
+                title: 'Community & Guild Growth',
+                date: 'Active',
+                desc: 'Built robust community networks and active Discord channels to coordinate teams, manage scrims, and unite players.',
+                img: 'https://basepic.com/UZKYBjWe/b92d00df-c182-4e99-8fea-c19d638676f0.jpg',
+                isDefault: true
+            }
+        ];
+
         let allPlayers = [];
         let allMatches = {};
         let allCreators = [];
         let allPartners = {};
         let allNews = [];
+        let allAchievements = [];
+        let hasCustomAchievements = false;
         let currentNewsIndex = 0;
         let currentGameFilter = 'ALL';
         let currentMatchFilter = 'ALL';
@@ -869,7 +939,7 @@
         let lastCreatorsSignature = '';
         let lastPartnersSignature = '';
 
-        /* SAFE IN-APP NOTIFICATION STATE (NO NATIVE PUSH) */
+        /* SAFE IN-APP NOTIFICATION + OPTIONAL CAPACITOR LOCAL/PUSH BRIDGE */
         let rrNotifications = [];
         let rrUnreadCount = 0;
         let seenIds = {
@@ -882,6 +952,35 @@
             roster: false,
             matches: false
         };
+
+        async function triggerNativePhoneNotificationSafe(title, body) {
+            try {
+                if (window.Capacitor && typeof window.Capacitor.isNativePlatform === 'function' && window.Capacitor.isNativePlatform()) {
+                    const plugins = window.Capacitor.Plugins || {};
+                    if (plugins.LocalNotifications) {
+                        if (typeof plugins.LocalNotifications.checkPermissions === 'function') {
+                            const perm = await plugins.LocalNotifications.checkPermissions();
+                            if (perm && perm.display !== 'granted' && typeof plugins.LocalNotifications.requestPermissions === 'function') {
+                                const req = await plugins.LocalNotifications.requestPermissions();
+                                if (!req || req.display !== 'granted') return;
+                            }
+                        }
+                        if (typeof plugins.LocalNotifications.schedule === 'function') {
+                            await plugins.LocalNotifications.schedule({
+                                notifications: [{
+                                    title: String(title || 'Rift Raiders'),
+                                    body: String(body || 'New update available.'),
+                                    id: Math.floor(Date.now() % 2147483647),
+                                    schedule: { at: new Date(Date.now() + 250) }
+                                }]
+                            });
+                        }
+                    }
+                }
+            } catch (err) {
+                console.log('Native notification skipped safely:', err);
+            }
+        }
 
         function showInAppToast(title, message, targetSelector) {
             const container = document.getElementById('rr-toast-container');
@@ -918,6 +1017,7 @@
             updateNotifBadge();
             renderNotifDrawer();
             showInAppToast(title, message, targetSelector);
+            triggerNativePhoneNotificationSafe(title, message);
         }
 
         function updateNotifBadge() {
@@ -1020,6 +1120,157 @@
                 }
             });
             db.ref('matches').once('value', () => { initialLoaded.matches = true; });
+        }
+
+        /* ABOUT US SETTINGS */
+        db.ref('settings/aboutUs').on('value', snap => {
+            const aboutVal = (snap.val() || '').trim();
+            const finalAbout = aboutVal || defaultAboutText;
+            const aboutEl = document.getElementById('about-us-text');
+            if (aboutEl) aboutEl.textContent = finalAbout;
+            const aboutInput = document.getElementById('setting-about-us');
+            if (aboutInput && document.activeElement !== aboutInput) {
+                aboutInput.value = finalAbout;
+            }
+        });
+
+        function saveAboutUs() {
+            const aboutVal = document.getElementById('setting-about-us').value.trim();
+            if (!aboutVal) {
+                alert('Ilagay ang About Us description!');
+                return;
+            }
+            db.ref('settings/aboutUs').set(aboutVal).then(() => {
+                alert('About Us updated successfully!');
+            }).catch(err => alert('Error saving About Us: ' + err.message));
+        }
+
+        /* ACHIEVEMENTS & MILESTONES CRUD */
+        db.ref('achievements').on('value', snap => {
+            allAchievements = [];
+            hasCustomAchievements = snap.exists();
+            if (hasCustomAchievements) {
+                snap.forEach(child => {
+                    const a = { id: child.key, ...child.val(), isDefault: false };
+                    if (a.img) warmImageCache(a.img);
+                    allAchievements.push(a);
+                });
+            }
+            renderAchievements();
+            renderAdminAchievements();
+        });
+
+        function renderAchievements() {
+            const grid = document.getElementById('achievements-grid');
+            if (!grid) return;
+
+            const itemsToRender = hasCustomAchievements ? allAchievements : defaultAchievements;
+
+            grid.innerHTML = '';
+            itemsToRender.forEach(a => {
+                const imgSrc = (a.img && a.img.trim() !== '') ? a.img : FALLBACK_IMAGES.logo;
+                grid.innerHTML += `
+                    <div class="bg-[#161822]/85 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden group hover:border-red-500/40 transition shadow-xl flex flex-col">
+                        <div class="h-36 bg-slate-900 overflow-hidden relative">
+                            <img src="${imgSrc}" decoding="async" onload="this.classList.add('loaded')" onerror="handleImgError(this, 'logo')" class="img-fade w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="${a.title || 'Achievement'}">
+                            ${a.date ? `<div class="absolute top-2 right-2 bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded uppercase shadow">${a.date}</div>` : ''}
+                        </div>
+                        <div class="p-4 space-y-1 flex-1 flex flex-col justify-between">
+                            <div>
+                                <h3 class="font-black text-white text-xs uppercase tracking-wider">${a.title || 'Untitled Milestone'}</h3>
+                                <p class="text-[11px] text-slate-300 mt-1">${a.desc || ''}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function editAchievement(id) {
+            const item = allAchievements.find(a => a.id === id);
+            if (!item) return;
+
+            document.getElementById('editing-achievement-id').value = id;
+            document.getElementById('a-title').value = item.title || '';
+            document.getElementById('a-date').value = item.date || '';
+            document.getElementById('a-desc').value = item.desc || '';
+            document.getElementById('a-img').value = '';
+
+            document.getElementById('achievement-form-title').innerText = "Edit Achievement (" + (item.title || 'Milestone') + ")";
+            document.getElementById('save-achievement-btn').innerText = "Update Achievement";
+            document.getElementById('cancel-achievement-edit-btn').classList.remove('hidden');
+
+            window.scrollTo({ top: document.getElementById('achievement-form-title').offsetTop - 70, behavior: 'smooth' });
+        }
+
+        function resetAchievementForm() {
+            document.getElementById('editing-achievement-id').value = '';
+            document.getElementById('a-title').value = '';
+            document.getElementById('a-date').value = '';
+            document.getElementById('a-desc').value = '';
+            document.getElementById('a-img').value = '';
+
+            document.getElementById('achievement-form-title').innerText = "Manage Guild Achievements & Milestones";
+            document.getElementById('save-achievement-btn').innerText = "Save Achievement";
+            document.getElementById('cancel-achievement-edit-btn').classList.add('hidden');
+        }
+
+        async function saveAchievement() {
+            const editId = document.getElementById('editing-achievement-id').value;
+            const title = document.getElementById('a-title').value.trim();
+            const date = document.getElementById('a-date').value.trim();
+            const desc = document.getElementById('a-desc').value.trim();
+            const fileInput = document.getElementById('a-img');
+
+            if (!title || !desc) {
+                alert('Ilagay ang Title at Description ng Achievement!');
+                return;
+            }
+
+            let img = '';
+            if (fileInput && fileInput.files && fileInput.files[0]) {
+                img = await fileToCompressedBase64(fileInput.files[0], 800, 0.8);
+            } else if (editId) {
+                const existing = allAchievements.find(a => a.id === editId);
+                if (existing) img = existing.img || '';
+            }
+
+            const achData = { title, date, desc, img };
+
+            if (editId) {
+                db.ref(`achievements/${editId}`).update(achData).then(() => {
+                    alert('Achievement updated successfully!');
+                    resetAchievementForm();
+                }).catch(err => alert('Error updating achievement: ' + err.message));
+            } else {
+                db.ref('achievements').push(achData).then(() => {
+                    alert('Achievement saved successfully!');
+                    resetAchievementForm();
+                }).catch(err => alert('Error saving achievement: ' + err.message));
+            }
+        }
+
+        function renderAdminAchievements() {
+            const container = document.getElementById('admin-achievements-list');
+            if (!container) return;
+            container.innerHTML = '';
+
+            if (!hasCustomAchievements || allAchievements.length === 0) {
+                container.innerHTML = '<p class="text-[10px] text-slate-400 italic">Showing default milestones. Add a custom achievement above to manage items in Firebase.</p>';
+                return;
+            }
+
+            allAchievements.forEach(a => {
+                container.innerHTML += `
+                    <div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/10 text-xs">
+                        <span class="font-bold text-slate-200 truncate pr-2">${a.title} ${a.date ? `(${a.date})` : ''}</span>
+                        <div class="flex items-center space-x-1 shrink-0">
+                            <button onclick="editAchievement('${a.id}')" type="button" class="bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 px-2 py-1 rounded text-[10px] font-bold">Edit</button>
+                            <button onclick="deleteItem('achievements', '${a.id}')" type="button" class="bg-red-600/20 text-red-400 hover:bg-red-600/30 px-2 py-1 rounded text-[10px] font-bold">Delete</button>
+                        </div>
+                    </div>
+                `;
+            });
         }
 
         const defaultLogoUrl = "https://i.ibb.co/6R7QW3L/79923.jpg";
@@ -1333,7 +1584,7 @@
                 container.innerHTML += `
                     <div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/10 text-xs">
                         <span class="font-bold text-slate-200 truncate pr-2">${n.title}</span>
-                        <button onclick="deleteItem('news', '${n.id}')" class="bg-red-600/20 text-red-400 hover:bg-red-600/30 px-2 py-1 rounded text-[10px] font-bold shrink-0">Delete</button>
+                        <button onclick="deleteItem('news', '${n.id}')" type="button" class="bg-red-600/20 text-red-400 hover:bg-red-600/30 px-2 py-1 rounded text-[10px] font-bold shrink-0">Delete</button>
                     </div>
                 `;
             });
@@ -1591,8 +1842,8 @@
                             <span class="text-[9px] text-slate-400 ml-1">(${p.game} • ${p.team})</span>
                         </div>
                         <div class="flex items-center space-x-1 shrink-0">
-                            <button onclick="editPlayer('${p.id}')" class="bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 px-2 py-1 rounded text-[10px] font-bold">Edit Profile</button>
-                            <button onclick="deleteItem('roster', '${p.id}')" class="bg-red-600/20 text-red-400 hover:bg-red-600/30 px-2 py-1 rounded text-[10px] font-bold">Delete</button>
+                            <button onclick="editPlayer('${p.id}')" type="button" class="bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 px-2 py-1 rounded text-[10px] font-bold">Edit Profile</button>
+                            <button onclick="deleteItem('roster', '${p.id}')" type="button" class="bg-red-600/20 text-red-400 hover:bg-red-600/30 px-2 py-1 rounded text-[10px] font-bold">Delete</button>
                         </div>
                     </div>
                 `;
@@ -1609,8 +1860,8 @@
                     <div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/10 text-xs">
                         <span class="font-bold text-slate-200 truncate">[${m.game || 'Wild Rift'}] ${m.team} vs ${m.opponent}</span>
                         <div class="flex items-center space-x-1 shrink-0">
-                            <button onclick="editMatch('${key}')" class="bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 px-2 py-1 rounded text-[10px] font-bold">Edit Match</button>
-                            <button onclick="deleteItem('matches', '${key}')" class="bg-red-600/20 text-red-400 hover:bg-red-600/30 px-2 py-1 rounded text-[10px] font-bold">Delete</button>
+                            <button onclick="editMatch('${key}')" type="button" class="bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 px-2 py-1 rounded text-[10px] font-bold">Edit Match</button>
+                            <button onclick="deleteItem('matches', '${key}')" type="button" class="bg-red-600/20 text-red-400 hover:bg-red-600/30 px-2 py-1 rounded text-[10px] font-bold">Delete</button>
                         </div>
                     </div>
                 `;
@@ -1623,7 +1874,7 @@
             container.innerHTML = '';
             if(allCreators.length === 0) { container.innerHTML = '<p class="text-[10px] text-slate-400 italic">No creators added.</p>'; return; }
             allCreators.forEach(c => {
-                container.innerHTML += `<div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/10 text-xs"><span class="font-bold text-slate-200 truncate">${c.name}</span><button onclick="deleteItem('creators', '${c.id}')" class="bg-red-600/20 text-red-400 px-2 py-1 rounded text-[10px]">Delete</button></div>`;
+                container.innerHTML += `<div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/10 text-xs"><span class="font-bold text-slate-200 truncate">${c.name}</span><button onclick="deleteItem('creators', '${c.id}')" type="button" class="bg-red-600/20 text-red-400 px-2 py-1 rounded text-[10px]">Delete</button></div>`;
             });
         }
 
@@ -1632,7 +1883,7 @@
             if(!container) return;
             container.innerHTML = '';
             Object.keys(allPartners).forEach(key => {
-                container.innerHTML += `<div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/10 text-xs"><span class="font-bold text-slate-200 truncate">${allPartners[key].name}</span><button onclick="deleteItem('partners', '${key}')" class="bg-red-600/20 text-red-400 px-2 py-1 rounded text-[10px]">Delete</button></div>`;
+                container.innerHTML += `<div class="flex items-center justify-between bg-[#0b0c10] p-2 rounded border border-white/10 text-xs"><span class="font-bold text-slate-200 truncate">${allPartners[key].name}</span><button onclick="deleteItem('partners', '${key}')" type="button" class="bg-red-600/20 text-red-400 px-2 py-1 rounded text-[10px]">Delete</button></div>`;
             });
         }
 
