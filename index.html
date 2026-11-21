@@ -1047,32 +1047,38 @@
 
         const defaultAboutText = "Rift Raiders began its journey in 2024 as a dedicated competitive team. After a year of climbing the ranks, we expanded in April 2025 by establishing our official guild. Today, we continue to field elite rosters ready to conquer the rift and arena.";
 
-        const defaultAchievements = [
-    {
-        id: 'default-1',
-        title: 'The Spirit Showdown',
-        date: 'Feb 21, 2026',
-        desc: 'Successfully organized and hosted a grassroots 5v5 esports tournament last February 21, 2026, showcasing competitive integrity and passion for the Wild Rift PH community.',
-        img: 'https://ibb.co/MDYzGzxR.jpg',
-        isDefault: true
-    },
-    {
-        id: 'default-2',
-        title: 'Elite Roster Dominance',
-        date: '2024 - 2026',
-        desc: 'Active and consistent competitive presence, battling it out in major tournaments and live matches across Wild Rift, League of Legends (PC), and Valorant.',
-        img: 'https://ibb.co/Hp4PPwb3.jpg',
-        isDefault: true
-    },
-    {
-        id: 'default-3',
-        title: 'Community & Guild Growth',
-        date: 'Active',
-        desc: 'Built robust community networks and active Discord channels to coordinate teams, manage scrims, and unite players.',
-        img: 'https://ibb.co/219ntWH5.jpg',
-        isDefault: true
+        const defaultAchievements = [];
+
+function renderAchievements() {
+    const grid = document.getElementById('achievements-grid');
+    if (!grid) return;
+
+    const itemsToRender = hasCustomAchievements ? allAchievements : defaultAchievements;
+
+    grid.innerHTML = '';
+    if (itemsToRender.length === 0) {
+        grid.innerHTML = '<p class="text-xs text-slate-400 italic py-4 text-center col-span-full">No guild achievements or milestones posted yet.</p>';
+        return;
     }
-];
+
+    itemsToRender.forEach(a => {
+        const imgSrc = (a.img && a.img.trim() !== '') ? a.img : FALLBACK_IMAGES.logo;
+        grid.innerHTML += `
+            <div class="bg-[#161822]/85 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden group hover:border-red-500/40 transition shadow-xl flex flex-col">
+                <div class="h-36 bg-slate-900 overflow-hidden relative">
+                    <img src="${imgSrc}" decoding="async" onload="this.classList.add('loaded')" onerror="handleImgError(this, 'logo')" class="img-fade w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="${a.title || 'Achievement'}">
+                    ${a.date ? `<div class="absolute top-2 right-2 bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded uppercase shadow">${a.date}</div>` : ''}
+                </div>
+                <div class="p-4 space-y-1 flex-1 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-black text-white text-xs uppercase tracking-wider">${a.title || 'Untitled Milestone'}</h3>
+                        <p class="text-[11px] text-slate-300 mt-1">${a.desc || ''}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+}
 
         let allPlayers = [];
         let allMatches = {};
