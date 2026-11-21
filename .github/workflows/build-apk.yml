@@ -6,44 +6,92 @@ on:
       - main
   workflow_dispatch:
 
+concurrency:
+  group: build-rift-raiders-apk-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  build:
+  build-apk:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '20'
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v5
+      - name: Setup Java
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Prepare Web Assets Directory (www)
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Ensure www directory and synced web files
         run: |
-          if [ -e www ] && [ ! -d www ]; then
+          if [ -f "www" ] && [ ! -d "www" ]; then
             rm -f www
           fi
           mkdir -p www
-          if [ -f index.html ]; then
+          if [ -f "index.html" ]; then
             cp -f index.html www/index.html
-          elif [ ! -f www/index.html ]; then
-            echo "<h1>Rift Raiders - Official Guild</h1>" > www/index.html
+          elif [ -f "www/index.html" ]; then
+            cp -f www/index.html index.html
           fi
-          ls -la www
 
-      - name: Install Dependencies & Fresh Capacitor Android
+      - name: Initialize Capacitor and Android project if missing
         run: |
-          npm install
-          rm -rf android
-          npx cap add android
-          npx cap sync android
+          if [ ! -f "package.json" ]; then
+            npm init -y
+          fi
+
+          if ! node -e "require('@capacitor/core')" 2>/dev/null; then
+            npm install @capacitor/core @capacitor/cli
+          fi
+
+          if [ ! -f "capacitor.config.json" ] && [ ! -f "capacitor.config.ts" ]; then
+            npx cap init "Rift Raiders" "com.riftraiders.official" --web-dir www
+          fi
+
+          if [ ! -d "android" ]; then
+            if ! node -e "require('@capacitor/android')" 2>/dev/null; then
+              npm install @capacitor/android
+            fi
+            npx cap add android
+          fi
+
+      - name: Bump Android versionCode and versionName
+        run: |
+          GRADLE_FILE="android/app/build.gradle"
+          if [ -f "$GRADLE_FILE" ]; then
+            NEW_VERSION_CODE=$((100 + ${GITHUB_RUN_NUMBER:-1}))
+            NEW_VERSION_NAME="1.0.${GITHUB_RUN_NUMBER:-1}"
+            node -e '
+              const fs = require("fs");
+              const p = process.argv[1];
+              const code = process.argv[2];
+              const name = process.argv[3];
+              let content = fs.readFileSync(p, "utf8");
+              if (/versionCode\s+\d+/.test(content)) {
+                content = content.replace(/versionCode\s+\d+/, `versionCode ${code}`);
+              }
+              if (/versionName\s+"[^"]*"/.test(content)) {
+                content = content.replace(/versionName\s+"[^"]*"/, `versionName "${name}"`);
+              }
+              fs.writeFileSync(p, content, "utf8");
+            ' "$GRADLE_FILE" "$NEW_VERSION_CODE" "$NEW_VERSION_NAME"
+            echo "Updated $GRADLE_FILE -> versionCode: $NEW_VERSION_CODE, versionName: $NEW_VERSION_NAME"
+          fi
+
+      - name: Sync web assets to Android
+        run: |
+          cp -f index.html www/index.html 2>/dev/null || true
+          npx cap copy android
 
       - name: Build Debug APK
         run: |
@@ -56,3 +104,4 @@ jobs:
         with:
           name: Rift-Raiders-Official-App
           path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
