@@ -54,6 +54,12 @@
             </div>
             
             <div class="flex items-center space-x-2">
+                <!-- MOBILE APP ONLY NOTIFICATION BELL -->
+                <button id="mobile-notif-btn" onclick="openMobileNotifModal()" class="hidden relative bg-[#161822]/90 hover:bg-slate-800 text-slate-200 hover:text-white w-8 h-8 rounded-lg font-bold text-xs flex items-center justify-center transition border border-white/10" title="App Notifications">
+                    <i class="fa-solid fa-bell text-amber-400"></i>
+                    <span id="mobile-notif-badge" class="hidden absolute -top-1.5 -right-1.5 min-w-[16px] h-4 px-1 rounded-full bg-red-600 text-white text-[9px] font-black flex items-center justify-center leading-none shadow">0</span>
+                </button>
+
                 <a href="https://docs.google.com/forms/d/1qTTcHVfRsVXhsfKHv5-7qkZnoe6kMtoN2uLVEYY5XVg/viewform" target="_blank" class="bg-[#ff2a2d] hover:bg-red-600 text-white px-3 py-1.5 rounded-lg font-bold text-xs flex items-center justify-center space-x-1.5 transition shadow-[0_0_15px_rgba(255,42,45,0.3)]">
                     <i class="fa-solid fa-paper-plane"></i>
                     <span>APPLY</span>
@@ -65,6 +71,48 @@
             </div>
         </div>
     </header>
+
+    <!-- MOBILE APP ONLY IN-APP TOAST BANNER -->
+    <div id="mobile-notif-toast" onclick="handleMobileToastClick()" class="hidden fixed top-16 left-3 right-3 z-50 bg-[#161822]/95 border border-red-500/50 rounded-xl p-3 shadow-2xl cursor-pointer transition-all duration-300">
+        <div class="flex items-start space-x-3">
+            <div class="w-8 h-8 rounded-lg bg-red-600/20 border border-red-500/40 flex items-center justify-center text-red-400 shrink-0 mt-0.5">
+                <i id="mobile-toast-icon" class="fa-solid fa-bell text-xs"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between gap-2">
+                    <span id="mobile-toast-category" class="text-[9px] font-black uppercase tracking-wider text-red-400">NEW UPDATE</span>
+                    <button type="button" onclick="event.stopPropagation(); hideMobileNotifToast();" class="text-slate-400 hover:text-white text-xs px-1">✕</button>
+                </div>
+                <p id="mobile-toast-title" class="text-xs font-black text-white truncate mt-0.5">New Guild Update</p>
+                <p id="mobile-toast-desc" class="text-[10px] text-slate-300 line-clamp-2 mt-0.5"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MOBILE APP ONLY NOTIFICATION FEED MODAL -->
+    <div id="mobile-notif-modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-[#161822] border border-white/10 rounded-2xl p-5 w-full max-w-md relative shadow-2xl space-y-4 max-h-[85vh] flex flex-col">
+            <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                <div>
+                    <h3 class="text-white font-black text-sm uppercase tracking-wider flex items-center space-x-2">
+                        <i class="fa-solid fa-bell text-amber-400"></i>
+                        <span>App Updates & Alerts</span>
+                    </h3>
+                    <p class="text-[10px] text-slate-400">News, Meet The Teams & Match History</p>
+                </div>
+                <button onclick="closeMobileNotifModal()" class="text-slate-400 hover:text-white w-7 h-7 flex items-center justify-center bg-white/5 rounded-full">✕</button>
+            </div>
+
+            <div class="flex items-center justify-between text-[10px]">
+                <span id="mobile-notif-summary" class="text-slate-400 font-bold uppercase">0 Alerts</span>
+                <button onclick="clearMobileNotifications()" class="text-red-400 hover:text-red-300 font-bold uppercase">Clear All</button>
+            </div>
+
+            <div id="mobile-notif-list" class="space-y-2 overflow-y-auto flex-1 pr-1">
+                <p class="text-xs text-slate-400 italic text-center py-6">No new updates yet.</p>
+            </div>
+        </div>
+    </div>
 
     <div id="admin-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-[#161822] border border-white/10 rounded-2xl p-6 w-full max-w-xs text-center relative shadow-2xl">
@@ -146,7 +194,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 <div class="bg-[#161822]/85 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden group hover:border-red-500/40 transition shadow-xl flex flex-col">
                     <div class="h-36 bg-slate-900 overflow-hidden relative">
-                        <img src="https://i.ibb.co/6R7QW3L/79923.jpg" onerror="handleImgError(this, 'logo')" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="The Spirit Showdown">
+                        <img src="https://ibb.co/MDYzGzxR" decoding="async" onload="this.classList.add('loaded')" onerror="handleImgError(this, 'logo')" class="img-fade w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="The Spirit Showdown">
                         <div class="absolute top-2 right-2 bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded uppercase shadow">Feb 21, 2026</div>
                     </div>
                     <div class="p-4 space-y-1 flex-1 flex flex-col justify-between">
@@ -159,7 +207,7 @@
 
                 <div class="bg-[#161822]/85 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden group hover:border-red-500/40 transition shadow-xl flex flex-col">
                     <div class="h-36 bg-slate-900 overflow-hidden relative">
-                        <img src="https://i.ibb.co/6R7QW3L/79923.jpg" onerror="handleImgError(this, 'logo')" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="Elite Roster Dominance">
+                        <img src="https://ibb.co/354H7qkX" decoding="async" onload="this.classList.add('loaded')" onerror="handleImgError(this, 'logo')" class="img-fade w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="Elite Roster Dominance">
                         <div class="absolute top-2 right-2 bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded uppercase shadow">2024 - 2026</div>
                     </div>
                     <div class="p-4 space-y-1 flex-1 flex flex-col justify-between">
@@ -172,7 +220,7 @@
 
                 <div class="bg-[#161822]/85 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden group hover:border-red-500/40 transition shadow-xl flex flex-col">
                     <div class="h-36 bg-slate-900 overflow-hidden relative">
-                        <img src="https://i.ibb.co/6R7QW3L/79923.jpg" onerror="handleImgError(this, 'logo')" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="Community & Guild Growth">
+                        <img src="https://ibb.co/GfmkXH8v" decoding="async" onload="this.classList.add('loaded')" onerror="handleImgError(this, 'logo')" class="img-fade w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="Community & Guild Growth">
                         <div class="absolute top-2 right-2 bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded uppercase shadow">Active</div>
                     </div>
                     <div class="p-4 space-y-1 flex-1 flex flex-col justify-between">
@@ -684,40 +732,184 @@
             } catch (e) {}
         }
 
-        /* SAFE DELAYED CAPACITOR NOTIFICATION PERMISSION (NO REGISTER CALL) */
-        let permissionPromptTriggered = false;
-        async function requestDelayedNotificationPermissionSafe() {
-            if (permissionPromptTriggered) return;
-            permissionPromptTriggered = true;
-
+        /* MOBILE APP ONLY IN-APP NOTIFICATION SYSTEM (SAFE, NO NATIVE PUSH CRASH) */
+        function isCapacitorMobileApp() {
             try {
-                const PushNotifications = window.Capacitor?.Plugins?.PushNotifications;
-                if (!PushNotifications) return;
-
-                let status = null;
-                try {
-                    status = await PushNotifications.checkPermissions();
-                } catch (e) {
-                    console.log("checkPermissions skipped:", e);
-                    return;
-                }
-
-                if (status && status.receive === 'prompt') {
-                    try {
-                        await PushNotifications.requestPermissions();
-                    } catch (e) {
-                        console.log("requestPermissions skipped:", e);
-                    }
-                }
-            } catch (err) {
-                console.log("Safe notification flow error:", err);
+                return Boolean(
+                    window.Capacitor &&
+                    typeof window.Capacitor.isNativePlatform === 'function' &&
+                    window.Capacitor.isNativePlatform()
+                );
+            } catch (e) {
+                return false;
             }
         }
 
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                requestDelayedNotificationPermissionSafe();
-            }, 1200);
+        const MOBILE_APP_MODE = isCapacitorMobileApp();
+        let mobileNotifItems = [];
+        let mobileUnreadCount = 0;
+        let mobileToastTimer = null;
+        let lastToastTarget = '#news-section';
+
+        const seenSnapshotIds = {
+            news: null,
+            roster: null,
+            matches: null
+        };
+
+        function initMobileAppNotificationUI() {
+            if (!MOBILE_APP_MODE) return;
+            try {
+                const btn = document.getElementById('mobile-notif-btn');
+                if (btn) btn.classList.remove('hidden');
+                renderMobileNotificationUI();
+            } catch (e) {}
+        }
+
+        function renderMobileNotificationUI() {
+            if (!MOBILE_APP_MODE) return;
+            try {
+                const badge = document.getElementById('mobile-notif-badge');
+                const summary = document.getElementById('mobile-notif-summary');
+                const list = document.getElementById('mobile-notif-list');
+
+                if (badge) {
+                    if (mobileUnreadCount > 0) {
+                        badge.textContent = mobileUnreadCount > 99 ? '99+' : String(mobileUnreadCount);
+                        badge.classList.remove('hidden');
+                    } else {
+                        badge.classList.add('hidden');
+                    }
+                }
+
+                if (summary) {
+                    summary.textContent = `${mobileNotifItems.length} ${mobileNotifItems.length === 1 ? 'Alert' : 'Alerts'} • ${mobileUnreadCount} Unread`;
+                }
+
+                if (!list) return;
+                if (mobileNotifItems.length === 0) {
+                    list.innerHTML = '<p class="text-xs text-slate-400 italic text-center py-6">No new updates yet.</p>';
+                    return;
+                }
+
+                list.innerHTML = '';
+                mobileNotifItems.forEach((item, idx) => {
+                    const row = document.createElement('div');
+                    row.className = `p-3 rounded-xl border ${item.unread ? 'bg-[#0b0c10] border-red-500/40' : 'bg-[#0b0c10]/60 border-white/10'} cursor-pointer transition hover:border-red-500/60`;
+                    row.onclick = () => {
+                        mobileNotifItems[idx].unread = false;
+                        mobileUnreadCount = mobileNotifItems.filter(n => n.unread).length;
+                        renderMobileNotificationUI();
+                        closeMobileNotifModal();
+                        if (item.target) {
+                            const el = document.querySelector(item.target);
+                            if (el) el.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    };
+
+                    row.innerHTML = `
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="text-[9px] font-black uppercase tracking-wider ${item.badgeColor || 'text-red-400'}">${item.category}</span>
+                            <span class="text-[9px] text-slate-500">${item.timeText || 'Just now'}</span>
+                        </div>
+                        <p class="text-xs font-black text-white mt-0.5 truncate">${item.title}</p>
+                        <p class="text-[10px] text-slate-300 mt-0.5 line-clamp-2">${item.desc}</p>
+                    `;
+                    list.appendChild(row);
+                });
+            } catch (e) {}
+        }
+
+        function showMobileToast(category, title, desc, targetSection, iconClass = 'fa-bell') {
+            if (!MOBILE_APP_MODE) return;
+            try {
+                const toast = document.getElementById('mobile-notif-toast');
+                const catEl = document.getElementById('mobile-toast-category');
+                const titleEl = document.getElementById('mobile-toast-title');
+                const descEl = document.getElementById('mobile-toast-desc');
+                const iconEl = document.getElementById('mobile-toast-icon');
+                if (!toast || !catEl || !titleEl || !descEl) return;
+
+                lastToastTarget = targetSection || '#news-section';
+                catEl.textContent = category;
+                titleEl.textContent = title;
+                descEl.textContent = desc;
+                if (iconEl) iconEl.className = `fa-solid ${iconClass} text-xs`;
+
+                toast.classList.remove('hidden');
+                if (mobileToastTimer) clearTimeout(mobileToastTimer);
+                mobileToastTimer = setTimeout(() => {
+                    hideMobileNotifToast();
+                }, 4500);
+            } catch (e) {}
+        }
+
+        function hideMobileNotifToast() {
+            try {
+                const toast = document.getElementById('mobile-notif-toast');
+                if (toast) toast.classList.add('hidden');
+            } catch (e) {}
+        }
+
+        function handleMobileToastClick() {
+            hideMobileNotifToast();
+            try {
+                if (lastToastTarget) {
+                    const el = document.querySelector(lastToastTarget);
+                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }
+            } catch (e) {}
+        }
+
+        function openMobileNotifModal() {
+            if (!MOBILE_APP_MODE) return;
+            try {
+                mobileUnreadCount = 0;
+                mobileNotifItems.forEach(n => { n.unread = false; });
+                renderMobileNotificationUI();
+                const modal = document.getElementById('mobile-notif-modal');
+                if (modal) modal.classList.remove('hidden');
+            } catch (e) {}
+        }
+
+        function closeMobileNotifModal() {
+            try {
+                const modal = document.getElementById('mobile-notif-modal');
+                if (modal) modal.classList.add('hidden');
+            } catch (e) {}
+        }
+
+        function clearMobileNotifications() {
+            mobileNotifItems = [];
+            mobileUnreadCount = 0;
+            renderMobileNotificationUI();
+        }
+
+        function pushMobileAppAlert(category, title, desc, target, badgeColor, iconClass) {
+            if (!MOBILE_APP_MODE) return;
+            try {
+                const now = new Date();
+                const timeText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                mobileNotifItems.unshift({
+                    category,
+                    title,
+                    desc,
+                    target,
+                    badgeColor,
+                    timeText,
+                    unread: true
+                });
+                if (mobileNotifItems.length > 30) {
+                    mobileNotifItems = mobileNotifItems.slice(0, 30);
+                }
+                mobileUnreadCount = mobileNotifItems.filter(n => n.unread).length;
+                renderMobileNotificationUI();
+                showMobileToast(category, title, desc, target, iconClass);
+            } catch (e) {}
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initMobileAppNotificationUI();
         });
 
         /* INTERACTIVE CROPPER LOGIC */
@@ -1053,7 +1245,30 @@
         if (db) {
             db.ref('matches').on('value', snap => {
                 try {
-                    allMatches = snap.val() || {};
+                    const nextMatches = snap.val() || {};
+                    const nextKeys = Object.keys(nextMatches);
+                    if (MOBILE_APP_MODE) {
+                        if (seenSnapshotIds.matches === null) {
+                            seenSnapshotIds.matches = new Set(nextKeys);
+                        } else {
+                            nextKeys.forEach(key => {
+                                if (!seenSnapshotIds.matches.has(key)) {
+                                    seenSnapshotIds.matches.add(key);
+                                    const m = nextMatches[key] || {};
+                                    pushMobileAppAlert(
+                                        'MATCH HISTORY',
+                                        `${m.team || 'Rift Raiders'} vs ${m.opponent || 'Opponent'}`,
+                                        `${m.game || 'Wild Rift'} • ${m.result || ''} (${m.score || '0 - 0'})`,
+                                        '#matches-section',
+                                        'text-blue-400',
+                                        'fa-gamepad'
+                                    );
+                                }
+                            });
+                        }
+                    }
+
+                    allMatches = nextMatches;
                     renderMatches();
                     renderAdminMatches();
                     updateRosterWinrateBadgesOnly();
@@ -1062,15 +1277,39 @@
 
             db.ref('roster').on('value', snap => {
                 try {
-                    allPlayers = [];
+                    const playersTemp = [];
+                    const currentIds = new Set();
                     if(snap.exists()) {
                         snap.forEach(child => {
+                            currentIds.add(child.key);
                             const p = { id: child.key, ...child.val() };
                             if (p.pfp) warmImageCache(p.pfp);
                             if (p.teamlogo) warmImageCache(p.teamlogo);
-                            allPlayers.push(p);
+                            playersTemp.push(p);
                         });
                     }
+
+                    if (MOBILE_APP_MODE) {
+                        if (seenSnapshotIds.roster === null) {
+                            seenSnapshotIds.roster = currentIds;
+                        } else {
+                            playersTemp.forEach(p => {
+                                if (!seenSnapshotIds.roster.has(p.id)) {
+                                    seenSnapshotIds.roster.add(p.id);
+                                    pushMobileAppAlert(
+                                        'MEET THE TEAMS',
+                                        `New Player: ${p.ign || 'Roster Member'}`,
+                                        `${p.game || 'Wild Rift'}${p.team ? ' • ' + p.team : ''}${p.role ? ' • ' + p.role : ''}`,
+                                        '#teams-section',
+                                        'text-emerald-400',
+                                        'fa-users'
+                                    );
+                                }
+                            });
+                        }
+                    }
+
+                    allPlayers = playersTemp;
                     renderRoster(true); 
                     renderAdminPlayers();
                 } catch (e) {}
@@ -1104,13 +1343,37 @@
 
             db.ref('news').on('value', snap => {
                 try {
-                    allNews = [];
+                    const newsTemp = [];
+                    const currentIds = new Set();
                     if(snap.exists()) {
                         snap.forEach(child => {
+                            currentIds.add(child.key);
                             const n = { id: child.key, ...child.val() };
-                            allNews.push(n);
+                            newsTemp.push(n);
                         });
                     }
+
+                    if (MOBILE_APP_MODE) {
+                        if (seenSnapshotIds.news === null) {
+                            seenSnapshotIds.news = currentIds;
+                        } else {
+                            newsTemp.forEach(n => {
+                                if (!seenSnapshotIds.news.has(n.id)) {
+                                    seenSnapshotIds.news.add(n.id);
+                                    pushMobileAppAlert(
+                                        'NEWS & ANNOUNCEMENT',
+                                        n.title || 'New Guild Announcement',
+                                        n.desc || 'Check out the latest guild announcement.',
+                                        '#news-section',
+                                        'text-red-400',
+                                        'fa-bullhorn'
+                                    );
+                                }
+                            });
+                        }
+                    }
+
+                    allNews = newsTemp;
                     renderNewsCarousel();
                     renderAdminNews();
                 } catch (e) {}
