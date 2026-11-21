@@ -910,19 +910,20 @@
             if (statusEl) statusEl.textContent = msg;
         }
 
-        async function registerRiftRaidersSW() {
-            if (!("serviceWorker" in navigator)) return null;
-            try {
-                const reg = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
-                swRegistrationRef = reg;
-                console.log("FCM Service Worker registered:", reg.scope);
-                return reg;
-            } catch (err) {
-                console.warn("FCM Service Worker registration failed:", err);
-                return null;
-            }
-        }
-
+       async function registerRiftRaidersSW() {
+    if (!("serviceWorker" in navigator)) return null;
+    try {
+        const reg = await navigator.serviceWorker.register("./firebase-messaging-sw.js", {
+            scope: "./"
+        });
+        swRegistrationRef = reg;
+        console.log("FCM Service Worker registered:", reg.scope);
+        return reg;
+    } catch (err) {
+        console.warn("FCM Service Worker registration failed:", err);
+        return null;
+    }
+}
         function initFirebaseCloudMessaging() {
             if (typeof firebase.messaging !== "function") return;
             if (!firebase.messaging.isSupported || !firebase.messaging.isSupported()) {
