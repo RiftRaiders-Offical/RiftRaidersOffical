@@ -11,6 +11,7 @@
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>
     
     <style>
         ::-webkit-scrollbar { width: 6px; }
@@ -711,9 +712,13 @@
                 <i class="fa-solid fa-bell text-amber-400"></i> Notifications
             </span>
             <div class="flex items-center gap-2">
+                <button onclick="requestWebPushPermission()" type="button" class="text-[10px] bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/30 px-2 py-0.5 rounded font-bold">Enable Push</button>
                 <button onclick="clearNotifications()" type="button" class="text-[10px] text-slate-400 hover:text-white font-bold">Clear</button>
                 <button onclick="toggleNotifDrawer()" type="button" class="text-slate-400 hover:text-white text-xs">✕</button>
             </div>
+        </div>
+        <div id="fcm-token-status" class="text-[10px] text-slate-400 bg-[#0b0c10] border border-white/10 rounded-lg p-2 break-all">
+            Push status: Click "Enable Push" to allow notifications and generate FCM token.
         </div>
         <div id="rr-notif-list" class="space-y-2 max-h-72 overflow-y-auto text-xs">
             <p class="text-[11px] text-slate-400 italic text-center py-4">No new notifications yet.</p>
@@ -893,8 +898,107 @@
             messagingSenderId: "103200979693",
             appId: "1:103200979693:web:48d4b7f6e65734f2756ae4"
         };
+        const VAPID_KEY = "BN4OZGajAFuHW0WX4gg7rbrFQeciPSFk08l_TgTp3PxbfRYrb_aS7TgNuSx0bxhkWP9KwpuQuKrU-6r_6nfPViw";
+
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+
+        /* FIREBASE CLOUD MESSAGING (FCM) */
+        let fcmMessaging = null;
+        let swRegistrationRef = null;
+
+        async function registerRiftRaidersSW() {
+            if (!("serviceWorker" in navigator)) return null;
+            try {
+                const reg = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
+                swRegistrationRef = reg;
+                console.log("FCM Service Worker registered:", reg.scope);
+                return reg;
+            } catch (err) {
+                console.warn("FCM Service Worker registration failed:", err);
+                return null;
+            }
+        }
+
+        function initFirebaseCloudMessaging() {
+            if (typeof firebase.messaging !== "function") return;
+            try {
+                fcmMessaging = firebase.messaging();
+                fcmMessaging.usePublicVapidKey(VAPID_KEY);
+
+                registerRiftRaidersSW().then((reg) => {
+                    if (reg && fcmMessaging) {
+                        fcmMessaging.useServiceWorker(reg);
+                    }
+                    if (Notification.permission === "granted") {
+                        retrieveAndStoreFcmToken(reg);
+                    }
+                });
+
+                fcmMessaging.onMessage((payload) => {
+                    console.log("Foreground FCM message:", payload);
+                    const title = (payload.notification && payload.notification.title) || "Rift Raiders";
+                    const body = (payload.notification && payload.notification.body) || "New push notification received.";
+                    pushNotification("FCM", title, body, "#news-section");
+                });
+            } catch (err) {
+                console.warn("FCM init warning:", err);
+            }
+        }
+
+        async function retrieveAndStoreFcmToken(existingReg) {
+            if (!fcmMessaging) return null;
+            try {
+                const reg = existingReg || swRegistrationRef || (await registerRiftRaidersSW());
+                const options = { vapidKey: VAPID_KEY };
+                if (reg) options.serviceWorkerRegistration = reg;
+
+                const token = await fcmMessaging.getToken(options);
+                const statusEl = document.getElementById("fcm-token-status");
+                if (token) {
+                    console.log("FCM Token:", token);
+                    if (statusEl) {
+                        statusEl.textContent = "FCM Token: " + token;
+                    }
+                    const tokenKey = btoa(token).replace(/[^a-zA-Z0-9]/g, "").slice(-40);
+                    db.ref(`fcmTokens/${tokenKey}`).set({
+                        token,
+                        platform: window.Capacitor && typeof window.Capacitor.isNativePlatform === "function" && window.Capacitor.isNativePlatform() ? "capacitor" : "web",
+                        updatedAt: Date.now()
+                    }).catch(() => {});
+                    return token;
+                }
+                if (statusEl) {
+                    statusEl.textContent = "Push status: No FCM token returned.";
+                }
+                return null;
+            } catch (err) {
+                console.error("Error getting FCM token:", err);
+                const statusEl = document.getElementById("fcm-token-status");
+                if (statusEl) {
+                    statusEl.textContent = "Push status: Error getting token (" + (err.message || err) + ")";
+                }
+                return null;
+            }
+        }
+
+        async function requestWebPushPermission() {
+            if (!("Notification" in window)) {
+                alert("Hindi suportado ng browser na ito ang push notifications.");
+                return;
+            }
+            try {
+                const perm = await Notification.requestPermission();
+                if (perm !== "granted") {
+                    const statusEl = document.getElementById("fcm-token-status");
+                    if (statusEl) statusEl.textContent = "Push status: Permission not granted (" + perm + ").";
+                    return;
+                }
+                await retrieveAndStoreFcmToken();
+            } catch (err) {
+                console.error("Notification permission error:", err);
+            }
+        }
 
         const defaultAboutText = "Rift Raiders began its journey in 2024 as a dedicated competitive team. After a year of climbing the ranks, we expanded in April 2025 by establishing our official guild. Today, we continue to field elite rosters ready to conquer the rift and arena.";
 
@@ -2297,6 +2401,7 @@
             document.getElementById('match-modal-backdrop').classList.add('hidden');
         }
 
+        initFirebaseCloudMessaging();
         initRealtimeNotifications();
     </script>
 </body>
