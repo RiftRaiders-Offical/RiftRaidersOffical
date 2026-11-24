@@ -26,6 +26,7 @@
             background-size: cover;
             background-attachment: fixed;
             background-position: center;
+            overflow-x: hidden;
         }
 
         .gaming-font {
@@ -41,21 +42,27 @@
         .img-fade.loaded {
             opacity: 1;
         }
+
+        .team-subtab.active-subtab {
+            background-color: #dc2626;
+            color: #ffffff;
+            border-color: rgba(239, 68, 68, 0.45);
+        }
     </style>
 </head>
 <body class="text-slate-100 font-sans antialiased pb-20">
 
     <header class="bg-[#0b0c14]/90 backdrop-blur-md sticky top-0 z-40 border-b border-white/5 shadow-lg">
-        <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <img id="header-logo" src="https://i.ibb.co/6R7QW3L/79923.jpg" decoding="async" onerror="handleImgError(this, 'logo')" alt="Rift Raiders Logo" class="h-9 w-auto object-contain">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
+            <div class="flex items-center space-x-3 min-w-0">
+                <img id="header-logo" src="https://i.ibb.co/6R7QW3L/79923.jpg" decoding="async" onerror="handleImgError(this, 'logo')" alt="Rift Raiders Logo" class="h-9 w-auto object-contain shrink-0">
                 <div class="leading-none">
                     <h1 class="font-black text-white text-base uppercase tracking-widest">Rift<br>Raiders</h1>
                     <p class="text-red-600 text-[9px] font-bold uppercase tracking-widest mt-0.5">Official Guild</p>
                 </div>
             </div>
             
-            <div class="flex items-center space-x-2">
+            <div class="flex items-center space-x-2 shrink-0">
                 <button id="notif-bell-btn" onclick="toggleNotifDrawer()" type="button" class="relative bg-[#161822]/80 hover:bg-slate-800 text-slate-300 hover:text-white px-2.5 py-1.5 rounded-lg font-bold text-xs flex items-center justify-center transition border border-white/5" title="Notifications">
                     <i class="fa-solid fa-bell text-amber-400"></i>
                     <span id="notif-badge" class="hidden -top-1.5 -right-1.5 absolute bg-red-600 text-white text-[9px] font-black min-w-[16px] h-4 px-1 rounded-full flex items-center justify-center">0</span>
@@ -191,15 +198,17 @@
             </div>
         </section>
 
-        <!-- MEET THE TEAMS -->
+        <!-- MEET THE TEAMS (GAME FILTER + DYNAMIC SUB-TEAM / SQUAD FILTER & SUMMARY) -->
         <section id="teams-section" class="space-y-4 scroll-mt-20">
-            <div class="flex items-center justify-between">
+            <div class="flex flex-wrap items-center justify-between gap-2">
                 <div class="flex items-center space-x-2">
                     <div class="w-1 h-4 bg-red-600"></div>
                     <h2 class="font-black text-sm text-white uppercase tracking-widest">Meet The Teams</h2>
                 </div>
+                <span id="roster-count-badge" class="text-[10px] font-bold uppercase tracking-wider bg-[#161822]/85 border border-white/10 text-slate-300 px-2.5 py-1 rounded-lg">0 Active Players</span>
             </div>
             
+            <!-- Game Category Tabs -->
             <div class="flex gap-2 overflow-x-auto pb-1 text-xs font-bold">
                 <button onclick="filterGame('ALL')" type="button" class="game-tab bg-red-600 text-white px-4 py-2 rounded-lg border border-red-500/35 whitespace-nowrap transition shadow">ALL</button>
                 <button onclick="filterGame('Wild Rift')" type="button" class="game-tab bg-[#161822]/85 backdrop-blur-md text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition">WILD RIFT</button>
@@ -207,25 +216,57 @@
                 <button onclick="filterGame('Valorant')" type="button" class="game-tab bg-[#161822]/85 backdrop-blur-md text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition">VALORANT</button>
             </div>
 
+            <!-- Squad / Team Tag Filter Pills (Dynamically populated from roster teams) -->
+            <div id="team-squad-tabs" class="flex items-center gap-1.5 overflow-x-auto pb-1 text-[11px] font-bold">
+                <button onclick="filterTeamSquad('ALL')" type="button" data-squad="ALL" class="team-subtab active-subtab px-3 py-1 rounded-md border border-white/10 whitespace-nowrap transition">ALL TEAMS</button>
+            </div>
+
+            <!-- Active Team / Roster Summary Banner -->
+            <div id="active-team-banner" class="hidden bg-[#161822]/80 backdrop-blur-md border border-white/10 rounded-xl p-3 flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center space-x-3">
+                    <img id="active-team-logo" src="" onerror="this.classList.add('hidden')" class="w-9 h-9 rounded-lg object-contain bg-black/40 border border-white/10 p-1 hidden">
+                    <div>
+                        <p id="active-team-label" class="text-xs font-black uppercase tracking-wider text-white">ALL SQUADS</p>
+                        <p id="active-team-meta" class="text-[10px] text-slate-400">Showing active competitive roster</p>
+                    </div>
+                </div>
+                <div id="active-team-wr" class="text-xs font-black text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-lg">
+                    Squad WR: --
+                </div>
+            </div>
+
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4" id="roster-grid">
                 <div class="text-xs text-slate-400 py-4">Loading rosters...</div>
             </div>
         </section>
 
-        <!-- MATCH HISTORY WITH GAME TABS -->
+        <!-- MATCH HISTORY WITH GAME TABS + TEAM / RESULT FILTERS -->
         <section id="matches-section" class="space-y-4 scroll-mt-20">
-            <div class="flex items-center justify-between">
+            <div class="flex flex-wrap items-center justify-between gap-2">
                 <div class="flex items-center space-x-2">
                     <div class="w-1 h-4 bg-red-600"></div>
                     <h2 class="font-black text-sm text-white uppercase tracking-widest">Match History & 5v5 Scoreboards</h2>
                 </div>
+                <div id="match-record-summary" class="flex items-center gap-2 text-[10px] font-black uppercase">
+                    <span class="bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded">0W</span>
+                    <span class="bg-red-500/15 text-red-400 border border-red-500/30 px-2 py-0.5 rounded">0L</span>
+                    <span class="bg-blue-500/15 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded">0% WR</span>
+                </div>
             </div>
 
-            <div class="flex gap-2 overflow-x-auto pb-1 text-xs font-bold">
-                <button onclick="filterMatchGame('ALL')" type="button" class="match-tab bg-blue-600 text-white px-4 py-2 rounded-lg border border-blue-500/35 whitespace-nowrap transition shadow">ALL GAMES</button>
-                <button onclick="filterMatchGame('Wild Rift')" type="button" class="match-tab bg-[#161822]/85 backdrop-blur-md text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition">WILD RIFT</button>
-                <button onclick="filterMatchGame('League of Legends')" type="button" class="match-tab bg-[#161822]/85 backdrop-blur-md text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition">LOL PC</button>
-                <button onclick="filterMatchGame('Valorant')" type="button" class="match-tab bg-[#161822]/85 backdrop-blur-md text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition">VALORANT</button>
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                <div class="flex gap-2 overflow-x-auto pb-1 text-xs font-bold">
+                    <button onclick="filterMatchGame('ALL')" type="button" class="match-tab bg-blue-600 text-white px-4 py-2 rounded-lg border border-blue-500/35 whitespace-nowrap transition shadow">ALL GAMES</button>
+                    <button onclick="filterMatchGame('Wild Rift')" type="button" class="match-tab bg-[#161822]/85 backdrop-blur-md text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition">WILD RIFT</button>
+                    <button onclick="filterMatchGame('League of Legends')" type="button" class="match-tab bg-[#161822]/85 backdrop-blur-md text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition">LOL PC</button>
+                    <button onclick="filterMatchGame('Valorant')" type="button" class="match-tab bg-[#161822]/85 backdrop-blur-md text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition">VALORANT</button>
+                </div>
+
+                <div class="flex items-center gap-1.5 text-[11px] font-bold">
+                    <button onclick="filterMatchResult('ALL')" type="button" data-result="ALL" class="match-result-btn bg-slate-700 text-white px-2.5 py-1.5 rounded-lg border border-white/10 transition">ALL</button>
+                    <button onclick="filterMatchResult('Win')" type="button" data-result="Win" class="match-result-btn bg-[#161822]/85 text-emerald-400 px-2.5 py-1.5 rounded-lg border border-white/10 transition">WINS</button>
+                    <button onclick="filterMatchResult('Lose')" type="button" data-result="Lose" class="match-result-btn bg-[#161822]/85 text-red-400 px-2.5 py-1.5 rounded-lg border border-white/10 transition">LOSSES</button>
+                </div>
             </div>
 
             <div id="match-history-list" class="grid grid-cols-1 gap-3 text-xs text-slate-400">Loading matches...</div>
@@ -293,7 +334,7 @@
                     <div class="w-8 h-8 rounded-full bg-red-600/20 border border-red-500/40 flex items-center justify-center font-black text-red-500 text-xs">YOU</div>
                     <div>
                         <h3 class="text-white font-black text-xs uppercase tracking-wider">Admin Dashboard Unlocked</h3>
-                        <p class="text-[9px] text-slate-400">Management Panel Active • About, Achievements & Cropper Ready</p>
+                        <p class="text-[9px] text-slate-400">Management Panel Active • Teams, Matches, About, Achievements & Cropper Ready</p>
                     </div>
                 </div>
                 <button onclick="lockAdmin()" type="button" class="bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/40 px-3 py-1 rounded text-[10px] font-bold">Lock Admin</button>
@@ -373,6 +414,7 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 1. PLAYER / TEAM ROSTER ADMIN -->
                 <div class="bg-[#161822] p-5 rounded-xl border border-white/10 space-y-4 shadow-xl">
                     <div class="flex justify-between items-center">
                         <h3 id="player-form-title" class="font-black text-xs uppercase text-red-500">1. Add & Manage Competitive Player</h3>
@@ -402,7 +444,12 @@
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="text-[10px] font-bold text-slate-400 uppercase">Team Name / Tag:</label>
-                            <input type="text" id="p-team" placeholder="e.g. RRS, RFR, RRA" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500 text-white">
+                            <input type="text" id="p-team" list="team-tag-suggestions" placeholder="e.g. RRS, RFR, RRA" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 focus:outline-none focus:border-red-500 text-white">
+                            <datalist id="team-tag-suggestions">
+                                <option value="RRS">
+                                <option value="RFR">
+                                <option value="RRA">
+                            </datalist>
                         </div>
                         <div>
                             <label class="text-[10px] font-bold text-slate-400 uppercase">Team Logo URL:</label>
@@ -426,6 +473,7 @@
                     </div>
                 </div>
 
+                <!-- 2. MATCH HISTORY & 5V5 SCOREBOARD ADMIN -->
                 <div class="bg-[#161822] p-5 rounded-xl border border-white/10 space-y-4 shadow-xl">
                     <div class="flex justify-between items-center">
                         <h3 id="match-form-title" class="font-black text-xs uppercase text-red-500">2. Add / Edit Full 5v5 Match</h3>
@@ -442,15 +490,16 @@
                         <button onclick="autoFillDemoMatch()" type="button" class="w-full bg-red-600 hover:bg-red-700 text-white py-1.5 rounded text-[10px] font-bold uppercase transition">Auto-Fill Match Form Data</button>
                     </div>
 
+                    <!-- Dynamic Roster Auto-Fill by Game & Team Tag -->
                     <div class="bg-[#0b0c10] p-3 rounded-lg border border-indigo-500/40 space-y-2">
                         <label class="text-[10px] font-bold text-indigo-400 uppercase flex items-center space-x-1">
                             <i class="fa-solid fa-users"></i>
                             <span>Quick Roster Auto-Fill into Blue Team Data:</span>
                         </label>
                         
-                        <div class="space-y-1.5">
+                        <div id="dynamic-autofill-teams" class="space-y-1.5">
                             <p class="text-[9px] text-slate-400 font-bold uppercase">Wild Rift:</p>
-                            <div class="flex gap-1.5">
+                            <div class="flex flex-wrap gap-1.5">
                                 <button onclick="autoFillTeamData('Wild Rift', 'RFR')" type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2 py-1 rounded text-[10px] font-bold uppercase transition">RFR (Wild Rift)</button>
                                 <button onclick="autoFillTeamData('Wild Rift', 'RRS')" type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2 py-1 rounded text-[10px] font-bold uppercase transition">RRS (Sentinel)</button>
                             </div>
@@ -640,7 +689,7 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-4 gap-1.5 mb-5 bg-[#161822] p-3 rounded-xl border border-white/5 text-center">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 mb-5 bg-[#161822] p-3 rounded-xl border border-white/5 text-center">
                 <div>
                     <p class="text-slate-500 text-[8px] font-bold uppercase tracking-widest mb-0.5">WINS</p>
                     <p id="modal-wins" class="text-green-400 font-black text-xs">0</p>
@@ -917,10 +966,8 @@
                     scope: "./"
                 });
                 swRegistrationRef = reg;
-                console.log("FCM Service Worker registered:", reg.scope);
                 return reg;
             } catch (err) {
-                console.warn("FCM Service Worker registration failed:", err);
                 return null;
             }
         }
@@ -945,7 +992,6 @@
                 });
 
                 fcmMessaging.onMessage((payload) => {
-                    console.log("Foreground FCM message:", payload);
                     const title = (payload.notification && payload.notification.title) || "Rift Raiders";
                     const body = (payload.notification && payload.notification.body) || "New push notification received.";
                     pushNotification("FCM", title, body, "#news-section");
@@ -964,7 +1010,6 @@
 
                 const token = await fcmMessaging.getToken(options);
                 if (token) {
-                    console.log("FCM Token:", token);
                     setPushStatusText("FCM Token: " + token);
                     const tokenKey = btoa(token).replace(/[^a-zA-Z0-9]/g, "").slice(-40);
                     db.ref(`fcmTokens/${tokenKey}`).set({
@@ -977,7 +1022,6 @@
                 setPushStatusText("Push status: No FCM token returned.");
                 return null;
             } catch (err) {
-                console.error("Error getting FCM token:", err);
                 setPushStatusText("Push status: Error getting token (" + (err.message || err) + ")");
                 return null;
             }
@@ -1018,7 +1062,6 @@
                     }
                     return;
                 } catch (err) {
-                    console.error("Native notification permission error:", err);
                     setPushStatusText("Push status: Unable to enable native notification (" + (err.message || err) + ")");
                     return;
                 }
@@ -1040,7 +1083,6 @@
                 }
                 await retrieveAndStoreFcmToken();
             } catch (err) {
-                console.error("Notification permission error:", err);
                 setPushStatusText("Push status: Permission error (" + (err.message || err) + ")");
             }
         }
@@ -1083,7 +1125,9 @@
         let hasCustomAchievements = false;
         let currentNewsIndex = 0;
         let currentGameFilter = 'ALL';
+        let currentTeamSquadFilter = 'ALL';
         let currentMatchFilter = 'ALL';
+        let currentMatchResultFilter = 'ALL';
         let lastRosterSignature = '';
         let lastCreatorsSignature = '';
         let lastPartnersSignature = '';
@@ -1572,6 +1616,7 @@
             renderMatches();
             renderAdminMatches();
             updateRosterWinrateBadgesOnly();
+            updateActiveTeamBanner();
         });
 
         db.ref('roster').on('value', snap => {
@@ -1584,6 +1629,8 @@
                     allPlayers.push(p);
                 });
             }
+            rebuildTeamSquadTabs();
+            rebuildDynamicAutoFillButtons();
             renderRoster(true); 
             renderAdminPlayers();
         });
@@ -1739,8 +1786,83 @@
             });
         }
 
+        /* TEAM SQUAD & GAME FILTERING */
+        function getUniqueTeamsForCurrentGame() {
+            const teams = new Set();
+            allPlayers.forEach(p => {
+                const pGame = p.game || 'Wild Rift';
+                if (currentGameFilter !== 'ALL' && pGame.toLowerCase() !== currentGameFilter.toLowerCase()) return;
+                const teamTag = (p.team || '').trim();
+                if (teamTag) teams.add(teamTag);
+            });
+            return Array.from(teams).sort((a, b) => a.localeCompare(b));
+        }
+
+        function rebuildTeamSquadTabs() {
+            const container = document.getElementById('team-squad-tabs');
+            if (!container) return;
+
+            const squads = getUniqueTeamsForCurrentGame();
+            if (currentTeamSquadFilter !== 'ALL' && !squads.some(s => s.toLowerCase() === currentTeamSquadFilter.toLowerCase())) {
+                currentTeamSquadFilter = 'ALL';
+            }
+
+            let html = `<button onclick="filterTeamSquad('ALL')" type="button" data-squad="ALL" class="team-subtab ${currentTeamSquadFilter === 'ALL' ? 'active-subtab' : 'bg-[#161822]/85 text-slate-300'} px-3 py-1 rounded-md border border-white/10 whitespace-nowrap transition">ALL TEAMS</button>`;
+            squads.forEach(sq => {
+                const isActive = currentTeamSquadFilter.toLowerCase() === sq.toLowerCase();
+                html += `<button onclick="filterTeamSquad('${sq.replace(/'/g, "\\'")}')" type="button" data-squad="${sq}" class="team-subtab ${isActive ? 'active-subtab' : 'bg-[#161822]/85 text-slate-300'} px-3 py-1 rounded-md border border-white/10 whitespace-nowrap transition">${sq}</button>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function rebuildDynamicAutoFillButtons() {
+            const container = document.getElementById('dynamic-autofill-teams');
+            if (!container) return;
+
+            const grouped = {};
+            allPlayers.forEach(p => {
+                const game = (p.game || 'Wild Rift').trim();
+                const team = (p.team || '').trim();
+                if (!team) return;
+                if (!grouped[game]) grouped[game] = new Set();
+                grouped[game].add(team);
+            });
+
+            const games = Object.keys(grouped);
+            if (games.length === 0) {
+                container.innerHTML = `
+                    <p class="text-[9px] text-slate-400 font-bold uppercase">Wild Rift:</p>
+                    <div class="flex flex-wrap gap-1.5">
+                        <button onclick="autoFillTeamData('Wild Rift', 'RFR')" type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2 py-1 rounded text-[10px] font-bold uppercase transition">RFR (Wild Rift)</button>
+                        <button onclick="autoFillTeamData('Wild Rift', 'RRS')" type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2 py-1 rounded text-[10px] font-bold uppercase transition">RRS (Sentinel)</button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = games.map(game => {
+                const tags = Array.from(grouped[game]).sort((a, b) => a.localeCompare(b));
+                const btns = tags.map(tag => `
+                    <button onclick="autoFillTeamData('${game.replace(/'/g, "\\'")}', '${tag.replace(/'/g, "\\'")}')" type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2 py-1 rounded text-[10px] font-bold uppercase transition">${tag} (${game})</button>
+                `).join('');
+                return `
+                    <div class="space-y-1">
+                        <p class="text-[9px] text-slate-400 font-bold uppercase">${game}:</p>
+                        <div class="flex flex-wrap gap-1.5">${btns}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterTeamSquad(squad) {
+            currentTeamSquadFilter = squad;
+            rebuildTeamSquadTabs();
+            applyRosterFiltersToDom();
+        }
+
         function filterGame(game) {
             currentGameFilter = game;
+            currentTeamSquadFilter = 'ALL';
             document.querySelectorAll('.game-tab').forEach(btn => {
                 const text = btn.innerText.toLowerCase();
                 if (text.includes(game.toLowerCase()) || (game === 'ALL' && text === 'all')) {
@@ -1749,20 +1871,83 @@
                     btn.className = 'game-tab bg-[#161822]/85 text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition';
                 }
             });
+            rebuildTeamSquadTabs();
+            applyRosterFiltersToDom();
+        }
+
+        function applyRosterFiltersToDom() {
             const cards = document.querySelectorAll('#roster-grid [data-player-card]');
-            if (cards.length > 0) {
-                let visibleCount = 0;
-                cards.forEach(card => {
-                    const cardGame = card.getAttribute('data-game') || 'Wild Rift';
-                    const show = (game === 'ALL' || cardGame === game);
-                    card.classList.toggle('hidden', !show);
-                    if (show) visibleCount++;
-                });
-                const emptyMsg = document.getElementById('roster-empty-msg');
-                if (emptyMsg) emptyMsg.classList.toggle('hidden', visibleCount > 0);
-            } else {
-                renderRoster(true);
+            let visibleCount = 0;
+            cards.forEach(card => {
+                const cardGame = card.getAttribute('data-game') || 'Wild Rift';
+                const cardTeam = (card.getAttribute('data-team') || '').trim();
+                const gameMatch = (currentGameFilter === 'ALL' || cardGame.toLowerCase() === currentGameFilter.toLowerCase());
+                const teamMatch = (currentTeamSquadFilter === 'ALL' || cardTeam.toLowerCase() === currentTeamSquadFilter.toLowerCase());
+                const show = gameMatch && teamMatch;
+                card.classList.toggle('hidden', !show);
+                if (show) visibleCount++;
+            });
+
+            const emptyMsg = document.getElementById('roster-empty-msg');
+            if (emptyMsg) emptyMsg.classList.toggle('hidden', visibleCount > 0);
+
+            const countBadge = document.getElementById('roster-count-badge');
+            if (countBadge) {
+                const label = currentTeamSquadFilter !== 'ALL' ? `${currentTeamSquadFilter} • ` : (currentGameFilter !== 'ALL' ? `${currentGameFilter} • ` : '');
+                countBadge.textContent = `${label}${visibleCount} ${visibleCount === 1 ? 'Player' : 'Players'}`;
             }
+            updateActiveTeamBanner(visibleCount);
+        }
+
+        function updateActiveTeamBanner(visibleCount = null) {
+            const banner = document.getElementById('active-team-banner');
+            if (!banner) return;
+
+            if (currentTeamSquadFilter === 'ALL' && currentGameFilter === 'ALL') {
+                banner.classList.add('hidden');
+                return;
+            }
+
+            banner.classList.remove('hidden');
+            const matchingPlayers = allPlayers.filter(p => {
+                const pGame = p.game || 'Wild Rift';
+                const pTeam = (p.team || '').trim();
+                const gameOk = currentGameFilter === 'ALL' || pGame.toLowerCase() === currentGameFilter.toLowerCase();
+                const teamOk = currentTeamSquadFilter === 'ALL' || pTeam.toLowerCase() === currentTeamSquadFilter.toLowerCase();
+                return gameOk && teamOk;
+            });
+
+            const count = visibleCount !== null ? visibleCount : matchingPlayers.length;
+            const logoEl = document.getElementById('active-team-logo');
+            const labelEl = document.getElementById('active-team-label');
+            const metaEl = document.getElementById('active-team-meta');
+            const wrEl = document.getElementById('active-team-wr');
+
+            const sampleLogo = matchingPlayers.find(p => p.teamlogo && p.teamlogo.trim() !== '')?.teamlogo || '';
+            if (logoEl) {
+                if (sampleLogo) {
+                    logoEl.src = sampleLogo;
+                    logoEl.classList.remove('hidden');
+                } else {
+                    logoEl.classList.add('hidden');
+                }
+            }
+
+            const titleParts = [];
+            if (currentTeamSquadFilter !== 'ALL') titleParts.push(`SQUAD ${currentTeamSquadFilter}`);
+            if (currentGameFilter !== 'ALL') titleParts.push(currentGameFilter.toUpperCase());
+            if (labelEl) labelEl.textContent = titleParts.join(' • ') || 'ROSTER VIEW';
+            if (metaEl) metaEl.textContent = `${count} active ${count === 1 ? 'player' : 'players'} listed in this lineup`;
+
+            let totalW = 0, totalL = 0;
+            matchingPlayers.forEach(p => {
+                const st = calculatePlayerTournamentStats(p);
+                totalW += st.wins;
+                totalL += st.losses;
+            });
+            const totalGames = totalW + totalL;
+            const squadWr = totalGames === 0 ? 'No Tourney Data' : `${Math.round((totalW / totalGames) * 100)}% (${totalW}W-${totalL}L)`;
+            if (wrEl) wrEl.textContent = `Tourney WR: ${squadWr}`;
         }
 
         function filterMatchGame(game) {
@@ -1774,6 +1959,17 @@
                 } else {
                     btn.className = 'match-tab bg-[#161822]/85 text-slate-300 px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap transition';
                 }
+            });
+            renderMatches();
+        }
+
+        function filterMatchResult(resultVal) {
+            currentMatchResultFilter = resultVal;
+            document.querySelectorAll('.match-result-btn').forEach(btn => {
+                const isSelected = btn.getAttribute('data-result') === resultVal;
+                btn.className = isSelected
+                    ? 'match-result-btn bg-slate-700 text-white px-2.5 py-1.5 rounded-lg border border-white/20 transition'
+                    : 'match-result-btn bg-[#161822]/85 text-slate-300 px-2.5 py-1.5 rounded-lg border border-white/10 transition';
             });
             renderMatches();
         }
@@ -1797,6 +1993,7 @@
             const newSignature = JSON.stringify(allPlayers.map(p => [p.id, p.ign, p.tag, p.game, p.team, p.role, p.pfp, p.teamlogo]));
             if (!forceRebuild && newSignature === lastRosterSignature) {
                 updateRosterWinrateBadgesOnly();
+                applyRosterFiltersToDom();
                 return;
             }
             lastRosterSignature = newSignature;
@@ -1804,6 +2001,9 @@
             grid.innerHTML = '';
             if (allPlayers.length === 0) {
                 grid.innerHTML = '<p class="text-xs text-slate-400 italic py-4 text-center col-span-full">No players found.</p>';
+                const countBadge = document.getElementById('roster-count-badge');
+                if (countBadge) countBadge.textContent = '0 Active Players';
+                updateActiveTeamBanner(0);
                 return;
             }
 
@@ -1811,25 +2011,33 @@
             allPlayers.forEach(p => {
                 const stats = calculatePlayerTournamentStats(p);
                 const pGame = p.game || 'Wild Rift';
-                const isVisible = (currentGameFilter === 'ALL' || pGame === currentGameFilter);
+                const pTeam = (p.team || '').trim();
+                const gameMatch = (currentGameFilter === 'ALL' || pGame.toLowerCase() === currentGameFilter.toLowerCase());
+                const teamMatch = (currentTeamSquadFilter === 'ALL' || pTeam.toLowerCase() === currentTeamSquadFilter.toLowerCase());
+                const isVisible = gameMatch && teamMatch;
                 if (isVisible) visibleCount++;
                 const imgSrc = (p.pfp && p.pfp.trim() !== '') ? p.pfp : FALLBACK_IMAGES.player;
+                const teamBadgeHtml = pTeam ? `<span class="bg-black/75 text-amber-300 border border-amber-400/25 text-[9px] font-black px-1.5 py-0.5 rounded uppercase">${pTeam}</span>` : '';
 
                 const card = document.createElement('div');
                 card.setAttribute('data-player-card', 'true');
                 card.setAttribute('data-player-id', p.id);
                 card.setAttribute('data-game', pGame);
+                card.setAttribute('data-team', pTeam);
                 card.className = `bg-[#161822]/85 backdrop-blur-md rounded-xl overflow-hidden relative h-64 cursor-pointer group border border-white/10 shadow-xl ${isVisible ? '' : 'hidden'}`;
                 card.onclick = () => openPlayerStatsById(p.id);
 
                 card.innerHTML = `
                     <img src="${imgSrc}" decoding="async" onload="this.classList.add('loaded')" onerror="handleImgError(this, 'player')" class="img-fade w-full h-full object-cover opacity-80 group-hover:scale-105 transition duration-500">
                     <div class="absolute inset-0 bg-gradient-to-t from-[#0b0c10] via-[#0b0c10]/30 to-transparent"></div>
+                    <div class="absolute top-3 left-3 flex items-center gap-1.5">
+                        <span class="bg-[#ff2a2d] text-white text-[9px] font-black px-2 py-0.5 rounded uppercase shadow">${pGame}</span>
+                        ${teamBadgeHtml}
+                    </div>
                     <div data-wr-badge class="absolute top-3 right-3 bg-black/70 backdrop-blur-md text-emerald-400 text-[9px] font-black px-2 py-1 rounded border border-white/15 shadow">WR: ${stats.winrate}</div>
                     <div class="absolute bottom-4 left-4 right-4">
-                        <span class="bg-[#ff2a2d] text-white text-[9px] font-black px-2 py-0.5 rounded uppercase shadow">${pGame}</span>
                         <h3 class="text-white font-black text-xl mt-1 uppercase truncate">${p.ign}</h3>
-                        <p class="text-slate-300 text-[10px] font-bold uppercase mt-1 truncate">${p.team || ''} ${p.role ? '• ' + p.role : ''}</p>
+                        <p class="text-slate-300 text-[10px] font-bold uppercase mt-1 truncate">${pTeam} ${p.role ? '• ' + p.role : ''}</p>
                     </div>
                 `;
                 grid.appendChild(card);
@@ -1840,6 +2048,13 @@
             emptyNote.className = `text-xs text-slate-400 italic py-4 text-center col-span-full ${visibleCount > 0 ? 'hidden' : ''}`;
             emptyNote.textContent = 'No players found in this category.';
             grid.appendChild(emptyNote);
+
+            const countBadge = document.getElementById('roster-count-badge');
+            if (countBadge) {
+                const label = currentTeamSquadFilter !== 'ALL' ? `${currentTeamSquadFilter} • ` : (currentGameFilter !== 'ALL' ? `${currentGameFilter} • ` : '');
+                countBadge.textContent = `${label}${visibleCount} ${visibleCount === 1 ? 'Player' : 'Players'}`;
+            }
+            updateActiveTeamBanner(visibleCount);
         }
 
         function calculatePlayerTournamentStats(player) {
@@ -1894,29 +2109,58 @@
 
         function renderMatches() {
             const list = document.getElementById('match-history-list');
+            const summaryEl = document.getElementById('match-record-summary');
             if (!list) return;
             list.innerHTML = '';
-            
-            const keys = Object.keys(allMatches).filter(key => {
+
+            const gameFilteredKeys = Object.keys(allMatches).filter(key => {
                 const m = allMatches[key];
                 if (currentMatchFilter === 'ALL') return true;
                 return m.game && m.game.toLowerCase() === currentMatchFilter.toLowerCase();
             });
 
-            if (keys.length === 0) { list.innerHTML = '<div class="text-xs text-slate-400 italic col-span-full py-4 text-center">No match history found for this category.</div>'; return; }
+            let winsCount = 0;
+            let lossesCount = 0;
+            gameFilteredKeys.forEach(k => {
+                const res = (allMatches[k].result || '').toLowerCase();
+                if (res === 'win') winsCount++;
+                else if (res === 'lose') lossesCount++;
+            });
+            const totalDecided = winsCount + lossesCount;
+            const wrPct = totalDecided === 0 ? '0%' : `${Math.round((winsCount / totalDecided) * 100)}%`;
+
+            if (summaryEl) {
+                summaryEl.innerHTML = `
+                    <span class="bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded">${winsCount}W</span>
+                    <span class="bg-red-500/15 text-red-400 border border-red-500/30 px-2 py-0.5 rounded">${lossesCount}L</span>
+                    <span class="bg-blue-500/15 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded">${wrPct} WR</span>
+                `;
+            }
+
+            const keys = gameFilteredKeys.filter(key => {
+                const m = allMatches[key];
+                if (currentMatchResultFilter === 'ALL') return true;
+                return (m.result || '').toLowerCase() === currentMatchResultFilter.toLowerCase();
+            });
+
+            if (keys.length === 0) {
+                list.innerHTML = '<div class="text-xs text-slate-400 italic col-span-full py-4 text-center">No match history found for this filter.</div>';
+                return;
+            }
 
             keys.forEach(key => {
                 const m = allMatches[key];
-                const color = m.result === 'Win' ? 'text-green-400 bg-green-500/10 border-green-500/20' : 'text-red-400 bg-red-500/10 border-red-500/20';
+                const isWin = (m.result || '').toLowerCase() === 'win';
+                const color = isWin ? 'text-green-400 bg-green-500/10 border-green-500/20' : 'text-red-400 bg-red-500/10 border-red-500/20';
                 list.innerHTML += `
                     <div onclick="openMatchDetails('${key}')" class="bg-[#161822]/85 backdrop-blur-md border border-white/10 hover:border-blue-500/40 rounded-xl p-4 space-y-2 cursor-pointer transition shadow-xl">
-                        <div class="flex justify-between items-center">
-                            <div class="text-[10px] font-bold text-slate-300"><span class="text-blue-400 font-bold uppercase">${m.game || 'Wild Rift'}</span> • ${m.type} • ${m.date || 'Recent'}</div>
-                            <div class="px-3 py-0.5 rounded border font-black uppercase text-[10px] ${color}">${m.result}</div>
+                        <div class="flex justify-between items-center gap-2">
+                            <div class="text-[10px] font-bold text-slate-300 truncate"><span class="text-blue-400 font-bold uppercase">${m.game || 'Wild Rift'}</span> • ${m.type} • ${m.date || 'Recent'}</div>
+                            <div class="px-3 py-0.5 rounded border font-black uppercase text-[10px] shrink-0 ${color}">${m.result}</div>
                         </div>
-                        <div class="flex justify-between items-center">
-                            <div class="text-white font-black text-sm uppercase">${m.team} vs ${m.opponent}</div>
-                            <div class="text-xs font-bold text-slate-200">Score: ${m.score}</div>
+                        <div class="flex justify-between items-center gap-2">
+                            <div class="text-white font-black text-sm uppercase truncate">${m.team} vs ${m.opponent}</div>
+                            <div class="text-xs font-bold text-slate-200 shrink-0">Score: ${m.score}</div>
                         </div>
                     </div>
                 `;
@@ -2386,6 +2630,8 @@
             document.getElementById('match-modal-type').innerText = `${m.game || 'Wild Rift'} • ${m.type || 'Tournament'}`;
             document.getElementById('match-modal-teams').innerText = `${m.team} vs ${m.opponent}`;
             document.getElementById('match-modal-score').innerText = m.score || '0 - 0';
+            document.getElementById('blue-team-title').innerText = m.team || 'BLUE TEAM';
+            document.getElementById('red-team-title').innerText = m.opponent || 'RED TEAM';
             
             const badge = document.getElementById('match-modal-result-badge');
             badge.innerText = m.result === 'Win' ? 'VICTORY' : 'DEFEAT';
