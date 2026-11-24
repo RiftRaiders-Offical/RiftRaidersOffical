@@ -14,7 +14,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>
     
     <style>
-        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #07080c; }
         ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #ef4444; }
@@ -97,7 +97,7 @@
                 WELCOME TO <span class="text-red-600">RIFT RAIDERS</span> OFFICIAL
             </h1>
             <p class="text-xs sm:text-sm text-slate-400 max-w-xl mx-auto">
-                Explore our rosters, match scoreboards, tournament milestones, and latest announcements below.
+                Explore our rosters, player rankings, match scoreboards, tournament milestones, and latest announcements below.
             </p>
 
             <!-- Quick Jump Navigation Buttons -->
@@ -107,6 +107,9 @@
                 </a>
                 <a href="#teams-section" class="bg-[#161822]/90 hover:bg-red-600 hover:text-white text-slate-300 border border-white/10 px-3.5 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider transition shadow">
                     <i class="fa-solid fa-users mr-1 text-red-500"></i> Meet The Teams
+                </a>
+                <a href="#rankings-section" class="bg-[#161822]/90 hover:bg-red-600 hover:text-white text-slate-300 border border-white/10 px-3.5 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider transition shadow">
+                    <i class="fa-solid fa-trophy mr-1 text-amber-400"></i> Player Rankings
                 </a>
                 <a href="#matches-section" class="bg-[#161822]/90 hover:bg-red-600 hover:text-white text-slate-300 border border-white/10 px-3.5 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider transition shadow">
                     <i class="fa-solid fa-gamepad mr-1 text-blue-500"></i> Match History
@@ -237,6 +240,72 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4" id="roster-grid">
                 <div class="text-xs text-slate-400 py-4">Loading rosters...</div>
+            </div>
+        </section>
+
+        <!-- PLAYER RANKINGS LEADERBOARD (#, PLAYER, TEAM, AVG KDA, K/D/A, GP) -->
+        <section id="rankings-section" class="space-y-4 scroll-mt-20">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center space-x-2">
+                    <div class="w-1 h-4 bg-red-600"></div>
+                    <h2 class="font-black text-sm text-white uppercase tracking-widest">Player Rankings - Tournaments & Scrims</h2>
+                </div>
+                <span id="leaderboard-count-badge" class="text-[10px] font-bold uppercase tracking-wider bg-[#161822]/85 border border-white/10 text-emerald-400 px-2.5 py-1 rounded-lg">0 Ranked Players</span>
+            </div>
+
+            <!-- Controls Bar: Search, Game/Mode Filter, Sort By -->
+            <div class="bg-[#161822]/80 backdrop-blur-md border border-white/10 rounded-2xl p-3.5 space-y-3 shadow-xl">
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
+                    <div class="relative flex-1">
+                        <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs absolute left-3 top-1/2 -translate-y-1/2"></i>
+                        <input type="text" id="lb-search-input" oninput="renderLeaderboard()" placeholder="Search player or team (e.g. RRS, RFR, Kuro, Winter)..." class="w-full bg-[#0b0c10] border border-white/10 pl-8 pr-3 py-2 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:border-red-500">
+                    </div>
+
+                    <div class="flex items-center gap-1.5 text-[11px] font-bold shrink-0">
+                        <button onclick="setLeaderboardMode('ALL')" type="button" data-lb-mode="ALL" class="lb-mode-btn bg-red-600 text-white px-3 py-2 rounded-lg border border-red-500/40 transition">ALL</button>
+                        <button onclick="setLeaderboardMode('Tournament')" type="button" data-lb-mode="Tournament" class="lb-mode-btn bg-[#0b0c10] text-slate-300 hover:text-white px-3 py-2 rounded-lg border border-white/10 transition">TOURNAMENT</button>
+                        <button onclick="setLeaderboardMode('Scrim')" type="button" data-lb-mode="Scrim" class="lb-mode-btn bg-[#0b0c10] text-slate-300 hover:text-white px-3 py-2 rounded-lg border border-white/10 transition">SCRIM</button>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-white/5">
+                    <div class="flex gap-1.5 overflow-x-auto pb-0.5 text-[11px] font-bold">
+                        <button onclick="setLeaderboardGame('ALL')" type="button" data-lb-game="ALL" class="lb-game-btn bg-blue-600 text-white px-3 py-1 rounded-md border border-blue-500/40 whitespace-nowrap transition">ALL GAMES</button>
+                        <button onclick="setLeaderboardGame('Wild Rift')" type="button" data-lb-game="Wild Rift" class="lb-game-btn bg-[#0b0c10] text-slate-300 hover:text-white px-3 py-1 rounded-md border border-white/10 whitespace-nowrap transition">WILD RIFT</button>
+                        <button onclick="setLeaderboardGame('League of Legends')" type="button" data-lb-game="League of Legends" class="lb-game-btn bg-[#0b0c10] text-slate-300 hover:text-white px-3 py-1 rounded-md border border-white/10 whitespace-nowrap transition">LOL PC</button>
+                        <button onclick="setLeaderboardGame('Valorant')" type="button" data-lb-game="Valorant" class="lb-game-btn bg-[#0b0c10] text-slate-300 hover:text-white px-3 py-1 rounded-md border border-white/10 whitespace-nowrap transition">VALORANT</button>
+                    </div>
+
+                    <div class="flex items-center gap-1.5 text-[11px] font-bold">
+                        <span class="text-[10px] text-slate-400 uppercase">Sort:</span>
+                        <button onclick="setLeaderboardSort('kda')" type="button" data-lb-sort="kda" class="lb-sort-btn bg-slate-700 text-white px-2.5 py-1 rounded-md border border-white/15 transition">AVG KDA</button>
+                        <button onclick="setLeaderboardSort('gp')" type="button" data-lb-sort="gp" class="lb-sort-btn bg-[#0b0c10] text-slate-300 hover:text-white px-2.5 py-1 rounded-md border border-white/10 transition">GP</button>
+                        <button onclick="setLeaderboardSort('wr')" type="button" data-lb-sort="wr" class="lb-sort-btn bg-[#0b0c10] text-slate-300 hover:text-white px-2.5 py-1 rounded-md border border-white/10 transition">WINRATE</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Leaderboard Table Container -->
+            <div class="bg-[#161822]/85 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse min-w-[600px]">
+                        <thead>
+                            <tr class="bg-[#0b0c10]/90 border-b border-white/10 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                                <th class="py-3 px-3.5 w-12 text-center">#</th>
+                                <th class="py-3 px-3.5">PLAYER</th>
+                                <th class="py-3 px-3.5">TEAM</th>
+                                <th class="py-3 px-3.5 text-center">AVG KDA</th>
+                                <th class="py-3 px-3.5 text-center">K/D/A</th>
+                                <th class="py-3 px-3.5 text-center">GP</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-tbody" class="divide-y divide-white/5 text-xs">
+                            <tr>
+                                <td colspan="6" class="py-6 text-center text-slate-400 italic">Loading player rankings...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </section>
 
@@ -670,12 +739,12 @@
         </div>
     </div>
 
-    <!-- PLAYER STATS MODAL -->
-    <div id="player-modal-backdrop" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 hidden transition-opacity duration-300">
+    <!-- PLAYER STATS & TOP CHAMPIONS MODAL -->
+    <div id="player-modal-backdrop" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-3 sm:p-4 hidden transition-opacity duration-300">
         <div id="player-modal-card" class="bg-[#121212] border border-red-600/30 rounded-2xl p-5 w-full max-w-md shadow-[0_0_30px_rgba(255,42,45,0.15)] relative transform scale-95 opacity-0 transition-all duration-300 max-h-[90vh] overflow-y-auto">
             <button onclick="closePlayerStats()" type="button" class="absolute top-4 right-4 text-slate-500 hover:text-white w-6 h-6 flex items-center justify-center bg-white/5 rounded-full">✕</button>
 
-            <div class="flex items-center space-x-4 mb-5">
+            <div class="flex items-center space-x-4 mb-4">
                 <div class="w-[60px] h-[60px] rounded-lg border-[3px] border-red-500 overflow-hidden bg-slate-800 shrink-0">
                     <img id="modal-pfp" src="" decoding="async" onerror="handleImgError(this, 'player')" class="w-full h-full object-cover">
                 </div>
@@ -685,32 +754,54 @@
                         <h3 id="modal-name" class="text-white font-black text-xl uppercase tracking-wider leading-none">NAME</h3>
                     </div>
                     <p id="modal-tag" class="text-slate-400 text-[10px] font-bold tracking-widest mt-0.5">#TAG</p>
-                    <span id="modal-game" class="inline-block bg-red-600/20 text-red-400 border border-red-500/30 text-[8px] font-black px-2 py-0.5 rounded mt-1 uppercase">GAME</span>
+                    <div class="flex flex-wrap items-center gap-1.5 mt-1">
+                        <span id="modal-game" class="inline-block bg-red-600/20 text-red-400 border border-red-500/30 text-[8px] font-black px-2 py-0.5 rounded uppercase">GAME</span>
+                        <span id="modal-team-badge" class="hidden bg-amber-500/15 text-amber-300 border border-amber-400/25 text-[8px] font-black px-2 py-0.5 rounded uppercase">TEAM</span>
+                    </div>
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 mb-5 bg-[#161822] p-3 rounded-xl border border-white/5 text-center">
+            <!-- Modal View Tabs: Overview / Champions -->
+            <div class="grid grid-cols-2 gap-1.5 bg-[#0b0c10] p-1 rounded-xl border border-white/10 mb-4 text-[11px] font-black uppercase">
+                <button onclick="switchPlayerModalTab('overview')" type="button" id="pm-tab-overview" class="bg-amber-500 text-black py-1.5 rounded-lg transition">Overview</button>
+                <button onclick="switchPlayerModalTab('champions')" type="button" id="pm-tab-champions" class="text-slate-400 hover:text-white py-1.5 rounded-lg transition">Champions</button>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 mb-4 bg-[#161822] p-3 rounded-xl border border-white/5 text-center">
                 <div>
-                    <p class="text-slate-500 text-[8px] font-bold uppercase tracking-widest mb-0.5">WINS</p>
-                    <p id="modal-wins" class="text-green-400 font-black text-xs">0</p>
+                    <p class="text-slate-500 text-[8px] font-bold uppercase tracking-widest mb-0.5">AVG KDA</p>
+                    <p id="modal-avg-kda" class="text-amber-400 font-black text-xs">0.00</p>
                 </div>
                 <div>
-                    <p class="text-slate-500 text-[8px] font-bold uppercase tracking-widest mb-0.5">LOSSES</p>
-                    <p id="modal-losses" class="text-red-400 font-black text-xs">0</p>
+                    <p class="text-slate-500 text-[8px] font-bold uppercase tracking-widest mb-0.5">K/D/A</p>
+                    <p id="modal-kda-line" class="text-white font-black text-[11px]">0/0/0</p>
+                </div>
+                <div>
+                    <p class="text-slate-500 text-[8px] font-bold uppercase tracking-widest mb-0.5">W / L (GP)</p>
+                    <p id="modal-wl-gp" class="text-emerald-400 font-black text-[11px]">0W-0L (0)</p>
                 </div>
                 <div>
                     <p class="text-slate-500 text-[8px] font-bold uppercase tracking-widest mb-0.5">WINRATE</p>
-                    <p id="modal-winrate" class="text-emerald-400 font-black text-xs">0%</p>
-                </div>
-                <div>
-                    <p class="text-slate-500 text-[8px] font-bold uppercase tracking-widest mb-0.5">ROLE</p>
-                    <p id="modal-role" class="text-white font-bold text-[10px] truncate">N/A</p>
+                    <p id="modal-winrate" class="text-sky-400 font-black text-xs">0%</p>
                 </div>
             </div>
 
-            <div class="space-y-3 border-t border-white/10 pt-3">
-                <p id="modal-champs-title" class="text-slate-500 text-[9px] font-bold uppercase tracking-widest">MOST PLAYED CHAMPIONS (TOURNAMENT ONLY)</p>
-                <div id="modal-champs-list" class="space-y-2"></div>
+            <!-- OVERVIEW TAB PANEL -->
+            <div id="pm-panel-overview" class="space-y-3 border-t border-white/10 pt-3">
+                <div class="flex items-center justify-between">
+                    <p class="text-amber-400 text-[10px] font-black uppercase tracking-widest">TOP 3 BEST CHAMPIONS</p>
+                    <button onclick="switchPlayerModalTab('champions')" type="button" class="text-[10px] font-bold text-slate-400 hover:text-white underline">View All Champions →</button>
+                </div>
+                <div id="modal-top3-champs-list" class="space-y-2"></div>
+            </div>
+
+            <!-- ALL CHAMPIONS TAB PANEL -->
+            <div id="pm-panel-champions" class="hidden space-y-3 border-t border-white/10 pt-3">
+                <div class="flex items-center justify-between">
+                    <p class="text-slate-300 text-[10px] font-black uppercase tracking-widest">ALL CHAMPIONS USED</p>
+                    <span id="modal-role-sub" class="text-[9px] text-slate-400 font-bold uppercase">Role: N/A</span>
+                </div>
+                <div id="modal-all-champs-list" class="space-y-2"></div>
             </div>
         </div>
     </div>
@@ -1128,6 +1219,9 @@
         let currentTeamSquadFilter = 'ALL';
         let currentMatchFilter = 'ALL';
         let currentMatchResultFilter = 'ALL';
+        let lbModeFilter = 'ALL';
+        let lbGameFilter = 'ALL';
+        let lbSortBy = 'kda';
         let lastRosterSignature = '';
         let lastCreatorsSignature = '';
         let lastPartnersSignature = '';
@@ -1501,7 +1595,8 @@
                 'aurelionsol': 'AurelionSol', 'asol': 'AurelionSol', 'renata': 'Renata',
                 'renataglasc': 'Renata', 'nunu': 'Nunu', 'ambessa': 'Ambessa',
                 'aurora': 'Aurora', 'ornn': 'Ornn', 'orn': 'Ornn', 'belveth': 'Belveth',
-                'ksante': 'KSante', 'reksai': 'RekSai', 'kogmaw': 'KogMaw', 'leblanc': 'Leblanc'
+                'ksante': 'KSante', 'reksai': 'RekSai', 'kogmaw': 'KogMaw', 'leblanc': 'Leblanc',
+                'ezreal': 'Ezreal', 'smolder': 'Smolder', 'orianna': 'Orianna'
             };
 
             const formattedName = champMap[clean] || (rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase().replace(/['\s]/g, ''));
@@ -1615,6 +1710,7 @@
             allMatches = snap.val() || {};
             renderMatches();
             renderAdminMatches();
+            renderLeaderboard();
             updateRosterWinrateBadgesOnly();
             updateActiveTeamBanner();
         });
@@ -1633,6 +1729,7 @@
             rebuildDynamicAutoFillButtons();
             renderRoster(true); 
             renderAdminPlayers();
+            renderLeaderboard();
         });
 
         db.ref('creators').on('value', snap => {
@@ -1941,7 +2038,7 @@
 
             let totalW = 0, totalL = 0;
             matchingPlayers.forEach(p => {
-                const st = calculatePlayerTournamentStats(p);
+                const st = calculatePlayerMatchStats(p, 'Tournament');
                 totalW += st.wins;
                 totalL += st.losses;
             });
@@ -1980,9 +2077,9 @@
                 const playerId = card.getAttribute('data-player-id');
                 const p = allPlayers.find(item => item.id === playerId);
                 if (!p) return;
-                const stats = calculatePlayerTournamentStats(p);
+                const stats = calculatePlayerMatchStats(p, 'Tournament');
                 const badge = card.querySelector('[data-wr-badge]');
-                if (badge) badge.textContent = `WR: ${stats.winrate}`;
+                if (badge) badge.textContent = `WR: ${stats.winrateStr}`;
             });
         }
 
@@ -2009,7 +2106,7 @@
 
             let visibleCount = 0;
             allPlayers.forEach(p => {
-                const stats = calculatePlayerTournamentStats(p);
+                const stats = calculatePlayerMatchStats(p, 'Tournament');
                 const pGame = p.game || 'Wild Rift';
                 const pTeam = (p.team || '').trim();
                 const gameMatch = (currentGameFilter === 'ALL' || pGame.toLowerCase() === currentGameFilter.toLowerCase());
@@ -2025,7 +2122,7 @@
                 card.setAttribute('data-game', pGame);
                 card.setAttribute('data-team', pTeam);
                 card.className = `bg-[#161822]/85 backdrop-blur-md rounded-xl overflow-hidden relative h-64 cursor-pointer group border border-white/10 shadow-xl ${isVisible ? '' : 'hidden'}`;
-                card.onclick = () => openPlayerStatsById(p.id);
+                card.onclick = () => openPlayerStatsById(p.id, 'overview');
 
                 card.innerHTML = `
                     <img src="${imgSrc}" decoding="async" onload="this.classList.add('loaded')" onerror="handleImgError(this, 'player')" class="img-fade w-full h-full object-cover opacity-80 group-hover:scale-105 transition duration-500">
@@ -2034,7 +2131,7 @@
                         <span class="bg-[#ff2a2d] text-white text-[9px] font-black px-2 py-0.5 rounded uppercase shadow">${pGame}</span>
                         ${teamBadgeHtml}
                     </div>
-                    <div data-wr-badge class="absolute top-3 right-3 bg-black/70 backdrop-blur-md text-emerald-400 text-[9px] font-black px-2 py-1 rounded border border-white/15 shadow">WR: ${stats.winrate}</div>
+                    <div data-wr-badge class="absolute top-3 right-3 bg-black/70 backdrop-blur-md text-emerald-400 text-[9px] font-black px-2 py-1 rounded border border-white/15 shadow">WR: ${stats.winrateStr}</div>
                     <div class="absolute bottom-4 left-4 right-4">
                         <h3 class="text-white font-black text-xl mt-1 uppercase truncate">${p.ign}</h3>
                         <p class="text-slate-300 text-[10px] font-bold uppercase mt-1 truncate">${pTeam} ${p.role ? '• ' + p.role : ''}</p>
@@ -2057,54 +2154,293 @@
             updateActiveTeamBanner(visibleCount);
         }
 
-        function calculatePlayerTournamentStats(player) {
-            if (!player || !allMatches) return { wins: 0, losses: 0, winrate: '0%' };
-            const pIgn = (player.ign || '').trim().toLowerCase();
-            const pIgnNoTag = pIgn.replace(/^(rrs|rfr|rra)\s+/i, '').trim();
-            const pGame = (player.game || 'Wild Rift').trim().toLowerCase();
+        /* PLAYER MATCH AGGREGATOR (K/D/A, AVG KDA, GP, W/L, WINRATE & PER-CHAMPION STATS) */
+        function parseKdaNumbers(kdaRaw) {
+            const match = String(kdaRaw || '0/0/0').match(/(\d+)\s*\/\s*(\d+)\s*\/\s*(\d+)/);
+            if (!match) return { k: 0, d: 0, a: 0 };
+            return {
+                k: parseInt(match[1], 10) || 0,
+                d: parseInt(match[2], 10) || 0,
+                a: parseInt(match[3], 10) || 0
+            };
+        }
 
-            let wins = 0, losses = 0;
+        function computeSingleKdaRatio(k, d, a) {
+            const safeDeaths = Math.max(1, d);
+            return (k + a) / safeDeaths;
+        }
 
-            Object.values(allMatches).forEach(m => {
-                if (!m.type || m.type.trim().toLowerCase() !== 'tournament') return;
-                
+        function matchesPlayerName(rowIgnRaw, targetIgn, targetIgnNoTag) {
+            const rowIgn = (rowIgnRaw || '').trim().toLowerCase();
+            if (!rowIgn || !targetIgn) return false;
+            const rowIgnNoTag = rowIgn.replace(/^(rrs|rfr|rra)\s+/i, '').trim();
+            return rowIgn === targetIgn || (targetIgnNoTag && rowIgnNoTag === targetIgnNoTag);
+        }
+
+        function calculatePlayerMatchStats(player, modeFilter = 'ALL', gameFilter = 'ALL') {
+            const targetIgn = (player.ign || '').trim().toLowerCase();
+            const targetIgnNoTag = targetIgn.replace(/^(rrs|rfr|rra)\s+/i, '').trim();
+            const playerGame = (player.game || 'Wild Rift').trim().toLowerCase();
+            const activeGameFilter = (gameFilter || 'ALL').trim().toLowerCase();
+            const activeModeFilter = (modeFilter || 'ALL').trim().toLowerCase();
+
+            let gp = 0;
+            let wins = 0;
+            let losses = 0;
+            let totalKills = 0;
+            let totalDeaths = 0;
+            let totalAssists = 0;
+            let sumMatchKdaRatios = 0;
+            const champMap = {};
+
+            Object.values(allMatches || {}).forEach(m => {
+                if (!m) return;
+                const mType = (m.type || 'Tournament').trim().toLowerCase();
+                if (activeModeFilter !== 'all' && mType !== activeModeFilter) return;
+
                 const mGame = (m.game || 'Wild Rift').trim().toLowerCase();
-                if (mGame !== pGame) return;
+                if (activeGameFilter !== 'all' && mGame !== activeGameFilter) return;
+                if (activeGameFilter === 'all' && playerGame && mGame !== playerGame) return;
 
-                let foundInBlue = false;
-                let foundInRed = false;
+                let matchedEntry = null;
+                let isBlueSide = false;
 
-                if (m.blueData && pIgn) {
-                    m.blueData.split('\n').forEach(line => {
-                        const rowIgn = (line.split('|')[0] || '').trim().toLowerCase();
-                        const rowIgnNoTag = rowIgn.replace(/^(rrs|rfr|rra)\s+/i, '').trim();
-                        if (rowIgn && (rowIgn === pIgn || (pIgnNoTag && rowIgnNoTag === pIgnNoTag))) {
-                            foundInBlue = true;
+                const blueLines = (m.blueData || '').split('\n');
+                for (let i = 0; i < blueLines.length; i++) {
+                    const line = blueLines[i].trim();
+                    if (!line) continue;
+                    const parts = line.split('|').map(s => s.trim());
+                    if (matchesPlayerName(parts[0], targetIgn, targetIgnNoTag)) {
+                        matchedEntry = parts;
+                        isBlueSide = true;
+                        break;
+                    }
+                }
+
+                if (!matchedEntry) {
+                    const redLines = (m.redData || '').split('\n');
+                    for (let i = 0; i < redLines.length; i++) {
+                        const line = redLines[i].trim();
+                        if (!line) continue;
+                        const parts = line.split('|').map(s => s.trim());
+                        if (matchesPlayerName(parts[0], targetIgn, targetIgnNoTag)) {
+                            matchedEntry = parts;
+                            isBlueSide = false;
+                            break;
                         }
-                    });
+                    }
                 }
 
-                if (m.redData && pIgn) {
-                    m.redData.split('\n').forEach(line => {
-                        const rowIgn = (line.split('|')[0] || '').trim().toLowerCase();
-                        const rowIgnNoTag = rowIgn.replace(/^(rrs|rfr|rra)\s+/i, '').trim();
-                        if (rowIgn && (rowIgn === pIgn || (pIgnNoTag && rowIgnNoTag === pIgnNoTag))) {
-                            foundInRed = true;
-                        }
-                    });
+                if (!matchedEntry) return;
+
+                gp++;
+                const champName = matchedEntry[1] || 'Unknown';
+                const { k, d, a } = parseKdaNumbers(matchedEntry[2]);
+                const singleKda = computeSingleKdaRatio(k, d, a);
+
+                totalKills += k;
+                totalDeaths += d;
+                totalAssists += a;
+                sumMatchKdaRatios += singleKda;
+
+                let wonMatch = false;
+                if (isBlueSide) {
+                    if (m.result === 'Win') { wins++; wonMatch = true; }
+                    else if (m.result === 'Lose') { losses++; }
+                } else {
+                    if (m.result === 'Lose') { wins++; wonMatch = true; }
+                    else if (m.result === 'Win') { losses++; }
                 }
 
-                if (foundInBlue) {
-                    if (m.result === 'Win') wins++;
-                    else if (m.result === 'Lose') losses++;
-                } else if (foundInRed) {
-                    if (m.result === 'Lose') wins++;
-                    else if (m.result === 'Win') losses++;
+                const champKey = champName.toLowerCase();
+                if (!champMap[champKey]) {
+                    champMap[champKey] = {
+                        name: champName,
+                        gp: 0,
+                        wins: 0,
+                        losses: 0,
+                        k: 0,
+                        d: 0,
+                        a: 0,
+                        kdaSum: 0
+                    };
                 }
+                champMap[champKey].gp++;
+                if (wonMatch) champMap[champKey].wins++;
+                else champMap[champKey].losses++;
+                champMap[champKey].k += k;
+                champMap[champKey].d += d;
+                champMap[champKey].a += a;
+                champMap[champKey].kdaSum += singleKda;
             });
 
-            const total = wins + losses;
-            return { wins, losses, winrate: total === 0 ? '0%' : Math.round((wins / total) * 100) + '%' };
+            const avgKda = gp === 0 ? 0 : (sumMatchKdaRatios / gp);
+            const totalDecided = wins + losses;
+            const winrateNum = totalDecided === 0 ? 0 : Math.round((wins / totalDecided) * 100);
+
+            const championsList = Object.values(champMap)
+                .map(c => {
+                    const cDecided = c.wins + c.losses;
+                    const cWr = cDecided === 0 ? 0 : Math.round((c.wins / cDecided) * 100);
+                    const cAvgKda = c.gp === 0 ? 0 : (c.kdaSum / c.gp);
+                    const pickPct = gp === 0 ? 0 : Math.round((c.gp / gp) * 100);
+                    return {
+                        ...c,
+                        wr: cWr,
+                        avgKda: cAvgKda,
+                        avgKdaStr: cAvgKda.toFixed(1),
+                        pickPct
+                    };
+                })
+                .sort((a, b) => {
+                    if (b.gp !== a.gp) return b.gp - a.gp;
+                    if (b.wr !== a.wr) return b.wr - a.wr;
+                    return b.avgKda - a.avgKda;
+                });
+
+            return {
+                gp,
+                wins,
+                losses,
+                kills: totalKills,
+                deaths: totalDeaths,
+                assists: totalAssists,
+                kdaLine: `${totalKills}/${totalDeaths}/${totalAssists}`,
+                avgKda,
+                avgKdaStr: avgKda.toFixed(2),
+                winrateNum,
+                winrateStr: `${winrateNum}%`,
+                championsList
+            };
+        }
+
+        function setLeaderboardMode(mode) {
+            lbModeFilter = mode;
+            document.querySelectorAll('.lb-mode-btn').forEach(btn => {
+                const active = btn.getAttribute('data-lb-mode') === mode;
+                btn.className = active
+                    ? 'lb-mode-btn bg-red-600 text-white px-3 py-2 rounded-lg border border-red-500/40 transition'
+                    : 'lb-mode-btn bg-[#0b0c10] text-slate-300 hover:text-white px-3 py-2 rounded-lg border border-white/10 transition';
+            });
+            renderLeaderboard();
+        }
+
+        function setLeaderboardGame(game) {
+            lbGameFilter = game;
+            document.querySelectorAll('.lb-game-btn').forEach(btn => {
+                const active = btn.getAttribute('data-lb-game') === game;
+                btn.className = active
+                    ? 'lb-game-btn bg-blue-600 text-white px-3 py-1 rounded-md border border-blue-500/40 whitespace-nowrap transition'
+                    : 'lb-game-btn bg-[#0b0c10] text-slate-300 hover:text-white px-3 py-1 rounded-md border border-white/10 whitespace-nowrap transition';
+            });
+            renderLeaderboard();
+        }
+
+        function setLeaderboardSort(sortField) {
+            lbSortBy = sortField;
+            document.querySelectorAll('.lb-sort-btn').forEach(btn => {
+                const active = btn.getAttribute('data-lb-sort') === sortField;
+                btn.className = active
+                    ? 'lb-sort-btn bg-slate-700 text-white px-2.5 py-1 rounded-md border border-white/15 transition'
+                    : 'lb-sort-btn bg-[#0b0c10] text-slate-300 hover:text-white px-2.5 py-1 rounded-md border border-white/10 transition';
+            });
+            renderLeaderboard();
+        }
+
+        function renderLeaderboard() {
+            const tbody = document.getElementById('leaderboard-tbody');
+            const badge = document.getElementById('leaderboard-count-badge');
+            if (!tbody) return;
+
+            const searchVal = (document.getElementById('lb-search-input')?.value || '').trim().toLowerCase();
+
+            const rows = allPlayers
+                .filter(p => {
+                    const pGame = (p.game || 'Wild Rift').trim();
+                    if (lbGameFilter !== 'ALL' && pGame.toLowerCase() !== lbGameFilter.toLowerCase()) return false;
+                    if (searchVal) {
+                        const ign = (p.ign || '').toLowerCase();
+                        const team = (p.team || '').toLowerCase();
+                        const role = (p.role || '').toLowerCase();
+                        if (!ign.includes(searchVal) && !team.includes(searchVal) && !role.includes(searchVal)) {
+                            return false;
+                        }
+                    }
+                    return true;
+                })
+                .map(p => {
+                    const stats = calculatePlayerMatchStats(p, lbModeFilter, lbGameFilter);
+                    return { player: p, stats };
+                })
+                .sort((a, b) => {
+                    if (lbSortBy === 'gp') {
+                        if (b.stats.gp !== a.stats.gp) return b.stats.gp - a.stats.gp;
+                        return b.stats.avgKda - a.stats.avgKda;
+                    }
+                    if (lbSortBy === 'wr') {
+                        if (b.stats.winrateNum !== a.stats.winrateNum) return b.stats.winrateNum - a.stats.winrateNum;
+                        return b.stats.avgKda - a.stats.avgKda;
+                    }
+                    if (b.stats.avgKda !== a.stats.avgKda) return b.stats.avgKda - a.stats.avgKda;
+                    if (b.stats.gp !== a.stats.gp) return b.stats.gp - a.stats.gp;
+                    return b.stats.winrateNum - a.stats.winrateNum;
+                });
+
+            if (badge) {
+                badge.textContent = `${rows.length} ${rows.length === 1 ? 'Ranked Player' : 'Ranked Players'}`;
+            }
+
+            if (rows.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="py-6 text-center text-slate-400 italic">No player rankings for this filter yet.</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = rows.map((entry, idx) => {
+                const { player, stats } = entry;
+                const rank = idx + 1;
+                const avatarSrc = (player.pfp && player.pfp.trim() !== '') ? player.pfp : FALLBACK_IMAGES.player;
+                const topChamp = stats.championsList[0];
+                const rankBadge = rank === 1
+                    ? `<span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 border border-amber-400/40 font-black text-[11px]">1</span>`
+                    : rank === 2
+                    ? `<span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-slate-300/15 text-slate-200 border border-slate-300/30 font-black text-[11px]">2</span>`
+                    : rank === 3
+                    ? `<span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-orange-600/20 text-orange-400 border border-orange-500/35 font-black text-[11px]">3</span>`
+                    : `<span class="text-slate-400 font-bold text-xs">${rank}</span>`;
+
+                const kdaColor = stats.avgKda >= 6 ? 'text-emerald-400' : (stats.avgKda >= 3 ? 'text-amber-300' : 'text-slate-200');
+                const subInfo = [player.role, topChamp ? `Top: ${topChamp.name} (${topChamp.wr}% WR)` : null].filter(Boolean).join(' • ');
+
+                return `
+                    <tr onclick="openPlayerStatsById('${player.id}', 'overview')" class="hover:bg-white/[0.04] cursor-pointer transition">
+                        <td class="py-3 px-3.5 text-center">${rankBadge}</td>
+                        <td class="py-3 px-3.5">
+                            <div class="flex items-center space-x-2.5 min-w-0">
+                                <img src="${avatarSrc}" decoding="async" onerror="handleImgError(this, 'player')" class="w-9 h-9 rounded-lg object-cover border border-white/15 shrink-0">
+                                <div class="min-w-0">
+                                    <p class="font-black text-white text-xs uppercase truncate">${player.ign}</p>
+                                    <p class="text-[10px] text-slate-400 truncate">${subInfo || (player.game || 'Wild Rift')}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="py-3 px-3.5">
+                            <div class="flex items-center space-x-1.5">
+                                ${player.teamlogo ? `<img src="${player.teamlogo}" onerror="this.classList.add('hidden')" class="w-4 h-4 object-contain rounded shrink-0">` : ''}
+                                <span class="text-[11px] font-black uppercase text-slate-200">${player.team || 'RR'}</span>
+                            </div>
+                        </td>
+                        <td class="py-3 px-3.5 text-center font-black text-xs ${kdaColor}">${stats.avgKdaStr}</td>
+                        <td class="py-3 px-3.5 text-center font-bold text-[11px] text-slate-200">${stats.kdaLine}</td>
+                        <td class="py-3 px-3.5 text-center">
+                            <span class="bg-white/5 border border-white/10 text-white font-black text-[11px] px-2 py-0.5 rounded">${stats.gp}</span>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
 
         function renderMatches() {
@@ -2518,97 +2854,111 @@
             alert('Partner saved!');
         }
 
-        function openPlayerStatsById(playerId) {
-            const p = allPlayers.find(item => item.id === playerId);
-            if (!p) return;
-            const stats = calculatePlayerTournamentStats(p);
-            openPlayerStats(p.ign, p.tag || '', p.game || 'Wild Rift', p.team || '', p.role || '', stats.winrate, stats.wins, stats.losses, p.pfp || '', p.teamlogo || '');
+        let currentModalPlayerObj = null;
+
+        function switchPlayerModalTab(tabName) {
+            const overviewTab = document.getElementById('pm-tab-overview');
+            const champsTab = document.getElementById('pm-tab-champions');
+            const overviewPanel = document.getElementById('pm-panel-overview');
+            const champsPanel = document.getElementById('pm-panel-champions');
+
+            if (tabName === 'champions') {
+                champsTab.className = 'bg-amber-500 text-black py-1.5 rounded-lg transition';
+                overviewTab.className = 'text-slate-400 hover:text-white py-1.5 rounded-lg transition';
+                overviewPanel.classList.add('hidden');
+                champsPanel.classList.remove('hidden');
+            } else {
+                overviewTab.className = 'bg-amber-500 text-black py-1.5 rounded-lg transition';
+                champsTab.className = 'text-slate-400 hover:text-white py-1.5 rounded-lg transition';
+                champsPanel.classList.add('hidden');
+                overviewPanel.classList.remove('hidden');
+            }
         }
 
-        function openPlayerStats(name, tag, game, team, role, winrate, wins, losses, pfp, teamlogo) {
-            document.getElementById('modal-name').innerText = name;
-            document.getElementById('modal-tag').innerText = tag ? '#' + tag : '';
-            document.getElementById('modal-game').innerText = game;
-            document.getElementById('modal-wins').innerText = wins;
-            document.getElementById('modal-losses').innerText = losses;
-            document.getElementById('modal-winrate').innerText = winrate;
-            document.getElementById('modal-role').innerText = role || 'N/A';
+        function buildChampionRowCard(c, isTop3 = false) {
+            const wrColor = c.wr >= 60 ? 'text-emerald-400' : (c.wr >= 40 ? 'text-amber-300' : 'text-red-400');
+            const borderHighlight = isTop3 ? 'border-emerald-500/35' : 'border-white/10';
+            const barWidth = Math.max(4, Math.min(100, c.wr));
+            const barColor = c.wr >= 50 ? 'bg-emerald-400' : (c.wr > 0 ? 'bg-amber-400' : 'bg-red-500');
+
+            return `
+                <div class="bg-[#0b0c10] p-2.5 rounded-xl border ${borderHighlight} space-y-2 text-xs">
+                    <div class="flex items-center justify-between gap-2">
+                        <div class="flex items-center space-x-2.5 min-w-0">
+                            <img src="${getChampionIconUrl(c.name)}" decoding="async" onerror="handleImgError(this, 'champ')" class="w-9 h-9 rounded-lg border border-white/15 object-cover shrink-0">
+                            <div class="min-w-0">
+                                <p class="font-black text-white text-xs leading-tight truncate">${c.name}</p>
+                                <p class="text-[10px] text-slate-400 mt-0.5 font-bold">${c.wins}W | ${c.losses}L • ${c.gp} ${c.gp === 1 ? 'Match' : 'Matches'}</p>
+                            </div>
+                        </div>
+                        <div class="text-right shrink-0">
+                            <p class="font-black text-xs leading-tight ${wrColor}">${c.wr}% WR</p>
+                            <p class="text-[10px] text-slate-300 font-bold mt-0.5">KDA ${c.avgKdaStr}</p>
+                        </div>
+                    </div>
+                    <div class="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+                        <div class="h-full ${barColor} rounded-full" style="width: ${barWidth}%"></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function openPlayerStatsById(playerId, initialTab = 'overview') {
+            const p = allPlayers.find(item => item.id === playerId);
+            if (!p) return;
+            currentModalPlayerObj = p;
+
+            const activeMode = lbModeFilter !== 'ALL' ? lbModeFilter : 'ALL';
+            const activeGame = lbGameFilter !== 'ALL' ? lbGameFilter : (p.game || 'Wild Rift');
+            const stats = calculatePlayerMatchStats(p, activeMode, activeGame);
+
+            document.getElementById('modal-name').innerText = p.ign || 'PLAYER';
+            document.getElementById('modal-tag').innerText = p.tag ? `#${p.tag}` : (p.role ? p.role.toUpperCase() : '');
+            document.getElementById('modal-game').innerText = p.game || 'Wild Rift';
+
+            const teamBadge = document.getElementById('modal-team-badge');
+            if (p.team && p.team.trim()) {
+                teamBadge.textContent = p.team.trim();
+                teamBadge.classList.remove('hidden');
+            } else {
+                teamBadge.classList.add('hidden');
+            }
+
+            document.getElementById('modal-avg-kda').innerText = stats.avgKdaStr;
+            document.getElementById('modal-kda-line').innerText = stats.kdaLine;
+            document.getElementById('modal-wl-gp').innerText = `${stats.wins}W-${stats.losses}L (${stats.gp})`;
+            document.getElementById('modal-winrate').innerText = stats.winrateStr;
+            document.getElementById('modal-role-sub').innerText = `Role: ${p.role || 'N/A'}`;
 
             const modalPfp = document.getElementById('modal-pfp');
             delete modalPfp.dataset.fallbackApplied;
-            modalPfp.src = (pfp && pfp.trim() !== '') ? pfp : FALLBACK_IMAGES.player;
+            modalPfp.src = (p.pfp && p.pfp.trim() !== '') ? p.pfp : FALLBACK_IMAGES.player;
             
             const teamLogoEl = document.getElementById('modal-teamlogo');
-            if (teamlogo && teamlogo.trim() !== '') {
-                teamLogoEl.src = teamlogo;
+            if (p.teamlogo && p.teamlogo.trim() !== '') {
+                teamLogoEl.src = p.teamlogo;
                 teamLogoEl.classList.remove('hidden');
             } else {
                 teamLogoEl.classList.add('hidden');
             }
 
-            const champStats = {};
-            let totalPlayerMatches = 0;
-            const targetIgn = (name || '').trim().toLowerCase();
-            const targetIgnNoTag = targetIgn.replace(/^(rrs|rfr|rra)\s+/i, '').trim();
-            const targetGame = (game || 'Wild Rift').trim().toLowerCase();
+            const top3ListEl = document.getElementById('modal-top3-champs-list');
+            const allChampsListEl = document.getElementById('modal-all-champs-list');
 
-            Object.values(allMatches).forEach(m => {
-                if (m.type && m.type.trim().toLowerCase() === 'tournament') {
-                    const mGame = (m.game || 'Wild Rift').trim().toLowerCase();
-                    if (mGame !== targetGame) return;
-
-                    (m.blueData || '').split('\n').forEach(line => {
-                        const p = line.split('|').map(s => s.trim());
-                        const rowIgn = (p[0] || '').toLowerCase();
-                        const rowIgnNoTag = rowIgn.replace(/^(rrs|rfr|rra)\s+/i, '').trim();
-                        if (rowIgn && (rowIgn === targetIgn || (targetIgnNoTag && rowIgnNoTag === targetIgnNoTag))) {
-                            totalPlayerMatches++;
-                            const champ = p[1] || 'Unknown';
-                            if (!champStats[champ]) champStats[champ] = { count: 0, wins: 0 };
-                            champStats[champ].count++;
-                            if (m.result === 'Win') champStats[champ].wins++;
-                        }
-                    });
-                    (m.redData || '').split('\n').forEach(line => {
-                        const p = line.split('|').map(s => s.trim());
-                        const rowIgn = (p[0] || '').toLowerCase();
-                        const rowIgnNoTag = rowIgn.replace(/^(rrs|rfr|rra)\s+/i, '').trim();
-                        if (rowIgn && (rowIgn === targetIgn || (targetIgnNoTag && rowIgnNoTag === targetIgnNoTag))) {
-                            totalPlayerMatches++;
-                            const champ = p[1] || 'Unknown';
-                            if (!champStats[champ]) champStats[champ] = { count: 0, wins: 0 };
-                            champStats[champ].count++;
-                            if (m.result === 'Lose') champStats[champ].wins++;
-                        }
-                    });
-                }
-            });
-
-            const champsListEl = document.getElementById('modal-champs-list');
-            champsListEl.innerHTML = '';
-            const champsArray = Object.keys(champStats).sort((a,b) => champStats[b].count - champStats[a].count);
-
-            if (champsArray.length > 0) {
-                champsArray.forEach(champ => {
-                    const data = champStats[champ];
-                    const pickPercent = Math.round((data.count / totalPlayerMatches) * 100);
-                    const champWr = Math.round((data.wins / data.count) * 100);
-                    champsListEl.innerHTML += `
-                        <div class="bg-[#0b0c10] p-2 rounded-xl border border-white/10 flex items-center justify-between text-xs">
-                            <div class="flex items-center space-x-3">
-                                <img src="${getChampionIconUrl(champ)}" decoding="async" onerror="handleImgError(this, 'champ')" class="w-9 h-9 rounded-lg border border-red-500/40 object-cover">
-                                <div>
-                                    <p class="font-black text-white text-xs leading-none">${champ}</p>
-                                    <p class="text-[9px] text-slate-400 mt-0.5">${data.count} Matches • <span class="text-emerald-400 font-bold">${champWr}% WR</span></p>
-                                </div>
-                            </div>
-                            <div class="text-right"><span class="bg-red-600/20 text-red-400 border border-red-500/30 text-[10px] font-black px-2 py-0.5 rounded">${pickPercent}% Pick</span></div>
-                        </div>
-                    `;
-                });
+            const top3 = stats.championsList.slice(0, 3);
+            if (top3.length > 0) {
+                top3ListEl.innerHTML = top3.map((c, idx) => buildChampionRowCard(c, idx === 0)).join('');
             } else {
-                champsListEl.innerHTML = `<p class="text-[10px] text-slate-500 italic">No tournament champions recorded yet.</p>`;
+                top3ListEl.innerHTML = `<p class="text-[10px] text-slate-500 italic py-2">No champion match stats recorded yet for this player.</p>`;
             }
+
+            if (stats.championsList.length > 0) {
+                allChampsListEl.innerHTML = stats.championsList.map((c, idx) => buildChampionRowCard(c, idx < 3)).join('');
+            } else {
+                allChampsListEl.innerHTML = `<p class="text-[10px] text-slate-500 italic py-2">No champions recorded yet.</p>`;
+            }
+
+            switchPlayerModalTab(initialTab);
 
             const backdrop = document.getElementById('player-modal-backdrop');
             const card = document.getElementById('player-modal-card');
