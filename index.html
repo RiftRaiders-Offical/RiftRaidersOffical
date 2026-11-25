@@ -77,7 +77,8 @@
             <nav class="hidden md:flex items-center space-x-4 text-xs font-bold uppercase tracking-wider text-slate-300">
                 <a href="#news-section" class="hover:text-red-500 transition">News</a>
                 <a href="#about-us-section" class="hover:text-red-500 transition">About</a>
-                <a href="#teams-section" class="hover:text-red-500 transition">Meta Teams</a>
+                <a href="#teams-section" class="hover:text-red-500 transition">Teams & Roster</a>
+                <a href="#leaderboard-section" class="hover:text-red-500 transition">Leaderboard</a>
                 <a href="#matches-section" class="hover:text-red-500 transition">Matches</a>
                 <a href="#creators-section" class="hover:text-red-500 transition">Creators</a>
                 <a href="#contact-section" class="hover:text-red-500 transition">Contact</a>
@@ -108,7 +109,7 @@
                 WELCOME TO <span class="text-red-600">RIFT RAIDERS</span> OFFICIAL
             </h1>
             <p class="text-xs sm:text-sm text-slate-300 max-w-2xl mx-auto leading-relaxed">
-                Explore our meta team groups, sub-rosters, player champion pools, KDA & team gold match scoreboards, creators, and announcements.
+                Explore our team groups, registered sub-rosters, players leaderboard, KDA & team gold match scoreboards, creators, and announcements.
             </p>
 
             <div class="flex flex-wrap items-center justify-center gap-2 pt-1">
@@ -116,7 +117,10 @@
                     <i class="fa-solid fa-shield-halved mr-1 text-red-500"></i> About Us
                 </a>
                 <a href="#teams-section" class="glass-card hover:bg-red-600 hover:text-white text-slate-200 px-3.5 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider transition">
-                    <i class="fa-solid fa-users mr-1 text-red-500"></i> Meta Teams
+                    <i class="fa-solid fa-users mr-1 text-red-500"></i> Teams & Roster
+                </a>
+                <a href="#leaderboard-section" class="glass-card hover:bg-red-600 hover:text-white text-slate-200 px-3.5 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider transition">
+                    <i class="fa-solid fa-trophy mr-1 text-amber-400"></i> Leaderboard
                 </a>
                 <a href="#matches-section" class="glass-card hover:bg-red-600 hover:text-white text-slate-200 px-3.5 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider transition">
                     <i class="fa-solid fa-gamepad mr-1 text-blue-400"></i> Match History
@@ -193,12 +197,12 @@
             </div>
         </section>
 
-        <!-- META TEAMS DIRECTORY -->
+        <!-- TEAMS & ROSTER DIRECTORY -->
         <section id="teams-section" class="space-y-4 scroll-mt-20">
             <div class="flex flex-wrap items-center justify-between gap-2">
                 <div class="flex items-center space-x-2">
                     <div class="w-1 h-5 bg-red-600 rounded"></div>
-                    <h2 class="gaming-font font-black text-sm sm:text-base text-white uppercase">Meta Teams & Rosters</h2>
+                    <h2 class="gaming-font font-black text-sm sm:text-base text-white uppercase">Teams & Roster</h2>
                 </div>
 
                 <div class="flex gap-1.5 overflow-x-auto pb-1 text-[11px] font-bold">
@@ -212,13 +216,13 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- LEFT: TEAM GROUPS -->
                 <div class="glass-card p-4 rounded-2xl space-y-2.5">
-                    <h3 class="text-[11px] font-black uppercase tracking-wider text-slate-400 px-1">Select Team Group</h3>
+                    <h3 class="text-[11px] font-black uppercase tracking-wider text-slate-400 px-1">Select Group</h3>
                     <div id="team-groups-list" class="space-y-2 max-h-[420px] overflow-y-auto pr-1">
-                        <p class="text-xs text-slate-400 italic px-1">Loading team groups...</p>
+                        <p class="text-xs text-slate-400 italic px-1">Loading groups...</p>
                     </div>
                 </div>
 
-                <!-- RIGHT: SUB-TEAMS INSIDE SELECTED GROUP -->
+                <!-- RIGHT: TEAMS & ROSTER INSIDE SELECTED GROUP -->
                 <div class="lg:col-span-2 glass-card p-5 rounded-2xl space-y-4">
                     <div class="flex flex-wrap items-start justify-between gap-2 border-b border-white/10 pb-3">
                         <div>
@@ -235,6 +239,46 @@
                     <div id="sub-teams-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <p class="text-xs text-slate-400 italic">Loading teams...</p>
                     </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PLAYERS LEADERBOARD (REGISTERED TEAMS & PLAYERS RECORDED BY MATCH HISTORY) -->
+        <section id="leaderboard-section" class="space-y-4 scroll-mt-20">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center space-x-2">
+                    <div class="w-1 h-5 bg-amber-400 rounded"></div>
+                    <h2 class="gaming-font font-black text-sm sm:text-base text-white uppercase">Players Leaderboard • Match History Stats</h2>
+                </div>
+
+                <div class="flex gap-1.5 overflow-x-auto pb-1 text-[11px] font-bold">
+                    <button onclick="filterLeaderboardGame('ALL')" id="ltab-ALL" type="button" class="lb-tab bg-amber-500 text-slate-950 px-3 py-1.5 rounded-lg whitespace-nowrap transition font-black">ALL</button>
+                    <button onclick="filterLeaderboardGame('Wild Rift')" id="ltab-Wild Rift" type="button" class="lb-tab glass-card text-slate-300 px-3 py-1.5 rounded-lg whitespace-nowrap transition">WILD RIFT</button>
+                    <button onclick="filterLeaderboardGame('League of Legends')" id="ltab-League of Legends" type="button" class="lb-tab glass-card text-slate-300 px-3 py-1.5 rounded-lg whitespace-nowrap transition">LOL PC</button>
+                    <button onclick="filterLeaderboardGame('Valorant')" id="ltab-Valorant" type="button" class="lb-tab glass-card text-slate-300 px-3 py-1.5 rounded-lg whitespace-nowrap transition">VALORANT</button>
+                </div>
+            </div>
+
+            <div class="glass-card rounded-2xl overflow-hidden shadow-xl">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-white/10 bg-[#0b0c10]/80 text-[10px] font-black uppercase tracking-wider text-slate-400">
+                                <th class="py-3 px-4">Rank</th>
+                                <th class="py-3 px-4">Player / Team</th>
+                                <th class="py-3 px-4">Top Champions</th>
+                                <th class="py-3 px-4 text-center">W - L</th>
+                                <th class="py-3 px-4 text-center">AVG KDA</th>
+                                <th class="py-3 px-4 text-center">MVP</th>
+                                <th class="py-3 px-4 text-right">Winrate</th>
+                            </tr>
+                        </thead>
+                        <tbody id="players-leaderboard-body" class="divide-y divide-white/10 text-xs">
+                            <tr>
+                                <td colspan="7" class="py-6 px-4 text-center text-slate-400 italic">Loading players leaderboard...</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </section>
@@ -325,7 +369,7 @@
             <div class="flex flex-wrap justify-between items-center gap-3 glass-card p-4 rounded-xl border border-red-500/40 shadow-xl">
                 <div>
                     <h3 class="gaming-font text-white font-black text-xs sm:text-sm uppercase">Rift Raiders Admin Dashboard</h3>
-                    <p id="admin-status-banner" class="text-[11px] text-emerald-400 mt-0.5">Ready to manage groups, meta teams, players, matches, news, creators, and partners.</p>
+                    <p id="admin-status-banner" class="text-[11px] text-emerald-400 mt-0.5">Ready to manage groups, teams & roster, players, matches, news, creators, and partners.</p>
                 </div>
                 <button onclick="lockAdmin()" type="button" class="bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/40 px-3 py-1.5 rounded-lg text-xs font-bold">Lock Admin</button>
             </div>
@@ -359,11 +403,11 @@
                     </div>
                 </div>
 
-                <!-- 1A & 1B. TEAM GROUPS & META SUB-TEAMS (WITH TEAM TAG + ADD & CROP PHOTO) -->
+                <!-- 1A & 1B. TEAM GROUPS & REGISTERED TEAMS -->
                 <div class="glass-card p-5 rounded-xl space-y-4 shadow-xl">
                     <div class="space-y-2.5">
                         <div class="flex justify-between items-center">
-                            <h3 class="font-black text-xs uppercase text-red-500">1A. Team Group (e.g. Rift Raiders Main / Meta Groups)</h3>
+                            <h3 class="font-black text-xs uppercase text-red-500">1A. Team Group (e.g. Rift Raiders Main / Groups)</h3>
                             <button id="cancel-group-btn" onclick="resetForm('group')" type="button" class="hidden text-[10px] text-slate-400 underline">Cancel Edit</button>
                         </div>
                         <input type="hidden" id="editing-group-id">
@@ -389,7 +433,7 @@
                         <button id="save-group-btn" onclick="saveTeamGroup()" type="button" class="bg-red-600 hover:bg-red-700 w-full py-2 rounded text-xs font-bold uppercase transition">Save Team Group</button>
 
                         <div>
-                            <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Registered Team Groups (Click Edit to add/change photo):</p>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Registered Team Groups:</p>
                             <div id="admin-groups-list" class="space-y-1.5 max-h-28 overflow-y-auto"></div>
                         </div>
                     </div>
@@ -437,7 +481,7 @@
                             </div>
                         </div>
 
-                        <button id="save-subteam-btn" onclick="saveSubTeam()" type="button" class="bg-slate-700 hover:bg-slate-600 w-full py-2 rounded text-xs font-bold uppercase transition">Save Meta Team</button>
+                        <button id="save-subteam-btn" onclick="saveSubTeam()" type="button" class="bg-slate-700 hover:bg-slate-600 w-full py-2 rounded text-xs font-bold uppercase transition">Save Registered Team</button>
                         <div>
                             <p class="text-[10px] font-bold text-slate-400 uppercase mb-1.5">Teams in Selected Group:</p>
                             <div id="admin-subteams-list" class="space-y-1.5 max-h-36 overflow-y-auto"></div>
@@ -445,10 +489,10 @@
                     </div>
                 </div>
 
-                <!-- 2. PLAYERS INSIDE META TEAMS -->
+                <!-- 2. PLAYERS INSIDE REGISTERED TEAMS -->
                 <div class="glass-card p-5 rounded-xl space-y-4 shadow-xl">
                     <div class="flex justify-between items-center">
-                        <h3 id="player-form-title" class="font-black text-xs uppercase text-red-500">2. Add & Manage Player (Inside Meta Team)</h3>
+                        <h3 id="player-form-title" class="font-black text-xs uppercase text-red-500">2. Add & Manage Player (Registered Team)</h3>
                         <button id="cancel-edit-btn" onclick="resetPlayerForm()" type="button" class="hidden text-[9px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded hover:bg-slate-700">Cancel Edit</button>
                     </div>
 
@@ -475,7 +519,7 @@
                             <input type="text" id="p-ign" placeholder="e.g. Tyad" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 text-white">
                         </div>
                         <div>
-                            <label class="text-[10px] font-bold text-slate-400 uppercase">Team / Player Tag:</label>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase">Team Tag:</label>
                             <input type="text" id="p-tag" placeholder="e.g. RFR or RRS" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 text-white uppercase">
                         </div>
                         <div>
@@ -486,7 +530,7 @@
 
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="text-[10px] font-bold text-slate-400 uppercase">Custom Team Name (Auto-filled):</label>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase">Team Name (Auto-filled):</label>
                             <input type="text" id="p-team" placeholder="e.g. Rift Raiders Ascent" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 text-white">
                         </div>
                         <div>
@@ -518,7 +562,7 @@
                     </div>
                 </div>
 
-                <!-- 3. MATCH HISTORY (SCORE, TEAM GOLD, TEAM KDA, BANS, MVP & ITEMS) -->
+                <!-- 3. MATCH HISTORY -->
                 <div class="glass-card p-5 rounded-xl space-y-4 shadow-xl">
                     <div class="flex justify-between items-center">
                         <h3 id="match-form-title" class="font-black text-xs uppercase text-red-500">3. Add / Edit Match (Score, Team KDA, Team Gold & Items)</h3>
@@ -1050,6 +1094,7 @@
         let selectedGroupId = null;
         let currentNewsIndex = 0;
         let currentGameFilter = 'ALL';
+        let currentLeaderboardFilter = 'ALL';
         let currentMatchFilter = 'ALL';
 
         /* CROPPER (SUPPORTS GROUP, SUBTEAM, AND PLAYER ON BOTH MOBILE & PC) */
@@ -1214,7 +1259,7 @@
                 cropState.subteamBase64 = dataUrl;
                 document.getElementById('st-logo').value = '';
                 updateEntityPreview('subteam', dataUrl);
-                setAdminStatus('Team logo cropped! Click Save Meta Team.');
+                setAdminStatus('Team logo cropped! Click Save Registered Team.');
             } else {
                 cropState.playerBase64 = dataUrl;
                 updateEntityPreview('player', dataUrl);
@@ -1318,6 +1363,7 @@
 
         function refreshAllRosterAndAdminViews() {
             renderGroupsAndTeams();
+            renderPlayersLeaderboard();
             renderAdminDropdowns();
             renderAllAdminLists();
         }
@@ -1367,7 +1413,7 @@
             refreshAllRosterAndAdminViews();
         });
 
-        /* MERGED GROUPS & REGISTERED TEAMS (COMBINES DB METATEAMS + EXISTING PLAYERS/MATCHES TEAMS) */
+        /* MERGED GROUPS & REGISTERED TEAMS */
         function getEffectiveGroups() {
             if (allGroups.length > 0) return allGroups;
             return [{ id: 'default-group', name: 'Rift Raiders Main', tag: 'RFR', achievements: 'Official Guild Roster', logo: '' }];
@@ -1391,7 +1437,6 @@
                 });
             });
 
-            // Auto-include teams already saved on existing players
             allPlayers.forEach(p => {
                 const tName = (p.team || '').trim();
                 if (!tName) return;
@@ -1411,7 +1456,6 @@
                 }
             });
 
-            // Auto-include Rift Raiders / registered teams from existing matches if missing
             Object.values(allMatches).forEach(m => {
                 if (!m || typeof m !== 'object') return;
                 const mGame = m.game || 'Wild Rift';
@@ -1437,6 +1481,17 @@
             });
 
             return Array.from(map.values());
+        }
+
+        function isPlayerInRegisteredTeam(playerObj) {
+            const mergedTeams = getMergedRegisteredTeams();
+            if (!mergedTeams.length) return false;
+            return mergedTeams.some(t => {
+                if (playerObj.teamId && !t.isDerived && playerObj.teamId === t.id) return true;
+                const sameTeam = teamNamesMatch(playerObj.team, t.name);
+                const sameGame = !playerObj.game || !t.game || playerObj.game.toLowerCase() === t.game.toLowerCase();
+                return sameTeam && sameGame;
+            });
         }
 
         function getEffectiveTeamsForGroup(groupId, gameFilter = currentGameFilter) {
@@ -1517,6 +1572,16 @@
             const active = document.getElementById(`gtab-${game}`);
             if (active) active.className = 'game-tab bg-red-600 text-white px-3 py-1.5 rounded-lg whitespace-nowrap transition';
             renderGroupsAndTeams();
+        }
+
+        function filterLeaderboardGame(game) {
+            currentLeaderboardFilter = game;
+            document.querySelectorAll('.lb-tab').forEach(btn => {
+                btn.className = 'lb-tab glass-card text-slate-300 px-3 py-1.5 rounded-lg whitespace-nowrap transition';
+            });
+            const active = document.getElementById(`ltab-${game}`);
+            if (active) active.className = 'lb-tab bg-amber-500 text-slate-950 px-3 py-1.5 rounded-lg whitespace-nowrap transition font-black';
+            renderPlayersLeaderboard();
         }
 
         function filterMatchGame(game) {
@@ -1684,7 +1749,88 @@
             return { wins, losses, total, winrate, avgKda, mvpCount, sortedChamps };
         }
 
-        /* GROUPS & META TEAMS RENDERING */
+        /* PLAYERS LEADERBOARD RENDERING (ONLY REGISTERED TEAM PLAYERS RECORDED IN MATCH HISTORY) */
+        function renderPlayersLeaderboard() {
+            const tbody = document.getElementById('players-leaderboard-body');
+            if (!tbody) return;
+
+            const eligiblePlayers = allPlayers.filter(p => {
+                if (!p || !(p.ign || '').trim()) return false;
+                if (!isPlayerInRegisteredTeam(p)) return false;
+                if (currentLeaderboardFilter !== 'ALL') {
+                    return (p.game || 'Wild Rift').toLowerCase() === currentLeaderboardFilter.toLowerCase();
+                }
+                return true;
+            });
+
+            const ranked = eligiblePlayers.map(p => {
+                const st = computePlayerStats(p);
+                return { player: p, stats: st };
+            }).filter(item => item.stats.total > 0)
+              .sort((a, b) =>
+                  b.stats.winrate - a.stats.winrate ||
+                  parseFloat(b.stats.avgKda) - parseFloat(a.stats.avgKda) ||
+                  b.stats.total - a.stats.total ||
+                  b.stats.mvpCount - a.stats.mvpCount
+              );
+
+            if (!ranked.length) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="py-6 px-4 text-center text-slate-400 italic">
+                            No match history records yet for registered team players in this category.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = ranked.map((entry, idx) => {
+                const { player: p, stats: st } = entry;
+                const rankNum = idx + 1;
+                const rankBadge = rankNum === 1
+                    ? `<span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-amber-400/20 text-amber-300 border border-amber-400/40 font-black">1</span>`
+                    : rankNum === 2
+                    ? `<span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-slate-300/20 text-slate-200 border border-slate-300/35 font-black">2</span>`
+                    : rankNum === 3
+                    ? `<span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-orange-500/20 text-orange-300 border border-orange-500/35 font-black">3</span>`
+                    : `<span class="font-black text-slate-400 px-2">#${rankNum}</span>`;
+
+                const topChampsHtml = st.sortedChamps.slice(0, 3).map(c => `
+                    <span class="inline-flex items-center gap-1 bg-[#0b0c10] border border-white/10 px-2 py-0.5 rounded-md text-[10px] font-bold text-slate-200" title="${c.champ}: ${c.winrate}% WR, ${c.kda} KDA">
+                        <img src="${getChampionIconUrl(c.champ)}" onerror="handleImgError(this, 'champ')" class="w-4 h-4 rounded object-cover" alt="${c.champ}">
+                        <span>${c.champ}</span>
+                    </span>
+                `).join('');
+
+                return `
+                    <tr onclick="openPlayerStatsById('${p.id}')" class="hover:bg-white/5 cursor-pointer transition">
+                        <td class="py-3 px-4 whitespace-nowrap">${rankBadge}</td>
+                        <td class="py-3 px-4">
+                            <div class="flex items-center gap-2.5 min-w-[170px]">
+                                ${renderAvatarHtml(p.pfp, p.ign, 'w-9 h-9 rounded-lg', 'player')}
+                                <div class="min-w-0">
+                                    <p class="font-black text-white uppercase truncate">
+                                        ${p.ign}
+                                        ${p.tag ? `<span class="text-[10px] font-black text-red-400 ml-1">[${p.tag}]</span>` : ''}
+                                    </p>
+                                    <p class="text-[10px] text-slate-400 truncate">${p.team || 'Registered Team'} • ${p.role || 'Player'}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="py-3 px-4">
+                            <div class="flex flex-wrap items-center gap-1 min-w-[140px]">${topChampsHtml}</div>
+                        </td>
+                        <td class="py-3 px-4 text-center font-extrabold text-slate-200 whitespace-nowrap">${st.wins}W - ${st.losses}L</td>
+                        <td class="py-3 px-4 text-center font-black text-emerald-300 whitespace-nowrap">${st.avgKda}</td>
+                        <td class="py-3 px-4 text-center font-black text-amber-300 whitespace-nowrap">${st.mvpCount}</td>
+                        <td class="py-3 px-4 text-right font-black text-emerald-400 whitespace-nowrap">${st.winrate}%</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        /* GROUPS & TEAMS RENDERING */
         function renderGroupsAndTeams() {
             const groupsListEl = document.getElementById('team-groups-list');
             const subGridEl = document.getElementById('sub-teams-grid');
@@ -1818,7 +1964,7 @@
                             <div class="flex items-center space-x-3 min-w-0">
                                 ${renderAvatarHtml(p.pfp, p.ign, 'w-11 h-11 rounded-lg', 'player')}
                                 <div class="min-w-0">
-                                    <p class="text-xs font-black text-white uppercase truncate">${p.ign} ${p.tag ? `<span class="text-slate-400 font-bold">#${p.tag}</span>` : ''}</p>
+                                    <p class="text-xs font-black text-white uppercase truncate">${p.ign} ${p.tag ? `<span class="text-slate-400 font-bold">[${p.tag}]</span>` : ''}</p>
                                     <p class="text-[10px] text-slate-300 font-bold">${p.role || 'Player'} • ${teamObj.name}</p>
                                 </div>
                             </div>
@@ -1886,7 +2032,7 @@
             const st = computePlayerStats(p);
 
             document.getElementById('modal-pfp-box').innerHTML = renderAvatarHtml(p.pfp, p.ign, 'w-14 h-14 rounded-xl', 'player');
-            document.getElementById('modal-name').textContent = p.ign + (p.tag ? ` #${p.tag}` : '');
+            document.getElementById('modal-name').textContent = p.ign + (p.tag ? ` [${p.tag}]` : '');
             document.getElementById('modal-sub').textContent = `${p.role || 'Player'} • ${p.team || 'Rift Raiders'}`;
             document.getElementById('modal-game').textContent = p.game || 'Wild Rift';
 
@@ -2117,7 +2263,7 @@
                 document.getElementById('st-logo').value = '';
                 cropState.subteamBase64 = '';
                 updateEntityPreview('subteam', '', 'RR');
-                document.getElementById('save-subteam-btn').textContent = 'Save Meta Team';
+                document.getElementById('save-subteam-btn').textContent = 'Save Registered Team';
                 document.getElementById('cancel-subteam-btn').classList.add('hidden');
             } else if (type === 'creator') {
                 document.getElementById('editing-creator-id').value = '';
@@ -2211,8 +2357,8 @@
             const game = document.getElementById('st-game').value;
             const achievements = document.getElementById('st-ach').value.trim();
             const logo = cropState.subteamBase64 || document.getElementById('st-logo').value.trim();
-            if (!name) return alert('Please enter Meta Team Name.');
-            upsertDoc('metaTeams', editId, { groupId, name, tag, game, achievements, logo }, 'subteam', 'Meta Team');
+            if (!name) return alert('Please enter Team Name.');
+            upsertDoc('metaTeams', editId, { groupId, name, tag, game, achievements, logo }, 'subteam', 'Registered Team');
         }
         function editSubTeam(id) {
             const t = getMergedRegisteredTeams().find(x => x.id === id);
@@ -2226,7 +2372,7 @@
             document.getElementById('st-logo').value = (t.logo && !t.logo.startsWith('data:')) ? t.logo : '';
             cropState.subteamBase64 = (t.logo && t.logo.startsWith('data:')) ? t.logo : '';
             updateEntityPreview('subteam', t.logo || '', getTwoLetters(t.tag || t.name));
-            document.getElementById('save-subteam-btn').textContent = 'Update Meta Team';
+            document.getElementById('save-subteam-btn').textContent = 'Update Registered Team';
             document.getElementById('cancel-subteam-btn').classList.remove('hidden');
             renderAdminSubTeams();
         }
@@ -2241,7 +2387,7 @@
             document.getElementById('p-ach').value = '';
             cropState.playerBase64 = '';
             updateEntityPreview('player', '');
-            document.getElementById('player-form-title').textContent = '2. Add & Manage Player (Inside Meta Team)';
+            document.getElementById('player-form-title').textContent = '2. Add & Manage Player (Registered Team)';
             document.getElementById('save-player-btn').textContent = 'Save Player';
             document.getElementById('cancel-edit-btn').classList.add('hidden');
         }
@@ -2284,7 +2430,7 @@
             const game = document.getElementById('p-game').value;
             const teamId = document.getElementById('p-team-select').value;
             const selectedTeamObj = getMergedRegisteredTeams().find(t => t.id === teamId);
-            const team = (document.getElementById('p-team').value || '').trim() || (selectedTeamObj ? selectedTeamObj.name : 'Rift Raiders');
+            const team = (document.getElementById('p-team').value || '').trim() || (selectedTeamObj ? selectedTeamObj.name : '');
             const ign = document.getElementById('p-ign').value.trim();
             const tag = (document.getElementById('p-tag').value.trim() || (selectedTeamObj ? selectedTeamObj.tag : '')).toUpperCase();
             const mvp = parseInt(document.getElementById('p-mvp').value, 10) || 0;
@@ -2292,6 +2438,7 @@
             const achievements = document.getElementById('p-ach').value.trim();
 
             if (!ign) return alert('Please enter Player IGN.');
+            if (!team) return alert('Please select a Registered Team or enter a Team Name.');
 
             let pfp = cropState.playerBase64;
             if (!pfp && editId) {
@@ -2458,7 +2605,7 @@
         }
 
         function deleteItem(path, id) {
-            if (!id || String(id).startsWith('derived__')) return alert('This team is derived from existing player records. Click Edit and Save to register it in Meta Teams.');
+            if (!id || String(id).startsWith('derived__')) return alert('This team is derived from existing player records. Click Edit and Save to register it.');
             if (!confirm('Delete this item?')) return;
             db.ref(`${path}/${id}`).remove()
                 .then(() => setAdminStatus('Item deleted.'))
@@ -2539,7 +2686,7 @@
             renderAdminSubTeams();
 
             const pBox = document.getElementById('admin-players-list');
-            if (pBox) pBox.innerHTML = allPlayers.map(p => adminRow(`${p.ign}${p.tag ? ` #${p.tag}` : ''} • ${p.team || ''} (${p.role || 'Player'})`, `editPlayer('${p.id}')`, `deleteItem('roster','${p.id}')`, p.pfp, p.ign)).join('');
+            if (pBox) pBox.innerHTML = allPlayers.map(p => adminRow(`${p.ign}${p.tag ? ` [${p.tag}]` : ''} • ${p.team || ''} (${p.role || 'Player'})`, `editPlayer('${p.id}')`, `deleteItem('roster','${p.id}')`, p.pfp, p.ign)).join('');
 
             const mBox = document.getElementById('admin-matches-list');
             if (mBox) {
