@@ -193,7 +193,7 @@
             </div>
         </section>
 
-        <!-- META TEAMS DIRECTORY (GROUP SELECTOR -> REGISTERED SUB-TEAMS -> POP-OUT ROSTER -> POP-OUT PLAYER STATS) -->
+        <!-- META TEAMS DIRECTORY -->
         <section id="teams-section" class="space-y-4 scroll-mt-20">
             <div class="flex flex-wrap items-center justify-between gap-2">
                 <div class="flex items-center space-x-2">
@@ -223,7 +223,10 @@
                     <div class="flex flex-wrap items-start justify-between gap-2 border-b border-white/10 pb-3">
                         <div>
                             <span class="text-[10px] font-bold uppercase text-red-400">Selected Group</span>
-                            <h3 id="selected-group-title" class="gaming-font font-black text-base text-white uppercase">Select a Group</h3>
+                            <div class="flex items-center space-x-2">
+                                <h3 id="selected-group-title" class="gaming-font font-black text-base text-white uppercase">Select a Group</h3>
+                                <span id="selected-group-tag-badge" class="hidden text-[10px] font-black uppercase bg-red-600/20 text-red-400 border border-red-500/35 px-2 py-0.5 rounded"></span>
+                            </div>
                             <p id="selected-group-achievements" class="text-[11px] text-amber-300 mt-1"></p>
                         </div>
                         <span id="selected-group-count" class="text-xs font-bold text-slate-400">0 Teams</span>
@@ -236,7 +239,7 @@
             </div>
         </section>
 
-        <!-- MATCH HISTORY (FOCUSED ON SCORE, TEAM KDA, TEAM GOLD, BANS & ITEMS) -->
+        <!-- MATCH HISTORY -->
         <section id="matches-section" class="space-y-4 scroll-mt-20">
             <div class="flex flex-wrap items-center justify-between gap-2">
                 <div class="flex items-center space-x-2">
@@ -356,7 +359,7 @@
                     </div>
                 </div>
 
-                <!-- 1A & 1B. TEAM GROUPS & META SUB-TEAMS -->
+                <!-- 1A & 1B. TEAM GROUPS & META SUB-TEAMS (WITH TEAM TAG + ADD & CROP PHOTO) -->
                 <div class="glass-card p-5 rounded-xl space-y-4 shadow-xl">
                     <div class="space-y-2.5">
                         <div class="flex justify-between items-center">
@@ -364,11 +367,31 @@
                             <button id="cancel-group-btn" onclick="resetForm('group')" type="button" class="hidden text-[10px] text-slate-400 underline">Cancel Edit</button>
                         </div>
                         <input type="hidden" id="editing-group-id">
-                        <input type="text" id="g-name" placeholder="Group Name (e.g. Rift Raiders Competitive)" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs text-white">
+                        <div class="grid grid-cols-3 gap-2">
+                            <input type="text" id="g-name" placeholder="Group Name (e.g. Rift Raiders Main)" class="col-span-2 w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs text-white">
+                            <input type="text" id="g-tag" placeholder="Tag (e.g. RFR)" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs text-white uppercase">
+                        </div>
                         <input type="text" id="g-ach" placeholder="Group Achievements / Notes (optional)" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs text-white">
-                        <input type="text" id="g-logo" placeholder="Group Logo URL (blank = 2 letters)" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs text-white">
+
+                        <div class="flex items-center gap-2 bg-[#0b0c10] border border-white/10 p-2 rounded-lg">
+                            <div id="g-logo-preview-box" class="w-10 h-10 rounded-lg bg-[#161822] border border-white/15 flex items-center justify-center text-[10px] font-black text-slate-400 overflow-hidden shrink-0">RR</div>
+                            <div class="flex-1 min-w-0 space-y-1">
+                                <div class="flex flex-wrap items-center gap-1.5">
+                                    <button type="button" onclick="triggerCropUpload('group')" class="bg-red-600/25 hover:bg-red-600/40 text-red-300 border border-red-500/40 px-2.5 py-1 rounded text-[10px] font-bold uppercase transition">
+                                        <i class="fa-solid fa-crop-simple mr-1"></i> Add Photo & Crop
+                                    </button>
+                                    <button type="button" id="g-clear-photo-btn" onclick="clearEntityPhoto('group')" class="hidden text-[10px] text-slate-400 hover:text-white underline">Clear</button>
+                                </div>
+                                <input type="text" id="g-logo" oninput="syncUrlPreview('group')" placeholder="Or paste Group Logo URL (blank = 2 letters)" class="w-full bg-transparent text-[11px] text-slate-300 outline-none">
+                            </div>
+                        </div>
+
                         <button id="save-group-btn" onclick="saveTeamGroup()" type="button" class="bg-red-600 hover:bg-red-700 w-full py-2 rounded text-xs font-bold uppercase transition">Save Team Group</button>
-                        <div id="admin-groups-list" class="space-y-1.5 max-h-28 overflow-y-auto"></div>
+
+                        <div>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Registered Team Groups (Click Edit to add/change photo):</p>
+                            <div id="admin-groups-list" class="space-y-1.5 max-h-28 overflow-y-auto"></div>
+                        </div>
                     </div>
 
                     <div class="pt-3 border-t border-white/10 space-y-2.5">
@@ -377,24 +400,47 @@
                             <button id="cancel-subteam-btn" onclick="resetForm('subteam')" type="button" class="hidden text-[10px] text-slate-400 underline">Cancel Edit</button>
                         </div>
                         <input type="hidden" id="editing-subteam-id">
-                        <div>
-                            <label class="text-[10px] font-bold text-slate-400 uppercase">Select Team Group:</label>
-                            <select id="st-group" onchange="renderAdminSubTeams()" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 text-white font-bold"></select>
+                        <div class="flex items-end gap-2">
+                            <div class="flex-1">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase">Select Team Group:</label>
+                                <select id="st-group" onchange="renderAdminSubTeams()" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 text-white font-bold"></select>
+                            </div>
+                            <button type="button" onclick="editSelectedAdminGroup()" class="bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/35 px-3 py-2 rounded text-xs font-bold uppercase shrink-0" title="Edit Selected Group">
+                                <i class="fa-solid fa-pen-to-square mr-1"></i> Edit Group
+                            </button>
                         </div>
+
+                        <div class="grid grid-cols-3 gap-2">
+                            <input type="text" id="st-name" placeholder="Team Name (e.g. Rift Raiders Ascent)" class="col-span-2 w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs text-white">
+                            <input type="text" id="st-tag" placeholder="Team Tag (e.g. RRS)" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs text-white uppercase">
+                        </div>
+
                         <div class="grid grid-cols-2 gap-2">
-                            <input type="text" id="st-name" placeholder="Team Name (e.g. Rift Raiders Ascent)" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs text-white">
-                            <select id="st-game" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs text-white">
+                            <select id="st-game" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs text-white font-bold">
                                 <option value="Wild Rift">Wild Rift</option>
                                 <option value="League of Legends">League of Legends</option>
                                 <option value="Valorant">Valorant</option>
                             </select>
+                            <input type="text" id="st-ach" placeholder="Team Achievements (optional)" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs text-white">
                         </div>
-                        <input type="text" id="st-ach" placeholder="Team Achievements (optional)" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs text-white">
-                        <input type="text" id="st-logo" placeholder="Team Logo URL (blank = 2 letters)" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs text-white">
+
+                        <div class="flex items-center gap-2 bg-[#0b0c10] border border-white/10 p-2 rounded-lg">
+                            <div id="st-logo-preview-box" class="w-10 h-10 rounded-lg bg-[#161822] border border-white/15 flex items-center justify-center text-[10px] font-black text-slate-400 overflow-hidden shrink-0">RR</div>
+                            <div class="flex-1 min-w-0 space-y-1">
+                                <div class="flex flex-wrap items-center gap-1.5">
+                                    <button type="button" onclick="triggerCropUpload('subteam')" class="bg-red-600/25 hover:bg-red-600/40 text-red-300 border border-red-500/40 px-2.5 py-1 rounded text-[10px] font-bold uppercase transition">
+                                        <i class="fa-solid fa-crop-simple mr-1"></i> Add Photo & Crop
+                                    </button>
+                                    <button type="button" id="st-clear-photo-btn" onclick="clearEntityPhoto('subteam')" class="hidden text-[10px] text-slate-400 hover:text-white underline">Clear</button>
+                                </div>
+                                <input type="text" id="st-logo" oninput="syncUrlPreview('subteam')" placeholder="Or paste Team Logo URL (blank = 2 letters)" class="w-full bg-transparent text-[11px] text-slate-300 outline-none">
+                            </div>
+                        </div>
+
                         <button id="save-subteam-btn" onclick="saveSubTeam()" type="button" class="bg-slate-700 hover:bg-slate-600 w-full py-2 rounded text-xs font-bold uppercase transition">Save Meta Team</button>
                         <div>
                             <p class="text-[10px] font-bold text-slate-400 uppercase mb-1.5">Teams in Selected Group:</p>
-                            <div id="admin-subteams-list" class="space-y-1.5 max-h-32 overflow-y-auto"></div>
+                            <div id="admin-subteams-list" class="space-y-1.5 max-h-36 overflow-y-auto"></div>
                         </div>
                     </div>
                 </div>
@@ -410,7 +456,7 @@
 
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="text-[10px] font-bold text-slate-400 uppercase">Game Category:</label>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase">1. Select Game:</label>
                             <select id="p-game" onchange="renderAdminTeamDropdown()" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 text-white font-bold">
                                 <option value="Wild Rift">Wild Rift</option>
                                 <option value="League of Legends">League of Legends</option>
@@ -418,8 +464,8 @@
                             </select>
                         </div>
                         <div>
-                            <label class="text-[10px] font-bold text-slate-400 uppercase">Assign to Meta Team:</label>
-                            <select id="p-team-select" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 text-white font-bold"></select>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase">2. Select Registered Team:</label>
+                            <select id="p-team-select" onchange="onAdminPlayerTeamSelect()" class="w-full bg-[#0b0c10] border border-red-500/35 px-3 py-2 rounded text-xs mt-1 text-white font-bold"></select>
                         </div>
                     </div>
 
@@ -429,8 +475,8 @@
                             <input type="text" id="p-ign" placeholder="e.g. Tyad" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 text-white">
                         </div>
                         <div>
-                            <label class="text-[10px] font-bold text-slate-400 uppercase">Tag:</label>
-                            <input type="text" id="p-tag" placeholder="e.g. PH1" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 text-white">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase">Team / Player Tag:</label>
+                            <input type="text" id="p-tag" placeholder="e.g. RFR or RRS" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 text-white uppercase">
                         </div>
                         <div>
                             <label class="text-[10px] font-bold text-slate-400 uppercase">MVP Count:</label>
@@ -440,8 +486,8 @@
 
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="text-[10px] font-bold text-slate-400 uppercase">Custom Team Label (if not selected):</label>
-                            <input type="text" id="p-team" placeholder="e.g. Rift Raiders First Team" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 text-white">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase">Custom Team Name (Auto-filled):</label>
+                            <input type="text" id="p-team" placeholder="e.g. Rift Raiders Ascent" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 text-white">
                         </div>
                         <div>
                             <label class="text-[10px] font-bold text-slate-400 uppercase">Role:</label>
@@ -454,9 +500,14 @@
                         <input type="text" id="p-ach" placeholder="e.g. Finals MVP, Regional Top 4" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 text-white">
                     </div>
 
-                    <div>
-                        <label class="text-[10px] font-bold text-slate-400 uppercase">Profile Photo (Custom Crop):</label>
-                        <input type="file" id="p-pfp" accept="image/*" onchange="previewAndCropImage(this)" class="w-full text-xs text-slate-400 mt-1">
+                    <div class="flex items-center justify-between gap-2 bg-[#0b0c10] border border-white/10 p-2.5 rounded-lg">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <div id="p-pfp-preview-box" class="w-10 h-10 rounded-lg bg-[#161822] border border-white/15 flex items-center justify-center text-[10px] font-black text-slate-400 overflow-hidden shrink-0">PFP</div>
+                            <span class="text-[10px] text-slate-400 truncate">Player Profile Photo (Mobile & PC Crop)</span>
+                        </div>
+                        <button type="button" onclick="triggerCropUpload('player')" class="bg-red-600/25 hover:bg-red-600/40 text-red-300 border border-red-500/40 px-3 py-1.5 rounded text-[10px] font-bold uppercase shrink-0 transition">
+                            <i class="fa-solid fa-crop-simple mr-1"></i> Add Photo & Crop
+                        </button>
                     </div>
 
                     <button id="save-player-btn" onclick="addPlayer()" type="button" class="bg-red-600 hover:bg-red-700 w-full py-2.5 rounded text-xs font-bold uppercase transition">Save Player</button>
@@ -602,6 +653,9 @@
         </section>
     </main>
 
+    <!-- SHARED HIDDEN CROP INPUT (WORKS ON MOBILE & PC) -->
+    <input type="file" id="shared-crop-file-input" accept="image/*" class="hidden" onchange="handleCropFileSelected(this)">
+
     <!-- ADMIN PASSWORD POP-UP MODAL -->
     <div id="admin-modal" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="glass-card border border-red-500/35 rounded-2xl p-6 w-full max-w-sm text-center relative shadow-2xl space-y-4">
@@ -624,10 +678,10 @@
     <!-- CROPPER MODAL -->
     <div id="crop-modal" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 hidden">
         <div class="glass-card border border-white/15 rounded-2xl p-5 w-full max-w-sm text-center relative shadow-2xl space-y-4">
-            <h3 class="text-white font-black text-sm uppercase">Adjust Profile Photo Crop</h3>
-            <p class="text-[10px] text-slate-400">Drag image and adjust zoom for framing.</p>
+            <h3 id="crop-modal-title" class="text-white font-black text-sm uppercase">Adjust Photo Crop</h3>
+            <p class="text-[10px] text-slate-400">Drag image (touch or mouse) and adjust zoom for framing.</p>
 
-            <div class="relative w-48 h-48 mx-auto rounded-xl overflow-hidden border-2 border-red-500 bg-black cursor-grab active:cursor-grabbing select-none" id="crop-viewport">
+            <div class="relative w-48 h-48 mx-auto rounded-xl overflow-hidden border-2 border-red-500 bg-black cursor-grab active:cursor-grabbing select-none touch-none" id="crop-viewport">
                 <img id="crop-img" src="" alt="Crop Preview" class="absolute max-none select-none pointer-events-none" style="transform: translate(0px, 0px) scale(1);">
             </div>
 
@@ -654,14 +708,17 @@
         </div>
     </div>
 
-    <!-- POP-OUT TEAM ROSTER MODAL (MOST PICKED & KDA CHAMPS + PLAYERS LIST) -->
+    <!-- POP-OUT TEAM ROSTER MODAL -->
     <div id="team-modal-backdrop" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="glass-card border border-red-500/30 rounded-2xl p-5 w-full max-w-2xl max-h-[90vh] overflow-y-auto relative space-y-4 shadow-2xl">
             <button onclick="closeTeamModal()" type="button" class="absolute top-4 right-4 text-slate-400 hover:text-white bg-white/5 w-7 h-7 rounded-full flex items-center justify-center">✕</button>
             <div class="flex items-center space-x-3 border-b border-white/10 pb-3">
                 <div id="tmodal-logo-box" class="w-12 h-12 rounded-xl overflow-hidden border border-white/15 shrink-0"></div>
                 <div class="min-w-0">
-                    <h3 id="tmodal-name" class="gaming-font font-black text-base text-white uppercase truncate">TEAM NAME</h3>
+                    <div class="flex items-center space-x-2">
+                        <h3 id="tmodal-name" class="gaming-font font-black text-base text-white uppercase truncate">TEAM NAME</h3>
+                        <span id="tmodal-tag" class="hidden text-[10px] font-black uppercase bg-red-600/20 text-red-400 border border-red-500/35 px-2 py-0.5 rounded"></span>
+                    </div>
                     <p id="tmodal-meta" class="text-xs text-slate-400">Game • Team Winrate: <span id="tmodal-wr" class="text-emerald-400 font-bold">0%</span></p>
                 </div>
             </div>
@@ -677,7 +734,7 @@
         </div>
     </div>
 
-    <!-- POP-OUT PLAYER STATS MODAL (OVERVIEW WITH MVP + CHAMPIONS TAB WITH TOP 3 & ALL CHAMPS) -->
+    <!-- POP-OUT PLAYER STATS MODAL -->
     <div id="player-modal-backdrop" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="glass-card border border-red-500/30 rounded-2xl p-5 w-full max-w-lg max-h-[90vh] overflow-y-auto relative space-y-4 shadow-2xl">
             <button onclick="closePlayerStats()" type="button" class="absolute top-4 right-4 text-slate-400 hover:text-white bg-white/5 w-7 h-7 rounded-full flex items-center justify-center">✕</button>
@@ -852,6 +909,13 @@
             return Boolean((partsA.length > 1 && tagA && tagA === b) || (partsB.length > 1 && tagB && tagB === a));
         }
 
+        function inferTeamTag(name) {
+            const words = (name || '').trim().split(/\s+/).filter(Boolean);
+            if (!words.length) return '';
+            if (words.length === 1) return words[0].slice(0, 3).toUpperCase();
+            return words.map(w => w[0]).join('').slice(0, 4).toUpperCase();
+        }
+
         function getTwoLetters(label) {
             const clean = (label || '').trim().replace(/[^a-zA-Z0-9]/g, '');
             if (!clean) return 'RR';
@@ -988,8 +1052,9 @@
         let currentGameFilter = 'ALL';
         let currentMatchFilter = 'ALL';
 
-        /* CROPPER */
+        /* CROPPER (SUPPORTS GROUP, SUBTEAM, AND PLAYER ON BOTH MOBILE & PC) */
         let cropState = {
+            target: 'player',
             imgObj: new Image(),
             posX: 0,
             posY: 0,
@@ -997,7 +1062,9 @@
             isDragging: false,
             startX: 0,
             startY: 0,
-            finalBase64: ''
+            groupBase64: '',
+            subteamBase64: '',
+            playerBase64: ''
         };
 
         const viewport = document.getElementById('crop-viewport');
@@ -1031,8 +1098,21 @@
         }, { passive: true });
         window.addEventListener('touchend', () => { cropState.isDragging = false; });
 
-        function previewAndCropImage(input) {
+        function triggerCropUpload(target) {
+            cropState.target = target;
+            const inp = document.getElementById('shared-crop-file-input');
+            inp.value = '';
+            inp.click();
+        }
+
+        function handleCropFileSelected(input) {
             if (!input.files || !input.files[0]) return;
+            const titleMap = {
+                group: 'Crop Group Logo',
+                subteam: 'Crop Team Logo',
+                player: 'Crop Player Profile Photo'
+            };
+            document.getElementById('crop-modal-title').textContent = titleMap[cropState.target] || 'Adjust Photo Crop';
             const reader = new FileReader();
             reader.onload = (e) => {
                 cropState.imgObj.onload = () => {
@@ -1067,8 +1147,48 @@
 
         function cancelCrop() {
             document.getElementById('crop-modal').classList.add('hidden');
-            document.getElementById('p-pfp').value = '';
-            cropState.finalBase64 = '';
+            document.getElementById('shared-crop-file-input').value = '';
+        }
+
+        function updateEntityPreview(target, imgVal, fallbackText = 'RR') {
+            if (target === 'group') {
+                const box = document.getElementById('g-logo-preview-box');
+                const clr = document.getElementById('g-clear-photo-btn');
+                if (box) box.innerHTML = imgVal ? `<img src="${imgVal}" class="w-full h-full object-cover">` : fallbackText;
+                if (clr) clr.classList.toggle('hidden', !imgVal);
+            } else if (target === 'subteam') {
+                const box = document.getElementById('st-logo-preview-box');
+                const clr = document.getElementById('st-clear-photo-btn');
+                if (box) box.innerHTML = imgVal ? `<img src="${imgVal}" class="w-full h-full object-cover">` : fallbackText;
+                if (clr) clr.classList.toggle('hidden', !imgVal);
+            } else if (target === 'player') {
+                const box = document.getElementById('p-pfp-preview-box');
+                if (box) box.innerHTML = imgVal ? `<img src="${imgVal}" class="w-full h-full object-cover">` : 'PFP';
+            }
+        }
+
+        function syncUrlPreview(target) {
+            if (target === 'group') {
+                const url = document.getElementById('g-logo').value.trim();
+                cropState.groupBase64 = '';
+                updateEntityPreview('group', url, getTwoLetters(document.getElementById('g-name').value || 'RR'));
+            } else if (target === 'subteam') {
+                const url = document.getElementById('st-logo').value.trim();
+                cropState.subteamBase64 = '';
+                updateEntityPreview('subteam', url, getTwoLetters(document.getElementById('st-name').value || 'RR'));
+            }
+        }
+
+        function clearEntityPhoto(target) {
+            if (target === 'group') {
+                cropState.groupBase64 = '';
+                document.getElementById('g-logo').value = '';
+                updateEntityPreview('group', '', getTwoLetters(document.getElementById('g-name').value || 'RR'));
+            } else if (target === 'subteam') {
+                cropState.subteamBase64 = '';
+                document.getElementById('st-logo').value = '';
+                updateEntityPreview('subteam', '', getTwoLetters(document.getElementById('st-name').value || 'RR'));
+            }
         }
 
         function confirmCrop() {
@@ -1083,9 +1203,24 @@
             const sy = (-cropState.posY / renderH) * cropState.imgObj.height;
             const sSize = (vSize / renderW) * cropState.imgObj.width;
             ctx.drawImage(cropState.imgObj, sx, sy, sSize, sSize, 0, 0, 400, 400);
-            cropState.finalBase64 = canvas.toDataURL('image/jpeg', 0.85);
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+
+            if (cropState.target === 'group') {
+                cropState.groupBase64 = dataUrl;
+                document.getElementById('g-logo').value = '';
+                updateEntityPreview('group', dataUrl);
+                setAdminStatus('Group logo cropped! Click Save Team Group.');
+            } else if (cropState.target === 'subteam') {
+                cropState.subteamBase64 = dataUrl;
+                document.getElementById('st-logo').value = '';
+                updateEntityPreview('subteam', dataUrl);
+                setAdminStatus('Team logo cropped! Click Save Meta Team.');
+            } else {
+                cropState.playerBase64 = dataUrl;
+                updateEntityPreview('player', dataUrl);
+                setAdminStatus('Player photo cropped! Click Save Player.');
+            }
             document.getElementById('crop-modal').classList.add('hidden');
-            setAdminStatus('Cropped photo ready! Click Save Player.');
         }
 
         function fileToCompressedBase64(file, maxSize = 800, quality = 0.8) {
@@ -1181,6 +1316,12 @@
                 .catch(err => setAdminStatus('Error saving settings: ' + err.message, true));
         }
 
+        function refreshAllRosterAndAdminViews() {
+            renderGroupsAndTeams();
+            renderAdminDropdowns();
+            renderAllAdminLists();
+        }
+
         function bindCollection(path, setterFn, renderFn) {
             db.ref(path).on('value', snap => {
                 const items = [];
@@ -1200,9 +1341,9 @@
             });
         }
 
-        bindCollection('teamGroups', arr => { allGroups = arr; }, renderGroupsAndTeams);
-        bindCollection('metaTeams', arr => { allTeams = arr; }, renderGroupsAndTeams);
-        bindCollection('roster', arr => { allPlayers = arr; }, renderGroupsAndTeams);
+        bindCollection('teamGroups', arr => { allGroups = arr; }, refreshAllRosterAndAdminViews);
+        bindCollection('metaTeams', arr => { allTeams = arr; }, refreshAllRosterAndAdminViews);
+        bindCollection('roster', arr => { allPlayers = arr; }, refreshAllRosterAndAdminViews);
         bindCollection('creators', arr => { allCreators = arr; }, renderCreators);
         bindCollection('news', arr => { allNews = arr; }, renderNewsCarousel);
 
@@ -1223,9 +1364,97 @@
             const raw = snap && snap.exists() ? snap.val() : {};
             allMatches = raw && typeof raw === 'object' ? raw : {};
             renderMatches();
-            renderGroupsAndTeams();
-            renderAllAdminLists();
+            refreshAllRosterAndAdminViews();
         });
+
+        /* MERGED GROUPS & REGISTERED TEAMS (COMBINES DB METATEAMS + EXISTING PLAYERS/MATCHES TEAMS) */
+        function getEffectiveGroups() {
+            if (allGroups.length > 0) return allGroups;
+            return [{ id: 'default-group', name: 'Rift Raiders Main', tag: 'RFR', achievements: 'Official Guild Roster', logo: '' }];
+        }
+
+        function getMergedRegisteredTeams() {
+            const map = new Map();
+            const defaultGrpId = getEffectiveGroups()[0].id;
+
+            allTeams.forEach(t => {
+                const key = `${normalizeTeamKey(t.name)}__${(t.game || 'Wild Rift').toLowerCase()}`;
+                map.set(key, {
+                    id: t.id,
+                    groupId: t.groupId || defaultGrpId,
+                    name: t.name,
+                    tag: t.tag || inferTeamTag(t.name),
+                    game: t.game || 'Wild Rift',
+                    achievements: t.achievements || '',
+                    logo: t.logo || '',
+                    isDerived: false
+                });
+            });
+
+            // Auto-include teams already saved on existing players
+            allPlayers.forEach(p => {
+                const tName = (p.team || '').trim();
+                if (!tName) return;
+                const pGame = p.game || 'Wild Rift';
+                const key = `${normalizeTeamKey(tName)}__${pGame.toLowerCase()}`;
+                if (!map.has(key)) {
+                    map.set(key, {
+                        id: `derived__${encodeURIComponent(tName)}__${encodeURIComponent(pGame)}`,
+                        groupId: defaultGrpId,
+                        name: tName,
+                        tag: (p.tag || '').trim() || inferTeamTag(tName),
+                        game: pGame,
+                        achievements: '',
+                        logo: p.teamlogo || '',
+                        isDerived: true
+                    });
+                }
+            });
+
+            // Auto-include Rift Raiders / registered teams from existing matches if missing
+            Object.values(allMatches).forEach(m => {
+                if (!m || typeof m !== 'object') return;
+                const mGame = m.game || 'Wild Rift';
+                [m.team, m.opponent].forEach(candidate => {
+                    const tName = (candidate || '').trim();
+                    if (!tName) return;
+                    const lower = tName.toLowerCase();
+                    if (!lower.includes('rift') && !lower.includes('raider') && !lower.includes('replayer')) return;
+                    const key = `${normalizeTeamKey(tName)}__${mGame.toLowerCase()}`;
+                    if (!map.has(key)) {
+                        map.set(key, {
+                            id: `derived__${encodeURIComponent(tName)}__${encodeURIComponent(mGame)}`,
+                            groupId: defaultGrpId,
+                            name: tName,
+                            tag: inferTeamTag(tName),
+                            game: mGame,
+                            achievements: '',
+                            logo: '',
+                            isDerived: true
+                        });
+                    }
+                });
+            });
+
+            return Array.from(map.values());
+        }
+
+        function getEffectiveTeamsForGroup(groupId, gameFilter = currentGameFilter) {
+            const defaultGrpId = getEffectiveGroups()[0].id;
+            return getMergedRegisteredTeams().filter(t => {
+                const matchGrp = (t.groupId || defaultGrpId) === groupId || (groupId === 'default-group' && t.groupId === defaultGrpId);
+                const matchGame = gameFilter === 'ALL' || (t.game || 'Wild Rift').toLowerCase() === gameFilter.toLowerCase();
+                return matchGrp && matchGame;
+            });
+        }
+
+        function getPlayersForMetaTeam(teamObj) {
+            const matched = allPlayers.filter(p => {
+                if (teamObj.id && !teamObj.isDerived && p.teamId === teamObj.id) return true;
+                return teamNamesMatch(p.team, teamObj.name) && (!p.game || !teamObj.game || p.game.toLowerCase() === teamObj.game.toLowerCase());
+            });
+            return sortPlayersByRole(matched);
+        }
 
         /* NEWS */
         function renderNewsCarousel() {
@@ -1456,45 +1685,11 @@
         }
 
         /* GROUPS & META TEAMS RENDERING */
-        function getEffectiveGroups() {
-            if (allGroups.length > 0) return allGroups;
-            return [{ id: 'default-group', name: 'Rift Raiders Main', achievements: 'Official Guild Roster', logo: '' }];
-        }
-
-        function getEffectiveTeamsForGroup(groupId) {
-            const filtered = allTeams.filter(t => {
-                const matchGrp = groupId === 'default-group' ? (!t.groupId || t.groupId === 'default-group') : t.groupId === groupId;
-                const matchGame = currentGameFilter === 'ALL' || (t.game || 'Wild Rift').toLowerCase() === currentGameFilter.toLowerCase();
-                return matchGrp && matchGame;
-            });
-            if (filtered.length > 0) return filtered;
-
-            const derived = new Map();
-            allPlayers.forEach(p => {
-                const pGame = p.game || 'Wild Rift';
-                if (currentGameFilter !== 'ALL' && pGame.toLowerCase() !== currentGameFilter.toLowerCase()) return;
-                const tName = (p.team || '').trim();
-                if (!tName) return;
-                const key = normalizeTeamKey(tName);
-                if (!derived.has(key)) {
-                    derived.set(key, { id: `derived-${key}`, groupId: 'default-group', name: tName, game: pGame, achievements: '', logo: p.teamlogo || '' });
-                }
-            });
-            return groupId === 'default-group' ? Array.from(derived.values()) : [];
-        }
-
-        function getPlayersForMetaTeam(teamObj) {
-            const matched = allPlayers.filter(p => {
-                if (teamObj.id && !teamObj.id.startsWith('derived-') && p.teamId === teamObj.id) return true;
-                return teamNamesMatch(p.team, teamObj.name) && (!p.game || !teamObj.game || p.game.toLowerCase() === teamObj.game.toLowerCase());
-            });
-            return sortPlayersByRole(matched);
-        }
-
         function renderGroupsAndTeams() {
             const groupsListEl = document.getElementById('team-groups-list');
             const subGridEl = document.getElementById('sub-teams-grid');
             const titleEl = document.getElementById('selected-group-title');
+            const tagBadgeEl = document.getElementById('selected-group-tag-badge');
             const achEl = document.getElementById('selected-group-achievements');
             const countEl = document.getElementById('selected-group-count');
             if (!groupsListEl || !subGridEl) return;
@@ -1507,11 +1702,15 @@
             groupsListEl.innerHTML = groups.map(g => {
                 const active = g.id === selectedGroupId;
                 const tCount = getEffectiveTeamsForGroup(g.id).length;
+                const gTag = (g.tag || '').trim();
                 return `
                     <button onclick="selectTeamGroup('${g.id}')" type="button" class="w-full text-left p-3 rounded-xl flex items-center space-x-3 transition border ${active ? 'bg-red-600/20 border-red-500 text-white' : 'bg-[#0b0c10]/75 border-white/10 text-slate-300 hover:border-white/25'}">
-                        ${renderAvatarHtml(g.logo, g.name, 'w-10 h-10 rounded-lg', 'logo')}
+                        ${renderAvatarHtml(g.logo, gTag || g.name, 'w-10 h-10 rounded-lg', 'logo')}
                         <div class="min-w-0 flex-1">
-                            <p class="text-xs font-extrabold uppercase truncate">${g.name}</p>
+                            <div class="flex items-center gap-1.5">
+                                <p class="text-xs font-extrabold uppercase truncate">${g.name}</p>
+                                ${gTag ? `<span class="text-[9px] font-black uppercase px-1.5 py-0.2 rounded bg-red-600/25 text-red-300 border border-red-500/35 shrink-0">${gTag}</span>` : ''}
+                            </div>
                             <p class="text-[10px] text-slate-400">${tCount} ${tCount === 1 ? 'Team' : 'Teams'}</p>
                         </div>
                         <i class="fa-solid fa-chevron-right text-xs text-slate-500"></i>
@@ -1522,6 +1721,14 @@
             const activeGroup = groups.find(g => g.id === selectedGroupId) || groups[0];
             const teams = getEffectiveTeamsForGroup(activeGroup.id);
             titleEl.textContent = activeGroup.name;
+            if (tagBadgeEl) {
+                if ((activeGroup.tag || '').trim()) {
+                    tagBadgeEl.textContent = activeGroup.tag.trim();
+                    tagBadgeEl.classList.remove('hidden');
+                } else {
+                    tagBadgeEl.classList.add('hidden');
+                }
+            }
             const grpAch = parseList(activeGroup.achievements);
             achEl.textContent = grpAch.length ? grpAch.join(' • ') : '';
             countEl.textContent = `${teams.length} ${teams.length === 1 ? 'Team' : 'Teams'}`;
@@ -1535,13 +1742,17 @@
                 const wr = computeTeamWinrate(t.name);
                 const roster = getPlayersForMetaTeam(t);
                 const tAch = parseList(t.achievements);
+                const tTag = (t.tag || '').trim();
                 return `
-                    <div onclick="openTeamPopout('${t.id}', '${encodeURIComponent(t.name)}')" class="bg-[#0b0c10]/85 hover:border-red-500/50 border border-white/10 p-4 rounded-xl cursor-pointer transition space-y-2">
+                    <div onclick="openTeamPopout('${t.id}')" class="bg-[#0b0c10]/85 hover:border-red-500/50 border border-white/10 p-4 rounded-xl cursor-pointer transition space-y-2">
                         <div class="flex items-center justify-between gap-3">
                             <div class="flex items-center space-x-3 min-w-0">
-                                ${renderAvatarHtml(t.logo || activeGroup.logo, t.name, 'w-11 h-11 rounded-xl', 'logo')}
+                                ${renderAvatarHtml(t.logo || activeGroup.logo, tTag || t.name, 'w-11 h-11 rounded-xl', 'logo')}
                                 <div class="min-w-0">
-                                    <h4 class="text-sm font-black text-white uppercase truncate">${t.name}</h4>
+                                    <div class="flex items-center gap-1.5">
+                                        <h4 class="text-sm font-black text-white uppercase truncate">${t.name}</h4>
+                                        ${tTag ? `<span class="text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-red-600/20 text-red-400 border border-red-500/35 shrink-0">${tTag}</span>` : ''}
+                                    </div>
                                     <p class="text-[11px] text-slate-400">${t.game || 'Wild Rift'} • ${roster.length} ${roster.length === 1 ? 'Player' : 'Players'}</p>
                                 </div>
                             </div>
@@ -1562,18 +1773,19 @@
             renderGroupsAndTeams();
         }
 
-        function openTeamPopout(teamId, encodedTeamName = '') {
-            const decodedName = decodeURIComponent(encodedTeamName || '');
-            const teamObj = allTeams.find(t => t.id === teamId) || {
-                id: teamId,
-                name: decodedName || 'Team',
-                game: currentGameFilter === 'ALL' ? 'Wild Rift' : currentGameFilter,
-                achievements: '',
-                logo: ''
-            };
+        function openTeamPopout(teamId) {
+            const teamObj = getMergedRegisteredTeams().find(t => t.id === teamId);
+            if (!teamObj) return;
 
-            document.getElementById('tmodal-logo-box').innerHTML = renderAvatarHtml(teamObj.logo, teamObj.name, 'w-12 h-12 rounded-xl', 'logo');
+            document.getElementById('tmodal-logo-box').innerHTML = renderAvatarHtml(teamObj.logo, teamObj.tag || teamObj.name, 'w-12 h-12 rounded-xl', 'logo');
             document.getElementById('tmodal-name').textContent = teamObj.name;
+            const tagEl = document.getElementById('tmodal-tag');
+            if ((teamObj.tag || '').trim()) {
+                tagEl.textContent = teamObj.tag.trim();
+                tagEl.classList.remove('hidden');
+            } else {
+                tagEl.classList.add('hidden');
+            }
             document.getElementById('tmodal-meta').innerHTML = `${teamObj.game || 'Wild Rift'} • Team Winrate: <span class="text-emerald-400 font-bold">${computeTeamWinrate(teamObj.name)}</span>`;
 
             const achList = parseList(teamObj.achievements);
@@ -1890,15 +2102,21 @@
             } else if (type === 'group') {
                 document.getElementById('editing-group-id').value = '';
                 document.getElementById('g-name').value = '';
+                document.getElementById('g-tag').value = '';
                 document.getElementById('g-ach').value = '';
                 document.getElementById('g-logo').value = '';
+                cropState.groupBase64 = '';
+                updateEntityPreview('group', '', 'RR');
                 document.getElementById('save-group-btn').textContent = 'Save Team Group';
                 document.getElementById('cancel-group-btn').classList.add('hidden');
             } else if (type === 'subteam') {
                 document.getElementById('editing-subteam-id').value = '';
                 document.getElementById('st-name').value = '';
+                document.getElementById('st-tag').value = '';
                 document.getElementById('st-ach').value = '';
                 document.getElementById('st-logo').value = '';
+                cropState.subteamBase64 = '';
+                updateEntityPreview('subteam', '', 'RR');
                 document.getElementById('save-subteam-btn').textContent = 'Save Meta Team';
                 document.getElementById('cancel-subteam-btn').classList.add('hidden');
             } else if (type === 'creator') {
@@ -1924,12 +2142,13 @@
 
         function upsertDoc(path, editId, payload, resetType, label) {
             const ref = db.ref(path);
-            const req = editId
+            const isRealEdit = editId && !String(editId).startsWith('derived__') && editId !== 'default-group';
+            const req = isRealEdit
                 ? ref.child(editId).update(payload)
                 : ref.push({ ...payload, createdAt: firebase.database.ServerValue.TIMESTAMP });
             return req.then(() => {
                 resetForm(resetType);
-                setAdminStatus(`${label} ${editId ? 'updated' : 'saved'}.`);
+                setAdminStatus(`${label} ${isRealEdit ? 'updated' : 'saved'}.`);
             }).catch(err => setAdminStatus(`Error saving ${label}: ${err.message}`, true));
         }
 
@@ -1960,41 +2179,53 @@
         function saveTeamGroup() {
             const editId = document.getElementById('editing-group-id').value;
             const name = document.getElementById('g-name').value.trim();
+            const tag = document.getElementById('g-tag').value.trim().toUpperCase();
             const achievements = document.getElementById('g-ach').value.trim();
-            const logo = document.getElementById('g-logo').value.trim();
+            const logo = cropState.groupBase64 || document.getElementById('g-logo').value.trim();
             if (!name) return alert('Please enter Group Name.');
-            upsertDoc('teamGroups', editId, { name, achievements, logo }, 'group', 'Team Group');
+            upsertDoc('teamGroups', editId, { name, tag, achievements, logo }, 'group', 'Team Group');
         }
         function editTeamGroup(id) {
-            const g = allGroups.find(x => x.id === id);
+            const g = getEffectiveGroups().find(x => x.id === id);
             if (!g) return;
             document.getElementById('editing-group-id').value = g.id;
             document.getElementById('g-name').value = g.name || '';
+            document.getElementById('g-tag').value = g.tag || '';
             document.getElementById('g-ach').value = g.achievements || '';
-            document.getElementById('g-logo').value = g.logo || '';
+            document.getElementById('g-logo').value = (g.logo && !g.logo.startsWith('data:')) ? g.logo : '';
+            cropState.groupBase64 = (g.logo && g.logo.startsWith('data:')) ? g.logo : '';
+            updateEntityPreview('group', g.logo || '', getTwoLetters(g.tag || g.name));
             document.getElementById('save-group-btn').textContent = 'Update Team Group';
             document.getElementById('cancel-group-btn').classList.remove('hidden');
+        }
+        function editSelectedAdminGroup() {
+            const grpId = document.getElementById('st-group')?.value;
+            if (grpId) editTeamGroup(grpId);
         }
 
         function saveSubTeam() {
             const editId = document.getElementById('editing-subteam-id').value;
-            const groupId = document.getElementById('st-group').value || 'default-group';
+            const groupId = document.getElementById('st-group').value || getEffectiveGroups()[0].id;
             const name = document.getElementById('st-name').value.trim();
+            const tag = document.getElementById('st-tag').value.trim().toUpperCase();
             const game = document.getElementById('st-game').value;
             const achievements = document.getElementById('st-ach').value.trim();
-            const logo = document.getElementById('st-logo').value.trim();
+            const logo = cropState.subteamBase64 || document.getElementById('st-logo').value.trim();
             if (!name) return alert('Please enter Meta Team Name.');
-            upsertDoc('metaTeams', editId, { groupId, name, game, achievements, logo }, 'subteam', 'Meta Team');
+            upsertDoc('metaTeams', editId, { groupId, name, tag, game, achievements, logo }, 'subteam', 'Meta Team');
         }
         function editSubTeam(id) {
-            const t = allTeams.find(x => x.id === id);
+            const t = getMergedRegisteredTeams().find(x => x.id === id);
             if (!t) return;
             document.getElementById('editing-subteam-id').value = t.id;
-            document.getElementById('st-group').value = t.groupId || 'default-group';
+            document.getElementById('st-group').value = t.groupId || getEffectiveGroups()[0].id;
             document.getElementById('st-name').value = t.name || '';
+            document.getElementById('st-tag').value = t.tag || '';
             document.getElementById('st-game').value = t.game || 'Wild Rift';
             document.getElementById('st-ach').value = t.achievements || '';
-            document.getElementById('st-logo').value = t.logo || '';
+            document.getElementById('st-logo').value = (t.logo && !t.logo.startsWith('data:')) ? t.logo : '';
+            cropState.subteamBase64 = (t.logo && t.logo.startsWith('data:')) ? t.logo : '';
+            updateEntityPreview('subteam', t.logo || '', getTwoLetters(t.tag || t.name));
             document.getElementById('save-subteam-btn').textContent = 'Update Meta Team';
             document.getElementById('cancel-subteam-btn').classList.remove('hidden');
             renderAdminSubTeams();
@@ -2008,11 +2239,22 @@
             document.getElementById('p-team').value = '';
             document.getElementById('p-role').value = '';
             document.getElementById('p-ach').value = '';
-            document.getElementById('p-pfp').value = '';
-            cropState.finalBase64 = '';
+            cropState.playerBase64 = '';
+            updateEntityPreview('player', '');
             document.getElementById('player-form-title').textContent = '2. Add & Manage Player (Inside Meta Team)';
             document.getElementById('save-player-btn').textContent = 'Save Player';
             document.getElementById('cancel-edit-btn').classList.add('hidden');
+        }
+
+        function onAdminPlayerTeamSelect() {
+            const selId = document.getElementById('p-team-select')?.value;
+            if (!selId) return;
+            const teamObj = getMergedRegisteredTeams().find(t => t.id === selId);
+            if (!teamObj) return;
+            document.getElementById('p-team').value = teamObj.name;
+            if (teamObj.tag && !document.getElementById('p-tag').value.trim()) {
+                document.getElementById('p-tag').value = teamObj.tag;
+            }
         }
 
         function editPlayer(id) {
@@ -2021,43 +2263,44 @@
             document.getElementById('editing-player-id').value = p.id;
             document.getElementById('p-game').value = p.game || 'Wild Rift';
             renderAdminTeamDropdown();
-            if (p.teamId) document.getElementById('p-team-select').value = p.teamId;
+            const merged = getMergedRegisteredTeams();
+            const matchedTeam = merged.find(t => t.id === p.teamId || (teamNamesMatch(t.name, p.team) && (t.game || 'Wild Rift').toLowerCase() === (p.game || 'Wild Rift').toLowerCase()));
+            if (matchedTeam) document.getElementById('p-team-select').value = matchedTeam.id;
             document.getElementById('p-ign').value = p.ign || '';
             document.getElementById('p-tag').value = p.tag || '';
             document.getElementById('p-mvp').value = p.mvp || '';
             document.getElementById('p-team').value = p.team || '';
             document.getElementById('p-role').value = p.role || '';
             document.getElementById('p-ach').value = p.achievements || '';
-            cropState.finalBase64 = p.pfp || '';
+            cropState.playerBase64 = p.pfp || '';
+            updateEntityPreview('player', p.pfp || '');
             document.getElementById('player-form-title').textContent = `2. Edit Player (${p.ign})`;
             document.getElementById('save-player-btn').textContent = 'Update Player';
             document.getElementById('cancel-edit-btn').classList.remove('hidden');
         }
 
-        async function addPlayer() {
+        function addPlayer() {
             const editId = document.getElementById('editing-player-id').value;
             const game = document.getElementById('p-game').value;
             const teamId = document.getElementById('p-team-select').value;
-            const selectedTeamObj = allTeams.find(t => t.id === teamId);
+            const selectedTeamObj = getMergedRegisteredTeams().find(t => t.id === teamId);
             const team = (document.getElementById('p-team').value || '').trim() || (selectedTeamObj ? selectedTeamObj.name : 'Rift Raiders');
             const ign = document.getElementById('p-ign').value.trim();
-            const tag = document.getElementById('p-tag').value.trim();
+            const tag = (document.getElementById('p-tag').value.trim() || (selectedTeamObj ? selectedTeamObj.tag : '')).toUpperCase();
             const mvp = parseInt(document.getElementById('p-mvp').value, 10) || 0;
             const role = document.getElementById('p-role').value.trim();
             const achievements = document.getElementById('p-ach').value.trim();
 
             if (!ign) return alert('Please enter Player IGN.');
 
-            let pfp = cropState.finalBase64;
-            if (!pfp && document.getElementById('p-pfp').files[0]) {
-                pfp = await fileToCompressedBase64(document.getElementById('p-pfp').files[0], 400, 0.8);
-            }
+            let pfp = cropState.playerBase64;
             if (!pfp && editId) {
                 const existing = allPlayers.find(x => x.id === editId);
                 if (existing) pfp = existing.pfp || '';
             }
 
-            const payload = { game, teamId: teamId || '', team, ign, tag, mvp, role, achievements, pfp };
+            const cleanTeamId = (teamId && !teamId.startsWith('derived__')) ? teamId : '';
+            const payload = { game, teamId: cleanTeamId, team, ign, tag, mvp, role, achievements, pfp };
             const req = editId
                 ? db.ref(`roster/${editId}`).update(payload)
                 : db.ref('roster').push({ ...payload, createdAt: firebase.database.ServerValue.TIMESTAMP });
@@ -2215,6 +2458,7 @@
         }
 
         function deleteItem(path, id) {
+            if (!id || String(id).startsWith('derived__')) return alert('This team is derived from existing player records. Click Edit and Save to register it in Meta Teams.');
             if (!confirm('Delete this item?')) return;
             db.ref(`${path}/${id}`).remove()
                 .then(() => setAdminStatus('Item deleted.'))
@@ -2226,7 +2470,7 @@
             if (gSel) {
                 const prev = gSel.value;
                 const groups = getEffectiveGroups();
-                gSel.innerHTML = groups.map(g => `<option value="${g.id}">${g.name}</option>`).join('');
+                gSel.innerHTML = groups.map(g => `<option value="${g.id}">${g.name}${g.tag ? ` [${g.tag}]` : ''}</option>`).join('');
                 if (prev && groups.some(g => g.id === prev)) gSel.value = prev;
             }
             renderAdminTeamDropdown();
@@ -2237,35 +2481,42 @@
             const tSel = document.getElementById('p-team-select');
             if (!tSel) return;
             const prev = tSel.value;
-            const matching = allTeams.filter(t => !t.game || t.game.toLowerCase() === pGame.toLowerCase());
-            const options = matching.length ? matching : allTeams;
-            tSel.innerHTML = `<option value="">-- Custom / None --</option>` + options.map(t => `<option value="${t.id}">${t.name} (${t.game || 'Wild Rift'})</option>`).join('');
+            const merged = getMergedRegisteredTeams();
+            const matching = merged.filter(t => (t.game || 'Wild Rift').toLowerCase() === pGame.toLowerCase());
+            const options = matching.length ? matching : merged;
+            tSel.innerHTML = `<option value="">-- Select Registered Team (${options.length}) --</option>` + options.map(t => `<option value="${t.id}">${t.name}${t.tag ? ` [${t.tag}]` : ''} (${t.game || 'Wild Rift'})</option>`).join('');
             if (prev && options.some(t => t.id === prev)) tSel.value = prev;
         }
 
-        function adminRow(label, editFn, delFn) {
+        function adminRow(label, editFn, delFn, thumbUrl = '', thumbLabel = '') {
+            const avatar = thumbLabel ? renderAvatarHtml(thumbUrl, thumbLabel, 'w-6 h-6 rounded', 'logo') : '';
             return `
                 <div class="bg-[#0b0c10] border border-white/10 px-2.5 py-1.5 rounded flex items-center justify-between gap-2 text-[11px]">
-                    <span class="text-slate-200 truncate">${label}</span>
+                    <div class="flex items-center space-x-2 min-w-0">
+                        ${avatar}
+                        <span class="text-slate-200 truncate">${label}</span>
+                    </div>
                     <div class="flex items-center space-x-2 shrink-0">
                         <button onclick="${editFn}" type="button" class="text-amber-400 hover:text-amber-300 font-bold">Edit</button>
-                        <button onclick="${delFn}" type="button" class="text-red-400 hover:text-red-300 font-bold">Del</button>
+                        ${delFn ? `<button onclick="${delFn}" type="button" class="text-red-400 hover:text-red-300 font-bold">Del</button>` : ''}
                     </div>
                 </div>
             `;
         }
 
         function renderAdminSubTeams() {
-            const grpId = document.getElementById('st-group')?.value;
+            const grpId = document.getElementById('st-group')?.value || getEffectiveGroups()[0].id;
             const box = document.getElementById('admin-subteams-list');
             if (!box) return;
-            const items = allTeams.filter(t => {
-                if (!grpId) return true;
-                if (grpId === 'default-group') return !t.groupId || t.groupId === 'default-group';
-                return t.groupId === grpId;
-            });
+            const items = getEffectiveTeamsForGroup(grpId, 'ALL');
             box.innerHTML = items.length
-                ? items.map(t => adminRow(`${t.name} (${t.game || 'Wild Rift'})`, `editSubTeam('${t.id}')`, `deleteItem('metaTeams','${t.id}')`)).join('')
+                ? items.map(t => adminRow(
+                    `${t.name}${t.tag ? ` [${t.tag}]` : ''} (${t.game || 'Wild Rift'})`,
+                    `editSubTeam('${t.id}')`,
+                    t.isDerived ? '' : `deleteItem('metaTeams','${t.id}')`,
+                    t.logo,
+                    t.tag || t.name
+                )).join('')
                 : `<p class="text-[10px] text-slate-500 italic">No teams under this group yet.</p>`;
         }
 
@@ -2274,12 +2525,21 @@
             if (nBox) nBox.innerHTML = allNews.map(n => adminRow(n.title, `editNews('${n.id}')`, `deleteItem('news','${n.id}')`)).join('');
 
             const gBox = document.getElementById('admin-groups-list');
-            if (gBox) gBox.innerHTML = allGroups.map(g => adminRow(g.name, `editTeamGroup('${g.id}')`, `deleteItem('teamGroups','${g.id}')`)).join('');
+            if (gBox) {
+                const groups = getEffectiveGroups();
+                gBox.innerHTML = groups.map(g => adminRow(
+                    `${g.name}${g.tag ? ` [${g.tag}]` : ''}`,
+                    `editTeamGroup('${g.id}')`,
+                    g.id === 'default-group' ? '' : `deleteItem('teamGroups','${g.id}')`,
+                    g.logo,
+                    g.tag || g.name
+                )).join('');
+            }
 
             renderAdminSubTeams();
 
             const pBox = document.getElementById('admin-players-list');
-            if (pBox) pBox.innerHTML = allPlayers.map(p => adminRow(`${p.ign} • ${p.team || ''} (${p.role || 'Player'})`, `editPlayer('${p.id}')`, `deleteItem('roster','${p.id}')`)).join('');
+            if (pBox) pBox.innerHTML = allPlayers.map(p => adminRow(`${p.ign}${p.tag ? ` #${p.tag}` : ''} • ${p.team || ''} (${p.role || 'Player'})`, `editPlayer('${p.id}')`, `deleteItem('roster','${p.id}')`, p.pfp, p.ign)).join('');
 
             const mBox = document.getElementById('admin-matches-list');
             if (mBox) {
@@ -2290,10 +2550,10 @@
             }
 
             const cBox = document.getElementById('admin-creators-list');
-            if (cBox) cBox.innerHTML = allCreators.map(c => adminRow(`${c.name} (${c.game || 'Streamer'})`, `editCreator('${c.id}')`, `deleteItem('creators','${c.id}')`)).join('');
+            if (cBox) cBox.innerHTML = allCreators.map(c => adminRow(`${c.name} (${c.game || 'Streamer'})`, `editCreator('${c.id}')`, `deleteItem('creators','${c.id}')`, c.pfp, c.name)).join('');
 
             const partBox = document.getElementById('admin-partners-list');
-            if (partBox) partBox.innerHTML = allPartners.map(p => adminRow(p.name, `editPartner('${p.id}')`, `deleteItem('partners','${p.id}')`)).join('');
+            if (partBox) partBox.innerHTML = allPartners.map(p => adminRow(p.name, `editPartner('${p.id}')`, `deleteItem('partners','${p.id}')`, p.logo, p.name)).join('');
         }
     </script>
 </body>
