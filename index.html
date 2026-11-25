@@ -373,11 +373,14 @@
 
                     <div class="pt-3 border-t border-white/10 space-y-2.5">
                         <div class="flex justify-between items-center">
-                            <h3 class="font-black text-xs uppercase text-red-400">1B. Meta Sub-Team (e.g. Rift Raiders First Team, Second Team, Ascent)</h3>
+                            <h3 class="font-black text-xs uppercase text-red-400">1B. Select Team Group & Manage Teams</h3>
                             <button id="cancel-subteam-btn" onclick="resetForm('subteam')" type="button" class="hidden text-[10px] text-slate-400 underline">Cancel Edit</button>
                         </div>
                         <input type="hidden" id="editing-subteam-id">
-                        <select id="st-group" onchange="renderAdminSubTeams()" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs text-white font-bold"></select>
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase">Select Team Group:</label>
+                            <select id="st-group" onchange="renderAdminSubTeams()" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs mt-1 text-white font-bold"></select>
+                        </div>
                         <div class="grid grid-cols-2 gap-2">
                             <input type="text" id="st-name" placeholder="Team Name (e.g. Rift Raiders Ascent)" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs text-white">
                             <select id="st-game" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs text-white">
@@ -389,7 +392,10 @@
                         <input type="text" id="st-ach" placeholder="Team Achievements (optional)" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs text-white">
                         <input type="text" id="st-logo" placeholder="Team Logo URL (blank = 2 letters)" class="w-full bg-[#0b0c10] border border-white/10 px-3 py-2 rounded text-xs text-white">
                         <button id="save-subteam-btn" onclick="saveSubTeam()" type="button" class="bg-slate-700 hover:bg-slate-600 w-full py-2 rounded text-xs font-bold uppercase transition">Save Meta Team</button>
-                        <div id="admin-subteams-list" class="space-y-1.5 max-h-32 overflow-y-auto"></div>
+                        <div>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase mb-1.5">Teams in Selected Group:</p>
+                            <div id="admin-subteams-list" class="space-y-1.5 max-h-32 overflow-y-auto"></div>
+                        </div>
                     </div>
                 </div>
 
@@ -595,6 +601,25 @@
             </div>
         </section>
     </main>
+
+    <!-- ADMIN PASSWORD POP-UP MODAL -->
+    <div id="admin-modal" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-card border border-red-500/35 rounded-2xl p-6 w-full max-w-sm text-center relative shadow-2xl space-y-4">
+            <button onclick="closeAdminModal()" type="button" class="absolute top-3.5 right-3.5 text-slate-400 hover:text-white w-7 h-7 flex items-center justify-center bg-white/5 rounded-full">✕</button>
+            <div class="w-11 h-11 rounded-xl bg-red-600/20 border border-red-500/35 text-red-500 flex items-center justify-center mx-auto text-lg">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            <div class="space-y-1">
+                <h3 class="gaming-font font-black text-base text-white uppercase">Admin Access</h3>
+                <p class="text-xs text-slate-400">Enter admin password to unlock management controls.</p>
+            </div>
+            <input type="password" id="admin-pass-input" onkeydown="if(event.key==='Enter') verifyAdminPass()" placeholder="Enter password" class="w-full bg-[#0b0c10] border border-white/15 focus:border-red-500 rounded-lg px-3.5 py-2.5 text-xs text-white text-center outline-none">
+            <div class="flex space-x-2">
+                <button onclick="closeAdminModal()" type="button" class="w-1/2 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded-lg text-xs font-bold uppercase transition">Cancel</button>
+                <button onclick="verifyAdminPass()" type="button" class="w-1/2 bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg text-xs font-bold uppercase transition">Unlock</button>
+            </div>
+        </div>
+    </div>
 
     <!-- CROPPER MODAL -->
     <div id="crop-modal" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 hidden">
@@ -1091,18 +1116,36 @@
         }
 
         /* ADMIN MODAL */
-        function openAdminModal() { document.getElementById('admin-modal').classList.remove('hidden'); }
-        function closeAdminModal() { document.getElementById('admin-modal').classList.add('hidden'); }
+        function openAdminModal() {
+            const modal = document.getElementById('admin-modal');
+            const inp = document.getElementById('admin-pass-input');
+            if (!modal) return;
+            modal.classList.remove('hidden');
+            if (inp) {
+                inp.value = '';
+                setTimeout(() => inp.focus(), 50);
+            }
+        }
+        function closeAdminModal() {
+            const modal = document.getElementById('admin-modal');
+            if (modal) modal.classList.add('hidden');
+        }
         function verifyAdminPass() {
-            if (document.getElementById('admin-pass-input').value === 'rr2024') {
+            const inp = document.getElementById('admin-pass-input');
+            const entered = (inp?.value || '').trim().toLowerCase();
+            if (entered === 'rr2024') {
                 closeAdminModal();
-                document.getElementById('admin-dashboard-section').classList.remove('hidden');
-                document.getElementById('admin-pass-input').value = '';
+                const dash = document.getElementById('admin-dashboard-section');
+                if (dash) {
+                    dash.classList.remove('hidden');
+                    dash.scrollIntoView({ behavior: 'smooth' });
+                }
+                if (inp) inp.value = '';
                 renderAdminDropdowns();
                 renderAllAdminLists();
-                document.getElementById('admin-dashboard-section').scrollIntoView({ behavior: 'smooth' });
             } else {
                 alert('Incorrect password.');
+                if (inp) inp.focus();
             }
         }
         function lockAdmin() {
@@ -1426,7 +1469,6 @@
             });
             if (filtered.length > 0) return filtered;
 
-            // Fallback: derive unique team names from players if no metaTeams records exist yet
             const derived = new Map();
             allPlayers.forEach(p => {
                 const pGame = p.game || 'Wild Rift';
@@ -1955,6 +1997,7 @@
             document.getElementById('st-logo').value = t.logo || '';
             document.getElementById('save-subteam-btn').textContent = 'Update Meta Team';
             document.getElementById('cancel-subteam-btn').classList.remove('hidden');
+            renderAdminSubTeams();
         }
 
         function resetPlayerForm() {
@@ -2216,8 +2259,14 @@
             const grpId = document.getElementById('st-group')?.value;
             const box = document.getElementById('admin-subteams-list');
             if (!box) return;
-            const items = allTeams.filter(t => !grpId || t.groupId === grpId);
-            box.innerHTML = items.map(t => adminRow(`${t.name} (${t.game || 'Wild Rift'})`, `editSubTeam('${t.id}')`, `deleteItem('metaTeams','${t.id}')`)).join('');
+            const items = allTeams.filter(t => {
+                if (!grpId) return true;
+                if (grpId === 'default-group') return !t.groupId || t.groupId === 'default-group';
+                return t.groupId === grpId;
+            });
+            box.innerHTML = items.length
+                ? items.map(t => adminRow(`${t.name} (${t.game || 'Wild Rift'})`, `editSubTeam('${t.id}')`, `deleteItem('metaTeams','${t.id}')`)).join('')
+                : `<p class="text-[10px] text-slate-500 italic">No teams under this group yet.</p>`;
         }
 
         function renderAllAdminLists() {
