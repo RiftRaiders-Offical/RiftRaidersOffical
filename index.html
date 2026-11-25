@@ -726,7 +726,7 @@
             <p class="text-[10px] text-slate-400">Drag image (touch or mouse) and adjust zoom for framing.</p>
 
             <div class="relative w-48 h-48 mx-auto rounded-xl overflow-hidden border-2 border-red-500 bg-black cursor-grab active:cursor-grabbing select-none touch-none" id="crop-viewport">
-                <img id="crop-img" src="" alt="Crop Preview" class="absolute max-none select-none pointer-events-none" style="transform: translate(0px, 0px) scale(1);">
+                <img id="crop-img" src="" alt="Crop Preview" class="absolute top-0 left-0 max-none select-none pointer-events-none" style="transform-origin: top left; transform: translate3d(0px, 0px, 0) scale(1);">
             </div>
 
             <div class="space-y-2">
@@ -734,7 +734,7 @@
                     <span>Zoom</span>
                     <span id="zoom-val">100%</span>
                 </div>
-                <input type="range" id="crop-zoom" min="1" max="3" step="0.05" value="1" class="w-full accent-red-500" oninput="updateCropTransform()">
+                <input type="range" id="crop-zoom" min="1" max="4" step="0.02" value="1" class="w-full accent-red-500" oninput="updateCropTransform()">
             </div>
 
             <div class="flex space-x-2 pt-2">
@@ -1097,7 +1097,7 @@
         let currentLeaderboardFilter = 'ALL';
         let currentMatchFilter = 'ALL';
 
-        /* CROPPER */
+        /* CENTER-LOCKED CROPPER */
         let cropState = {
             target: 'player',
             imgObj: new Image(),
@@ -1114,6 +1114,33 @@
 
         const viewport = document.getElementById('crop-viewport');
         const cropImg = document.getElementById('crop-img');
+        cropImg.style.top = '0px';
+        cropImg.style.left = '0px';
+        cropImg.style.transformOrigin = 'top left';
+
+        function clampCropPosition() {
+            const vSize = 192;
+            const renderW = cropState.imgObj.width * cropState.scale;
+            const renderH = cropState.imgObj.height * cropState.scale;
+
+            if (renderW <= vSize) {
+                cropState.posX = (vSize - renderW) / 2;
+            } else {
+                cropState.posX = Math.max(vSize - renderW, Math.min(0, cropState.posX));
+            }
+
+            if (renderH <= vSize) {
+                cropState.posY = (vSize - renderH) / 2;
+            } else {
+                cropState.posY = Math.max(vSize - renderH, Math.min(0, cropState.posY));
+            }
+        }
+
+        function applyCropDom() {
+            cropImg.style.width = cropState.imgObj.width + 'px';
+            cropImg.style.height = cropState.imgObj.height + 'px';
+            cropImg.style.transform = `translate3d(${cropState.posX}px, ${cropState.posY}px, 0) scale(${cropState.scale})`;
+        }
 
         viewport.addEventListener('mousedown', (e) => {
             cropState.isDragging = true;
@@ -1124,7 +1151,8 @@
             if (!cropState.isDragging) return;
             cropState.posX = e.clientX - cropState.startX;
             cropState.posY = e.clientY - cropState.startY;
-            updateCropTransform();
+            clampCropPosition();
+            applyCropDom();
         });
         window.addEventListener('mouseup', () => { cropState.isDragging = false; });
 
@@ -1139,7 +1167,8 @@
             if (!cropState.isDragging || e.touches.length !== 1) return;
             cropState.posX = e.touches[0].clientX - cropState.startX;
             cropState.posY = e.touches[0].clientY - cropState.startY;
-            updateCropTransform();
+            clampCropPosition();
+            applyCropDom();
         }, { passive: true });
         window.addEventListener('touchend', () => { cropState.isDragging = false; });
 
@@ -1160,18 +1189,25 @@
             document.getElementById('crop-modal-title').textContent = titleMap[cropState.target] || 'Adjust Photo Crop';
             const reader = new FileReader();
             reader.onload = (e) => {
+                cropState.imgObj = new Image();
                 cropState.imgObj.onload = () => {
                     const vSize = 192;
                     const baseScale = Math.max(vSize / cropState.imgObj.width, vSize / cropState.imgObj.height);
                     cropState.scale = baseScale;
+
                     const zoomSlider = document.getElementById('crop-zoom');
-                    zoomSlider.min = baseScale;
-                    zoomSlider.max = baseScale * 4;
+                    zoomSlider.min = baseScale.toFixed(4);
+                    zoomSlider.max = (baseScale * 4).toFixed(4);
+                    zoomSlider.step = (baseScale * 0.02).toFixed(4);
                     zoomSlider.value = baseScale;
-                    cropState.posX = (vSize - (cropState.imgObj.width * baseScale)) / 2;
-                    cropState.posY = (vSize - (cropState.imgObj.height * baseScale)) / 2;
+
+                    cropState.posX = (vSize - cropState.imgObj.width * baseScale) / 2;
+                    cropState.posY = (vSize - cropState.imgObj.height * baseScale) / 2;
+
                     cropImg.src = e.target.result;
-                    updateCropTransform();
+                    clampCropPosition();
+                    applyCropDom();
+                    document.getElementById('zoom-val').innerText = '100%';
                     document.getElementById('crop-modal').classList.remove('hidden');
                 };
                 cropState.imgObj.src = e.target.result;
@@ -1181,13 +1217,23 @@
 
         function updateCropTransform() {
             const zoomSlider = document.getElementById('crop-zoom');
-            const zoomVal = parseFloat(zoomSlider.value) || 1;
+            const newScale = parseFloat(zoomSlider.value) || cropState.scale;
             const minScale = parseFloat(zoomSlider.min) || 1;
-            cropState.scale = zoomVal;
-            document.getElementById('zoom-val').innerText = Math.round((zoomVal / minScale) * 100) + '%';
-            cropImg.style.width = (cropState.imgObj.width * cropState.scale) + 'px';
-            cropImg.style.height = (cropState.imgObj.height * cropState.scale) + 'px';
-            cropImg.style.transform = `translate(${cropState.posX}px, ${cropState.posY}px)`;
+            const oldScale = cropState.scale || newScale;
+
+            const vCenter = 96;
+            const imgCenterX = (vCenter - cropState.posX) / oldScale;
+            const imgCenterY = (vCenter - cropState.posY) / oldScale;
+
+            cropState.scale = newScale;
+            cropState.posX = vCenter - imgCenterX * newScale;
+            cropState.posY = vCenter - imgCenterY * newScale;
+
+            clampCropPosition();
+            applyCropDom();
+
+            const pct = Math.max(100, Math.round((newScale / minScale) * 100));
+            document.getElementById('zoom-val').innerText = pct + '%';
         }
 
         function cancelCrop() {
@@ -1241,14 +1287,14 @@
             canvas.width = 400;
             canvas.height = 400;
             const ctx = canvas.getContext('2d');
+
             const vSize = 192;
-            const renderW = cropState.imgObj.width * cropState.scale;
-            const renderH = cropState.imgObj.height * cropState.scale;
-            const sx = (-cropState.posX / renderW) * cropState.imgObj.width;
-            const sy = (-cropState.posY / renderH) * cropState.imgObj.height;
-            const sSize = (vSize / renderW) * cropState.imgObj.width;
+            const sx = (-cropState.posX) / cropState.scale;
+            const sy = (-cropState.posY) / cropState.scale;
+            const sSize = vSize / cropState.scale;
+
             ctx.drawImage(cropState.imgObj, sx, sy, sSize, sSize, 0, 0, 400, 400);
-            const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.88);
 
             if (cropState.target === 'group') {
                 cropState.groupBase64 = dataUrl;
