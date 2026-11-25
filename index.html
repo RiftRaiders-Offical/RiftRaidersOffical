@@ -109,7 +109,7 @@
                 WELCOME TO <span class="text-red-600">RIFT RAIDERS</span> OFFICIAL
             </h1>
             <p class="text-xs sm:text-sm text-slate-300 max-w-2xl mx-auto leading-relaxed">
-                Explore our team groups, registered sub-rosters, players leaderboard, KDA & team gold match scoreboards, creators, and announcements.
+                Explore our team groups, registered sub-rosters, tournament players leaderboard, KDA & team gold match scoreboards, creators, and announcements.
             </p>
 
             <div class="flex flex-wrap items-center justify-center gap-2 pt-1">
@@ -243,12 +243,12 @@
             </div>
         </section>
 
-        <!-- PLAYERS LEADERBOARD (REGISTERED TEAMS & PLAYERS RECORDED BY MATCH HISTORY) -->
+        <!-- PLAYERS LEADERBOARD (TOURNAMENT MATCHES ONLY) -->
         <section id="leaderboard-section" class="space-y-4 scroll-mt-20">
             <div class="flex flex-wrap items-center justify-between gap-2">
                 <div class="flex items-center space-x-2">
                     <div class="w-1 h-5 bg-amber-400 rounded"></div>
-                    <h2 class="gaming-font font-black text-sm sm:text-base text-white uppercase">Players Leaderboard • Match History Stats</h2>
+                    <h2 class="gaming-font font-black text-sm sm:text-base text-white uppercase">Players Leaderboard • Tournament Stats</h2>
                 </div>
 
                 <div class="flex gap-1.5 overflow-x-auto pb-1 text-[11px] font-bold">
@@ -801,7 +801,7 @@
             <div id="pview-overview" class="space-y-3">
                 <div class="grid grid-cols-3 gap-2 text-center bg-[#0b0c10] p-3 rounded-xl border border-white/10">
                     <div>
-                        <p class="text-[10px] text-slate-400 uppercase font-bold">Matches</p>
+                        <p class="text-[10px] text-slate-400 uppercase font-bold">Tournament Matches</p>
                         <p id="modal-total" class="text-sm font-black text-blue-400">0</p>
                     </div>
                     <div>
@@ -1735,13 +1735,16 @@
             })).sort((a, b) => b.picks - a.picks || b.kdaValue - a.kdaValue);
         }
 
+        /* PLAYER STATS BASED STRICTLY ON TOURNAMENT MATCHES */
         function computePlayerStats(playerObj) {
             const ign = (playerObj?.ign || '').trim().toLowerCase();
-            let wins = 0, losses = 0, k = 0, d = 0, a = 0, hasKda = false, matchMvps = 0;
+            let wins = 0, losses = 0, k = 0, d = 0, a = 0, hasKda = false, tournamentMvps = 0;
             const champs = {};
 
             Object.values(allMatches).forEach(m => {
                 if (!m || typeof m !== 'object') return;
+                if ((m.type || '').trim().toLowerCase() !== 'tournament') return;
+
                 const blueRows = parseMatchLines(m.blueData);
                 const redRows = parseMatchLines(m.redData);
                 const inBlue = blueRows.find(r => r.ign.trim().toLowerCase() === ign);
@@ -1751,7 +1754,7 @@
 
                 const won = inBlue ? (m.result === 'Win') : (m.result === 'Lose');
                 if (won) wins++; else losses++;
-                if (hit.isMvp) matchMvps++;
+                if (hit.isMvp) tournamentMvps++;
 
                 const parsed = parseKdaNumbers(hit.kda);
                 if (parsed) { k += parsed.k; d += parsed.d; a += parsed.a; hasKda = true; }
@@ -1773,7 +1776,7 @@
             const total = wins + losses;
             const winrate = total === 0 ? 0 : Math.round((wins / total) * 100);
             const avgKda = hasKda ? kdaRatio(k, d, a).toFixed(2) : '0.00';
-            const mvpCount = Math.max(matchMvps, parseInt(playerObj?.mvp, 10) || 0);
+            const mvpCount = tournamentMvps;
 
             const sortedChamps = Object.values(champs).map(st => ({
                 champ: st.champ,
@@ -1787,7 +1790,7 @@
             return { wins, losses, total, winrate, avgKda, mvpCount, sortedChamps };
         }
 
-        /* PLAYERS LEADERBOARD RENDERING */
+        /* PLAYERS LEADERBOARD RENDERING (ONLY REGISTERED TEAM PLAYERS WITH TOURNAMENT MATCHES) */
         function renderPlayersLeaderboard() {
             const tbody = document.getElementById('players-leaderboard-body');
             if (!tbody) return;
@@ -1816,7 +1819,7 @@
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="7" class="py-6 px-4 text-center text-slate-400 italic">
-                            No match history records yet for registered team players in this category.
+                            No tournament match records yet for registered team players in this category.
                         </td>
                     </tr>
                 `;
@@ -2087,7 +2090,7 @@
                 : `<p class="text-xs text-slate-400 italic">No player achievements listed yet.</p>`;
 
             if (!st.sortedChamps.length) {
-                document.getElementById('modal-top3-champs').innerHTML = `<p class="text-xs text-slate-400 italic">No champion match data yet.</p>`;
+                document.getElementById('modal-top3-champs').innerHTML = `<p class="text-xs text-slate-400 italic">No tournament champion data yet.</p>`;
                 document.getElementById('modal-champs-list').innerHTML = `<p class="text-xs text-slate-400 italic">No champions recorded.</p>`;
             } else {
                 document.getElementById('modal-top3-champs').innerHTML = st.sortedChamps.slice(0, 3).map(c => buildChampRowHtml(c, true)).join('');
